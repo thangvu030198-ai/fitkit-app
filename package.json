@@ -1,0 +1,17 @@
+{
+  "name": "fitkit-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FIT KIT — bọc bằng Capacitor để build ra project iOS/Xcode, phục vụ đóng gói file .ipa qua GitHub Actions (không cần máy Mac).",
+  "scripts": {
+    "cap:add:ios": "cap add ios",
+    "cap:sync": "cap sync ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "^6.1.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/ios": "^6.1.2"
+  }
+}

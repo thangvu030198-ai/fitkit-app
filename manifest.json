@@ -1,0 +1,16 @@
+{
+  "name": "FIT KIT — Huấn luyện & Dinh dưỡng thông minh",
+  "short_name": "FIT KIT",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "description": "Ứng dụng hướng dẫn tập luyện, dinh dưỡng, giấc ngủ và nhắc nhở khoa học.",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Ctext x='50' y='62' font-size='34' font-family='Arial' font-weight='bold' fill='%23ff3100' text-anchor='middle'%3EFK%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}

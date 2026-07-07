@@ -1,0 +1,13 @@
+{
+  "appId": "com.fitkit.app",
+  "appName": "FIT KIT",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "ios": {
+    "contentInset": "always",
+    "scheme": "FitKit"
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
