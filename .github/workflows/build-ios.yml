@@ -1,0 +1,76 @@
+name: Build unsigned iOS .ipa (FitKit)
+
+# Chạy trên máy ảo macOS miễn phí của GitHub (không cần bạn có Mac).
+# Kết quả: file FitKit-unsigned.ipa CHƯA KÝ — dùng AltStore/SideStore trên
+# iPhone để ký lại bằng Apple ID miễn phí của bạn rồi cài (xem README-ios-build.md).
+
+on:
+  workflow_dispatch: {}   # cho phép bấm nút "Run workflow" thủ công trên GitHub
+  push:
+    branches: [ main ]
+    paths:
+      - "index.html"
+      - "style.css"
+      - "app.js"
+      - "data.js"
+      - "manifest.json"
+      - "sw.js"
+      - "capacitor.config.json"
+      - "package.json"
+      - ".github/workflows/build-ios.yml"
+
+jobs:
+  build-ios:
+    runs-on: macos-14
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Gom các file web vào thư mục www/ (đúng như webDir trong capacitor.config.json)
+        run: |
+          mkdir -p www
+          cp index.html style.css app.js data.js manifest.json sw.js www/
+
+      - name: Cài dependency Capacitor
+        run: npm install
+
+      - name: Thêm nền tảng iOS (tạo project Xcode)
+        run: npx cap add ios
+
+      - name: Đồng bộ web assets vào project iOS
+        run: npx cap sync ios
+
+      - name: Build bản .app KHÔNG ký (unsigned)
+        working-directory: ios/App
+        run: |
+          xcodebuild -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_ENTITLEMENTS="" \
+            DEVELOPMENT_TEAM="" \
+            clean build
+
+      - name: Đóng gói thành file .ipa
+        working-directory: ios/App/build/Build/Products/Release-iphoneos
+        run: |
+          mkdir -p Payload
+          cp -r App.app Payload/
+          zip -r FitKit-unsigned.ipa Payload
+
+      - name: Tải lên làm artifact (vào tab Actions của repo để tải về)
+        uses: actions/upload-artifact@v4
+        with:
+          name: FitKit-ipa
+          path: ios/App/build/Build/Products/Release-iphoneos/FitKit-unsigned.ipa
+          retention-days: 30
