@@ -42,7 +42,7 @@ function recipeMatchesTag(r, tag){
 }
 
 /* ---- Ảnh thật đã tách nền (media/food, phát qua jsDelivr). Chưa có ảnh → dùng emoji ---- */
-const FOOD_IMG_BASE = "https://cdn.jsdelivr.net/gh/thangvu030198-ai/fitkit-app@main/media/food/";
+const FOOD_IMG_BASE = "https://thangvu030198-ai.github.io/fitkit-app/media/food/";
 let FOOD_IMG = {};
 (async ()=>{
   try{ const r = await fetch(FOOD_IMG_BASE + "index.json"); if(r.ok){ FOOD_IMG = await r.json(); if(typeof renderNutritionScreen==="function" && $("#screen-nutrition.active")) renderNutritionScreen(); } }catch(e){}

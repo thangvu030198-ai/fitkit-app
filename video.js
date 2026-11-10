@@ -256,6 +256,9 @@ async function mountVideoBlock(id, query, opts={}){
       const words = String(qs[0]||"").toLowerCase().split(/\s+/).filter(w=> w.length>2 && !["exercise","workout","gym"].includes(w));
       const score = v=> v._saved ? 99 : words.filter(w=> (v.tags||"").includes(w)).length;
       list.sort((a,b)=> score(b)-score(a));
+      // Chỉ giữ video tham khảo thật sự liên quan (có thẻ khớp tên bài + thẻ thể thao) — không hiện video ngẫu nhiên
+      const sporty = v=> /exercise|workout|fitness|gym|training|sport|athlete|crossfit|run|jog|yoga|stretch/.test(v.tags||"");
+      list = list.filter(v=> v._saved || v._guide || (score(v) > 0 && sporty(v)));
     }
   }catch(e){ if(!list.length){ host.innerHTML = `<div class="vb-msg"><span class="material-symbols-rounded">videocam</span>${escapeHtml(e.message==="NO_KEY" ? "Chưa kết nối nguồn video." : e.message)}</div>`; return; } }
   if(!document.getElementById(id)) return;

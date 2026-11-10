@@ -7,7 +7,8 @@
    Khi mở 1 bài, app ưu tiên video khớp tên bài từ 2 nguồn này; chỉ khi không có mới
    dùng kho Pixabay làm video tham khảo.
    ========================================================================= */
-const FV_REPO_CDN = "https://cdn.jsdelivr.net/gh/thangvu030198-ai/fitkit-app@main/";
+/* Media lưu trong repo, phát qua GitHub Pages (cập nhật sau ~1–2 phút, không bị cache lâu như jsDelivr @main) */
+const FV_REPO_CDN = "https://thangvu030198-ai.github.io/fitkit-app/";
 
 const YMOVE_FREE = [
   ["fd0eaa34-d14b-4421-b41c-1669f93253b3","Barbell Back Squat"],
