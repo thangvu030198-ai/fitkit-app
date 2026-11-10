@@ -1,0 +1,29 @@
+name: Media — video bổ sung (Pexels / Wikimedia)
+
+# Tải các video chọn tay trong scripts/extra_sources.json, nén nhẹ, lưu vào media/extra/
+on:
+  workflow_dispatch: {}
+  push:
+    paths: ["scripts/extra_sources.json"]
+
+permissions:
+  contents: write
+
+jobs:
+  extra:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cài ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Tải & nén video
+        run: python3 scripts/fetch_extra_videos.py
+      - name: Lưu vào repo
+        run: |
+          git config user.name "fitkit-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add media/extra
+          if git diff --cached --quiet; then echo "Không có gì mới"; exit 0; fi
+          git commit -m "media: video bổ sung (Pexels / Wikimedia Commons)"
+          git pull --rebase && git push
