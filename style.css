@@ -1323,3 +1323,13 @@ i.cnt{ background:var(--coral); }
 .tpl-day-h b{ font-size:12px; color:var(--mint-2); min-width:58px; } .tpl-day-h span{ font-size:13px; font-weight:600; flex:1; } .tpl-day-h i{ font-style:normal; font-size:11px; color:var(--text-dim); }
 .tpl-day ol{ margin:6px 0 0 18px; display:flex; flex-direction:column; gap:3px; }
 .tpl-day li{ font-size:12px; color:var(--text-muted); } .tpl-day li span{ margin-right:6px; } .tpl-day li b{ color:#fff; font-weight:600; }
+
+/* Giáo án: nút thêm nhanh */
+.tpl-card{ cursor:pointer; width:100%; }
+.tpl-actions{ display:flex; gap:8px; margin-top:8px; width:100%; }
+.tpl-add{ flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 12px; border-radius:999px; border:0; background:var(--coral); color:#fff; font-weight:600; font-size:13px; font-family:inherit; }
+.tpl-add:disabled{ opacity:.7; }
+.tpl-add .material-symbols-rounded, .tpl-add svg{ width:16px; height:16px; font-size:16px; }
+.tpl-view{ padding:10px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.2); background:transparent; color:#fff; font-size:13px; font-family:inherit; }
+.thumb-wrap .cam-badge.play{ background:var(--mint); }
+.thumb-wrap .cam-badge.play .material-symbols-rounded, .thumb-wrap .cam-badge.play svg{ color:var(--navy); }

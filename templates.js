@@ -1,7 +1,7 @@
 /* =========================================================================
    FIT KIT — Bài tập bổ sung + Giáo án mẫu quốc tế (Nam / Nữ / Chung × 3 cấp độ)
-   Giáo án được xây theo CẤU TRÚC của các chương trình phổ biến, công khai miễn phí
-   trên thế giới (StrongLifts 5×5, PHUL, Reddit PPL, r/bodyweightfitness, NHS Couch to 5K…).
+   Giáo án theo xu hướng & nguyên tắc tập luyện hiện đại (RIR, tăng tiến kép, Upper/Lower,
+   ULPPL, PPL, Powerbuilding, Hybrid/Hyrox, Zone 2, đi bộ dốc 12-3-30, glute focus).
    Bố cục buổi tập/hiệp/lần là ý tưởng huấn luyện phổ thông — FIT KIT tự biên soạn lại
    bằng tiếng Việt, không sao chép tài liệu gốc.
    Nạp NGAY SAU data.js.
@@ -63,135 +63,240 @@ Object.assign(EXERCISES, {
     guide:"Giãn đùi trước, đùi sau, mông, ngực, vai và lưng, mỗi tư thế 30–45 giây, thở đều, không nhún." },
 });
 
+/* ---------- Bài tập bổ sung cho giáo án hiện đại ---------- */
+Object.assign(EXERCISES, {
+  bulgarian: { name:"Squat tách chân Bulgaria (Bulgarian Split Squat)", muscle:"Chân / Mông", equipment:"Tạ đơn + ghế", sets:3, reps:"8-12 mỗi chân", restSec:90, img:IMG.muscle_legs,
+    guide:"Mu bàn chân sau gác lên ghế, chân trước cách ghế ~1 bước. Hạ thẳng xuống đến khi gối sau gần chạm sàn, thân hơi đổ trước để nhắm mông. Đẩy bằng cả bàn chân trước." },
+  hacksquat: { name:"Squat máy Hack (Hack Squat)", muscle:"Chân", equipment:"Máy", sets:3, reps:"8-12", restSec:120, img:IMG.muscle_legs,
+    guide:"Lưng áp sát đệm, chân giữa bàn đạp. Hạ sâu hết tầm có kiểm soát (2–3 giây), đẩy lên không khoá gối." },
+  smithsquat: { name:"Squat máy Smith (Squats on Multipress)", muscle:"Chân", equipment:"Máy Smith", sets:3, reps:"8-12", restSec:120, img:IMG.muscle_legs,
+    guide:"Thanh tạ trên vai, chân đặt hơi trước thân. Ngồi sâu, giữ lưng thẳng, đẩy lên bằng cả bàn chân." },
+  csrow: { name:"Kéo tạ tì ngực (Chest Supported Row)", muscle:"Lưng", equipment:"Tạ đơn + ghế dốc", sets:3, reps:"8-12", restSec:90, img:IMG.muscle_back,
+    guide:"Nằm sấp trên ghế dốc 30–45°. Để tay duỗi hết (căng lưng), kéo tạ về hông, khép bả vai, hạ chậm. Không giật người." },
+  cablelateral: { name:"Dang vai cáp (Cable Lateral Raise)", muscle:"Vai", equipment:"Cáp", sets:3, reps:"12-15", restSec:45, img:IMG.muscle_shoulders,
+    guide:"Đứng cạnh máy cáp, tay cầm ở thấp phía trước người. Nâng tay sang ngang tới vai, khuỷu hơi chùng, hạ chậm giữ căng cơ ở đầu động tác." },
+  ohtriext: { name:"Duỗi tay sau qua đầu với cáp (Overhead Cable Tricep Extension)", muscle:"Tay sau", equipment:"Cáp", sets:3, reps:"10-15", restSec:60, img:IMG.muscle_arms,
+    guide:"Quay lưng vào máy, dây thừng sau đầu, khuỷu hướng lên. Duỗi tay ra trước–lên, hạ sâu ra sau đầu để kéo giãn tay sau." },
+  preacher: { name:"Cuốn tạ ghế Scott (Preacher Curls)", muscle:"Tay trước", equipment:"Đòn EZ / Tạ đơn", sets:3, reps:"10-12", restSec:60, img:IMG.muscle_arms,
+    guide:"Cánh tay tì lên đệm ghế Scott. Hạ tạ gần duỗi hết (căng tay trước), cuốn lên không nhấc khuỷu khỏi đệm." },
+  sledpush: { name:"Đẩy xe trượt (Sled Push)", muscle:"Toàn thân", equipment:"Xe trượt", sets:4, reps:"20 m", restSec:90, img:IMG.muscle_cardio,
+    guide:"Tay nắm cột xe, thân nghiêng ~45°, bước ngắn nhanh, đẩy bằng chân trước. Giữ lưng thẳng, mắt nhìn xuống trước." },
+  wallball: { name:"Ném bóng tường (Wall Ball)", muscle:"Toàn thân", equipment:"Bóng tạ", sets:4, reps:"15-20", restSec:60, img:IMG.muscle_cardio,
+    guide:"Ôm bóng trước ngực, squat xuống sâu rồi bật lên ném bóng vào mục tiêu trên tường, bắt bóng và vào luôn lần squat tiếp theo." },
+  farmercarry: { name:"Xách tạ đi bộ (Farmer's Carry)", muscle:"Toàn thân / Cẳng tay", equipment:"Tạ đơn / Tạ ấm", sets:4, reps:"40 m", restSec:60, img:IMG.muscle_cardio,
+    guide:"Xách hai tạ nặng hai bên, vai kéo xuống, thân thẳng, siết bụng. Đi bước ngắn đều, không để tạ đung đưa." },
+  inclinewalk: { name:"Đi bộ dốc 12-3-30 (Incline Treadmill Walk)", muscle:"Tim mạch", equipment:"Máy chạy bộ", sets:1, reps:"30 phút", restSec:0, img:IMG.muscle_cardio,
+    guide:"Độ dốc 12%, tốc độ ~4,8 km/h (3 mph), 30 phút. Không vịn tay vào máy. Mới tập có thể bắt đầu dốc 6–8% và 15–20 phút." },
+  zone2: { name:"Cardio Zone 2 (Zone 2 Cardio)", muscle:"Tim mạch", equipment:"Xe đạp / Chạy / Chèo", sets:1, reps:"30-45 phút", restSec:0, img:IMG.muscle_cardio,
+    guide:"Cường độ nhẹ–vừa, nhịp tim ~60–70% tối đa: vẫn nói được thành câu. Chọn xe đạp, chạy chậm, máy chèo hoặc đi dốc." },
+  intervalwalk: { name:"Đi bộ ngắt quãng (Interval Walking)", muscle:"Tim mạch", equipment:"Không", sets:5, reps:"3 phút nhanh + 3 phút chậm", restSec:0, img:IMG.muscle_cardio,
+    guide:"Xen kẽ 3 phút đi rất nhanh (thở gấp) với 3 phút đi thong thả, 5 vòng. Phương pháp đi bộ ngắt quãng của Nhật Bản." },
+  pecdeck: { name:"Ép ngực máy (Pec Deck / Cable Fly)", muscle:"Ngực", equipment:"Máy / Cáp", sets:3, reps:"12-15", restSec:60, img:IMG.muscle_chest,
+    guide:"Mở tay ra sau đến khi ngực căng hết cỡ, ép về trước bằng lực ngực, khuỷu hơi chùng cố định." },
+});
+
 /* ---------- Giáo án mẫu ----------
+   Nguyên tắc hiện đại dùng chung:
+   · 10–20 hiệp khó / nhóm cơ / tuần, mỗi nhóm cơ ≥ 2 lần/tuần
+   · Dừng cách thất bại 1–2 lần (RIR 1–2); bài cô lập có thể tới RIR 0
+   · Tăng tiến kép (double progression): đạt đỉnh khoảng lần ở mọi hiệp → tăng tạ
+   · Nhấn giai đoạn cơ bị kéo giãn (hạ chậm 2–3 giây, biên độ đầy đủ)
+   · Giảm tải (deload) mỗi 5–6 tuần
    ex: [mãBài, hiệp, lần, nghỉ(giây)]  */
 const TPL_R = (id, s, r, rest)=> [id, s, r, rest];
 const TPL_REST = { title:"Nghỉ ngơi", intensity:"Nghỉ", duration:0, ex:[] };
+const TPL_PRINCIPLES = "Nguyên tắc chung: dừng cách thất bại 1–2 lần (RIR 1–2) · đạt đỉnh khoảng lần ở mọi hiệp thì tăng tạ · hạ chậm 2–3 giây, biên độ đầy đủ · cứ 5–6 tuần giảm tải 1 tuần (bớt ~40% hiệp).";
 const PROGRAM_TEMPLATES = [
   /* ===================== NAM ===================== */
-  { id:"tpl-m-5x5", gender:"nam", level:"beginner", goal:"Sức mạnh nền tảng", weeks:12, perWeek:3,
-    name:"Toàn thân 5×5 — 3 buổi/tuần",
-    origin:"Dựa trên cấu trúc StrongLifts 5×5 / Starting Strength (miễn phí, phổ biến nhất thế giới cho người mới)",
-    desc:"2 buổi A/B luân phiên. Mỗi buổi thành công tăng 2,5 kg (chân, lưng +5 kg). Đơn giản, tiến bộ sức mạnh rất nhanh 3 tháng đầu.",
+  { id:"tpl-m-fb", gender:"nam", level:"beginner", goal:"Tăng cơ nền tảng", weeks:10, perWeek:3,
+    name:"Full Body 3 buổi — tăng tiến kép",
+    origin:"Theo nguyên tắc tăng cơ dựa trên nghiên cứu hiện nay: toàn thân 3 buổi, mỗi nhóm cơ 3 lần/tuần, dừng cách thất bại 1–2 lần",
+    desc:"Máy + tạ đơn để học kỹ thuật nhanh và an toàn. Khoảng lần 8–12: khi mọi hiệp đều đạt 12 lần thì tăng tạ nhỏ nhất. Mỗi buổi ~55 phút.",
     days:{
-      T2:{ title:"Buổi A — Squat · Đẩy ngực · Kéo tạ", intensity:"Cao", duration:60, ex:[TPL_R("squat",5,"5",150),TPL_R("benchpress",5,"5",150),TPL_R("bentoverrow",5,"5",120),TPL_R("plank",3,"30 giây",45)] },
+      T2:{ title:"Full Body A", intensity:"Vừa", duration:55, ex:[TPL_R("hacksquat",3,"8-12",120),TPL_R("dbbench",3,"8-12",90),TPL_R("csrow",3,"8-12",90),TPL_R("legcurl",2,"10-15",60),TPL_R("cablelateral",2,"12-15",45),TPL_R("bicepcurl",2,"10-15",45)] },
       T3:TPL_REST,
-      T4:{ title:"Buổi B — Squat · Đẩy vai · Deadlift", intensity:"Cao", duration:60, ex:[TPL_R("squat",5,"5",150),TPL_R("overheadpress",5,"5",150),TPL_R("deadlift",1,"5",180),TPL_R("hangingleg",3,"10",60)] },
+      T4:{ title:"Full Body B", intensity:"Vừa", duration:55, ex:[TPL_R("rdl",3,"8-10",120),TPL_R("machinepress",3,"8-12",90),TPL_R("latpulldown",3,"8-12",90),TPL_R("legpress",2,"10-15",90),TPL_R("ohtriext",2,"10-15",45),TPL_R("crunch",2,"12-15",45)] },
       T5:TPL_REST,
-      T6:{ title:"Buổi A — Squat · Đẩy ngực · Kéo tạ", intensity:"Cao", duration:60, ex:[TPL_R("squat",5,"5",150),TPL_R("benchpress",5,"5",150),TPL_R("bentoverrow",5,"5",120),TPL_R("plank",3,"30 giây",45)] },
-      T7:{ title:"Đi bộ phục hồi", intensity:"Thấp", duration:30, ex:[TPL_R("walking",1,"30 phút",0)] },
+      T6:{ title:"Full Body C", intensity:"Vừa", duration:55, ex:[TPL_R("gobletsquat",3,"8-12",90),TPL_R("inclinedb",3,"8-12",90),TPL_R("cablerow",3,"10-12",75),TPL_R("dbpress",2,"8-12",75),TPL_R("legext",2,"12-15",45),TPL_R("hammercurl",2,"10-12",45)] },
+      T7:{ title:"Đi bộ 8–10k bước", intensity:"Thấp", duration:40, ex:[TPL_R("walking",1,"40 phút",0)] },
       CN:TPL_REST } },
-  { id:"tpl-m-phul", gender:"nam", level:"intermediate", goal:"Tăng cơ + sức mạnh", weeks:12, perWeek:4,
-    name:"Upper/Lower Sức mạnh & Cơ bắp — 4 buổi",
-    origin:"Dựa trên cấu trúc PHUL (Power Hypertrophy Upper Lower) — chương trình miễn phí phổ biến",
-    desc:"2 buổi nặng (3–5 lần) xây sức mạnh + 2 buổi khối lượng (8–12 lần) xây cơ. Phù hợp người đã tập đều 6–12 tháng.",
+  { id:"tpl-m-ul", gender:"nam", level:"intermediate", goal:"Tăng cơ", weeks:12, perWeek:4,
+    name:"Upper / Lower 4 buổi — hypertrophy RIR 1–2",
+    origin:"Kiểu chia buổi phổ biến nhất hiện nay cho người tập 1–2 năm: Thân trên/Thân dưới, 12–16 hiệp/nhóm cơ/tuần",
+    desc:"Buổi 1–2 thiên về tạ nặng (6–10 lần), buổi 3–4 thiên về khối lượng (10–15 lần), nhiều bài tập ở tư thế cơ bị kéo giãn.",
     days:{
-      T2:{ title:"Thân trên — Sức mạnh", intensity:"Cao", duration:70, ex:[TPL_R("benchpress",4,"3-5",180),TPL_R("bentoverrow",4,"3-5",150),TPL_R("overheadpress",3,"5-8",120),TPL_R("latpulldown",3,"6-10",90),TPL_R("bicepcurl",2,"6-10",60),TPL_R("tricepsdown",2,"6-10",60)] },
-      T3:{ title:"Thân dưới — Sức mạnh", intensity:"Cao", duration:70, ex:[TPL_R("squat",4,"3-5",180),TPL_R("deadlift",3,"3-5",180),TPL_R("legpress",3,"10-15",90),TPL_R("legcurl",3,"6-10",75),TPL_R("calfraise",4,"6-10",60)] },
+      T2:{ title:"Upper — nặng", intensity:"Cao", duration:65, ex:[TPL_R("benchpress",3,"6-8",150),TPL_R("csrow",3,"6-10",120),TPL_R("dbpress",3,"8-10",90),TPL_R("latpulldown",3,"8-12",90),TPL_R("ohtriext",2,"10-12",60),TPL_R("preacher",2,"10-12",60)] },
+      T3:{ title:"Lower — nặng", intensity:"Cao", duration:60, ex:[TPL_R("squat",3,"5-8",180),TPL_R("rdl",3,"6-10",120),TPL_R("legpress",2,"10-12",90),TPL_R("legcurl",3,"10-12",60),TPL_R("calfraise",3,"10-15",45)] },
       T4:TPL_REST,
-      T5:{ title:"Thân trên — Cơ bắp", intensity:"Vừa", duration:65, ex:[TPL_R("inclinedb",3,"8-12",90),TPL_R("cablefly",3,"8-12",60),TPL_R("cablerow",3,"8-12",75),TPL_R("dbrow",3,"8-12",60),TPL_R("lateralraise",3,"10-15",45),TPL_R("hammercurl",3,"8-12",60),TPL_R("skullcrusher",3,"8-12",60)] },
-      T6:{ title:"Thân dưới — Cơ bắp", intensity:"Vừa", duration:65, ex:[TPL_R("frontsquat",3,"8-12",120),TPL_R("lunges",3,"8-12",75),TPL_R("legext",3,"10-15",60),TPL_R("legcurl",3,"10-15",60),TPL_R("calfraise",4,"8-12",45),TPL_R("plank",3,"45 giây",45)] },
-      T7:{ title:"Cardio nhẹ", intensity:"Thấp", duration:30, ex:[TPL_R("walking",1,"30 phút",0)] },
+      T5:{ title:"Upper — khối lượng", intensity:"Vừa", duration:65, ex:[TPL_R("inclinedb",3,"8-12",90),TPL_R("cablerow",3,"10-12",75),TPL_R("pecdeck",2,"12-15",60),TPL_R("pullup",3,"6-10",90),TPL_R("cablelateral",3,"12-15",45),TPL_R("tricepsdown",2,"12-15",45),TPL_R("hammercurl",2,"12-15",45)] },
+      T6:{ title:"Lower — khối lượng", intensity:"Vừa", duration:60, ex:[TPL_R("hacksquat",3,"8-12",120),TPL_R("bulgarian",3,"8-12",90),TPL_R("legext",3,"12-15",60),TPL_R("legcurl",3,"12-15",60),TPL_R("calfraise",3,"12-15",45),TPL_R("hangingleg",3,"10-15",45)] },
+      T7:{ title:"Zone 2", intensity:"Thấp", duration:35, ex:[TPL_R("zone2",1,"30 phút",0)] },
       CN:TPL_REST } },
-  { id:"tpl-m-ppl", gender:"nam", level:"advanced", goal:"Tăng cơ tối đa", weeks:12, perWeek:6,
-    name:"Push / Pull / Legs — 6 buổi",
-    origin:"Dựa trên cấu trúc Reddit PPL (r/Fitness) — chương trình miễn phí cho người tập lâu năm",
-    desc:"Mỗi nhóm cơ tập 2 lần/tuần với khối lượng cao. Bài chính 5×5 tăng tạ dần, bài phụ 8–12 lần. Cần ngủ đủ và ăn dư calo.",
+  { id:"tpl-m-ulppl", gender:"nam", level:"intermediate", goal:"Tăng cơ tối đa", weeks:12, perWeek:5,
+    name:"ULPPL 5 buổi — Upper · Lower · Push · Pull · Legs",
+    origin:"Kết hợp Upper/Lower + Push/Pull/Legs — kiểu chia 5 buổi đang rất thịnh hành vì mỗi nhóm cơ được tập 2 lần/tuần",
+    desc:"2 buổi đầu tập nặng, 3 buổi sau Push/Pull/Legs tập khối lượng. Phù hợp người có 5 buổi/tuần và đã tập ổn định.",
     days:{
-      T2:{ title:"Push — Ngực · Vai · Tay sau", intensity:"Cao", duration:75, ex:[TPL_R("benchpress",5,"5",150),TPL_R("overheadpress",3,"8-12",90),TPL_R("inclinedb",3,"8-12",90),TPL_R("tricepsdown",3,"8-12",60),TPL_R("lateralraise",3,"15-20",45),TPL_R("skullcrusher",3,"8-12",60)] },
-      T3:{ title:"Pull — Lưng · Tay trước", intensity:"Cao", duration:75, ex:[TPL_R("deadlift",1,"5+",180),TPL_R("pullup",3,"8-12",90),TPL_R("cablerow",3,"8-12",75),TPL_R("facepull",5,"15-20",45),TPL_R("hammercurl",4,"8-12",60),TPL_R("bicepcurl",4,"8-12",60)] },
-      T4:{ title:"Legs — Chân", intensity:"Cao", duration:75, ex:[TPL_R("squat",3,"5",180),TPL_R("rdl",3,"8-12",120),TPL_R("legpress",3,"8-12",90),TPL_R("legcurl",3,"8-12",60),TPL_R("calfraise",5,"8-12",45)] },
-      T5:{ title:"Push — Ngực · Vai · Tay sau", intensity:"Cao", duration:75, ex:[TPL_R("overheadpress",5,"5",150),TPL_R("benchpress",3,"8-12",90),TPL_R("inclinedb",3,"8-12",90),TPL_R("tricepdip",3,"8-12",60),TPL_R("lateralraise",3,"15-20",45),TPL_R("cablefly",3,"12-15",60)] },
-      T6:{ title:"Pull — Lưng · Tay trước", intensity:"Cao", duration:75, ex:[TPL_R("bentoverrow",5,"5",150),TPL_R("latpulldown",3,"8-12",90),TPL_R("dbrow",3,"8-12",60),TPL_R("facepull",5,"15-20",45),TPL_R("hammercurl",4,"8-12",60),TPL_R("bicepcurl",4,"8-12",60)] },
-      T7:{ title:"Legs — Chân", intensity:"Cao", duration:75, ex:[TPL_R("squat",3,"5",180),TPL_R("rdl",3,"8-12",120),TPL_R("lunges",3,"8-12",75),TPL_R("legext",3,"12-15",60),TPL_R("calfraise",5,"8-12",45)] },
+      T2:{ title:"Upper", intensity:"Cao", duration:60, ex:[TPL_R("benchpress",3,"6-8",150),TPL_R("bentoverrow",3,"6-10",120),TPL_R("overheadpress",2,"6-10",120),TPL_R("pullup",3,"6-10",90),TPL_R("cablelateral",2,"12-15",45)] },
+      T3:{ title:"Lower", intensity:"Cao", duration:60, ex:[TPL_R("squat",3,"5-8",180),TPL_R("rdl",3,"6-10",120),TPL_R("legcurl",2,"10-12",60),TPL_R("calfraise",3,"10-15",45),TPL_R("hangingleg",2,"10-15",45)] },
+      T4:TPL_REST,
+      T5:{ title:"Push", intensity:"Vừa", duration:60, ex:[TPL_R("inclinedb",3,"8-12",90),TPL_R("machinepress",3,"10-12",75),TPL_R("dbpress",2,"10-12",75),TPL_R("cablelateral",3,"12-15",45),TPL_R("ohtriext",3,"10-15",60)] },
+      T6:{ title:"Pull", intensity:"Vừa", duration:60, ex:[TPL_R("latpulldown",3,"8-12",90),TPL_R("csrow",3,"8-12",90),TPL_R("pullover",2,"12-15",60),TPL_R("facepull",2,"15",45),TPL_R("preacher",3,"10-12",60),TPL_R("hammercurl",2,"12",45)] },
+      T7:{ title:"Legs", intensity:"Vừa", duration:60, ex:[TPL_R("hacksquat",3,"8-12",120),TPL_R("bulgarian",2,"10-12",90),TPL_R("legext",3,"12-15",60),TPL_R("legcurl",3,"12-15",60),TPL_R("calfraise",3,"12-15",45)] },
+      CN:TPL_REST } },
+  { id:"tpl-m-ppl6", gender:"nam", level:"advanced", goal:"Tăng cơ nâng cao", weeks:12, perWeek:6,
+    name:"PPL 6 buổi — volume cao, RIR 0–1",
+    origin:"Push/Pull/Legs × 2 theo hướng bodybuilding hiện đại: 16–20 hiệp/nhóm cơ/tuần, tập sát thất bại ở bài cô lập",
+    desc:"Dành cho người tập trên 2 năm, ngủ ≥7 giờ. Bài đa khớp dừng RIR 1–2, bài cô lập tới RIR 0. Theo dõi phục hồi, deload mỗi 5 tuần.",
+    days:{
+      T2:{ title:"Push 1 — nặng", intensity:"Cao", duration:70, ex:[TPL_R("benchpress",3,"5-8",180),TPL_R("dbpress",3,"8-10",90),TPL_R("pecdeck",3,"12-15",60),TPL_R("cablelateral",4,"12-15",45),TPL_R("ohtriext",3,"10-12",60)] },
+      T3:{ title:"Pull 1 — nặng", intensity:"Cao", duration:70, ex:[TPL_R("deadlift",2,"4-6",180),TPL_R("pullup",3,"6-10",120),TPL_R("csrow",3,"8-10",90),TPL_R("facepull",3,"15",45),TPL_R("preacher",3,"10-12",60)] },
+      T4:{ title:"Legs 1 — nặng", intensity:"Cao", duration:70, ex:[TPL_R("squat",3,"5-8",180),TPL_R("rdl",3,"8-10",120),TPL_R("legext",3,"12-15",60),TPL_R("legcurl",3,"10-12",60),TPL_R("calfraise",4,"10-15",45)] },
+      T5:{ title:"Push 2 — khối lượng", intensity:"Vừa", duration:65, ex:[TPL_R("inclinedb",3,"8-12",90),TPL_R("machinepress",3,"10-12",75),TPL_R("tricepdip",3,"8-12",75),TPL_R("cablelateral",4,"15-20",45),TPL_R("tricepsdown",3,"12-15",45)] },
+      T6:{ title:"Pull 2 — khối lượng", intensity:"Vừa", duration:65, ex:[TPL_R("latpulldown",3,"10-12",90),TPL_R("cablerow",3,"10-12",75),TPL_R("pullover",3,"12-15",60),TPL_R("hammercurl",3,"10-12",45),TPL_R("bicepcurl",2,"12-15",45)] },
+      T7:{ title:"Legs 2 — khối lượng", intensity:"Vừa", duration:65, ex:[TPL_R("hacksquat",3,"8-12",120),TPL_R("bulgarian",3,"10-12",90),TPL_R("legcurl",3,"12-15",60),TPL_R("legext",2,"15-20",45),TPL_R("hangingleg",3,"12-15",45)] },
+      CN:TPL_REST } },
+  { id:"tpl-m-pb", gender:"nam", level:"advanced", goal:"Sức mạnh + cơ bắp", weeks:12, perWeek:4,
+    name:"Powerbuilding 4 buổi — Squat · Bench · Deadlift · Press",
+    origin:"Powerbuilding hiện đại: 1 bài chính nặng theo RPE 7–9 + bài phụ tăng cơ",
+    desc:"Bài chính: 1 hiệp nặng nhất RPE 8 rồi 3 hiệp giảm 10% tạ. Bài phụ 8–15 lần, RIR 1–2. Chu kỳ 4 tuần, tuần 4 nhẹ.",
+    days:{
+      T2:{ title:"Squat", intensity:"Cao", duration:70, ex:[TPL_R("squat",4,"3-5 · RPE 8",180),TPL_R("rdl",3,"8",120),TPL_R("legpress",3,"10-12",90),TPL_R("legcurl",3,"12",60)] },
+      T3:{ title:"Bench", intensity:"Cao", duration:70, ex:[TPL_R("benchpress",4,"3-5 · RPE 8",180),TPL_R("csrow",4,"8-10",90),TPL_R("inclinedb",3,"10",90),TPL_R("ohtriext",3,"12",60)] },
+      T4:TPL_REST,
+      T5:{ title:"Deadlift", intensity:"Cao", duration:70, ex:[TPL_R("deadlift",4,"2-4 · RPE 8",210),TPL_R("bulgarian",3,"8-10",90),TPL_R("pullup",4,"6-8",120),TPL_R("hangingleg",3,"10",45)] },
+      T6:{ title:"Press", intensity:"Cao", duration:65, ex:[TPL_R("overheadpress",4,"4-6 · RPE 8",150),TPL_R("dbbench",3,"10",75),TPL_R("latpulldown",3,"10-12",75),TPL_R("cablelateral",3,"15",45),TPL_R("preacher",3,"12",45)] },
+      T7:{ title:"Zone 2", intensity:"Thấp", duration:35, ex:[TPL_R("zone2",1,"30 phút",0)] },
       CN:TPL_REST } },
 
   /* ===================== NỮ ===================== */
-  { id:"tpl-f-start", gender:"nu", level:"beginner", goal:"Săn chắc · vòng 3", weeks:8, perWeek:3,
-    name:"Toàn thân & Mông — 3 buổi (người mới)",
-    origin:"Theo nguyên tắc tập mông phổ biến quốc tế: đẩy hông, gập hông, mở hông + toàn thân",
-    desc:"3 buổi A/B/C khác nhau, tạ nhẹ–vừa, tập đúng kỹ thuật trước. Ngày nghỉ đi bộ 30 phút. Tăng dần 1–2 lần mỗi tuần.",
+  { id:"tpl-f-fb", gender:"nu", level:"beginner", goal:"Săn chắc, tăng cơ mông", weeks:10, perWeek:3,
+    name:"Full Body cho nữ 3 buổi — mông · lưng · vai",
+    origin:"Theo nguyên tắc tăng cơ hiện đại cho nữ mới tập: toàn thân 3 buổi, mông được tập mỗi buổi, tăng tiến kép",
+    desc:"Không lo \"to cơ\": tập tạ giúp eo gọn, mông nâng, vai thon và đốt calo tốt hơn. Khoảng lần 10–15, khi đạt 15 lần mọi hiệp thì tăng tạ.",
     days:{
-      T2:{ title:"A — Squat · Cầu mông · Đẩy", intensity:"Vừa", duration:50, ex:[TPL_R("gobletsquat",3,"10-12",75),TPL_R("glutebridge",3,"15",45),TPL_R("inclinepushup",3,"8-12",60),TPL_R("dbrow",3,"10-12",60),TPL_R("deadbug",3,"10 mỗi bên",45)] },
-      T3:{ title:"Đi bộ nhanh", intensity:"Thấp", duration:30, ex:[TPL_R("walking",1,"30 phút",0)] },
-      T4:{ title:"B — Gập hông · Bước bục · Kéo", intensity:"Vừa", duration:50, ex:[TPL_R("rdl",3,"10-12",75),TPL_R("stepup",3,"10 mỗi chân",60),TPL_R("latpulldown",3,"10-12",60),TPL_R("dbpress",3,"10-12",60),TPL_R("sideplank",3,"30 giây mỗi bên",30)] },
-      T5:{ title:"Đi bộ nhanh", intensity:"Thấp", duration:30, ex:[TPL_R("walking",1,"30 phút",0)] },
-      T6:{ title:"C — Đẩy hông · Chùng chân · Mông bên", intensity:"Vừa", duration:50, ex:[TPL_R("hipthrust",3,"10-12",90),TPL_R("lunges",3,"10 mỗi chân",60),TPL_R("cablerow",3,"12",60),TPL_R("abduction",3,"15-20",45),TPL_R("plank",3,"30 giây",45)] },
-      T7:{ title:"Giãn cơ", intensity:"Thấp", duration:15, ex:[TPL_R("stretch",1,"10 phút",0)] },
+      T2:{ title:"Full Body A", intensity:"Vừa", duration:50, ex:[TPL_R("gobletsquat",3,"10-15",90),TPL_R("hipthrust",3,"10-15",90),TPL_R("latpulldown",3,"10-12",75),TPL_R("dbpress",2,"10-12",60),TPL_R("deadbug",2,"10 mỗi bên",30)] },
+      T3:TPL_REST,
+      T4:{ title:"Full Body B", intensity:"Vừa", duration:50, ex:[TPL_R("rdl",3,"10-12",90),TPL_R("legpress",3,"12-15",90),TPL_R("csrow",3,"10-12",75),TPL_R("cablelateral",2,"12-15",45),TPL_R("plank",3,"30-45 giây",30)] },
+      T5:TPL_REST,
+      T6:{ title:"Full Body C", intensity:"Vừa", duration:50, ex:[TPL_R("stepup",3,"10 mỗi chân",75),TPL_R("glutebridge",3,"15",60),TPL_R("abduction",3,"15-20",45),TPL_R("cablerow",3,"12",60),TPL_R("inclinepushup",2,"8-12",60),TPL_R("tricepsdown",2,"12-15",45)] },
+      T7:{ title:"Đi bộ dốc 12-3-30", intensity:"Vừa", duration:30, ex:[TPL_R("inclinewalk",1,"30 phút",0)] },
       CN:TPL_REST } },
-  { id:"tpl-f-lu", gender:"nu", level:"intermediate", goal:"Mông · eo · săn chắc", weeks:10, perWeek:4,
-    name:"Lower/Upper tập trung mông — 4 buổi",
-    origin:"Dựa trên cấu trúc Upper/Lower 4 buổi, ưu tiên mông 2 buổi/tuần (khuyến nghị tần suất ≥2 lần/nhóm cơ của ACSM)",
-    desc:"2 buổi chân–mông (1 buổi nặng, 1 buổi khối lượng) + 2 buổi thân trên giữ dáng cân đối. Phù hợp đã tập 3–6 tháng.",
+  { id:"tpl-f-home", gender:"nu", level:"beginner", goal:"Giảm mỡ tại nhà", weeks:8, perWeek:4,
+    name:"Tại nhà cho nữ — tạ đơn + đi bộ ngắt quãng",
+    origin:"Xu hướng tập tại nhà hiện nay: 3 buổi tạ đơn toàn thân + đi bộ ngắt quãng kiểu Nhật (3 phút nhanh / 3 phút chậm)",
+    desc:"Chỉ cần 1 cặp tạ đơn (2–6 kg) và thảm. Không có tạ thì dùng chai nước hoặc balo sách. Mỗi buổi 30–40 phút.",
     days:{
-      T2:{ title:"Chân & Mông — Nặng", intensity:"Cao", duration:60, ex:[TPL_R("hipthrust",4,"8-10",120),TPL_R("squat",3,"6-8",150),TPL_R("rdl",3,"8-10",90),TPL_R("abduction",3,"15",45),TPL_R("calfraise",3,"12-15",45)] },
-      T3:{ title:"Thân trên A", intensity:"Vừa", duration:50, ex:[TPL_R("dbbench",3,"10",75),TPL_R("cablerow",3,"10-12",60),TPL_R("dbpress",3,"10",60),TPL_R("lateralraise",3,"12-15",45),TPL_R("tricepsdown",3,"12",45),TPL_R("plank",3,"40 giây",45)] },
+      T2:{ title:"Mông & chân", intensity:"Vừa", duration:35, ex:[TPL_R("gobletsquat",3,"12-15",60),TPL_R("glutebridge",3,"15-20",45),TPL_R("bulgarian",2,"10 mỗi chân",60),TPL_R("rdl",3,"12",60),TPL_R("sideplank",2,"20-30 giây mỗi bên",30)] },
+      T3:{ title:"Đi bộ ngắt quãng", intensity:"Vừa", duration:30, ex:[TPL_R("intervalwalk",5,"3 phút nhanh + 3 phút chậm",0)] },
+      T4:{ title:"Thân trên & bụng", intensity:"Vừa", duration:35, ex:[TPL_R("inclinepushup",3,"8-12",60),TPL_R("dbrow",3,"12 mỗi tay",45),TPL_R("dbpress",3,"10-12",60),TPL_R("lateralraise",2,"15",45),TPL_R("deadbug",3,"10 mỗi bên",30)] },
+      T5:TPL_REST,
+      T6:{ title:"Toàn thân", intensity:"Vừa", duration:35, ex:[TPL_R("gobletsquat",3,"15",60),TPL_R("glutebridge",3,"20",45),TPL_R("dbrow",3,"12 mỗi tay",45),TPL_R("mountainclimber",3,"30 giây",30),TPL_R("plank",3,"30-45 giây",30)] },
+      T7:{ title:"Đi bộ ngắt quãng", intensity:"Vừa", duration:30, ex:[TPL_R("intervalwalk",5,"3 phút nhanh + 3 phút chậm",0),TPL_R("stretch",1,"10 phút",0)] },
+      CN:TPL_REST } },
+  { id:"tpl-f-glute", gender:"nu", level:"intermediate", goal:"Phát triển mông", weeks:12, perWeek:4,
+    name:"Glute Focus Upper/Lower 4 buổi",
+    origin:"Theo hướng tập mông hiện đại: mông 3 buổi/tuần với cả bài đẩy hông, bài kéo giãn (RDL, Bulgarian) và bài mở hông",
+    desc:"2 buổi Lower thiên mông + 1 buổi mông bổ sung trong Upper. Mông đặc biệt phát triển tốt ở bài kéo giãn sâu như RDL, Bulgarian — hạ chậm 3 giây.",
+    days:{
+      T2:{ title:"Lower — mông & đùi sau", intensity:"Cao", duration:60, ex:[TPL_R("hipthrust",4,"8-12",120),TPL_R("rdl",3,"8-10",120),TPL_R("bulgarian",3,"10-12",90),TPL_R("legcurl",3,"12-15",60),TPL_R("abduction",3,"15-20",45)] },
+      T3:{ title:"Upper + mông", intensity:"Vừa", duration:55, ex:[TPL_R("latpulldown",3,"10-12",75),TPL_R("dbpress",3,"10-12",75),TPL_R("csrow",3,"10-12",75),TPL_R("cablelateral",3,"12-15",45),TPL_R("kickback",3,"12-15 mỗi chân",45)] },
       T4:TPL_REST,
-      T5:{ title:"Chân & Mông — Khối lượng", intensity:"Vừa", duration:55, ex:[TPL_R("legpress",3,"12",90),TPL_R("stepup",3,"10 mỗi chân",60),TPL_R("kickback",3,"15 mỗi chân",45),TPL_R("legcurl",3,"12",60),TPL_R("glutebridge",3,"20",45)] },
-      T6:{ title:"Thân trên B", intensity:"Vừa", duration:50, ex:[TPL_R("latpulldown",3,"10",75),TPL_R("machinepress",3,"10-12",60),TPL_R("dbrow",3,"10",60),TPL_R("facepull",3,"15",45),TPL_R("bicepcurl",3,"12",45),TPL_R("woodchop",3,"12 mỗi bên",45)] },
-      T7:{ title:"Cardio vừa", intensity:"Vừa", duration:35, ex:[TPL_R("walking",1,"35 phút",0)] },
+      T5:{ title:"Lower — đùi trước & mông", intensity:"Cao", duration:60, ex:[TPL_R("hacksquat",3,"8-12",120),TPL_R("glutebridge",3,"12-15",60),TPL_R("stepup",3,"10 mỗi chân",75),TPL_R("legext",3,"12-15",60),TPL_R("abduction",3,"20",45)] },
+      T6:{ title:"Upper & bụng", intensity:"Vừa", duration:50, ex:[TPL_R("inclinedb",3,"10-12",75),TPL_R("cablerow",3,"12",60),TPL_R("cablelateral",3,"15",45),TPL_R("ohtriext",2,"12-15",45),TPL_R("woodchop",3,"12 mỗi bên",45)] },
+      T7:{ title:"Đi bộ dốc 12-3-30", intensity:"Vừa", duration:30, ex:[TPL_R("inclinewalk",1,"30 phút",0)] },
       CN:TPL_REST } },
-  { id:"tpl-f-glute5", gender:"nu", level:"advanced", goal:"Phát triển mông tối đa", weeks:12, perWeek:5,
-    name:"Glute Split — 5 buổi (nâng cao)",
-    origin:"Theo mô hình chia buổi tập mông phổ biến của các HLV nữ quốc tế (2 buổi mông + đùi trước + thân trên)",
-    desc:"Mông tập 2–3 lần/tuần với cả tạ nặng và bài bơm máu. Cần nền kỹ thuật tốt hip thrust, RDL, squat.",
+  { id:"tpl-f-hybrid", gender:"nu", level:"intermediate", goal:"Giảm mỡ – khoẻ – bền", weeks:10, perWeek:5,
+    name:"Hybrid cho nữ: 3 tạ + Zone 2 + Interval",
+    origin:"Hybrid training — xu hướng nổi bật 2025–2026: kết hợp tạ và cardio trong cùng tuần",
+    desc:"3 buổi tạ giữ và tạo dáng cơ, 1 buổi Zone 2 xây nền sức bền, 1 buổi interval đốt năng lượng. Ăn thâm hụt nhẹ 300–500 kcal (tab Dinh dưỡng).",
     days:{
-      T2:{ title:"Mông — Nặng", intensity:"Cao", duration:65, ex:[TPL_R("hipthrust",5,"6-8",150),TPL_R("rdl",4,"8",120),TPL_R("stepup",3,"10 mỗi chân",75),TPL_R("abduction",4,"15",45)] },
-      T3:{ title:"Thân trên — Đẩy", intensity:"Vừa", duration:50, ex:[TPL_R("dbbench",3,"10",75),TPL_R("dbpress",3,"10",60),TPL_R("lateralraise",4,"15",45),TPL_R("tricepsdown",3,"12",45),TPL_R("plank",3,"45 giây",45)] },
-      T4:{ title:"Đùi trước & Bắp chân", intensity:"Cao", duration:60, ex:[TPL_R("squat",4,"6-8",150),TPL_R("legpress",4,"10",90),TPL_R("lunges",3,"12 mỗi chân",75),TPL_R("legext",3,"15",60),TPL_R("calfraise",4,"12-15",45)] },
-      T5:{ title:"Thân trên — Kéo", intensity:"Vừa", duration:50, ex:[TPL_R("latpulldown",4,"10",75),TPL_R("cablerow",3,"12",60),TPL_R("facepull",3,"15",45),TPL_R("bicepcurl",3,"12",45),TPL_R("deadbug",3,"10 mỗi bên",45)] },
-      T6:{ title:"Mông — Bơm máu", intensity:"Vừa", duration:45, ex:[TPL_R("glutebridge",4,"20",45),TPL_R("kickback",4,"15 mỗi chân",45),TPL_R("abduction",4,"20",30),TPL_R("kbswing",4,"15",60),TPL_R("mountainclimber",3,"30 giây",30)] },
-      T7:{ title:"Cardio nhẹ & giãn cơ", intensity:"Thấp", duration:35, ex:[TPL_R("walking",1,"25 phút",0),TPL_R("stretch",1,"10 phút",0)] },
+      T2:{ title:"Lower", intensity:"Cao", duration:55, ex:[TPL_R("gobletsquat",3,"10-12",90),TPL_R("hipthrust",3,"10-12",90),TPL_R("rdl",3,"10",90),TPL_R("abduction",2,"20",45)] },
+      T3:{ title:"Zone 2", intensity:"Thấp", duration:40, ex:[TPL_R("zone2",1,"35-40 phút",0)] },
+      T4:{ title:"Upper", intensity:"Vừa", duration:50, ex:[TPL_R("latpulldown",3,"10-12",75),TPL_R("dbpress",3,"10",75),TPL_R("csrow",3,"10-12",75),TPL_R("cablelateral",3,"15",45),TPL_R("tricepsdown",2,"15",45)] },
+      T5:TPL_REST,
+      T6:{ title:"Full Body + conditioning", intensity:"Cao", duration:50, ex:[TPL_R("bulgarian",3,"10 mỗi chân",75),TPL_R("kbswing",4,"15",60),TPL_R("dbrow",3,"10 mỗi tay",60),TPL_R("farmercarry",3,"30 m",60),TPL_R("mountainclimber",3,"30 giây",30)] },
+      T7:{ title:"Interval", intensity:"Cao", duration:30, ex:[TPL_R("rowing",6,"1 phút nhanh / 1 phút chậm",60),TPL_R("stretch",1,"10 phút",0)] },
+      CN:TPL_REST } },
+  { id:"tpl-f-lower3", gender:"nu", level:"advanced", goal:"Mông – chân nâng cao", weeks:12, perWeek:5,
+    name:"Lower ×3 / Upper ×2 — 5 buổi chuyên mông chân",
+    origin:"Phân chia nâng cao phổ biến của nữ tập lâu năm: 3 buổi thân dưới, 2 buổi thân trên, mông 16–20 hiệp/tuần",
+    desc:"Dành cho người tập trên 2 năm. Bài cô lập mông có thể tới thất bại (RIR 0). Deload mỗi 5 tuần.",
+    days:{
+      T2:{ title:"Lower A — mông nặng", intensity:"Cao", duration:65, ex:[TPL_R("hipthrust",4,"6-10",150),TPL_R("squat",3,"6-8",180),TPL_R("legcurl",3,"10-12",60),TPL_R("abduction",3,"15-20",45)] },
+      T3:{ title:"Upper A", intensity:"Vừa", duration:55, ex:[TPL_R("pullup",3,"4-8",120),TPL_R("dbpress",3,"8-10",90),TPL_R("csrow",3,"10-12",75),TPL_R("cablelateral",3,"15",45),TPL_R("ohtriext",2,"12",45)] },
+      T4:{ title:"Lower B — đùi sau", intensity:"Cao", duration:60, ex:[TPL_R("rdl",4,"8-10",120),TPL_R("bulgarian",3,"8-12",90),TPL_R("legcurl",3,"12",60),TPL_R("kickback",3,"15 mỗi chân",45)] },
+      T5:TPL_REST,
+      T6:{ title:"Upper B", intensity:"Vừa", duration:55, ex:[TPL_R("latpulldown",3,"10-12",75),TPL_R("inclinedb",3,"8-12",90),TPL_R("cablerow",3,"12",60),TPL_R("cablelateral",3,"15-20",45),TPL_R("hammercurl",2,"12",45)] },
+      T7:{ title:"Lower C — khối lượng", intensity:"Cao", duration:60, ex:[TPL_R("hacksquat",3,"10-12",120),TPL_R("glutebridge",3,"12-15",60),TPL_R("stepup",3,"10 mỗi chân",75),TPL_R("legext",3,"15",45),TPL_R("abduction",3,"20",45)] },
+      CN:TPL_REST } },
+  { id:"tpl-f-pb", gender:"nu", level:"advanced", goal:"Sức mạnh & vóc dáng", weeks:12, perWeek:4,
+    name:"Powerbuilding cho nữ — 4 buổi",
+    origin:"Xu hướng nữ tập tạ đòn ngày càng phổ biến: 1 bài chính nặng (RPE 7–9) + bài phụ tạo dáng",
+    desc:"Squat, Bench, Deadlift, Hip Thrust làm bài chính. Bài phụ 10–15 lần. Chu kỳ 4 tuần, tuần 4 giảm tải.",
+    days:{
+      T2:{ title:"Squat", intensity:"Cao", duration:65, ex:[TPL_R("squat",4,"3-5 · RPE 8",180),TPL_R("bulgarian",3,"8-10",90),TPL_R("legcurl",3,"12",60),TPL_R("plank",3,"45 giây",30)] },
+      T3:{ title:"Bench & lưng", intensity:"Cao", duration:60, ex:[TPL_R("benchpress",4,"4-6 · RPE 8",150),TPL_R("csrow",4,"8-10",90),TPL_R("dbpress",3,"10",75),TPL_R("facepull",3,"15",45)] },
+      T4:TPL_REST,
+      T5:{ title:"Deadlift", intensity:"Cao", duration:60, ex:[TPL_R("deadlift",4,"3 · RPE 8",210),TPL_R("hipthrust",3,"8-10",120),TPL_R("kickback",3,"15 mỗi chân",45),TPL_R("hangingleg",3,"10",45)] },
+      T6:{ title:"Hip Thrust & Upper", intensity:"Cao", duration:60, ex:[TPL_R("hipthrust",4,"5-8 · RPE 8",150),TPL_R("pullup",3,"3-6",120),TPL_R("inclinedb",3,"10",75),TPL_R("cablelateral",3,"15",45)] },
+      T7:{ title:"Zone 2", intensity:"Thấp", duration:35, ex:[TPL_R("zone2",1,"30 phút",0)] },
       CN:TPL_REST } },
 
-  /* ===================== CHUNG ===================== */
-  { id:"tpl-u-home", gender:"chung", level:"beginner", goal:"Khởi động thói quen", weeks:8, perWeek:3,
+  /* ===================== NAM & NỮ ===================== */
+  { id:"tpl-u-home", gender:"chung", level:"beginner", goal:"Khoẻ toàn thân, không dụng cụ", weeks:8, perWeek:3,
     name:"Tại nhà không dụng cụ — 3 buổi",
-    origin:"Dựa trên cấu trúc Recommended Routine của cộng đồng r/bodyweightfitness",
-    desc:"Không cần phòng gym. Mỗi buổi ~35 phút gồm đẩy, kéo, chân, bụng. Khi làm dễ dàng hết số lần thì chuyển sang bài khó hơn (VD chống đẩy nghiêng → chống đẩy).",
+    origin:"Bài trọng lượng cơ thể theo cấp độ (dễ → khó), tập theo vòng",
+    desc:"Không cần phòng gym. Khi làm dễ dàng hết số lần thì chuyển bài khó hơn (VD chống đẩy nghiêng → chống đẩy).",
     days:{
-      T2:{ title:"Toàn thân tại nhà", intensity:"Vừa", duration:35, ex:[TPL_R("bwsquat",3,"15-20",45),TPL_R("inclinepushup",3,"8-12",60),TPL_R("invertedrow",3,"8-12",60),TPL_R("glutebridge",3,"15",45),TPL_R("plank",3,"30 giây",30),TPL_R("deadbug",2,"10 mỗi bên",30)] },
+      T2:{ title:"Toàn thân A", intensity:"Vừa", duration:35, ex:[TPL_R("bwsquat",3,"15-20",45),TPL_R("inclinepushup",3,"8-12",60),TPL_R("invertedrow",3,"8-12",60),TPL_R("glutebridge",3,"15",45),TPL_R("plank",3,"30 giây",30)] },
       T3:TPL_REST,
-      T4:{ title:"Toàn thân tại nhà", intensity:"Vừa", duration:35, ex:[TPL_R("lunges",3,"10 mỗi chân",45),TPL_R("pushup",3,"5-10",60),TPL_R("invertedrow",3,"8-12",60),TPL_R("glutebridge",3,"15",45),TPL_R("sideplank",2,"30 giây mỗi bên",30),TPL_R("mountainclimber",2,"30 giây",30)] },
+      T4:{ title:"Toàn thân B", intensity:"Vừa", duration:35, ex:[TPL_R("lunges",3,"10 mỗi chân",45),TPL_R("pushup",3,"5-10",60),TPL_R("invertedrow",3,"8-12",60),TPL_R("sideplank",2,"30 giây mỗi bên",30),TPL_R("mountainclimber",2,"30 giây",30)] },
       T5:TPL_REST,
-      T6:{ title:"Toàn thân tại nhà", intensity:"Vừa", duration:35, ex:[TPL_R("bwsquat",3,"15-20",45),TPL_R("inclinepushup",3,"8-12",60),TPL_R("invertedrow",3,"8-12",60),TPL_R("burpee",3,"8",60),TPL_R("plank",3,"40 giây",30)] },
-      T7:{ title:"Đi bộ & giãn cơ", intensity:"Thấp", duration:40, ex:[TPL_R("walking",1,"30 phút",0),TPL_R("stretch",1,"10 phút",0)] },
+      T6:{ title:"Toàn thân C", intensity:"Vừa", duration:35, ex:[TPL_R("bwsquat",3,"20",45),TPL_R("pushup",3,"tối đa −2",60),TPL_R("glutebridge",3,"20",45),TPL_R("burpee",3,"8",60),TPL_R("deadbug",3,"10 mỗi bên",30)] },
+      T7:{ title:"Đi bộ ngắt quãng", intensity:"Vừa", duration:30, ex:[TPL_R("intervalwalk",5,"3 phút nhanh + 3 phút chậm",0)] },
       CN:TPL_REST } },
-  { id:"tpl-u-c25k", gender:"chung", level:"beginner", goal:"Chạy được 5 km", weeks:9, perWeek:3,
-    name:"Chạy bộ từ số 0 lên 5 km — 9 tuần",
-    origin:"Dựa trên cấu trúc Couch to 5K của NHS (Hệ thống Y tế Anh) — chương trình miễn phí",
-    desc:"3 buổi/tuần xen kẽ chạy–đi bộ. Tuần 1: khởi động 5 phút đi bộ, rồi 8 lượt (chạy 60 giây + đi 90 giây). Mỗi tuần tăng thời gian chạy; tuần 9 chạy liền 30 phút. Sửa số lần trong giáo án theo tuần của bạn.",
+  { id:"tpl-u-cardio", gender:"chung", level:"beginner", goal:"Giảm cân, tim mạch", weeks:8, perWeek:4,
+    name:"Zone 2 + Đi bộ dốc 12-3-30 — 4 buổi",
+    origin:"Xu hướng cardio hiện đại: nền Zone 2 cường độ nhẹ, đi bộ dốc 12-3-30 và đi bộ ngắt quãng — dễ duy trì, ít chấn thương",
+    desc:"Phù hợp người thừa cân hoặc mới bắt đầu. Kết hợp 8–10k bước/ngày và ăn thâm hụt nhẹ. Thêm 2 buổi tạ khi đã quen.",
     days:{
-      T2:{ title:"Chạy xen kẽ — Tuần 1", intensity:"Vừa", duration:30, ex:[TPL_R("walking",1,"5 phút khởi động",0),TPL_R("running",8,"60 giây chạy + 90 giây đi",0),TPL_R("stretch",1,"5 phút",0)] },
+      T2:{ title:"Đi bộ dốc 12-3-30", intensity:"Vừa", duration:30, ex:[TPL_R("inclinewalk",1,"20-30 phút",0),TPL_R("stretch",1,"5 phút",0)] },
       T3:TPL_REST,
-      T4:{ title:"Chạy xen kẽ — Tuần 1", intensity:"Vừa", duration:30, ex:[TPL_R("walking",1,"5 phút khởi động",0),TPL_R("running",8,"60 giây chạy + 90 giây đi",0),TPL_R("stretch",1,"5 phút",0)] },
+      T4:{ title:"Zone 2", intensity:"Thấp", duration:40, ex:[TPL_R("zone2",1,"30-40 phút",0)] },
       T5:TPL_REST,
-      T6:{ title:"Chạy xen kẽ — Tuần 1", intensity:"Vừa", duration:30, ex:[TPL_R("walking",1,"5 phút khởi động",0),TPL_R("running",8,"60 giây chạy + 90 giây đi",0),TPL_R("stretch",1,"5 phút",0)] },
-      T7:TPL_REST, CN:TPL_REST } },
-  { id:"tpl-u-fatloss", gender:"chung", level:"intermediate", goal:"Giảm mỡ giữ cơ", weeks:8, perWeek:4,
-    name:"Giảm mỡ: Tạ toàn thân + HIIT — 4 buổi",
-    origin:"Kết hợp tập tạ toàn thân + interval theo khuyến nghị ACSM (tạ ≥2 buổi + cardio 150 phút/tuần)",
-    desc:"2 buổi tạ giữ cơ khi ăn thâm hụt calo + 2 buổi HIIT/cardio đốt năng lượng. Kết hợp với mục tiêu calo trong tab Dinh dưỡng.",
+      T6:{ title:"Đi bộ ngắt quãng", intensity:"Vừa", duration:30, ex:[TPL_R("intervalwalk",5,"3 phút nhanh + 3 phút chậm",0)] },
+      T7:{ title:"Zone 2 dài", intensity:"Thấp", duration:50, ex:[TPL_R("zone2",1,"45 phút",0),TPL_R("stretch",1,"10 phút",0)] },
+      CN:TPL_REST } },
+  { id:"tpl-u-hyrox", gender:"chung", level:"intermediate", goal:"Hyrox / thể lực hybrid", weeks:10, perWeek:4,
+    name:"Hybrid kiểu Hyrox — 4 buổi chạy + functional",
+    origin:"Hyrox — giải thể lực đang bùng nổ toàn cầu: chạy xen kẽ các trạm sled, chèo, wall ball, farmer carry",
+    desc:"2 buổi sức mạnh/functional, 1 buổi chạy Zone 2, 1 buổi mô phỏng Hyrox (chạy 1 km + 1 trạm). Không có xe trượt thì thay bằng đẩy máy chạy tắt điện hoặc lunge.",
     days:{
-      T2:{ title:"Tạ toàn thân A", intensity:"Cao", duration:55, ex:[TPL_R("gobletsquat",4,"10",75),TPL_R("dbbench",3,"10",75),TPL_R("dbrow",3,"10",60),TPL_R("rdl",3,"10",75),TPL_R("plank",3,"40 giây",30)] },
-      T3:{ title:"HIIT 20 phút", intensity:"Rất cao", duration:25, ex:[TPL_R("kbswing",5,"20 giây / nghỉ 40 giây",40),TPL_R("mountainclimber",5,"20 giây / nghỉ 40 giây",40),TPL_R("burpee",5,"20 giây / nghỉ 40 giây",40)] },
+      T2:{ title:"Strength", intensity:"Cao", duration:60, ex:[TPL_R("squat",4,"5-6",150),TPL_R("rdl",3,"8",120),TPL_R("dbrow",3,"10 mỗi tay",60),TPL_R("farmercarry",4,"40 m",60)] },
+      T3:{ title:"Chạy Zone 2", intensity:"Thấp", duration:40, ex:[TPL_R("running",1,"30-40 phút nhẹ",0)] },
       T4:TPL_REST,
-      T5:{ title:"Tạ toàn thân B", intensity:"Cao", duration:55, ex:[TPL_R("lunges",3,"10 mỗi chân",60),TPL_R("dbpress",3,"10",60),TPL_R("latpulldown",3,"12",60),TPL_R("hipthrust",3,"12",75),TPL_R("woodchop",3,"12 mỗi bên",45)] },
-      T6:{ title:"Cardio ổn định", intensity:"Vừa", duration:40, ex:[TPL_R("rowing",1,"15 phút",0),TPL_R("walking",1,"25 phút",0)] },
-      T7:TPL_REST, CN:TPL_REST } },
-  { id:"tpl-u-strength-adv", gender:"chung", level:"advanced", goal:"Sức mạnh 3 bài chính", weeks:12, perWeek:4,
-    name:"Sức mạnh 4 buổi — Squat · Bench · Deadlift · Press",
-    origin:"Dựa trên mô hình 4 buổi/tuần, mỗi buổi 1 bài chính (kiểu 5/3/1 & GZCLP) — tự quản lý % tạ",
-    desc:"Mỗi buổi 1 bài chính nặng (3–5 lần) + bài phụ khối lượng. Tăng tạ theo chu kỳ 4 tuần, tuần 4 giảm tải 60%.",
+      T5:{ title:"Functional", intensity:"Cao", duration:50, ex:[TPL_R("sledpush",4,"20 m",90),TPL_R("wallball",4,"20",60),TPL_R("lunges",3,"20 bước",60),TPL_R("burpee",3,"10",60),TPL_R("rowing",3,"500 m",90)] },
+      T6:TPL_REST,
+      T7:{ title:"Mô phỏng Hyrox", intensity:"Rất cao", duration:50, ex:[TPL_R("running",4,"1 km",0),TPL_R("rowing",1,"1000 m",0),TPL_R("sledpush",2,"25 m",0),TPL_R("farmercarry",2,"100 m",0),TPL_R("wallball",1,"50",0)] },
+      CN:TPL_REST } },
+  { id:"tpl-u-hybrid-adv", gender:"chung", level:"advanced", goal:"Vừa khoẻ vừa bền", weeks:12, perWeek:5,
+    name:"Hybrid Athlete 5 buổi — tạ + chạy",
+    origin:"Mô hình Hybrid Athlete hiện đại: 3 buổi tạ Upper/Lower/Full + 2 buổi chạy (1 Zone 2, 1 interval)",
+    desc:"Tách buổi tạ chân và buổi chạy nặng cách nhau ≥24 giờ. Tổng quãng chạy tăng tối đa 10%/tuần.",
     days:{
-      T2:{ title:"Squat", intensity:"Cao", duration:70, ex:[TPL_R("squat",5,"3-5",180),TPL_R("frontsquat",3,"8",120),TPL_R("legcurl",3,"10",60),TPL_R("hangingleg",3,"10",60)] },
-      T3:{ title:"Đẩy ngực", intensity:"Cao", duration:70, ex:[TPL_R("benchpress",5,"3-5",180),TPL_R("inclinedb",3,"10",90),TPL_R("dbrow",4,"10",60),TPL_R("tricepsdown",3,"12",45)] },
-      T4:TPL_REST,
-      T5:{ title:"Deadlift", intensity:"Cao", duration:70, ex:[TPL_R("deadlift",5,"3",180),TPL_R("rdl",3,"8",120),TPL_R("pullup",4,"6-8",90),TPL_R("plank",3,"60 giây",45)] },
-      T6:{ title:"Đẩy vai", intensity:"Cao", duration:65, ex:[TPL_R("overheadpress",5,"3-5",150),TPL_R("dbbench",3,"10",75),TPL_R("latpulldown",3,"10",60),TPL_R("lateralraise",3,"15",45),TPL_R("facepull",3,"15",45)] },
-      T7:{ title:"Đi bộ phục hồi", intensity:"Thấp", duration:30, ex:[TPL_R("walking",1,"30 phút",0)] },
+      T2:{ title:"Lower strength", intensity:"Cao", duration:60, ex:[TPL_R("squat",4,"4-6",180),TPL_R("rdl",3,"6-8",120),TPL_R("bulgarian",3,"8",90),TPL_R("calfraise",3,"12",45)] },
+      T3:{ title:"Chạy interval", intensity:"Rất cao", duration:45, ex:[TPL_R("running",6,"800 m nhanh / 2 phút đi bộ",120)] },
+      T4:{ title:"Upper", intensity:"Cao", duration:60, ex:[TPL_R("benchpress",4,"5-8",150),TPL_R("pullup",4,"6-10",120),TPL_R("dbpress",3,"10",75),TPL_R("csrow",3,"10",75)] },
+      T5:TPL_REST,
+      T6:{ title:"Full Body power", intensity:"Cao", duration:55, ex:[TPL_R("deadlift",3,"3-5",180),TPL_R("kbswing",4,"15",60),TPL_R("farmercarry",3,"40 m",60),TPL_R("hangingleg",3,"12",45)] },
+      T7:{ title:"Chạy Zone 2 dài", intensity:"Thấp", duration:60, ex:[TPL_R("zone2",1,"50-60 phút chạy nhẹ",0)] },
       CN:TPL_REST } },
 ];
+/* Video tham khảo Pixabay cho bài cardio/tự do không có video hướng dẫn riêng */
+const TPL_PB_QUERY = { walking:"walking", inclinewalk:"treadmill", zone2:"cycling", intervalwalk:"walking", running:"running", rowing:"rowing machine",
+  jumprope:"jump rope", plank:"plank", pushup:"push up", burpee:"burpee", crunch:"crunches", stretch:"stretching", mountainclimber:"mountain climber",
+  sideplank:"plank", glutebridge:"glute bridge", wallball:"wall ball", sledpush:"sled", farmercarry:"kettlebell", deadbug:"abs workout", russiantwist:"abs workout" };
 const TPL_LEVEL = { beginner:"Mới tập", intermediate:"Trung bình", advanced:"Nâng cao" };
 const TPL_GENDER = { nam:"Nam", nu:"Nữ", chung:"Nam & Nữ" };
 
@@ -208,24 +313,65 @@ function tplToPlan(t){
   });
   return { id:"plan_"+uid(), name:t.name, tagline:(TPL_GENDER[t.gender]+" · "+TPL_LEVEL[t.level]).toUpperCase(), builtin:false, fromTemplate:t.id, days };
 }
+/* Gắn sẵn video hướng dẫn (YMove / wger) cho mọi bài trong giáo án */
+async function tplAttachVideos(plan){
+  const cache = {}; let total = 0, withVid = 0;
+  const items = DAY_KEYS.flatMap(k=> plan.days[k].items);
+  for(const it of items){
+    total++;
+    if(!(it.exerciseId in cache)){
+      let v = null;
+      try{ const meta = EXERCISES[it.exerciseId]; const r = meta ? await findFreeExerciseVideos(meta) : []; v = r[0] || null; }catch(e){}
+      if(!v && TPL_PB_QUERY[it.exerciseId]) v = await tplPixabayFallback(TPL_PB_QUERY[it.exerciseId]);
+      cache[it.exerciseId] = v ? Object.assign(stockFromVideo(v), { duration:v.duration||0 }) : null;
+    }
+    if(cache[it.exerciseId]){ it.stock = Object.assign({}, cache[it.exerciseId]); withVid++; }
+  }
+  return { total, withVid };
+}
+async function tplPixabayFallback(q){
+  try{
+    const key = (typeof mediaKeys==="function") ? mediaKeys().pixabay : "";
+    if(!key) return null;
+    const hits = await searchPixabay(q, key);
+    const w = q.split(" ")[0];
+    return hits.find(h=> h.tags.includes(w)) || null;
+  }catch(e){ return null; }
+}
+const TPL_LV_ORDER = { beginner:0, intermediate:1, advanced:2 }, TPL_G_ORDER = { nam:0, nu:1, chung:2 };
+async function tplAddToWeek(t){
+  const plan = tplToPlan(t);
+  toast("Đang thêm giáo án & gắn video…", "videocam");
+  let res = { total:0, withVid:0 };
+  try{ res = await tplAttachVideos(plan); }catch(e){}
+  state.plans[plan.id] = plan; state.activePlanId = plan.id; state.selectedDay = todayDayKey();
+  saveState(); closeSheet(); goto("workout");
+  toast(`Đã thêm "${t.name}" vào tuần tập · ${res.withVid}/${res.total} bài có video hướng dẫn`, "check_circle");
+}
 function openTemplateBrowser(){
-  const list = PROGRAM_TEMPLATES.filter(t=> (tplUI.gender==="all" || t.gender===tplUI.gender || (tplUI.gender!=="chung" && t.gender==="chung")) && (tplUI.level==="all" || t.level===tplUI.level));
+  const list = PROGRAM_TEMPLATES.filter(t=> (tplUI.gender==="all" || t.gender===tplUI.gender || (tplUI.gender!=="chung" && t.gender==="chung")) && (tplUI.level==="all" || t.level===tplUI.level))
+    .slice().sort((a,b)=> (TPL_G_ORDER[a.gender]-TPL_G_ORDER[b.gender]) || (TPL_LV_ORDER[a.level]-TPL_LV_ORDER[b.level]));
   const chip = (k,v,label)=>`<button class="pill ${tplUI[k]===v?'active':''}" data-tf="${k}:${v}">${label}</button>`;
   openSheet(`
-    <div class="sheet-header"><h3>Giáo án mẫu quốc tế</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
-    <p class="small-note" style="margin-bottom:10px;">Xây theo cấu trúc các chương trình miễn phí nổi tiếng thế giới, đã Việt hoá. Chọn 1 giáo án → app tạo bản riêng để bạn chỉnh tiếp.</p>
+    <div class="sheet-header"><h3>Giáo án mẫu hiện đại</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
+    <p class="small-note" style="margin-bottom:10px;">Giáo án theo xu hướng tập hiện đại (RIR, Upper/Lower, ULPPL, Hybrid, Zone 2…). Bấm <b>Thêm vào tuần tập</b> → app tạo lịch tuần và tự gắn video cho từng bài.</p>
     <div class="exlib-chips">${chip("gender","all","Tất cả")}${chip("gender","nam","Nam")}${chip("gender","nu","Nữ")}${chip("gender","chung","Nam & Nữ")}</div>
     <div class="exlib-chips" style="margin:6px 0 12px;">${chip("level","all","Mọi cấp độ")}${chip("level","beginner","Mới tập")}${chip("level","intermediate","Trung bình")}${chip("level","advanced","Nâng cao")}</div>
     <div class="tpl-list">${list.map(t=>`
-      <button class="tpl-card" data-tpl="${t.id}">
+      <div class="tpl-card" data-tpl="${t.id}" role="button" tabindex="0">
         <div class="tpl-top"><span class="tpl-g g-${t.gender}">${TPL_GENDER[t.gender]}</span><span class="tpl-lv lv-${t.level}">${TPL_LEVEL[t.level]}</span></div>
         <b>${escapeHtml(t.name)}</b>
         <small>${escapeHtml(t.goal)} · ${t.perWeek} buổi/tuần · ${t.weeks} tuần</small>
         <em>${escapeHtml(t.origin)}</em>
-      </button>`).join("") || `<p class="empty-hint">Không có giáo án phù hợp bộ lọc.</p>`}</div>
+        <div class="tpl-actions">
+          <button class="tpl-add" type="button" data-tpl-add="${t.id}"><span class="material-symbols-rounded">add</span>Thêm vào tuần tập</button>
+          <button class="tpl-view" type="button" data-tpl-view="${t.id}">Xem chi tiết</button>
+        </div>
+      </div>`).join("") || `<p class="empty-hint">Không có giáo án phù hợp bộ lọc.</p>`}</div>
   `);
   $$("[data-tf]").forEach(b=> b.addEventListener("click", ()=>{ const [k,v] = b.dataset.tf.split(":"); tplUI[k]=v; openTemplateBrowser(); }));
   $$("[data-tpl]").forEach(b=> b.addEventListener("click", ()=> openTemplateDetail(b.dataset.tpl)));
+  $$("[data-tpl-add]").forEach(b=> b.addEventListener("click", e=>{ e.stopPropagation(); b.disabled = true; b.innerHTML = "Đang thêm…"; tplAddToWeek(PROGRAM_TEMPLATES.find(x=>x.id===b.dataset.tplAdd)); }));
 }
 function openTemplateDetail(id){
   const t = PROGRAM_TEMPLATES.find(x=>x.id===id); if(!t) return;
@@ -233,20 +379,16 @@ function openTemplateDetail(id){
     <div class="sheet-header"><button class="icon-btn" id="tpl-back"><span class="material-symbols-rounded">arrow_back</span></button><h3 style="flex:1;margin-left:8px;font-size:17px;">${escapeHtml(t.name)}</h3></div>
     <div class="tpl-top" style="margin-bottom:8px;"><span class="tpl-g g-${t.gender}">${TPL_GENDER[t.gender]}</span><span class="tpl-lv lv-${t.level}">${TPL_LEVEL[t.level]}</span><span class="tpl-lv">${t.perWeek} buổi/tuần</span><span class="tpl-lv">${t.weeks} tuần</span></div>
     <p class="small-note" style="line-height:1.55;">${escapeHtml(t.desc)}</p>
+    <p class="small-note tpl-principles">${escapeHtml(TPL_PRINCIPLES)}</p>
     <p class="small-note" style="margin-top:6px;color:var(--mint-2);">${escapeHtml(t.origin)}</p>
     <div class="tpl-week">${DAY_KEYS.map(k=>{ const d = t.days[k] || TPL_REST; return `
       <div class="tpl-day ${d.ex.length?'':'rest'}">
         <div class="tpl-day-h"><b>${DAY_LABELS[k]}</b><span>${escapeHtml(d.title)}</span>${d.duration?`<i>~${d.duration} phút</i>`:""}</div>
         ${d.ex.length ? `<ol>${d.ex.map(([id,s,r])=>`<li><span>${escapeHtml(EXERCISES[id].name)}</span><b>${s} × ${escapeHtml(String(r))}</b></li>`).join("")}</ol>` : ""}
       </div>`; }).join("")}</div>
-    <button class="btn btn-primary btn-block" id="tpl-use" style="margin-top:14px;"><span class="material-symbols-rounded">check</span>Áp dụng giáo án này</button>
-    <p class="small-note" style="text-align:center;margin-top:6px;">Giáo án đang dùng hiện tại vẫn được giữ trong "Chương trình của tôi".</p>
+    <button class="btn btn-primary btn-block" id="tpl-use" style="margin-top:14px;"><span class="material-symbols-rounded">add</span>Thêm giáo án vào tuần tập</button>
+    <p class="small-note" style="text-align:center;margin-top:6px;">App tự gắn video hướng dẫn cho từng bài. Giáo án cũ vẫn được giữ trong "Chương trình của tôi".</p>
   `);
   $("#tpl-back").addEventListener("click", openTemplateBrowser);
-  $("#tpl-use").addEventListener("click", ()=>{
-    const plan = tplToPlan(t);
-    state.plans[plan.id] = plan; state.activePlanId = plan.id; state.selectedDay = todayDayKey();
-    saveState(); closeSheet(); goto("workout");
-    toast(`Đã áp dụng: ${t.name}`, "check_circle");
-  });
+  $("#tpl-use").addEventListener("click", e=>{ e.currentTarget.disabled = true; e.currentTarget.innerHTML = "Đang thêm & gắn video…"; tplAddToWeek(t); });
 }

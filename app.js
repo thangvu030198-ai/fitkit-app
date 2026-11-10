@@ -527,8 +527,8 @@ function renderWorkoutScreen(){
     return `
     <div class="list-item ${done?'done':''}" data-ex="${item.uid}">
       <div class="thumb-wrap">
-        ${item.clipId ? `<video muted preload="metadata" data-thumb-clip="${item.clipId}"></video>` : `<img src="${meta.img}">`}
-        ${item.clipId ? `<div class="cam-badge"><span class="material-symbols-rounded">videocam</span></div>` : ""}
+        ${item.clipId ? `<video muted preload="metadata" data-thumb-clip="${item.clipId}"></video>` : `<img src="${(item.stock && item.stock.thumb) || meta.img}" onerror="this.onerror=null;this.src='${meta.img}'">`}
+        ${item.clipId ? `<div class="cam-badge"><span class="material-symbols-rounded">videocam</span></div>` : (item.stock && item.stock.url ? `<div class="cam-badge play"><span class="material-symbols-rounded">play_arrow</span></div>` : "")}
       </div>
       <div class="info">
         <div class="name">${meta.name}</div>

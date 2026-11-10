@@ -62,6 +62,7 @@ async function loadWgerIndex(){
 
 /* ---- So khớp tên bài ---- */
 const FV_SYN = [
+  [/rowing seated|seated rowing/g,"row"],
   [/bench ?press|benchpress/g,"benchpress"], [/pull[- ]?ups?|chin[- ]?ups?/g,"pullup"], [/push[- ]?ups?/g,"pushup"],
   [/lat ?pull ?downs?|pulldowns?/g,"pulldown"], [/sit[- ]?ups?/g,"situp"], [/face ?pulls?|facepull/g,"facepull"],
   [/push ?downs?/g,"pushdown"], [/skull ?crushers?/g,"skullcrusher"], [/hammer ?curls?|hammercurls/g,"hammercurl"],
@@ -74,7 +75,8 @@ const FV_SYN = [
   [/deadlifts/g,"deadlift"], [/rows/g,"row"], [/\bdips\b/g,"dip"], [/\bdb\b/g,"dumbbell"], [/\bbb\b/g,"barbell"], [/\bkb\b/g,"kettlebell"], [/dumbbells/g,"dumbbell"], [/raises/g,"raise"], [/extensions/g,"extension"],
 ];
 const FV_EQUIP = ["barbell","dumbbell","cable","machine","kettlebell","multipress","smith"];
-const FV_STOP = new Set(["the","with","on","and","a","of","exercise","standing","sitting","seated","laying","lying","one","arm","single","two","close","wide","grip","narrow","medium","legs","apart","mid","high","to","low","v","bar","sz","rope","bodyweight","back"]);
+const FV_STOP = new Set(["the","with","on","and","a","of","exercise","standing","sitting","seated","laying","lying","one","arm","single","two","close","wide","grip","narrow","medium","legs","apart","mid","high","to","low","v","bar","sz","rope","back"]);
+const FV_MOD = new Set(["frontsquat","gobletsquat","rdl","bodyweight","inverted","incline","decline","bulgarian","split","hack","sumo","overhead","preacher","hipthrust","pushpress"]);
 function fvTokens(name){
   let s = " " + String(name||"").toLowerCase().replace(/\(.*?\)/g, m=> " "+m.slice(1,-1)+" ").replace(/[-_,/]+/g," ") + " ";
   FV_SYN.forEach(([re, rep])=>{ s = s.replace(re, " "+rep+" "); });
@@ -84,9 +86,11 @@ function fvTokens(name){
 function fvScore(target, cand){
   const t = fvTokens(target), c = fvTokens(cand.name);
   if(!c.core.length) return 0;
-  const hit = c.core.filter(w=> t.core.includes(w)).length;
+  const hits = c.core.filter(w=> t.core.includes(w)), hit = hits.length;
   if(hit < c.core.length) return 0;                 // mọi từ chính của video phải có trong tên bài
-  let s = 10 + hit*3 - (t.core.length - hit);       // càng khớp sát càng cao
+  const cAll = c.core.concat(c.equip);
+  if(t.core.some(w=> FV_MOD.has(w) && !cAll.includes(w))) return 0;   // bài có biến thể đặc thù (Front, Goblet, RDL…) → video phải đúng biến thể
+  let s = 10 + hits.reduce((a,w)=> a + Math.min(w.length,12)/2, 0) - (t.core.length - hit)*0.5;   // từ ghép dài (gobletsquat) khớp → điểm cao hơn
   if(c.equip.length && t.equip.length) s += c.equip.some(e=> t.equip.includes(e)) ? 4 : -6;
   return s;
 }
