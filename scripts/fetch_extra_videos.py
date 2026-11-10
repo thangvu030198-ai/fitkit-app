@@ -61,9 +61,11 @@ def main():
     for s in json.load(open(SRC, encoding="utf-8")):
         key = s["key"]
         mp4, jpg = os.path.join(OUT, key + ".mp4"), os.path.join(OUT, key + ".jpg")
-        srcid = str(s.get("pexels") or s.get("commons"))
+        srcid = str(s.get("pexels") or s.get("commons") or s.get("file"))
         try:
-            if s.get("pexels"):
+            if s.get("file"):   # clip tự quay / tạo bằng AI, đã đưa vào repo (media/extra-src/)
+                meta = {"url": None, "page": s.get("page",""), "author": s.get("author","FIT KIT"), "license": s.get("license","Nội dung của FIT KIT"), "licenseUrl": ""}
+            elif s.get("pexels"):
                 meta = {"url": f"https://www.pexels.com/download/video/{s['pexels']}/", "page": s["page"],
                         "author": "Pexels", "license": "Pexels License", "licenseUrl": "https://www.pexels.com/license/"}
             else:
@@ -72,8 +74,10 @@ def main():
                 entry = old[key]
             else:
                 with tempfile.NamedTemporaryFile(delete=False) as t: tmp = t.name
-                print("  ↓", key, meta["url"])
-                fetch(meta["url"], tmp)
+                if s.get("file"):
+                    import shutil; shutil.copy(os.path.join(ROOT, s["file"]), tmp); print("  ⧉", key, s["file"])
+                else:
+                    print("  ↓", key, meta["url"]); fetch(meta["url"], tmp)
                 dur = encode(tmp, mp4, jpg)
                 os.unlink(tmp)
                 entry = {"key": key, "name": s["name"], "alias": s.get("alias", []), "file": key + ".mp4", "thumb": key + ".jpg",
