@@ -1263,3 +1263,38 @@ i.cnt{ background:var(--coral); }
 .atp-day small{ font-size:11.5px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
 .atp-day i{ font-style:normal; font-size:10.5px; color:var(--mint-2); font-weight:700; }
 .atp-day.today{ border-color:var(--mint); background:rgba(94,230,199,.12); }
+
+/* ---- Khối video phát ngay ---- */
+.vblock{ margin-bottom:12px; }
+.vplayer{ position:relative; width:100%; aspect-ratio:16/9; border-radius:18px; overflow:hidden; background:#000; border:1px solid rgba(255,255,255,.14); }
+.vplayer.skeleton{ display:flex; align-items:center; justify-content:center; background:linear-gradient(110deg, rgba(255,255,255,.06) 30%, rgba(255,255,255,.14) 50%, rgba(255,255,255,.06) 70%); background-size:200% 100%; animation:vbShimmer 1.2s linear infinite; }
+@keyframes vbShimmer{ to{ background-position:-200% 0; } }
+.vplayer video{ width:100%; height:100%; object-fit:cover; display:block; background:#000; }
+.vplayer[data-state="playing"] video{ object-fit:contain; }
+.vp-play{ position:absolute; inset:0; margin:auto; width:64px; height:64px; border-radius:50%; border:none; background:rgba(255,122,69,.92); color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 28px rgba(0,0,0,.45), 0 0 0 8px rgba(255,255,255,.14); transition:transform .25s var(--e-out); }
+.vp-play:hover{ transform:scale(1.08); }
+.vp-play .material-symbols-rounded{ font-size:34px; margin-left:3px; }
+.vplayer[data-state="playing"] .vp-play, .vplayer[data-state="playing"] .vp-time, .vplayer[data-state="playing"] .vp-saved{ display:none; }
+.vplayer::after{ content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(180deg, transparent 55%, rgba(6,26,36,.6)); }
+.vplayer[data-state="playing"]::after{ display:none; }
+.vp-time{ position:absolute; right:10px; bottom:10px; z-index:2; font-size:11.5px; font-weight:700; padding:3px 8px; border-radius:8px; background:rgba(6,26,36,.8); color:#fff; }
+.vp-saved{ position:absolute; left:10px; top:10px; z-index:2; font-size:10.5px; font-weight:700; padding:3px 8px; border-radius:8px; background:var(--mint); color:var(--navy); }
+.vp-err{ position:absolute; inset:auto 0 0 0; z-index:3; padding:10px; font-size:12px; background:rgba(6,26,36,.92); color:#fff; }
+.vp-err a{ color:var(--mint-2); text-decoration:underline; }
+.vb-foot{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:6px; }
+.vb-foot .stock-credit{ margin:0; }
+.vb-save{ flex-shrink:0; display:flex; align-items:center; gap:4px; border:none; border-radius:10px; padding:6px 10px; font-size:12px; font-weight:700; background:var(--mint); color:var(--navy); }
+.vb-save .material-symbols-rounded{ font-size:14px; }
+.vthumbs{ display:flex; gap:8px; overflow-x:auto; margin-top:10px; padding-bottom:2px; scrollbar-width:none; }
+.vthumbs::-webkit-scrollbar{ display:none; }
+.vthumb{ position:relative; flex:0 0 96px; aspect-ratio:16/10; border-radius:12px; overflow:hidden; padding:0; border:2px solid transparent; background:rgba(255,255,255,.08); }
+.vthumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.vthumb .material-symbols-rounded{ position:absolute; inset:0; margin:auto; width:26px; height:26px; border-radius:50%; background:rgba(6,26,36,.7); color:#fff; font-size:16px; }
+.vthumb i{ position:absolute; right:4px; bottom:3px; font-style:normal; font-size:9.5px; font-weight:700; color:#fff; text-shadow:0 1px 3px #000; }
+.vthumb.on{ border-color:var(--coral); }
+.vb-msg{ display:flex; align-items:center; gap:8px; padding:12px; border-radius:14px; background:rgba(255,255,255,.08); font-size:12.5px; color:var(--text-muted); }
+.vb-msg .material-symbols-rounded{ color:var(--mint); }
+.ld-media{ position:relative; margin-top:4px; }
+.ld-media span{ position:absolute; left:8px; bottom:8px; font-size:10px; font-weight:700; padding:2px 7px; border-radius:6px; background:rgba(6,26,36,.75); color:#fff; }
+.ld-media .ld-img{ max-height:22vh; }
+.exdb-anim-small{ max-height:20vh !important; margin-top:6px; }

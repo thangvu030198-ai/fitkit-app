@@ -188,6 +188,59 @@ function openMediaSettings(onSaved){
    GẮN VÀO CÁC MÀN HIỆN CÓ
    ===================================================================== */
 
+/* ---- Khối video phát ngay: ảnh bìa + nút play + dải video khác ----
+   opts.stock   : video đã gắn sẵn (ưu tiên)
+   opts.onSave  : (stock)=>{} — hiện nút "Gắn video này cho bài"
+   opts.compact : bớt khoảng cách                                        */
+let _vbSeq = 0;
+function videoBlockHTML(){ const id = "vb" + (++_vbSeq); return { id, html:`<div class="vblock" id="${id}"><div class="vplayer skeleton"><div class="spinner"></div></div></div>` }; }
+function fmtDur(s){ s = Math.round(s||0); return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; }
+
+async function mountVideoBlock(id, query, opts={}){
+  const host = document.getElementById(id); if(!host) return;
+  let list = [];
+  if(opts.stock && opts.stock.url) list.push(Object.assign({ duration:opts.stock.duration||0 }, opts.stock, { _saved:true }));
+  try{
+    if(hasVideoSource()){ const found = await searchVideos(query); found.forEach(v=>{ if(!list.some(x=>x.url===v.url)) list.push(v); }); }
+  }catch(e){ if(!list.length){ host.innerHTML = `<div class="vb-msg"><span class="material-symbols-rounded">videocam</span>${escapeHtml(e.message==="NO_KEY" ? "Chưa kết nối nguồn video." : e.message)}</div>`; return; } }
+  if(!document.getElementById(id)) return;
+  if(!list.length){ host.innerHTML = hasVideoSource() ? `<div class="vb-msg"><span class="material-symbols-rounded">videocam</span>Chưa tìm thấy video cho bài này.</div>` : `<div class="vb-msg"><span class="material-symbols-rounded">videocam</span>Chưa kết nối nguồn video.</div>`; return; }
+  let cur = 0;
+  const draw = ()=>{
+    const v = list[cur];
+    host.innerHTML = `
+      <div class="vplayer" data-state="idle">
+        <video playsinline preload="metadata" ${v.thumb?`poster="${escapeHtml(v.thumb)}"`:""} src="${escapeHtml(v.url)}"></video>
+        <button class="vp-play" aria-label="Phát video"><span class="material-symbols-rounded">play_arrow</span></button>
+        <span class="vp-time">${fmtDur(v.duration)}</span>
+        ${v._saved ? `<span class="vp-saved">Đã gắn cho bài</span>` : ""}
+      </div>
+      <div class="vb-foot">${stockCreditHTML(v)}${opts.onSave && !v._saved ? `<button class="vb-save" type="button"><span class="material-symbols-rounded">check</span>Gắn video này</button>` : ""}</div>
+      ${list.length > 1 ? `<div class="vthumbs">${list.slice(0,8).map((x,i)=>`
+        <button class="vthumb ${i===cur?'on':''}" data-vt="${i}" aria-label="Video ${i+1}">
+          ${x.thumb ? `<img src="${escapeHtml(x.thumb)}" alt="" loading="lazy">` : ""}<span class="material-symbols-rounded">play_arrow</span><i>${fmtDur(x.duration)}</i>
+        </button>`).join("")}</div>` : ""}`;
+    const box = host.querySelector(".vplayer"), vid = box.querySelector("video");
+    const start = ()=>{
+      box.dataset.state = "playing"; vid.controls = true; vid.muted = false;
+      const p = vid.play(); if(p && p.catch) p.catch(()=>{ vid.muted = true; vid.play().catch(()=>{}); });
+    };
+    box.querySelector(".vp-play").addEventListener("click", start);
+    vid.addEventListener("click", ()=>{ if(box.dataset.state==="idle") start(); });
+    vid.addEventListener("error", ()=>{
+      box.dataset.state = "error";
+      box.insertAdjacentHTML("beforeend", `<div class="vp-err">Không phát được video này. <a href="${escapeHtml(v.pageUrl||v.url)}" target="_blank" rel="noopener">Mở trên ${escapeHtml(v.provider||"web")}</a></div>`);
+    });
+    $$("[data-vt]", host).forEach(b=> b.addEventListener("click", ()=>{ cur = Number(b.dataset.vt); draw(); const nb = host.querySelector(".vplayer"); if(nb) nb.querySelector(".vp-play").click(); }));
+    const sv = host.querySelector(".vb-save");
+    if(sv) sv.addEventListener("click", ()=>{ const st = stockFromVideo(list[cur]); st.duration = list[cur].duration; opts.onSave(st); list.forEach(x=>delete x._saved); list[cur]._saved = true; draw(); toast("Đã gắn video cho bài", "videocam"); });
+  };
+  draw();
+}
+/* Dừng video khi đóng bảng trượt */
+const _closeSheetV1 = closeSheet;
+closeSheet = function(){ $$("#sheet-content video").forEach(v=>{ try{ v.pause(); }catch(e){} }); _closeSheetV1(); };
+
 /* 1. Giáo án cá nhân: chi tiết bài + khi đang tập */
 const _openExerciseDetailV1 = openExerciseDetail;
 openExerciseDetail = function(itemUid, isToday){
@@ -195,44 +248,32 @@ openExerciseDetail = function(itemUid, isToday){
   const item = getActivePlan().days[state.selectedDay].items.find(it=>it.uid===itemUid); if(!item) return;
   const meta = getExerciseMeta(item);
   const sheet = $("#sheet-content");
-  if(!item.clipId && item.stock){
-    const img = sheet.querySelector("img"); if(img) img.outerHTML = stockVideoHTML(item.stock);
-  }
-  const attach = $("#btn-attach-clip-detail"); if(!attach) return;
-  const btn = document.createElement("button");
-  btn.className = "btn btn-outline btn-block"; btn.style.marginTop = "10px";
-  btn.innerHTML = `<span class="material-symbols-rounded">video_library</span>${item.stock ? "Đổi video mẫu" : "Tìm video mẫu (Pexels/Pixabay)"}`;
-  attach.after(btn);
-  btn.addEventListener("click", ()=> openVideoPicker(videoQueryFor(meta), stock=>{
-    item.stock = stock; saveState(); openExerciseDetail(itemUid, isToday); renderWorkoutScreen(); toast("Đã gắn video mẫu", "videocam");
-  }, { onBack: ()=> openExerciseDetail(itemUid, isToday) }));
-  if(item.stock){
-    const rm = document.createElement("button");
-    rm.className = "btn btn-ghost btn-block"; rm.style.marginTop = "4px"; rm.textContent = "Gỡ video mẫu";
-    btn.after(rm);
-    rm.addEventListener("click", ()=>{ delete item.stock; saveState(); openExerciseDetail(itemUid, isToday); });
-  }
+  const vb = videoBlockHTML();
+  const wrap = document.createElement("div"); wrap.innerHTML = vb.html;
+  if(!item.clipId){ const img = sheet.querySelector("img"); if(img) img.replaceWith(wrap.firstElementChild); else sheet.prepend(wrap.firstElementChild); }
+  else { const after = $("#btn-fit-toggle-detail") || sheet.querySelector("video"); (after||sheet.firstElementChild).after(wrap.firstElementChild); }
+  mountVideoBlock(vb.id, videoQueryFor(meta), { stock:item.stock, onSave: st=>{ item.stock = st; saveState(); renderWorkoutScreen(); } });
 };
 const _renderSessionStepV1 = renderSessionStep;
 renderSessionStep = function(){
   _renderSessionStepV1();
   if(!session || session.idx >= session.items.length) return;
   const item = session.items[session.idx];
-  if(item && !item.clipId && item.stock){
-    const img = $("#sheet-content img"); if(img) img.outerHTML = stockVideoHTML(item.stock, { maxHeight:"40vh" });
+  if(item && !item.clipId){
+    const img = $("#sheet-content img"); if(!img) return;
+    const vb = videoBlockHTML(); const w = document.createElement("div"); w.innerHTML = vb.html; img.replaceWith(w.firstElementChild);
+    mountVideoBlock(vb.id, videoQueryFor(getExerciseMeta(item)), { stock:item.stock, onSave: st=>{ item.stock = st; saveState(); } });
   }
 };
 
-/* 2. Thư viện 800+ bài: nút xem video minh hoạ */
+/* 2. Thư viện 800+ bài (bảng chọn bài): video ngay dưới ảnh */
 const _openExDbDetailV1 = openExDbDetail;
 openExDbDetail = function(ex, onBack){
   _openExDbDetailV1(ex, onBack);
   const anim = $("#exdb-anim"); if(!anim) return;
-  const b = document.createElement("button");
-  b.className = "btn btn-soft btn-block btn-sm"; b.style.margin = "10px 0 4px";
-  b.innerHTML = `<span class="material-symbols-rounded">play_circle</span>Xem video minh hoạ`;
-  anim.after(b);
-  b.addEventListener("click", ()=> openVideoPicker(ex.name + " exercise", null, { onBack: ()=> openExDbDetail(ex, onBack) }));
+  const vb = videoBlockHTML(); anim.insertAdjacentHTML("beforebegin", vb.html);
+  anim.classList.add("exdb-anim-small");
+  mountVideoBlock(vb.id, ex.name + " exercise", {});
 };
 
 /* 3. Màn mở app: video nền */

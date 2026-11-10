@@ -175,14 +175,15 @@ function openLibDetail(key){
   const x = libFind(key); if(!x) return;
   const imgs = x.src==="exdb" ? (x.ex.images||[]).map((_,i)=>exdbImg(x.ex,i)) : [x.img];
   let frame = 0;
+  const vb = videoBlockHTML();
   openSheet(`
     <div class="sheet-header"><h3 style="font-size:18px;">${escapeHtml(x.name)}</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
-    <div id="ld-media">${imgs[0] ? `<img id="ld-anim" src="${escapeHtml(imgs[0])}" class="ld-img ${x.src==="exdb"?"white":""}" alt="">` : ""}</div>
+    ${vb.html}
+    ${imgs[0] ? `<div class="ld-media"><img id="ld-anim" src="${escapeHtml(imgs[0])}" class="ld-img ${x.src==="exdb"?"white":""}" alt=""><span>Ảnh động kỹ thuật</span></div>` : ""}
     <div class="chip-row" style="margin:10px 0;">
       <span class="pill">${escapeHtml(x.muscleVi)}</span><span class="pill">${escapeHtml(EXDB_EQUIP_VI[x.equip]||x.sub.split(" · ").pop())}</span><span class="pill">${EXDB_LEVEL_VI[x.level]||"Mới tập"}</span>
     </div>
     <div class="stat-grid"><div class="stat-box"><div class="num">${x.sets}</div><div class="cap">Hiệp</div></div><div class="stat-box"><div class="num">${escapeHtml(String(x.reps))}</div><div class="cap">Lần</div></div><div class="stat-box"><div class="num">${x.restSec}s</div><div class="cap">Nghỉ</div></div></div>
-    <button class="btn btn-soft btn-block" id="ld-video" style="margin-top:12px;"><span class="material-symbols-rounded">play_circle</span>Xem video minh hoạ</button>
     <div class="card-title" style="margin-top:14px;font-size:13px;">${x.src==="exdb" ? "Hướng dẫn (tiếng Anh)" : "Hướng dẫn kỹ thuật"}</div>
     ${x.src==="exdb" ? `<ol class="ld-steps">${(x.ex.instructions||[]).map(s=>`<li>${escapeHtml(s)}</li>`).join("")}</ol>` : `<p class="small-note" style="line-height:1.6;">${escapeHtml(x.guide)}</p>`}
     <button class="btn btn-primary btn-block" id="ld-add" style="margin-top:14px;"><span class="material-symbols-rounded">add</span>Thêm vào giáo án</button>
@@ -192,7 +193,7 @@ function openLibDetail(key){
     onSheetCloseHook = ()=> clearInterval(timer);
   }
   $("#ld-add").addEventListener("click", ()=> openAddToPlan(key));
-  $("#ld-video").addEventListener("click", ()=> openVideoPicker(videoQueryFor({ name:x.name, muscle:x.muscleVi }), null, { onBack: ()=> openLibDetail(key) }));
+  mountVideoBlock(vb.id, videoQueryFor({ name:x.name, muscle:x.muscleVi }), {});
 }
 
 /* ---- Thêm vào giáo án: chọn ngày ---- */

@@ -533,18 +533,23 @@ function cfToday(body, c){
 
 function openSessionExerciseDetail(e){
   if(!e) return;
+  const isMp4 = e.videoUrl && /\.(mp4|webm|mov)(\?|$)/i.test(e.videoUrl);
+  const vb = videoBlockHTML();
   openSheet(`
     <div class="sheet-header"><h3 style="font-size:18px;">${escapeHtml(e.name)}</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
-    ${e.stock ? stockVideoHTML(e.stock) : (e.videoUrl && /\.(mp4|webm|mov)(\?|$)/i.test(e.videoUrl) ? stockVideoHTML({ url:e.videoUrl, provider:"PT", author:"Video PT gửi", pageUrl:e.videoUrl }) : (e.img ? `<img src="${escapeHtml(e.img)}" style="width:100%;max-height:32vh;object-fit:contain;background:#fff;border-radius:14px;">` : ""))}
+    ${vb.html}
     <div class="stat-grid" style="margin-top:10px;">
       <div class="stat-box"><div class="num">${e.sets||"-"}</div><div class="cap">Hiệp</div></div>
       <div class="stat-box"><div class="num">${escapeHtml(String(e.reps||"-"))}</div><div class="cap">Lần</div></div>
       <div class="stat-box"><div class="num">${e.restSec||0}s</div><div class="cap">Nghỉ</div></div>
     </div>
     ${e.muscle ? `<p class="small-note" style="margin-top:8px;">Nhóm cơ: ${escapeHtml(e.muscle)}</p>` : ""}
-    ${e.videoUrl && !e.stock && !/\.(mp4|webm|mov)(\?|$)/i.test(e.videoUrl) ? `<button class="btn btn-primary btn-block" style="margin-top:12px;" id="sx-video"><span class="material-symbols-rounded">play_circle</span>Xem video hướng dẫn</button>` : ""}
+    ${e.videoUrl && !e.stock && !isMp4 ? `<button class="btn btn-primary btn-block" style="margin-top:12px;" id="sx-video"><span class="material-symbols-rounded">play_circle</span>Xem video PT gửi</button>` : ""}
+    ${e.img ? `<div class="ld-media" style="margin-top:12px;"><img src="${escapeHtml(e.img)}" class="ld-img white" alt=""><span>Ảnh kỹ thuật</span></div>` : ""}
     ${e.guide ? `<div class="card-title" style="margin-top:12px;font-size:13px;">Hướng dẫn</div><p class="small-note" style="white-space:pre-line;">${escapeHtml(e.guide)}</p>` : ""}
   `);
+  const stock = e.stock || (isMp4 ? { url:e.videoUrl, provider:"PT", author:"Video PT gửi", pageUrl:e.videoUrl } : null);
+  mountVideoBlock(vb.id, videoQueryFor(e), { stock });
   const v = $("#sx-video"); if(v) v.addEventListener("click", ()=> openExternal(e.videoUrl));
 }
 function openExternal(url){
