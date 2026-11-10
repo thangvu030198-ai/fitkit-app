@@ -1,0 +1,31 @@
+{
+ "foods": {
+  "com-trang":"cooked white rice bowl", "com-gao-lut":"brown rice bowl", "bun-pho":"rice noodles", "banh-mi":"baguette bread",
+  "yen-mach":"oatmeal oats", "khoai-lang":"sweet potato", "khoai-tay":"potato", "bap":"corn cob", "uc-ga":"chicken breast",
+  "dui-ga":"chicken drumstick", "uc-vit":"duck breast", "thit-bo-nac":"beef steak raw", "thit-heo-nac":"pork loin",
+  "thit-heo-ba-chi":"pork belly", "ca-hoi":"salmon fillet", "ca-basa":"fish fillet", "ca-ngu":"canned tuna", "tom-luoc":"cooked shrimp",
+  "trung-ga":"boiled egg", "sua-tuoi-khong-duong":"glass of milk", "sua-tuoi-co-duong":"milk bottle", "sua-chua-khong-duong":"yogurt",
+  "sua-chua-hy-lap":"greek yogurt", "pho-mai":"cheddar cheese", "dau-hu":"tofu", "dau-nanh-luoc":"edamame", "dau-den":"black beans",
+  "bong-cai-xanh":"broccoli", "rau-muong":"water spinach", "ca-chua":"tomato", "dua-leo":"cucumber", "xa-lach":"lettuce",
+  "chuoi":"banana", "tao":"red apple", "cam":"orange fruit", "bo-avocado":"avocado", "nho":"grapes", "bo-dau-phong":"peanut butter",
+  "hanh-nhan":"almonds", "oc-cho":"walnuts", "dau-oliu":"olive oil", "bo-dong-vat":"butter", "duong-trang":"sugar", "mat-ong":"honey",
+  "sua-dau-nanh":"soy milk", "mi-goi":"instant noodles", "khoai-mon":"taro root", "nuoc-cam":"orange juice", "banh-quy":"cookies",
+  "chocolate-den":"dark chocolate", "ca-thu":"mackerel fish", "muc":"squid", "thit-bo-xay":"ground beef", "dui-ga-bo-da":"chicken thigh",
+  "trung-trang":"egg white", "banh-trang":"rice paper", "mi-y-nguyen-cam":"whole wheat pasta", "banh-mi-nguyen-cam":"whole wheat bread",
+  "tortilla":"tortilla wrap", "quinoa":"quinoa", "granola":"granola", "hat-chia":"chia seeds", "whey":"protein powder scoop",
+  "nam":"mushrooms", "dau-que":"green beans", "cai-thia":"bok choy", "bi-do":"pumpkin", "ca-rot":"carrot", "hanh-tay":"onion",
+  "ot-chuong":"bell pepper", "mang-tay":"asparagus", "cai-bo-xoi":"spinach leaves", "rau-thom":"fresh herbs", "gia-do":"bean sprouts",
+  "dau-tay":"strawberries", "viet-quat":"blueberries", "xoai":"mango", "dua-hau":"watermelon slice", "thit-heo-xay":"minced pork"
+ },
+ "recipes": {
+  "ga-sa-ot-af":"grilled chicken breast rice", "goi-cuon":"vietnamese spring rolls", "pho-bo-nac":"pho noodle soup",
+  "bun-ga-xe":"chicken noodle soup", "ca-basa-kho":"braised fish", "canh-bi-do":"pumpkin soup", "dau-hu-sot-ca":"tofu tomato sauce",
+  "ca-thu-af":"grilled mackerel", "bo-xao-cai":"beef stir fry", "chao-yen-mach-ga":"porridge bowl", "banh-mi-trung":"banh mi",
+  "muc-hap-gung":"steamed squid", "com-ga":"chicken rice broccoli", "dui-ga-mat-ong-af":"honey chicken", "bun-bo":"beef noodle soup",
+  "tom-bap":"shrimp corn", "khoai-lang-af":"sweet potato fries", "overnight-oats":"overnight oats", "parfait":"yogurt parfait",
+  "omelette-trang":"omelette", "salmon-af":"salmon asparagus", "chicken-salad":"chicken salad", "spaghetti-bo":"spaghetti bolognese",
+  "wrap-ga":"chicken wrap", "steak-khoai":"steak potatoes", "tuna-sandwich":"tuna sandwich", "salad-ca-ngu":"tuna salad egg",
+  "ca-hoi-khoai":"salmon sweet potato", "yen-mach-chuoi":"oatmeal banana", "shake-tang-can":"banana smoothie",
+  "smoothie-dau":"strawberry smoothie", "sua-chua-hat":"yogurt nuts", "edamame-tao":"edamame"
+ }
+}
