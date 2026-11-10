@@ -66,7 +66,7 @@ async function searchPixabay(q, key){
   if(r.status===400 || r.status===401) throw new Error("Pixabay: API key không hợp lệ");
   if(!r.ok) throw new Error("Pixabay: lỗi " + r.status);
   const j = await r.json();
-  return (j.hits||[]).map(h=>{ const v = h.videos && (h.videos.medium && h.videos.medium.url ? h.videos.medium : h.videos.small); if(!v || !v.url) return null;
+  return (j.hits||[]).map(h=>{ const V = h.videos || {}; const v = [V.tiny, V.small, V.medium].find(x=> x && x.url);   // "tiny" của Pixabay thường là 720p, 1–5MB — nhẹ cho điện thoại if(!v || !v.url) return null;
     return { provider:"Pixabay", id:"pb"+h.id, url:v.url, thumb: v.thumbnail || (h.picture_id ? `https://i.vimeocdn.com/video/${h.picture_id}_640x360.jpg` : ""),
       w:v.width, h:v.height, duration:h.duration, author:h.user||"Pixabay", authorUrl:`https://pixabay.com/users/${h.user}-${h.user_id}/`, pageUrl:h.pageURL }; }).filter(Boolean);
 }
@@ -162,10 +162,10 @@ function openMediaSettings(onSaved){
   const ms = state.mediaSettings;
   openSheet(`
     <div class="sheet-header"><h3>Nguồn video minh hoạ</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
-    <p class="small-note">Theo tài liệu của bạn: Pexels &amp; Pixabay cho phép dùng thương mại miễn phí. Mỗi nguồn cần 1 API key (đăng ký miễn phí ~2 phút).</p>
+    <p class="small-note">Theo tài liệu của bạn: Pexels &amp; Pixabay cho phép dùng thương mại miễn phí. Mỗi nguồn cần 1 API key. Hiện nên dùng <b>Pixabay</b> (đăng ký miễn phí ~2 phút) vì Pexels đang tạm dừng cấp key mới.</p>
     ${cfg.pexelsKey || cfg.pixabayKey ? `<p class="small-note" style="color:var(--mint);margin-top:6px;">Chủ app đã cài sẵn key cho mọi người dùng. Ô dưới chỉ để ghi đè trên máy này.</p>` : ""}
-    <div class="field" style="margin-top:12px;"><label>Pexels API key — lấy tại pexels.com/api</label><input id="ms-px" value="${escapeHtml(ms.pexelsKey)}" placeholder="${cfg.pexelsKey?"(đang dùng key của chủ app)":"Dán key Pexels"}" autocomplete="off"></div>
-    <div class="field" style="margin-top:10px;"><label>Pixabay API key — lấy tại pixabay.com/api/docs</label><input id="ms-pb" value="${escapeHtml(ms.pixabayKey)}" placeholder="${cfg.pixabayKey?"(đang dùng key của chủ app)":"Dán key Pixabay"}" autocomplete="off"></div>
+    <div class="field" style="margin-top:12px;"><label>Pixabay API key — lấy tại pixabay.com/api/docs</label><input id="ms-pb" value="${escapeHtml(ms.pixabayKey)}" placeholder="${cfg.pixabayKey?"(đang dùng key của chủ app)":"Dán key Pixabay"}" autocomplete="off"></div>
+    <div class="field" style="margin-top:10px;"><label>Pexels API key (Pexels đang tạm dừng cấp key mới)</label><input id="ms-px" value="${escapeHtml(ms.pexelsKey)}" placeholder="${cfg.pexelsKey?"(đang dùng key của chủ app)":"Dán key Pexels"}" autocomplete="off"></div>
     <p class="auth-err" id="ms-err"></p>
     <button class="btn btn-primary btn-block" id="ms-save" style="margin-top:6px;">Lưu &amp; thử tìm video</button>
     <p class="small-note" style="margin-top:10px;">Key chỉ lưu trên máy này. Video luôn hiển thị tên tác giả và nguồn theo điều khoản của Pexels/Pixabay.</p>

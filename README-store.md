@@ -32,8 +32,8 @@ Gói miễn phí (Spark) đủ cho vài nghìn người dùng: 50.000 lượt đ
 ## 1b. Bật nguồn video minh hoạ (Pexels / Pixabay — miễn phí, dùng thương mại)
 
 Theo tài liệu tổng hợp (mục 4B), app tìm video tập luyện từ **Pexels** và **Pixabay**:
-1. Pexels: vào https://www.pexels.com/api/ → đăng ký → copy **API Key**.
-2. Pixabay (tuỳ chọn): https://pixabay.com/api/docs/ → đăng nhập → copy **key** trong mục Parameters.
+1. **Pixabay (khuyên dùng):** https://pixabay.com/api/docs/ → đăng nhập/đăng ký → copy **key** trong mục Parameters.
+2. Pexels: https://www.pexels.com/api/ — hiện (11/2026) Pexels **tạm dừng cấp key mới**; chỉ dùng nếu đã có key cũ.
 3. Dán vào file `media-config.js` (`pexelsKey`, `pixabayKey`) rồi đẩy lên GitHub → mọi người dùng đều tìm được video.
    (Hoặc thử nhanh: trong app → Hồ sơ → **Nguồn video minh hoạ** → dán key, chỉ lưu trên máy đó.)
 
