@@ -1255,7 +1255,7 @@ function guideSvgFor(angle){
     <line x1="150" y1="0" x2="150" y2="400" stroke="rgba(255,255,255,0.35)" stroke-width="1" stroke-dasharray="4 6"/>
     <line x1="0" y1="133" x2="300" y2="133" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="4 6"/>
     <line x1="0" y1="267" x2="300" y2="267" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="4 6"/>
-    <rect x="18" y="18" width="264" height="364" rx="18" fill="none" stroke="rgba(255,49,0,0.85)" stroke-width="2" stroke-dasharray="10 8"/>
+    <rect x="18" y="18" width="264" height="364" rx="18" fill="none" stroke="rgba(255,122,69,0.85)" stroke-width="2" stroke-dasharray="10 8"/>
   `;
   if(angle==="side"){
     return grid + `
@@ -1859,12 +1859,12 @@ function renderInbodyChart(containerId, rawLogs){
   const weightPts = logs.map((l,i)=> l.weight!=null ? `${xFor(i)},${yForWeight(l.weight)}` : null).filter(Boolean).join(" ");
   const bfPts = logs.map((l,i)=> l.bodyFatPct!=null ? `${xFor(i)},${yForBf(l.bodyFatPct)}` : null).filter(Boolean).join(" ");
   const weightDots = logs.map((l,i)=> l.weight!=null ? `<circle cx="${xFor(i)}" cy="${yForWeight(l.weight)}" r="${l.source==='manual'?3.5:3}" fill="var(--primary)" ${l.source==='ai'?'stroke="#fff" stroke-width="1"':''}/>` : "").join("");
-  const bfDots = logs.map((l,i)=> l.bodyFatPct!=null ? `<circle cx="${xFor(i)}" cy="${yForBf(l.bodyFatPct)}" r="${l.source==='manual'?3.5:3}" fill="#33d1c9" ${l.source==='ai'?'stroke="#fff" stroke-width="1"':''}/>` : "").join("");
+  const bfDots = logs.map((l,i)=> l.bodyFatPct!=null ? `<circle cx="${xFor(i)}" cy="${yForBf(l.bodyFatPct)}" r="${l.source==='manual'?3.5:3}" fill="#5EE6C7" ${l.source==='ai'?'stroke="#fff" stroke-width="1"':''}/>` : "").join("");
   el.innerHTML = `
     <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:150px;">
       <line x1="${PAD}" y1="${H-PAD}" x2="${W-PAD}" y2="${H-PAD}" stroke="var(--border)" stroke-width="1"/>
       ${weightPts ? `<polyline points="${weightPts}" fill="none" stroke="var(--primary)" stroke-width="2"/>` : ""}
-      ${bfPts ? `<polyline points="${bfPts}" fill="none" stroke="#33d1c9" stroke-width="2"/>` : ""}
+      ${bfPts ? `<polyline points="${bfPts}" fill="none" stroke="#5EE6C7" stroke-width="2"/>` : ""}
       ${weightDots}${bfDots}
     </svg>`;
 }
@@ -1884,7 +1884,7 @@ function renderProgressInbodyTab(){
       <div id="inbody-chart"></div>
       <div class="chip-row" style="margin-top:8px;">
         <span class="pill" style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--primary);display:inline-block;"></span>Cân nặng</span>
-        <span class="pill" style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#33d1c9;display:inline-block;"></span>% mỡ</span>
+        <span class="pill" style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#5EE6C7;display:inline-block;"></span>% mỡ</span>
       </div>
     </div>
     <div class="stat-grid" style="margin-top:2px;">

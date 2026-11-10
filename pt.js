@@ -141,8 +141,8 @@ function showAuth(view){
           <p class="wl-sub">Giáo án cá nhân, dinh dưỡng, giấc ngủ và kết nối PT ↔ học viên — trong một app.</p>
           <button class="wl-cta" id="wl-start" aria-label="Bắt đầu ngay">
             <svg viewBox="0 0 264 64" aria-hidden="true">
-              <rect x="0" y="0" width="264" height="64" rx="32" fill="#ffda00"/>
-              <circle cx="232" cy="32" r="26" fill="#0a0c14"/>
+              <rect x="0" y="0" width="264" height="64" rx="32" fill="#FF7A45"/>
+              <circle cx="232" cy="32" r="26" fill="#061A24"/>
               <g class="wl-arrow" transform-origin="232 32"><path d="M220 32 H244 M236 24 L244 32 L236 40" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g>
             </svg>
             <span>Bắt đầu ngay</span>
@@ -162,7 +162,7 @@ function showAuth(view){
           <svg viewBox="0 0 300 160" class="wl-routes" aria-hidden="true">
             ${routes.map((d,i)=>`<path id="wlr${i}" d="${d}" class="wl-route" style="--i:${i}"/>`).join("")}
             ${routes.map((d,i)=>`<polygon points="0,-4 8,0 0,4" class="wl-runner"><animateMotion dur="${3.2+i*0.4}s" repeatCount="indefinite" rotate="auto" begin="${1.2+i*0.3}s"><mpath href="#wlr${i}"/></animateMotion></polygon>`).join("")}
-            ${stops.map(([x,y,t],i)=>`<g class="wl-stop" style="--i:${i}"><circle cx="${x}" cy="${y}" r="8" fill="#ffda00"/><circle cx="${x}" cy="${y}" r="3" fill="#0a0c14"/><text x="${x}" y="${y+ (y>100?20:-13)}" text-anchor="middle">${t}</text></g>`).join("")}
+            ${stops.map(([x,y,t],i)=>`<g class="wl-stop" style="--i:${i}"><circle cx="${x}" cy="${y}" r="8" fill="#5EE6C7"/><circle cx="${x}" cy="${y}" r="3" fill="#061A24"/><text x="${x}" y="${y+ (y>100?20:-13)}" text-anchor="middle">${t}</text></g>`).join("")}
           </svg>
           <div class="wl-bubble" style="left:30%;top:46%;--d:2.6s"><span class="material-symbols-rounded">fitness_center</span></div>
           <div class="wl-bubble" style="left:63%;top:36%;--d:3.1s"><span class="material-symbols-rounded">restaurant</span></div>
@@ -177,7 +177,7 @@ function showAuth(view){
       <!-- 3. BẮT ĐẦU -->
       <section class="wl-start" id="wl-end">
         <div class="wl-rev wl-from-bottom">
-          <div class="wl-tag" style="color:#fff">BẮT ĐẦU <span style="color:#ffda00">NGAY</span></div>
+          <div class="wl-tag" style="color:#fff">BẮT ĐẦU <span style="color:#5EE6C7">NGAY</span></div>
           <p class="wl-muted">Miễn phí. Tập cá nhân không cần tài khoản — tài khoản dùng để kết nối với PT hoặc quản lý học viên.</p>
         </div>
         <div class="wl-actions">
@@ -191,7 +191,7 @@ function showAuth(view){
             <a class="wl-foot-link" id="wl-privacy">Chính sách bảo mật</a>
             <a class="wl-foot-link" id="wl-credits">Nguồn dữ liệu &amp; bản quyền</a>
           </div>
-          <button class="wl-round" id="wl-top" aria-label="Lên đầu trang"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="#0a1f2b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="wl-round" id="wl-top" aria-label="Lên đầu trang"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="#061A24" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
         <p class="wl-copy">© 2026 FIT KIT. All rights reserved.</p>
       </section>
@@ -458,15 +458,15 @@ function renderHomeScreen(){
 
     <div class="metric-grid">
       <div class="metric" onclick="goto('nutrition')">
-        <div class="metric-ring">${ringSVG(p.goalKcal? kcal/p.goalKcal:0, 52, 6, "#ff3100")}<span class="material-symbols-rounded">local_fire_department</span></div>
+        <div class="metric-ring">${ringSVG(p.goalKcal? kcal/p.goalKcal:0, 52, 6, "#FF7A45")}<span class="material-symbols-rounded">local_fire_department</span></div>
         <b>${Math.round(kcal)}</b><small>/ ${p.goalKcal||0} kcal</small>
       </div>
       <div class="metric" onclick="goto('nutrition')">
-        <div class="metric-ring">${ringSVG(waterGoal? water/waterGoal:0, 52, 6, "#2f9bff")}<span class="material-symbols-rounded" style="color:#5fb4ff">water_drop</span></div>
+        <div class="metric-ring">${ringSVG(waterGoal? water/waterGoal:0, 52, 6, "#5EE6C7")}<span class="material-symbols-rounded" style="color:#9AF1DD">water_drop</span></div>
         <b>${fmt1(water)}L</b><small>/ ${waterGoal}L nước</small>
       </div>
       <div class="metric" onclick="goto('sleep')">
-        <div class="metric-ring">${ringSVG(sl? sl.hours/sleepGoal:0, 52, 6, "#9b7bff")}<span class="material-symbols-rounded" style="color:#b39dff">bedtime</span></div>
+        <div class="metric-ring">${ringSVG(sl? sl.hours/sleepGoal:0, 52, 6, "#9AF1DD")}<span class="material-symbols-rounded" style="color:#9AF1DD">bedtime</span></div>
         <b>${sl ? fmt1(sl.hours)+"h" : "--"}</b><small>/ ${sleepGoal}h ngủ</small>
       </div>
     </div>
@@ -484,9 +484,9 @@ function renderHomeScreen(){
 
     <div class="section-title"><h3>Bạn muốn làm gì?</h3></div>
     <div class="entry-grid">
-      <div class="entry-tile" onclick="goto('workout')"><span class="ic" style="--c:#ff3100"><span class="material-symbols-rounded">fitness_center</span></span><b>Tập cá nhân</b><small>Giáo án &amp; lịch tập</small></div>
-      <div class="entry-tile" onclick="goto('coach')"><span class="ic" style="--c:#2f9bff"><span class="material-symbols-rounded">groups</span></span><b>${isPT ? "Tôi là PT" : "PT của tôi"}</b><small>${isPT ? "Quản lý học viên" : "Nhập mã PT"}</small></div>
-      <div class="entry-tile" onclick="openFindPTSoon()"><span class="ic" style="--c:#ffb020"><span class="material-symbols-rounded">travel_explore</span></span><b>Tìm PT</b><small class="soon-badge">Sắp ra mắt</small></div>
+      <div class="entry-tile" onclick="goto('workout')"><span class="ic" style="--c:#FF7A45"><span class="material-symbols-rounded">fitness_center</span></span><b>Tập cá nhân</b><small>Giáo án &amp; lịch tập</small></div>
+      <div class="entry-tile" onclick="goto('coach')"><span class="ic" style="--c:#5EE6C7"><span class="material-symbols-rounded">groups</span></span><b>${isPT ? "Tôi là PT" : "PT của tôi"}</b><small>${isPT ? "Quản lý học viên" : "Nhập mã PT"}</small></div>
+      <div class="entry-tile" onclick="openFindPTSoon()"><span class="ic" style="--c:#FFB08A"><span class="material-symbols-rounded">travel_explore</span></span><b>Tìm PT</b><small class="soon-badge">Sắp ra mắt</small></div>
     </div>
     <div class="quick-row">
       <button onclick="goto('plans')"><span class="material-symbols-rounded">edit_calendar</span>Giáo án</button>

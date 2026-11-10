@@ -24,7 +24,7 @@ function foodEmoji(idOrName){
 }
 
 const MEAL_EMOJI = { breakfast:"🍳", lunch:"🍱", dinner:"🍲", snack:"🍪" };
-const MEAL_TINT = { breakfast:"#ffb36b", lunch:"#ff8a5c", dinner:"#ff6b6b", snack:"#c59bff" };
+const MEAL_TINT = { breakfast:"#FFB08A", lunch:"#FF7A45", dinner:"#5EE6C7", snack:"#9AF1DD" };
 
 /* Thực đơn gợi ý — tính calo thật từ bảng FOODS (USDA) theo gram */
 const RECIPES = [
@@ -147,9 +147,9 @@ renderNutritionScreen = function(){
       </div>
       <div class="nu-left ${left<0?'over':''}">${left>=0 ? `Còn <b>${left.toLocaleString("vi-VN")}</b> kcal cho hôm nay` : `Đã vượt <b>${(-left).toLocaleString("vi-VN")}</b> kcal`}</div>
       <div class="nu-macros">
-        ${macro("Đạm", protein, p.protein, "#ff8a5c")}
-        ${macro("Tinh bột", carbs, p.carbs, "#ffc15c")}
-        ${macro("Chất béo", fat, p.fat, "#9b8cff")}
+        ${macro("Đạm", protein, p.protein, "#FF7A45")}
+        ${macro("Tinh bột", carbs, p.carbs, "#5EE6C7")}
+        ${macro("Chất béo", fat, p.fat, "#9AF1DD")}
       </div>
       <div class="nu-week">
         ${days.map(d=>`<div class="nu-day ${d.k===todayStr()?'today':''}"><div class="col"><i style="height:${Math.max(4, d.s/maxDay*100)}%" class="${d.s>goal?'over':''}"></i><em style="bottom:${goal/maxDay*100}%"></em></div><small>${d.lab}</small></div>`).join("")}
