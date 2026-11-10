@@ -1,24 +1,403 @@
 [
-  {"key":"stepup","name":"Dumbbell Step-up","alias":["Bước bục"],"provider":"Pexels","pexels":8402107,"page":"https://www.pexels.com/video/a-woman-doing-weighted-box-step-ups-8402107/"},
-  {"key":"hangingleg","name":"Hanging Leg Raise","alias":["Nâng chân treo xà"],"provider":"Pexels","pexels":4804761,"page":"https://www.pexels.com/video/a-man-lifting-his-legs-while-hanging-on-a-steel-bar-4804761/"},
-  {"key":"inclinepushup","name":"Incline Push-up","alias":["Chống đẩy nghiêng"],"provider":"Pexels","pexels":8402109,"page":"https://www.pexels.com/video/a-woman-doing-push-ups-on-the-wooden-bench-8402109/"},
-  {"key":"pushup","name":"Push-up","alias":["Chống đẩy (Push-up)"],"provider":"Pexels","pexels":4367576,"page":"https://www.pexels.com/video/a-man-doing-push-ups-4367576/"},
-  {"key":"plank","name":"Plank","alias":[],"provider":"Pexels","pexels":7801720,"page":"https://www.pexels.com/video/a-woman-doing-plank-exercise-on-a-yoga-mat-7801720/"},
-  {"key":"sideplank","name":"Side Plank","alias":["Plank nghiêng"],"provider":"Pexels","pexels":6023266,"page":"https://www.pexels.com/video/a-man-doing-a-side-plank-6023266/"},
-  {"key":"glutebridge","name":"Glute Bridge","alias":["Cầu mông"],"provider":"Pexels","pexels":6525487,"page":"https://www.pexels.com/video/woman-doing-glute-bridge-exercise-6525487/"},
-  {"key":"mountainclimber","name":"Mountain Climber","alias":["Leo núi (Mountain"],"provider":"Pexels","pexels":6525467,"page":"https://www.pexels.com/video/woman-doing-mountain-climbers-exercise-6525467/"},
-  {"key":"crunch","name":"Crunch","alias":["Gập bụng"],"provider":"Pexels","pexels":8472284,"page":"https://www.pexels.com/video/a-woman-doing-crunches-8472284/"},
-  {"key":"bwsquat","name":"Bodyweight Squat","alias":["Squat tay không"],"provider":"Pexels","pexels":4267356,"page":"https://www.pexels.com/video/video-of-woman-doing-squats-4267356/"},
-  {"key":"inclinewalk","name":"Incline Treadmill Walk","alias":["Đi bộ dốc","Đi bộ nhanh","Đi bộ ngắt quãng"],"provider":"Pexels","pexels":27861377,"page":"https://www.pexels.com/video/a-person-walking-on-a-treadmill-in-a-gym-27861377/"},
-  {"key":"zone2","name":"Zone 2 Cardio","alias":["Cardio Zone 2"],"provider":"Pexels","pexels":7934714,"page":"https://www.pexels.com/video/a-person-riding-a-stationary-bike-7934714/"},
-  {"key":"rowing","name":"Rowing Machine","alias":["Máy chèo thuyền"],"provider":"Pexels","pexels":6389558,"page":"https://www.pexels.com/video/a-man-using-a-rowing-machine-6389558/"},
-  {"key":"jumprope","name":"Jump Rope","alias":["Nhảy dây"],"provider":"Pexels","pexels":4761426,"page":"https://www.pexels.com/video/two-men-using-jump-ropes-in-exercising-4761426/"},
-  {"key":"running","name":"Treadmill Running","alias":["Chạy bộ"],"provider":"Pexels","pexels":6454274,"page":"https://www.pexels.com/video/a-man-on-a-treadmill-6454274/"},
-  {"key":"stretch","name":"Full Body Stretch","alias":["Giãn cơ"],"provider":"Pexels","pexels":5310935,"page":"https://www.pexels.com/video/person-stretching-legs-5310935/"},
-  {"key":"hacksquat","name":"Hack Squat","alias":["Squat máy Hack"],"provider":"Pexels","pexels":37997498,"page":"https://www.pexels.com/video/man-performing-squats-in-gym-with-weight-machine-37997498/"},
-  {"key":"abduction","name":"Hip Abduction","alias":["Mở hông"],"provider":"Pexels","pexels":6967418,"page":"https://www.pexels.com/video/a-woman-doing-a-lateral-leg-raise-exercise-6967418/"},
-  {"key":"burpee","name":"Burpee","alias":[],"provider":"Wikimedia Commons","commons":"CrossFit Burpee.webm"},
-  {"key":"farmercarry","name":"Farmer's Carry","alias":["Xách tạ đi bộ"],"provider":"Wikimedia Commons","commons":"Kettlebell Farmer Walks.webm"},
-  {"key":"bentoverrow","name":"Bent-over Row","alias":["Kéo tạ gập người"],"provider":"Wikimedia Commons","commons":"Bent-over row - exercise demonstration video.webm"},
-  {"key":"lunges","name":"Forward Lunge","alias":["Lunge (Bước chùng chân)"],"provider":"Wikimedia Commons","commons":"Strength Training Circuit- Forward Lunge.webm"}
+ {
+  "key": "stepup",
+  "name": "Dumbbell Step-up",
+  "alias": [
+   "Bước bục"
+  ],
+  "provider": "Pexels",
+  "pexels": 8402107,
+  "page": "https://www.pexels.com/video/a-woman-doing-weighted-box-step-ups-8402107/"
+ },
+ {
+  "key": "hangingleg",
+  "name": "Hanging Leg Raise",
+  "alias": [
+   "Nâng chân treo xà"
+  ],
+  "provider": "Pexels",
+  "pexels": 4804761,
+  "page": "https://www.pexels.com/video/a-man-lifting-his-legs-while-hanging-on-a-steel-bar-4804761/"
+ },
+ {
+  "key": "inclinepushup",
+  "name": "Incline Push-up",
+  "alias": [
+   "Chống đẩy nghiêng"
+  ],
+  "provider": "Pexels",
+  "pexels": 8402109,
+  "page": "https://www.pexels.com/video/a-woman-doing-push-ups-on-the-wooden-bench-8402109/"
+ },
+ {
+  "key": "pushup",
+  "name": "Push-up",
+  "alias": [
+   "Chống đẩy (Push-up)"
+  ],
+  "provider": "Pexels",
+  "pexels": 4367576,
+  "page": "https://www.pexels.com/video/a-man-doing-push-ups-4367576/"
+ },
+ {
+  "key": "plank",
+  "name": "Plank",
+  "alias": [],
+  "provider": "Pexels",
+  "pexels": 7801720,
+  "page": "https://www.pexels.com/video/a-woman-doing-plank-exercise-on-a-yoga-mat-7801720/"
+ },
+ {
+  "key": "sideplank",
+  "name": "Side Plank",
+  "alias": [
+   "Plank nghiêng"
+  ],
+  "provider": "Pexels",
+  "pexels": 6023266,
+  "page": "https://www.pexels.com/video/a-man-doing-a-side-plank-6023266/"
+ },
+ {
+  "key": "glutebridge",
+  "name": "Glute Bridge",
+  "alias": [
+   "Cầu mông"
+  ],
+  "provider": "Pexels",
+  "pexels": 6525487,
+  "page": "https://www.pexels.com/video/woman-doing-glute-bridge-exercise-6525487/"
+ },
+ {
+  "key": "mountainclimber",
+  "name": "Mountain Climber",
+  "alias": [
+   "Leo núi (Mountain"
+  ],
+  "provider": "Pexels",
+  "pexels": 6525467,
+  "page": "https://www.pexels.com/video/woman-doing-mountain-climbers-exercise-6525467/"
+ },
+ {
+  "key": "crunch",
+  "name": "Crunch",
+  "alias": [
+   "Gập bụng"
+  ],
+  "provider": "Pexels",
+  "pexels": 8472284,
+  "page": "https://www.pexels.com/video/a-woman-doing-crunches-8472284/"
+ },
+ {
+  "key": "bwsquat",
+  "name": "Bodyweight Squat",
+  "alias": [
+   "Squat tay không"
+  ],
+  "provider": "Pexels",
+  "pexels": 4267356,
+  "page": "https://www.pexels.com/video/video-of-woman-doing-squats-4267356/"
+ },
+ {
+  "key": "inclinewalk",
+  "name": "Incline Treadmill Walk",
+  "alias": [
+   "Đi bộ dốc",
+   "Đi bộ nhanh",
+   "Đi bộ ngắt quãng"
+  ],
+  "provider": "Pexels",
+  "pexels": 27861377,
+  "page": "https://www.pexels.com/video/a-person-walking-on-a-treadmill-in-a-gym-27861377/"
+ },
+ {
+  "key": "zone2",
+  "name": "Zone 2 Cardio",
+  "alias": [
+   "Cardio Zone 2"
+  ],
+  "provider": "Pexels",
+  "pexels": 7934714,
+  "page": "https://www.pexels.com/video/a-person-riding-a-stationary-bike-7934714/"
+ },
+ {
+  "key": "rowing",
+  "name": "Rowing Machine",
+  "alias": [
+   "Máy chèo thuyền"
+  ],
+  "provider": "Pexels",
+  "pexels": 6389558,
+  "page": "https://www.pexels.com/video/a-man-using-a-rowing-machine-6389558/"
+ },
+ {
+  "key": "jumprope",
+  "name": "Jump Rope",
+  "alias": [
+   "Nhảy dây"
+  ],
+  "provider": "Pexels",
+  "pexels": 4761426,
+  "page": "https://www.pexels.com/video/two-men-using-jump-ropes-in-exercising-4761426/"
+ },
+ {
+  "key": "running",
+  "name": "Treadmill Running",
+  "alias": [
+   "Chạy bộ"
+  ],
+  "provider": "Pexels",
+  "pexels": 6454274,
+  "page": "https://www.pexels.com/video/a-man-on-a-treadmill-6454274/"
+ },
+ {
+  "key": "stretch",
+  "name": "Full Body Stretch",
+  "alias": [
+   "Giãn cơ"
+  ],
+  "provider": "Pexels",
+  "pexels": 5310935,
+  "page": "https://www.pexels.com/video/person-stretching-legs-5310935/"
+ },
+ {
+  "key": "hacksquat",
+  "name": "Hack Squat",
+  "alias": [
+   "Squat máy Hack"
+  ],
+  "provider": "Pexels",
+  "pexels": 37997498,
+  "page": "https://www.pexels.com/video/man-performing-squats-in-gym-with-weight-machine-37997498/"
+ },
+ {
+  "key": "abduction",
+  "name": "Hip Abduction",
+  "alias": [
+   "Mở hông"
+  ],
+  "provider": "Pexels",
+  "pexels": 6967418,
+  "page": "https://www.pexels.com/video/a-woman-doing-a-lateral-leg-raise-exercise-6967418/"
+ },
+ {
+  "key": "burpee",
+  "name": "Burpee",
+  "alias": [],
+  "provider": "Wikimedia Commons",
+  "commons": "CrossFit Burpee.webm"
+ },
+ {
+  "key": "farmercarry",
+  "name": "Farmer's Carry",
+  "alias": [
+   "Xách tạ đi bộ"
+  ],
+  "provider": "Wikimedia Commons",
+  "commons": "Kettlebell Farmer Walks.webm"
+ },
+ {
+  "key": "bentoverrow",
+  "name": "Bent-over Row",
+  "alias": [
+   "Kéo tạ gập người"
+  ],
+  "provider": "Wikimedia Commons",
+  "commons": "Bent-over row - exercise demonstration video.webm"
+ },
+ {
+  "key": "lunges",
+  "name": "Forward Lunge",
+  "alias": [
+   "Lunge (Bước chùng chân)"
+  ],
+  "provider": "Wikimedia Commons",
+  "commons": "Strength Training Circuit- Forward Lunge.webm"
+ },
+ {
+  "key": "ai-sledpush-1",
+  "name": "Sled Push",
+  "alias": [
+   "Đẩy xe trượt"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-412cb355.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-sledpush-2",
+  "name": "Sled Push",
+  "alias": [
+   "Đẩy xe trượt"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-529c58ca.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-wallball-1",
+  "name": "Wall Ball",
+  "alias": [
+   "Ném bóng tường"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-f510788c.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-wallball-2",
+  "name": "Wall Ball",
+  "alias": [
+   "Ném bóng tường"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-0e8fb632.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-russiantwist-1",
+  "name": "Russian Twist",
+  "alias": [
+   "russian twist"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-1797d154.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-russiantwist-2",
+  "name": "Russian Twist",
+  "alias": [
+   "russian twist"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-bb4f2b33.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-deadbug-1",
+  "name": "Dead Bug",
+  "alias": [
+   "Bọ chết"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-44458f34.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-deadbug-2",
+  "name": "Dead Bug",
+  "alias": [
+   "Bọ chết"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-e8cef05e.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-pullover-1",
+  "name": "Dumbbell Pullover",
+  "alias": [
+   "Pullover tạ đơn"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-05f5734b.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-pullover-2",
+  "name": "Dumbbell Pullover",
+  "alias": [
+   "Pullover tạ đơn"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-a415db3e.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-csrow-1",
+  "name": "Chest Supported Row",
+  "alias": [
+   "Kéo tạ tì ngực"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-225a3b6f.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-csrow-2",
+  "name": "Chest Supported Row",
+  "alias": [
+   "Kéo tạ tì ngực"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-489c0850_1.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-bentoverrow-1",
+  "name": "Barbell Bent-over Row",
+  "alias": [
+   "Kéo tạ gập người"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-28c70f2f.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-bentoverrow-2",
+  "name": "Barbell Bent-over Row",
+  "alias": [
+   "Kéo tạ gập người"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-786f4b33.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-overheadpress-1",
+  "name": "Barbell Overhead Press",
+  "alias": [
+   "Đẩy vai (Overhead Press)"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-2bb2a6a9.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-overheadpress-2",
+  "name": "Barbell Overhead Press",
+  "alias": [
+   "Đẩy vai (Overhead Press)"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-ffa37803.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ },
+ {
+  "key": "ai-bulgarian-1",
+  "name": "Bulgarian Split Squat",
+  "alias": [
+   "Squat tách chân Bulgaria"
+  ],
+  "provider": "FIT KIT",
+  "file": "media/intake/video-eb60b604.mp4",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)"
+ }
 ]
