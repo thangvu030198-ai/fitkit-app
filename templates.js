@@ -396,3 +396,33 @@ function openTemplateDetail(id){
   $("#tpl-back").addEventListener("click", openTemplateBrowser);
   $("#tpl-use").addEventListener("click", e=>{ e.currentTarget.disabled = true; e.currentTarget.innerHTML = "Đang thêm & gắn video…"; tplAddToWeek(t); });
 }
+
+/* ---------------------------------------------------------------------
+   Làm mới video đã gắn trong giáo án: bỏ video tham khảo Pixabay cũ (có thể sai bài),
+   gắn video hướng dẫn mới nhất (YMove / wger / Pexels / video AI của FIT KIT) — chạy 1 lần/ngày.
+   --------------------------------------------------------------------- */
+async function refreshPlanVideos(force){
+  try{
+    if(!state || !state.plans || typeof findFreeExerciseVideos!=="function") return;
+    const today = todayStr();
+    if(!force && state.videoRefreshAt === today) return;
+    const cache = {};
+    for(const plan of Object.values(state.plans)){
+      for(const k of DAY_KEYS){
+        const d = plan.days && plan.days[k]; if(!d) continue;
+        for(const it of d.items||[]){
+          if(it.clipId) continue;                                   // video người dùng tự quay → giữ nguyên
+          const meta = it.exerciseId && EXERCISES[it.exerciseId]; if(!meta) continue;
+          const isGuide = it.stock && ["YMove","wger","Pexels","Wikimedia Commons","FIT KIT"].includes(it.stock.provider);
+          if(isGuide) continue;
+          if(!(it.exerciseId in cache)){ const r = await findFreeExerciseVideos(meta); cache[it.exerciseId] = r[0] ? Object.assign(stockFromVideo(r[0]), { duration:r[0].duration||0 }) : null; }
+          if(cache[it.exerciseId]) it.stock = Object.assign({}, cache[it.exerciseId]);
+          else if(it.stock && it.stock.provider==="Pixabay" && !/walk|run/i.test(it.exerciseId)) delete it.stock;
+        }
+      }
+    }
+    state.videoRefreshAt = today; saveState();
+    if($("#screen-workout.active") && typeof renderWorkoutScreen==="function") renderWorkoutScreen();
+  }catch(e){}
+}
+setTimeout(()=> refreshPlanVideos(), 3500);
