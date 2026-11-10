@@ -4,7 +4,7 @@ name: Media — video bổ sung (Pexels / Wikimedia)
 on:
   workflow_dispatch: {}
   push:
-    paths: ["scripts/extra_sources.json"]
+    paths: ["scripts/extra_sources.json", "media/extra-src/**"]
 
 permissions:
   contents: write
