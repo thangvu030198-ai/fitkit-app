@@ -69,7 +69,9 @@ function videoQueriesFromString(q){
   for(const group of VID_EN_KEYWORDS){ const hit = group.find(k=> low.includes(k)); if(hit){ kw = VID_KW_QUERY[hit] || group[0]; break; } }
   const stripped = s.replace(/\b(barbell|dumbbells?|cable|machine|smith|kettlebells?|bands?|ez[- ]?bar|lever|weighted|alternating|alternate|seated|standing|lying|incline|decline|one[- ]arm|single[- ]arm|single[- ]leg|one[- ]leg|close[- ]grip|wide[- ]grip|reverse|medium grip|with|on|the|and)\b/gi,"").replace(/\s+/g," ").trim();
   const out = [];
-  [raw.trim(), kw && kw+" exercise", kw, stripped && stripped.split(" ").length<=3 ? stripped : null, "gym workout"].forEach(x=>{ if(x && !out.some(o=>o.toLowerCase()===x.toLowerCase())) out.push(x); });
+  const short = s.split(" ").length<=3 ? s : null;
+  // Thêm "exercise" làm Pixabay trả về video chung chung (chạy bộ, yoga…) → dùng từ khoá gọn trước
+  [kw, stripped && stripped.split(" ").length<=3 ? stripped : null, short, kw && !/workout/.test(kw) && kw+" workout", "gym workout"].forEach(x=>{ if(x && !out.some(o=>o.toLowerCase()===x.toLowerCase())) out.push(x); });
   return out;
 }
 
@@ -97,7 +99,7 @@ async function searchPixabay(q, key){
   const j = await r.json();
   return (j.hits||[]).map(h=>{ const V = h.videos || {}; const v = [V.tiny, V.small, V.medium].find(x=> x && x.url);   // "tiny" của Pixabay thường là 720p, 1–5MB — nhẹ cho điện thoại if(!v || !v.url) return null;
     return { provider:"Pixabay", id:"pb"+h.id, url:v.url, thumb: v.thumbnail || (h.picture_id ? `https://i.vimeocdn.com/video/${h.picture_id}_640x360.jpg` : ""),
-      w:v.width, h:v.height, duration:h.duration, author:h.user||"Pixabay", authorUrl:`https://pixabay.com/users/${h.user}-${h.user_id}/`, pageUrl:h.pageURL }; }).filter(Boolean);
+      w:v.width, h:v.height, duration:h.duration, tags:(h.tags||"").toLowerCase(), author:h.user||"Pixabay", authorUrl:`https://pixabay.com/users/${h.user}-${h.user_id}/`, pageUrl:h.pageURL }; }).filter(Boolean);
 }
 function vidCacheGet(k){ try{ const c = JSON.parse(localStorage.getItem(VID_CACHE_KEY)||"{}")[k]; if(c && Date.now()-c.t < 7*86400000) return c.v; }catch(e){} return null; }
 function vidCacheSet(k, v){ try{ const all = JSON.parse(localStorage.getItem(VID_CACHE_KEY)||"{}"); all[k] = { t:Date.now(), v }; const keys = Object.keys(all); if(keys.length>60) delete all[keys[0]]; localStorage.setItem(VID_CACHE_KEY, JSON.stringify(all)); }catch(e){} }
@@ -238,6 +240,10 @@ async function mountVideoBlock(id, query, opts={}){
         found.forEach(v=>{ if(!list.some(x=>x.url===v.url)) list.push(v); });
         if(list.length >= 4) break;
       }
+      // Ưu tiên video có thẻ (tags) khớp từ khoá bài tập
+      const words = String(qs[0]||"").toLowerCase().split(/\s+/).filter(w=> w.length>2 && !["exercise","workout","gym"].includes(w));
+      const score = v=> v._saved ? 99 : words.filter(w=> (v.tags||"").includes(w)).length;
+      list.sort((a,b)=> score(b)-score(a));
     }
   }catch(e){ if(!list.length){ host.innerHTML = `<div class="vb-msg"><span class="material-symbols-rounded">videocam</span>${escapeHtml(e.message==="NO_KEY" ? "Chưa kết nối nguồn video." : e.message)}</div>`; return; } }
   if(!document.getElementById(id)) return;
