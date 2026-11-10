@@ -9,12 +9,12 @@
 /* ---------- Thực phẩm bổ sung ---------- */
 FOODS.push(
   { id:"ca-thu", name:"Cá thu (nướng)", kcal:262, protein:24, carbs:0, fat:18 },
-  { id:"muc", name:"Mực (hấp)", kcal:92, protein:15.6, carbs:3.1, fat:1.4 },
+  { id:"muc", name:"Mực (hấp)", kcal:115, protein:21, carbs:3.5, fat:1.5 },
   { id:"thit-bo-xay", name:"Bò xay nạc 90% (chín)", kcal:217, protein:26, carbs:0, fat:12 },
   { id:"dui-ga-bo-da", name:"Đùi gà bỏ da (chín)", kcal:177, protein:24, carbs:0, fat:8 },
   { id:"trung-trang", name:"Lòng trắng trứng", kcal:52, protein:11, carbs:0.7, fat:0.2 },
   { id:"banh-trang", name:"Bánh tráng (khô)", kcal:340, protein:6, carbs:78, fat:0.5 },
-  { id:"mi-y-nguyen-cam", name:"Mì Ý nguyên cám (đã nấu)", kcal:149, protein:6, carbs:30, fat:1.7 },
+  { id:"mi-y-nguyen-cam", name:"Mì Ý nguyên cám (đã nấu)", kcal:124, protein:5.3, carbs:27, fat:0.5 },
   { id:"banh-mi-nguyen-cam", name:"Bánh mì nguyên cám", kcal:252, protein:12.4, carbs:43, fat:3.5 },
   { id:"tortilla", name:"Bánh tortilla nguyên cám", kcal:300, protein:9, carbs:50, fat:7 },
   { id:"quinoa", name:"Hạt diêm mạch Quinoa (đã nấu)", kcal:120, protein:4.4, carbs:21, fat:1.9 },
@@ -60,7 +60,7 @@ const RECIPES = [
     items:[["uc-ga",150],["com-gao-lut",150],["dua-leo",80],["dau-oliu",5]],
     steps:["Ức gà khứa vài đường, ướp 15 phút với sả băm, ớt, tỏi, 1 thìa nước mắm, ít tiêu và 1 thìa cà phê dầu ô liu.",
       "Làm nóng nồi chiên không dầu 180°C trong 3 phút.",
-      "Cho gà vào, nướng 180°C trong 12 phút, lật mặt, nướng tiếp 6–8 phút đến khi thịt chín (bên trong không còn hồng).",
+      "Cho gà vào, nướng 180°C trong 12 phút, lật mặt, nướng tiếp 6–8 phút đến khi chín hẳn (nhiệt độ lõi ≥ 74°C, nước thịt trong).",
       "Để gà nghỉ 3 phút rồi thái lát, ăn cùng cơm gạo lứt và dưa leo."],
     tip:"Nấu sẵn 3–4 miếng ức gà cho 2 ngày, bảo quản tủ lạnh — meal prep tiết kiệm thời gian." },
   { id:"goi-cuon", name:"Gỏi cuốn tôm thịt", emoji:"🥢", cuisine:"vn", method:"boil", min:30, level:2, tags:["giam-mo","an-vat"], meal:"lunch",
@@ -239,7 +239,7 @@ const RECIPES = [
     steps:["Nấu yến mạch với sữa tươi 4–5 phút (hoặc lò vi sóng 2 phút).",
       "Thêm chuối thái lát và 1 thìa bơ đậu phộng."],
     tip:"Thêm 1 muỗng whey sau khi tắt bếp để tăng thêm 24 g đạm." },
-  { id:"shake-tang-can", name:"Sinh tố tăng cân: chuối, yến mạch, bơ đậu phộng, whey", emoji:"🥤", cuisine:"au", method:"blender", min:5, level:1, tags:["tang-co"], meal:"snack",
+  { id:"shake-tang-can", gainOnly:true, name:"Sinh tố tăng cân: chuối, yến mạch, bơ đậu phộng, whey", emoji:"🥤", cuisine:"au", method:"blender", min:5, level:1, tags:["tang-co"], meal:"snack",
     items:[["sua-tuoi-khong-duong",300],["chuoi",120],["yen-mach",40],["bo-dau-phong",20],["whey",30]],
     steps:["Cho tất cả vào máy xay, xay 40–60 giây đến khi mịn.",
       "Uống sau tập hoặc giữa các bữa."],
@@ -291,7 +291,9 @@ function buildDayPlan(p, dayIndex, prefs={}){
     if(prefs.veg){ const f = pool.filter(r=>r.tags.includes("chay")); if(f.length) pool = f; }
     if(want){ const f = pool.filter(r=>r.tags.includes(want)); if(f.length >= 2) pool = f; }
     if(!pool.length) pool = RECIPES.filter(r=>r.meal===meal);
-    const r = pool[(dayIndex*3 + mi*5) % pool.length];
+    if(goal!=="gain"){ const f = pool.filter(r=>!r.gainOnly); if(f.length) pool = f; }
+    // xoay vòng: mỗi ngày một món khác, các bữa lệch nhau
+    const r = pool[(dayIndex + mi*2) % pool.length];
     const mealTarget = target * split[meal];
     const factor = Math.min(1.8, Math.max(0.6, mealTarget / recipeKcal(r)));
     plan[meal] = scaleRecipe(r, factor);

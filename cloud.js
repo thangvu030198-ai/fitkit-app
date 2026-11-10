@@ -192,6 +192,8 @@ const cloud = (() => {
       firebase.initializeApp(FIREBASE_CONFIG);
       fb = { auth: firebase.auth(), db: firebase.firestore() };
       try{ await fb.db.enablePersistence({ synchronizeTabs:true }); }catch(e){ /* chạy tiếp không cache offline */ }
+      // Hoàn tất đăng nhập Google/Facebook kiểu redirect (khi popup bị chặn): tạo hồ sơ nếu chưa có
+      try{ const rr = await fb.auth.getRedirectResult(); if(rr && rr.user && !(await firebaseEngine.getUser(rr.user.uid))){ const pid=(rr.additionalUserInfo&&rr.additionalUserInfo.providerId)||"google.com"; await fb.db.collection("users").doc(rr.user.uid).set({ uid:rr.user.uid, email:rr.user.email||"", name:rr.user.displayName||"Bạn", photo:rr.user.photoURL||null, provider: pid.startsWith("facebook")?"facebook":"google", isPT:false, mainRole:null, createdAt: now() }); } }catch(e){}
       await new Promise(resolve=>{
         let first = true;
         fb.auth.onAuthStateChanged(async u=>{

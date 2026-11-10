@@ -333,7 +333,7 @@ function nuPlanCardHTML(){
         <div class="k"><b>${m.kcal}</b><small>kcal</small></div>
       </div>`; }).join("")}</div>
     <div class="nu-plan-foot"><span>Tổng <b>${total.toLocaleString("vi-VN")}</b> kcal · đạm <b>${Math.round(prot)}g</b></span>
-      <button class="btn btn-primary btn-sm" id="nu-plan-apply"><span class="material-symbols-rounded">playlist_add</span>Ghi cả ngày</button></div>
+      <button class="btn btn-primary btn-sm" id="nu-plan-apply"><span class="material-symbols-rounded">playlist_add</span>Ghi vào hôm nay</button></div>
   </div>`;
 }
 function bindPlanCard(el){
@@ -348,17 +348,26 @@ function bindPlanCard(el){
     toast(`Đã đổi mục tiêu: ${GOALS.find(g=>g.id===p.goal).label} · ${p.goalKcal} kcal/ngày`, "check_circle");
   }));
   const ap = $("#nu-plan-apply"); if(ap) ap.addEventListener("click", ()=>{
-    Object.entries(plan).forEach(([meal, r])=> addRecipeToLog(r, meal));
-    renderNutritionScreen(); toast("Đã ghi thực đơn cả ngày vào nhật ký", "restaurant");
+    const L = getDayFoodLog();
+    const already = Object.values(L).some(list=> list.some(it=> it.fromPlan));
+    const go = ()=>{
+      ap.disabled = true;
+      Object.entries(plan).forEach(([meal, r])=>{ addRecipeToLog(r, meal); const l = L[meal]; l[l.length-1].fromPlan = true; });
+      saveState(); renderNutritionScreen(); toast("Đã ghi thực đơn vào nhật ký HÔM NAY", "restaurant");
+    };
+    if(already) confirmDialog("Ghi thêm thực đơn?", "Hôm nay bạn đã ghi một thực đơn gợi ý rồi. Ghi thêm sẽ cộng dồn calo.", go); else go();
   });
 }
+
+/* Tìm không dấu: "uc ga" → "Ức gà" */
+function viFold(s){ return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d").replace(/Đ/g,"D").toLowerCase(); }
 
 /* Danh sách thực phẩm khi thêm món: có ảnh thật */
 openAddFood = function(mealId){
   const mt = MEAL_TYPES.find(m=>m.id===mealId);
   const render = (query="") => {
     const q = query.trim().toLowerCase();
-    const results = FOODS.filter(f=> f.name.toLowerCase().includes(q)).slice(0,60);
+    const results = FOODS.filter(f=> viFold(f.name).includes(viFold(q))).slice(0,60);
     return results.map(f=>`
       <div class="food-result fr-pic" data-pick="${f.id}">
         ${foodPic(f.id, "fr-img")}

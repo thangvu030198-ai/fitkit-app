@@ -1388,3 +1388,8 @@ i.cnt{ background:var(--coral); }
 .fr-img.emo{ display:flex; align-items:center; justify-content:center; font-size:24px; }
 .fr-t{ flex:1; min-width:0; }
 .nu-bowl .fp.emo{ font-size:46px; } .nu-bowl.big .fp.emo{ font-size:64px; } .nu-thumb .fp.emo{ font-size:22px; } .nu-item .e .fp.emo{ font-size:22px; }
+
+/* Khả năng truy cập: không tự phóng to ô nhập trên iOS, viền focus, giảm chuyển động */
+input, select, textarea{ font-size:16px; }
+button:focus-visible, a:focus-visible, [role="button"]:focus-visible, input:focus-visible{ outline:2px solid var(--mint,#5EE6C7); outline-offset:2px; }
+@media (prefers-reduced-motion: reduce){ *, *::before, *::after{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; } }

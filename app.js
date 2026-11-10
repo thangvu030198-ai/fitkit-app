@@ -121,10 +121,11 @@ function calcMacros(weight, goalKcal){
 }
 function recomputeProfile(){
   const p = state.profile;
+  /* Sàn calo an toàn: nữ ≥1.200, nam ≥1.500 kcal và không dưới BMR */
   p.bmr = calcBMR(p);
   p.tdee = calcTDEE(p.bmr, p.activity);
   if(p.autoTargets !== false){
-    p.goalKcal = calcGoalKcal(p.tdee, p.goal);
+    p.goalKcal = Math.max(calcGoalKcal(p.tdee, p.goal), p.gender==="male" ? 1500 : 1200, p.bmr||0);
     const m = calcMacros(p.weight, p.goalKcal);
     p.protein = m.protein; p.carbs = m.carbs; p.fat = m.fat;
   }
@@ -632,7 +633,7 @@ function calcStreak(){
   let streak = 0;
   let cursor = new Date();
   if(!isRestDay(cursor) && !state.finishedDates.includes(todayStr())) cursor.setDate(cursor.getDate()-1);
-  while(true){
+  for(let guard=0; guard<400; guard++){   // giới hạn: tránh treo khi giáo án không có ngày tập nào
     const dateKey = todayStr(cursor);
     if(state.finishedDates.includes(dateKey)) streak++;
     else if(!isRestDay(cursor)) break;
@@ -700,7 +701,9 @@ function restCountdown(sec){
       <button class="btn btn-outline btn-block" style="margin-top:20px;" id="btn-skip-rest">Bỏ qua nghỉ</button>
     </div>
   `);
-  const timer = setInterval(()=>{
+  clearInterval(window._restTimer);
+  const timer = window._restTimer = setInterval(()=>{
+    if(!session || !$("#rest-num")){ clearInterval(timer); return; }   // đã đóng sheet → dừng đếm
     remain--;
     const numEl = $("#rest-num");
     if(numEl) numEl.textContent = remain;
@@ -711,7 +714,9 @@ function restCountdown(sec){
 function finishSession(){
   if(session.isToday){
     const dateKey = todayStr();
-    state.workoutLog[dateKey] = { dayKey: session.dayKey, completedExerciseIds: Array.from(new Set(session.completed)), finishedAt: Date.now() };
+    const prev = state.workoutLog[dateKey];
+    const merged = (prev && prev.dayKey===session.dayKey ? prev.completedExerciseIds : []).concat(session.completed);
+    state.workoutLog[dateKey] = { dayKey: session.dayKey, completedExerciseIds: Array.from(new Set(merged)), finishedAt: Date.now() };
     saveState();
     updateFinishedDates();
   }
