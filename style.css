@@ -623,3 +623,108 @@ i.cnt{ font-style:normal; display:inline-block; min-width:18px; padding:1px 6px;
 .quick-row button{ background:var(--surface); border:1px solid var(--border); color:var(--text); border-radius:14px; padding:10px 4px; display:flex; flex-direction:column; align-items:center; gap:5px; font-size:11px; font-weight:700; }
 .quick-row .material-symbols-rounded{ font-size:18px; color:var(--primary-soft); }
 .list-item .material-symbols-rounded{ flex-shrink:0; }
+
+/* =========================================================================
+   HỒ SƠ PT — phong cách hero thể thao
+   ========================================================================= */
+#app-scroll.snap{ scroll-snap-type:y mandatory; }
+#screen-ptprofile{ --pp-h:100vh; --gold:#EDB40B; position:relative; font-family:'Be Vietnam Pro','Hanken Grotesk',system-ui,sans-serif; background:#0a0c14; }
+#pp-content{ position:relative; }
+.pp-loading{ min-height:var(--pp-h); display:flex; flex-direction:column; gap:14px; align-items:center; justify-content:center; padding:24px; text-align:center; }
+.pp-bg{ position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(70% 40% at 85% 8%, rgba(255,49,0,.30), transparent 70%),
+    radial-gradient(60% 35% at 0% 45%, rgba(237,180,11,.10), transparent 70%),
+    radial-gradient(80% 40% at 50% 100%, rgba(255,49,0,.18), transparent 70%),
+    repeating-linear-gradient(115deg, rgba(255,255,255,.025) 0 1px, transparent 1px 22px),
+    #0a0c14; }
+.pp-nav{ position:sticky; top:0; z-index:30; height:0; }
+.pp-nav > *{ position:absolute; top:16px; }
+.pp-btn{ width:48px; height:48px; border:none; display:flex; align-items:center; justify-content:center; }
+.pp-light{ left:16px; background:#fff; color:#111; }
+.pp-light .material-symbols-rounded{ font-size:20px; }
+.pp-glass{ right:16px; background:rgba(255,255,255,.15); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); flex-direction:column; align-items:flex-end; gap:5px; padding-right:13px; }
+.pp-glass i{ display:block; height:2px; width:21px; background:#fff; border-radius:2px; }
+.pp-glass i + i{ width:10px; }
+.pp-logo{ left:50%; transform:translateX(-50%); top:28px !important; font-weight:800; font-size:17px; letter-spacing:-.04em; color:#fff; font-style:italic; }
+.pp-logo b{ color:var(--primary); margin-left:2px; }
+
+.pp-sec{ position:relative; z-index:1; min-height:var(--pp-h); height:var(--pp-h); scroll-snap-align:start; overflow:hidden; padding:92px 20px 20px; display:flex; flex-direction:column; color:#fff; }
+.pp-label{ display:flex; align-items:center; gap:6px; color:rgba(255,255,255,.6); font-size:15px; font-weight:400; }
+.pp-label .material-symbols-rounded{ font-size:16px; color:var(--gold); }
+.pp-title{ font-weight:400; font-size:46px; line-height:.95; letter-spacing:-.05em; margin-top:6px; }
+.pp-title.sm{ font-size:34px; }
+
+/* 1. Hero */
+.pp-hero{ padding-bottom:0; }
+.pp-hero .pp-loc{ position:relative; z-index:10; }
+.pp-photo{ position:absolute; inset:0; z-index:5; display:flex; align-items:flex-end; justify-content:center; }
+.pp-photo img{ width:100%; height:82%; object-fit:cover; object-position:center top; transform-origin:bottom center;
+  -webkit-mask:linear-gradient(to bottom, transparent 0%, #000 22%); mask:linear-gradient(to bottom, transparent 0%, #000 22%); }
+.pp-mono{ width:100%; height:78%; display:flex; align-items:center; justify-content:center; transform-origin:bottom center; }
+.pp-mono span{ font-size:min(62vw,260px); font-weight:800; letter-spacing:-.08em; line-height:1;
+  background:linear-gradient(180deg, rgba(255,49,0,.95) 0%, rgba(255,49,0,.35) 55%, transparent 90%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.pp-photo-blur{ position:absolute; left:0; right:0; bottom:0; height:50%; pointer-events:none;
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  -webkit-mask:linear-gradient(to bottom, transparent 0%, #000 50%); mask:linear-gradient(to bottom, transparent 0%, #000 50%);
+  background:linear-gradient(to bottom, transparent 30%, rgba(10,12,20,.75)); }
+.pp-hero-bottom{ position:absolute; left:0; right:0; bottom:0; z-index:10; padding:0 20px 28px; }
+.pp-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+.pp-chips span{ font-size:12px; font-weight:600; padding:6px 10px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+.pp-name{ font-weight:600; font-size:clamp(46px,15vw,64px); line-height:.86; letter-spacing:-.05em; }
+.pp-scroll-hint{ position:absolute; z-index:11; right:20px; bottom:34px; width:34px; height:34px; border:1px solid rgba(255,255,255,.3); display:flex; align-items:center; justify-content:center; }
+.pp-scroll-hint .material-symbols-rounded{ transform:rotate(90deg); font-size:14px; animation:ppBob 1.6s ease-in-out infinite; }
+@keyframes ppBob{ 50%{ transform:rotate(90deg) translateX(4px); } }
+
+/* 2. Thành tích */
+.pp-ring{ flex:1; min-height:0; display:flex; align-items:center; justify-content:center; position:relative; margin:0 -20px; }
+.pp-ring > svg{ width:min(72%,300px); height:auto; fill:none; stroke:rgba(255,255,255,.14); stroke-width:1.2; }
+.pp-ring > svg path{ stroke:var(--primary); stroke-width:4; stroke-linecap:round; filter:drop-shadow(0 0 8px rgba(255,49,0,.8)); transform-origin:100px 100px; animation:ppSpin 6s linear infinite; }
+@keyframes ppSpin{ to{ transform:rotate(360deg); } }
+.pp-ring > .material-symbols-rounded{ position:absolute; font-size:42px; color:var(--gold); }
+.pp-numbers{ margin-top:auto; }
+.pp-num-row{ display:flex; align-items:flex-end; gap:10px; margin-top:6px; }
+.pp-num{ font-weight:600; font-size:clamp(72px,24vw,104px); line-height:.76; letter-spacing:-.06em; font-variant-numeric:tabular-nums; }
+.pp-num.grad{ background:linear-gradient(to bottom, #fff 0%, rgba(255,255,255,.4) 50%, transparent 92%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.pp-num.gold{ color:var(--gold); }
+.pp-num-row small{ font-size:13px; color:rgba(255,255,255,.6); padding-bottom:6px; }
+
+/* 3. Thương hiệu */
+.pp-spec{ margin-top:26px; }
+.pp-spec-big{ color:var(--gold); font-weight:600; font-size:clamp(40px,13vw,60px); line-height:.86; letter-spacing:-.06em; margin-top:8px; }
+.pp-bio{ margin-top:14px; font-size:13.5px; line-height:1.5; color:rgba(255,255,255,.7); max-height:7.5em; overflow:hidden; }
+.pp-cards{ display:flex; gap:8px; margin:auto -20px 0; padding:0 8px; }
+.pp-card{ flex:1; min-height:170px; padding:14px 12px; border-radius:16px 16px 0 0; cursor:pointer;
+  background:rgba(20,20,30,.8); border:1px solid rgba(255,255,255,.1); border-bottom:none; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  display:flex; flex-direction:column; }
+.pp-card .pp-label{ font-size:13px; }
+.pp-card-sub{ font-size:12px; color:rgba(255,255,255,.5); margin-top:4px; }
+.pp-card-big{ margin-top:auto; font-weight:600; font-size:clamp(48px,15vw,72px); line-height:.8; letter-spacing:-.07em; }
+.pp-card-big.gold{ color:var(--gold); }
+.pp-cta{ display:flex; flex-direction:column; gap:8px; margin:0 -20px -20px; padding:12px 20px 20px; background:rgba(20,20,30,.8); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
+.pp-cta:empty{ display:none; }
+
+/* Hiệu ứng — chỉ chạy khi phần đó vào màn hình (.in) */
+.pp-sec .anim{ opacity:0; }
+.pp-sec.in .anim{ animation-duration:.9s; animation-timing-function:cubic-bezier(.16,1,.3,1); animation-fill-mode:both; }
+.pp-sec.in .anim.up{ animation-name:ppUp; }
+.pp-sec.in .anim.scale{ animation-name:ppScale; animation-duration:1s; }
+.pp-sec.in .anim.fade{ animation-name:ppFade; animation-timing-function:ease-out; }
+.pp-sec.in .anim.speed{ animation-name:ppSpeed; animation-duration:.8s; }
+.pp-sec.in .d3{ animation-delay:.3s } .pp-sec.in .d4{ animation-delay:.4s } .pp-sec.in .d5{ animation-delay:.5s } .pp-sec.in .d6{ animation-delay:.6s }
+.pp-sec.in .d7{ animation-delay:.7s } .pp-sec.in .d8{ animation-delay:.8s } .pp-sec.in .d9{ animation-delay:.9s } .pp-sec.in .d10{ animation-delay:1s } .pp-sec.in .d12{ animation-delay:1.2s }
+@keyframes ppUp{ from{ opacity:0; transform:translateY(30px); } to{ opacity:1; transform:none; } }
+@keyframes ppScale{ from{ opacity:0; transform:scale(.92); } to{ opacity:1; transform:none; } }
+@keyframes ppFade{ from{ opacity:0; } to{ opacity:1; } }
+@keyframes ppSpeed{
+  0%{ opacity:0; transform:translateX(-100%) skewX(-8deg); filter:blur(8px); }
+  60%{ opacity:1; transform:translateX(4%) skewX(-2deg); filter:blur(0); }
+  100%{ opacity:1; transform:none; filter:blur(0); } }
+@media (prefers-reduced-motion: reduce){ .pp-sec .anim{ opacity:1; animation:none !important; } .pp-ring > svg path{ animation:none; } }
+
+/* Ô ảnh trong sheet hồ sơ PT */
+.br-photo{ width:132px; height:170px; margin:0 auto; border:1px dashed var(--border-strong); background:var(--surface-2); display:flex; flex-direction:column; gap:6px; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; border-radius:14px; }
+.br-photo img{ width:100%; height:100%; object-fit:cover; }
+.br-photo .material-symbols-rounded{ font-size:28px; color:var(--primary); }
+.br-photo small{ font-size:11px; color:var(--text-muted); }
+.pp-sec.done .anim{ animation:none !important; opacity:1 !important; transform:none !important; filter:none !important; }

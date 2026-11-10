@@ -1,7 +1,7 @@
 /* FIT KIT — Service Worker (chỉ dùng khi chạy dạng web/PWA, app native không dùng)
    Chiến lược: mạng trước, lỗi mạng thì dùng bản đã lưu → luôn nhận bản mới nhất. */
 const CACHE = "fitkit-v2";
-const ASSETS = ["./index.html","./style.css","./icons.js","./firebase-config.js","./cloud.js","./data.js","./exdb.js","./app.js","./coach.js","./pt.js","./manifest.json"];
+const ASSETS = ["./index.html","./style.css","./icons.js","./firebase-config.js","./cloud.js","./data.js","./exdb.js","./app.js","./coach.js","./ptprofile.js","./pt.js","./manifest.json"];
 
 self.addEventListener("install", e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).catch(()=>{}));

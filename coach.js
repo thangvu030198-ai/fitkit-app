@@ -28,6 +28,7 @@ function refreshCoachData(force){
       }));
       Object.assign(ptData, { asPT, asStudent, sessions, notes, loaded:true, at:Date.now(), error:null });
       rebuildCoachUpcoming();
+      if(typeof ppSyncMyStats==="function") ppSyncMyStats();
     }catch(e){ ptData.error = e.message; ptData.loaded = true; }
     finally{
       ptData.loading = null; updateCoachBadge();
@@ -145,11 +146,12 @@ function clientsTabHTML(){
   return `
     <div class="card brand-card" data-brand style="cursor:pointer;">
       <div style="display:flex;align-items:center;gap:12px;">
-        <div class="avatar-ini big">${escapeHtml(((pr.brandName||cloud.user.name)||"P").charAt(0).toUpperCase())}</div>
+        ${pr.photo ? `<img class="avatar-ini big" src="${pr.photo}" style="object-fit:cover;">` : `<div class="avatar-ini big">${escapeHtml(((pr.brandName||cloud.user.name)||"P").charAt(0).toUpperCase())}</div>`}
         <div style="flex:1;"><div class="headline" style="font-size:18px;">${escapeHtml(pr.brandName || cloud.user.name)}</div>
           <div class="small-note">${escapeHtml(pr.specialty || "Chạm để thêm thương hiệu & chuyên môn")}</div></div>
         <span class="material-symbols-rounded" style="color:var(--text-dim);">edit</span>
       </div>
+      <button class="btn btn-soft btn-sm btn-block" id="btn-view-my-profile" style="margin-top:12px;"><span class="material-symbols-rounded" style="font-size:15px;">visibility</span>Xem hồ sơ công khai của tôi</button>
     </div>
     <div class="stat-grid">
       <div class="stat-box"><div class="num">${list.length}</div><div class="cap">Học viên</div></div>
@@ -184,10 +186,15 @@ function coachesTabHTML(isPT){
 }
 
 function bindCoachTab(){
-  $$("[data-open-client]").forEach(el=> el.addEventListener("click", ()=> openClientForm(el.dataset.openClient, el.dataset.role)));
+  $$("[data-open-client]").forEach(el=> el.addEventListener("click", ()=>{
+    const role = el.dataset.role, cid = el.dataset.openClient;
+    if(role==="student"){ const c = ptData.asStudent.find(x=>x.id===cid); if(c){ openPTProfile(c.ptId, cid); return; } }
+    openClientForm(cid, role);
+  }));
+  const pv = $("#btn-view-my-profile"); if(pv) pv.addEventListener("click", (e)=>{ e.stopPropagation(); openPTProfile(cloud.user.uid); });
   const add = $("#btn-add-client"); if(add) add.addEventListener("click", openAddClientSheet);
   const join = $("#btn-join-pt"); if(join) join.addEventListener("click", openJoinSheet);
-  const brand = $("[data-brand]"); if(brand) brand.addEventListener("click", openBrandSheet);
+  const brand = $("[data-brand]"); if(brand) brand.addEventListener("click", ()=> openBrandSheet());
   const be = $("#btn-become-pt"); if(be) be.addEventListener("click", async ()=>{
     try{ await cloud.updateMyProfile({ isPT:true }); coachTab = "clients"; renderCoachScreen(false); renderHomeScreen(); toast("Đã bật chế độ PT"); }
     catch(e){ toast(e.message, "error"); }
@@ -196,23 +203,33 @@ function bindCoachTab(){
 $("#btn-coach-refresh").addEventListener("click", ()=>{ toast("Đang làm mới...", "refresh"); refreshCoachData(true); });
 
 /* ---- Hồ sơ thương hiệu PT (chuẩn bị cho giai đoạn 2) ---- */
-function openBrandSheet(){
+function openBrandSheet(onSaved){
   const pr = cloud.profile || {};
+  let photo = pr.photo || null;
   openSheet(`
-    <div class="sheet-header"><h3>Thương hiệu PT</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
-    <p class="small-note" style="margin-bottom:10px;">Hiển thị cho học viên trong form. Bản sau sẽ dùng làm hồ sơ công khai để nhận book.</p>
+    <div class="sheet-header"><h3>Hồ sơ PT</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
+    <p class="small-note" style="margin-bottom:10px;">Hiện trên trang hồ sơ học viên xem khi chạm vào bạn. Bản sau dùng làm hồ sơ công khai để nhận book.</p>
+    <div class="br-photo" id="br-photo">${photo ? `<img src="${photo}">` : `<span class="material-symbols-rounded">photo_camera</span><small>Thêm ảnh chân dung</small>`}</div>
+    <p class="small-note" style="text-align:center;margin:6px 0 10px;">Nên dùng ảnh dọc, nửa người, nền đơn giản.</p>
     <div class="field"><label>Tên thương hiệu</label><input id="br-name" value="${escapeHtml(pr.brandName||"")}" placeholder="VD: Thắng Fitness Coaching"></div>
-    <div class="field" style="margin-top:10px;"><label>Chuyên môn</label><input id="br-spec" value="${escapeHtml(pr.specialty||"")}" placeholder="VD: Giảm mỡ, tăng cơ, phục hồi chấn thương"></div>
-    <div class="field" style="margin-top:10px;"><label>Khu vực / phòng tập</label><input id="br-area" value="${escapeHtml(pr.area||"")}" placeholder="VD: Cầu Giấy, Hà Nội"></div>
+    <div class="field" style="margin-top:10px;"><label>Chuyên môn (cách nhau bằng dấu phẩy)</label><input id="br-spec" value="${escapeHtml(pr.specialty||"")}" placeholder="VD: Giảm mỡ, Tăng cơ, Phục hồi chấn thương"></div>
+    <div class="field-row" style="margin-top:10px;">
+      <div class="field"><label>Khu vực</label><input id="br-area" value="${escapeHtml(pr.area||"")}" placeholder="VD: Cầu Giấy, Hà Nội"></div>
+      <div class="field" style="max-width:110px;"><label>Năm kinh nghiệm</label><input type="number" min="0" max="60" id="br-years" value="${pr.years||""}" placeholder="5"></div>
+    </div>
     <div class="field" style="margin-top:10px;"><label>Số điện thoại / Zalo liên hệ</label><input id="br-phone" value="${escapeHtml(pr.phone||"")}" placeholder="VD: 09xx xxx xxx"></div>
     <div class="field" style="margin-top:10px;"><label>Giới thiệu ngắn</label><textarea id="br-bio" rows="3" placeholder="Kinh nghiệm, chứng chỉ...">${escapeHtml(pr.bio||"")}</textarea></div>
     <button class="btn btn-primary btn-block" id="br-save" style="margin-top:14px;">Lưu</button>
   `);
+  $("#br-photo").addEventListener("click", ()=> ppPickPhoto(data=>{ photo = data; $("#br-photo").innerHTML = `<img src="${data}">`; }));
   $("#br-save").addEventListener("click", async ()=>{
+    const btn = $("#br-save"); btn.disabled = true; btn.textContent = "Đang lưu...";
     try{
-      await cloud.updateMyProfile({ brandName:$("#br-name").value.trim(), specialty:$("#br-spec").value.trim(), area:$("#br-area").value.trim(), phone:$("#br-phone").value.trim(), bio:$("#br-bio").value.trim() });
-      closeSheet(); renderCoachScreen(false); toast("Đã lưu thương hiệu");
-    }catch(e){ toast(e.message, "error"); }
+      await cloud.updateMyProfile({ brandName:$("#br-name").value.trim(), specialty:$("#br-spec").value.trim(), area:$("#br-area").value.trim(),
+        years: Math.max(0, Number($("#br-years").value)||0), phone:$("#br-phone").value.trim(), bio:$("#br-bio").value.trim(), photo: photo || null });
+      closeSheet(); toast("Đã lưu hồ sơ PT");
+      if(onSaved) onSaved(); else renderCoachScreen(false);
+    }catch(e){ toast(e.message, "error"); btn.disabled = false; btn.textContent = "Lưu"; }
   });
 }
 
@@ -391,7 +408,8 @@ function cfInfo(body, c){
           ${pr&&pr.specialty ? row("military_tech","Chuyên môn", pr.specialty) : ""}
           ${pr&&pr.area ? row("location_on","Khu vực", pr.area) : ""}
           ${pr&&pr.phone ? row("call","Liên hệ", pr.phone) : ""}
-          ${pr&&pr.bio ? `<p class="small-note" style="margin-top:8px;">${escapeHtml(pr.bio)}</p>` : ""}`;
+          ${pr&&pr.bio ? `<p class="small-note" style="margin-top:8px;">${escapeHtml(pr.bio)}</p>` : ""}
+          <button class="btn btn-soft btn-sm btn-block" style="margin-top:10px;" onclick="openPTProfile('${c.ptId}','${c.id}')"><span class="material-symbols-rounded" style="font-size:15px;">visibility</span>Xem hồ sơ PT</button>`;
       }catch(e){}
     })();
     $("#ci-leave").addEventListener("click", ()=> confirmDialog("Ngừng kết nối?", "Bạn sẽ không xem được lịch và bài tập PT giao nữa. PT vẫn giữ form và có thể gửi lại mã.", async ()=>{

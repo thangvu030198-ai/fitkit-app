@@ -315,7 +315,7 @@ async function dbPutRaw(storeName, record){
 /* ---------------------------------------------------------------------
    4. ĐIỀU HƯỚNG
    --------------------------------------------------------------------- */
-const SUB_SCREENS = ["library","plans","progress","client"];
+const SUB_SCREENS = ["library","plans","progress","client","ptprofile"];
 function goto(screen){
   $$(".screen").forEach(s=>s.classList.remove("active"));
   $(`#screen-${screen}`).classList.add("active");
