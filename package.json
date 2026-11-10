@@ -1,17 +1,22 @@
 {
   "name": "fitkit-app",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "FIT KIT — bọc bằng Capacitor để build ra project iOS/Xcode, phục vụ đóng gói file .ipa qua GitHub Actions (không cần máy Mac).",
+  "description": "FIT KIT — app tập luyện cá nhân + PT, đóng gói iOS/Android bằng Capacitor (build trên GitHub Actions, không cần Mac).",
   "scripts": {
-    "cap:add:ios": "cap add ios",
-    "cap:sync": "cap sync ios"
+    "prepare:www": "bash scripts/prepare-www.sh",
+    "assets": "capacitor-assets generate --iconBackgroundColor '#0a0a0a' --iconBackgroundColorDark '#0a0a0a' --splashBackgroundColor '#0a0a0a' --splashBackgroundColorDark '#0a0a0a'"
   },
   "dependencies": {
-    "@capacitor/core": "^6.1.2"
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/browser": "^6.0.2",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/ios": "^6.1.2",
+    "@capacitor/local-notifications": "^6.1.0",
+    "@capacitor/share": "^6.0.2"
   },
   "devDependencies": {
-    "@capacitor/cli": "^6.1.2",
-    "@capacitor/ios": "^6.1.2"
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.1.2"
   }
 }

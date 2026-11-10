@@ -18,6 +18,9 @@
 
 <div id="app-shell">
 
+  <!-- ======================= ĐĂNG NHẬP / CHỌN VAI TRÒ ======================= -->
+  <div id="auth"><div class="auth-wrap" id="auth-body"></div></div>
+
   <!-- ======================= ONBOARDING ======================= -->
   <div id="onboarding">
     <div class="onboard-wrap">
@@ -94,8 +97,39 @@
   <!-- ======================= SCROLLABLE CONTENT ======================= -->
   <div id="app-scroll">
 
+  <!-- ======================= HOME ======================= -->
+  <section id="screen-home" class="screen active">
+    <div class="topbar">
+      <button class="icon-btn btn-menu-trigger"><span class="material-symbols-rounded">menu</span></button>
+      <div class="logo">FIT KIT</div>
+      <button class="icon-btn" data-goto="profile"><span class="material-symbols-rounded">account_circle</span></button>
+    </div>
+    <div class="content" id="home-content"></div>
+  </section>
+
+  <!-- ======================= PT (Tôi là PT / PT của tôi) ======================= -->
+  <section id="screen-coach" class="screen">
+    <div class="topbar">
+      <button class="icon-btn btn-menu-trigger"><span class="material-symbols-rounded">menu</span></button>
+      <div class="logo">PT &amp; HỌC VIÊN</div>
+      <button class="icon-btn" id="btn-coach-refresh"><span class="material-symbols-rounded">refresh</span></button>
+    </div>
+    <div class="content" id="coach-content"></div>
+  </section>
+
+  <!-- ======================= FORM QUẢN LÝ PT ↔ HỌC VIÊN ======================= -->
+  <section id="screen-client" class="screen">
+    <div class="topbar">
+      <button class="icon-btn" id="btn-client-back"><span class="material-symbols-rounded">arrow_back</span></button>
+      <div class="logo" id="client-title" style="max-width:62%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">HỌC VIÊN</div>
+      <button class="icon-btn" id="btn-client-refresh"><span class="material-symbols-rounded">refresh</span></button>
+    </div>
+    <div class="day-tabs" id="client-tabs"></div>
+    <div class="content" id="client-content"></div>
+  </section>
+
   <!-- ======================= WORKOUT ======================= -->
-  <section id="screen-workout" class="screen active">
+  <section id="screen-workout" class="screen">
     <div class="topbar transparent">
       <button class="icon-btn btn-menu-trigger" id="btn-menu"><span class="material-symbols-rounded">menu</span></button>
       <div class="logo">FIT KIT</div>
@@ -394,6 +428,8 @@
         • Giá trị dinh dưỡng thực phẩm tham khảo USDA FoodData Central — chỉ mang tính ước lượng trung bình.</p>
       </div>
 
+      <div class="card" id="profile-account-card"></div>
+
       <button class="btn btn-ghost btn-block" id="btn-reset-app"><span class="material-symbols-rounded">restart_alt</span>Đặt lại toàn bộ dữ liệu</button>
     </div>
   </section>
@@ -402,10 +438,10 @@
 
   <!-- ======================= BOTTOM NAV ======================= -->
   <nav class="bottom-nav">
-    <button class="nav-item active" data-goto="workout"><span class="material-symbols-rounded">fitness_center</span>Bài tập</button>
+    <button class="nav-item active" data-goto="home"><span class="material-symbols-rounded">home</span>Trang chủ</button>
+    <button class="nav-item" data-goto="workout"><span class="material-symbols-rounded">fitness_center</span>Tập luyện</button>
     <button class="nav-item" data-goto="nutrition"><span class="material-symbols-rounded">restaurant</span>Dinh dưỡng</button>
-    <button class="nav-item" data-goto="reminders"><span class="material-symbols-rounded">notifications_active</span>Nhắc nhở</button>
-    <button class="nav-item" data-goto="sleep"><span class="material-symbols-rounded">bedtime</span>Giấc ngủ</button>
+    <button class="nav-item" data-goto="coach"><span class="material-symbols-rounded">groups</span><span class="nav-badge-wrap">PT<span class="nav-dot" id="nav-coach-dot"></span></span></button>
     <button class="nav-item" data-goto="profile"><span class="material-symbols-rounded">person</span>Hồ sơ</button>
   </nav>
 
@@ -417,7 +453,12 @@
   <div id="toast"></div>
 </div>
 
+<script src="firebase-config.js"></script>
+<script src="cloud.js"></script>
 <script src="data.js"></script>
+<script src="exdb.js"></script>
 <script src="app.js"></script>
+<script src="coach.js"></script>
+<script src="pt.js"></script>
 </body>
 </html>

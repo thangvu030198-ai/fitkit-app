@@ -1,13 +1,22 @@
 {
-  "appId": "com.fitkit.app",
+  "appId": "vn.thangvu.fitkit",
   "appName": "FIT KIT",
   "webDir": "www",
-  "bundledWebRuntime": false,
+  "backgroundColor": "#0a0a0a",
   "ios": {
-    "contentInset": "always",
-    "scheme": "FitKit"
+    "contentInset": "never",
+    "scheme": "FitKit",
+    "backgroundColor": "#0a0a0a"
+  },
+  "android": {
+    "backgroundColor": "#0a0a0a"
   },
   "server": {
     "androidScheme": "https"
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "iconColor": "#FF3100"
+    }
   }
 }

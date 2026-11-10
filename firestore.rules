@@ -1,0 +1,57 @@
+// FIT KIT — Firestore Security Rules
+// Dán toàn bộ nội dung này vào: Firebase Console → Firestore Database → Rules → Publish
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function me() { return request.auth.uid; }
+    function onlyKeys(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    // Hồ sơ người dùng: ai đăng nhập cũng xem được tên; chỉ chủ tài khoản được sửa/xoá
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create, update, delete: if signedIn() && me() == uid;
+    }
+
+    // Mã mời 6 ký tự: học viên chỉ được "get" đúng 1 mã (không liệt kê được toàn bộ)
+    match /joinCodes/{code} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow create: if signedIn() && request.resource.data.ptId == me();
+      allow delete: if signedIn() && resource.data.ptId == me();
+    }
+
+    // Form quản lý PT ↔ học viên
+    match /clients/{cid} {
+      function isPT() { return resource.data.ptId == me(); }
+      function isStudent() { return resource.data.studentUid == me(); }
+
+      allow read: if signedIn() && (isPT() || isStudent());
+      allow create: if signedIn() && request.resource.data.ptId == me();
+      allow delete: if signedIn() && isPT();
+      allow update: if signedIn() && (
+        // PT sửa mọi thứ trừ chủ sở hữu
+        (isPT() && request.resource.data.ptId == me())
+        // Học viên nhập mã: chỉ khi form chưa có ai, chỉ ghi 3 trường của mình
+        || (resource.data.studentUid == null
+            && request.resource.data.studentUid == me()
+            && onlyKeys(['studentUid', 'studentName', 'studentEmail', 'updatedAt']))
+        // Học viên rời PT
+        || (isStudent()
+            && request.resource.data.studentUid == null
+            && onlyKeys(['studentUid', 'studentName', 'studentEmail', 'updatedAt']))
+      );
+
+      // Buổi tập + ghi chú: cả PT và học viên của form đều đọc/ghi; chỉ PT được xoá
+      match /{sub}/{docId} {
+        function parent() { return get(/databases/$(database)/documents/clients/$(cid)).data; }
+        function member() { return parent().ptId == me() || parent().studentUid == me(); }
+        allow read, create, update: if signedIn() && (sub == 'sessions' || sub == 'notes') && member();
+        allow delete: if signedIn() && parent().ptId == me();
+      }
+    }
+  }
+}

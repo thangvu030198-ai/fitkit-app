@@ -214,7 +214,7 @@ function getExerciseMeta(item){
     name: item.custom.name, muscle: item.custom.muscle || "Tuỳ chỉnh",
     equipment: item.custom.equipment || "—",
     guide: item.custom.guide || "Chưa có hướng dẫn kỹ thuật — hãy xem lại video bạn đã tải lên để nhớ đúng form thực hiện.",
-    img: IMG.muscle_core,
+    img: item.custom.img || IMG.muscle_core,
   };
   const ex = EXERCISES[item.exerciseId] || { name:"Bài tập đã bị xoá", muscle:"—", equipment:"—", guide:"", img: IMG.muscle_core };
   return { name: ex.name, muscle: ex.muscle, equipment: ex.equipment, guide: ex.guide, img: ex.img };
@@ -315,15 +315,21 @@ async function dbPutRaw(storeName, record){
 /* ---------------------------------------------------------------------
    4. ĐIỀU HƯỚNG
    --------------------------------------------------------------------- */
-const SUB_SCREENS = ["library","plans","progress"];
+const SUB_SCREENS = ["library","plans","progress","client"];
 function goto(screen){
   $$(".screen").forEach(s=>s.classList.remove("active"));
   $(`#screen-${screen}`).classList.add("active");
-  $$(".nav-item").forEach(b=>b.classList.toggle("active", b.dataset.goto===screen));
+  const navKey = ["sleep","reminders"].includes(screen) ? "home" : screen;
+  $$(".nav-item").forEach(b=>b.classList.toggle("active", b.dataset.goto===navKey));
   $(".bottom-nav").classList.toggle("hidden", SUB_SCREENS.includes(screen));
   if(screen==="library") renderLibraryScreen();
   if(screen==="plans"){ plansUI = { mode:"list" }; renderPlansScreen(); }
   if(screen==="progress") renderProgressScreen();
+  if(screen==="home" && typeof renderHomeScreen==="function") renderHomeScreen();
+  if(screen==="coach" && typeof renderCoachScreen==="function") renderCoachScreen(true);
+  if(screen==="workout") renderWorkoutScreen();
+  if(screen==="sleep") renderSleepScreen();
+  if(screen==="reminders") renderRemindersScreen();
   $("#app-scroll").scrollTo(0,0);
 }
 $$("[data-goto]").forEach(el=> el.addEventListener("click", ()=> goto(el.dataset.goto)));
@@ -332,6 +338,9 @@ $$(".btn-menu-trigger").forEach(btn=> btn.addEventListener("click", ()=>{
   openSheet(`
     <div class="sheet-header"><h3>FIT KIT</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
     <div style="display:flex;flex-direction:column;gap:4px;">
+      <div class="link-row" onclick="goto('home');closeSheet();"><div class="left"><span class="material-symbols-rounded">home</span><div class="name">Trang chủ</div></div><span class="material-symbols-rounded">chevron_right</span></div>
+      <div class="link-row" onclick="goto('coach');closeSheet();"><div class="left"><span class="material-symbols-rounded">groups</span><div class="name">PT &amp; Học viên</div></div><span class="material-symbols-rounded">chevron_right</span></div>
+      <div class="link-row" onclick="goto('sleep');closeSheet();"><div class="left"><span class="material-symbols-rounded">bedtime</span><div class="name">Giấc ngủ</div></div><span class="material-symbols-rounded">chevron_right</span></div>
       <div class="link-row" onclick="goto('profile');closeSheet();"><div class="left"><span class="material-symbols-rounded">person</span><div class="name">Hồ sơ của tôi</div></div><span class="material-symbols-rounded">chevron_right</span></div>
       <div class="link-row" onclick="goto('reminders');closeSheet();"><div class="left"><span class="material-symbols-rounded">notifications_active</span><div class="name">Nhắc nhở</div></div><span class="material-symbols-rounded">chevron_right</span></div>
       <div class="link-row" onclick="goto('plans');closeSheet();"><div class="left"><span class="material-symbols-rounded">edit_calendar</span><div class="name">Quản lý chương trình tập</div></div><span class="material-symbols-rounded">chevron_right</span></div>
@@ -431,6 +440,7 @@ function finishOnboarding(){
   saveState();
   $("#onboarding").classList.remove("open");
   renderAll();
+  if(!wasOnboarded && typeof afterFirstOnboarding==="function") afterFirstOnboarding(); else goto("home");
   toast(`Chào mừng ${p.name || "bạn"} đến với FIT KIT!`, "celebration");
 }
 
@@ -1104,12 +1114,23 @@ function openAddExerciseSheet(plan, dayKey){
       <div class="sheet-header"><h3>Thêm bài tập</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
       <div class="chip-row" style="margin-bottom:12px;">
         <button class="pill ${tab==='lib'?'active':''}" id="tab-lib">Từ thư viện</button>
+        <button class="pill" id="tab-exdb"><span class="material-symbols-rounded" style="font-size:14px;">library_books</span>&nbsp;800+ bài</button>
         <button class="pill ${tab==='custom'?'active':''}" id="tab-custom">Tạo bài tập mới</button>
       </div>
       <div id="add-ex-body"></div>
     `);
     $("#tab-lib").addEventListener("click", ()=>{ tab="lib"; render(); });
     $("#tab-custom").addEventListener("click", ()=>{ tab="custom"; render(); });
+    $("#tab-exdb").addEventListener("click", ()=>{
+      openExDbPicker((items)=>{
+        items.forEach(it=> plan.days[dayKey].items.push({
+          uid: uid(), exerciseId: null,
+          custom: { name: it.name, muscle: it.muscle, equipment: it.equipment, guide: it.guide, img: it.img, exDbId: it.exDbId },
+          sets: it.sets, reps: it.reps, restSec: it.restSec, clipId: null,
+        }));
+        saveState(); renderPlansScreen(); toast(`Đã thêm ${items.length} bài tập`);
+      }, { multi:true });
+    });
     if(tab==="lib") renderLibTab(); else renderCustomTab();
   };
   const renderLibTab = ()=>{
@@ -2294,7 +2315,9 @@ function openEditReminderTime(type, key){
 }
 $("#master-toggle").addEventListener("click", async ()=>{
   state.reminders.master = !state.reminders.master;
-  if(state.reminders.master && "Notification" in window && Notification.permission==="default"){
+  if(state.reminders.master && typeof nativeNotif!=="undefined" && nativeNotif.available()){
+    await nativeNotif.requestPermission();
+  } else if(state.reminders.master && "Notification" in window && Notification.permission==="default"){
     await Notification.requestPermission();
   }
   saveState(); renderRemindersScreen();
@@ -2674,6 +2697,7 @@ $("#btn-open-drive").addEventListener("click", ()=> openDriveSettings());
    12. KHỞI TẠO
    ========================================================================= */
 function renderAll(){
+  if(typeof renderHomeScreen==="function") renderHomeScreen();
   renderWorkoutScreen();
   renderNutritionScreen();
   renderSleepScreen();
@@ -2695,4 +2719,4 @@ function init(){
     renderAll();
   }
 }
-init();
+// init() được gọi từ pt.js (appBoot) sau khi kiểm tra đăng nhập

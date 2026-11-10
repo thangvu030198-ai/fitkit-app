@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chính sách bảo mật — FIT KIT</title>
+<style>
+  body{ font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width:760px; margin:0 auto; padding:32px 20px 60px; line-height:1.65; color:#1a1a1a; }
+  h1{ color:#ff3100; margin-bottom:4px; } h2{ margin-top:28px; font-size:19px; }
+  .muted{ color:#666; font-size:14px; } li{ margin:4px 0; }
+</style>
+</head>
+<body>
+<h1>Chính sách bảo mật — FIT KIT</h1>
+<p class="muted">Cập nhật lần cuối: 10/11/2026 · Áp dụng cho ứng dụng FIT KIT trên iOS, Android và web.</p>
+
+<h2>1. Dữ liệu chỉ lưu trên thiết bị của bạn</h2>
+<p>Các dữ liệu sau được lưu trong bộ nhớ của ứng dụng trên điện thoại và <b>không gửi lên máy chủ FIT KIT</b>: thông tin cơ thể (tuổi, giới tính, chiều cao, cân nặng, tỉ lệ mỡ), giáo án và nhật ký tập, nhật ký ăn uống và nước, nhật ký giấc ngủ, cài đặt nhắc nhở, video tập luyện và ảnh tiến trình, chỉ số InBody.</p>
+
+<h2>2. Dữ liệu lưu trên máy chủ (chỉ khi bạn tạo tài khoản)</h2>
+<ul>
+  <li><b>Tài khoản:</b> email, tên hiển thị, mật khẩu (được mã hoá bởi Google Firebase Authentication, FIT KIT không đọc được mật khẩu).</li>
+  <li><b>Hồ sơ PT</b> (nếu bạn bật chế độ PT): tên thương hiệu, chuyên môn, khu vực, số liên hệ, giới thiệu.</li>
+  <li><b>Form PT ↔ học viên:</b> tên học viên, mục tiêu, ngày bắt đầu, số buổi trong gói, số điện thoại (nếu PT nhập), lịch buổi tập, bài tập được giao, trạng thái hoàn thành, ghi chú và phản hồi.</li>
+</ul>
+<p>Dữ liệu được lưu tại Google Cloud Firestore. Mỗi form chỉ PT tạo ra form đó và học viên đã nhập đúng mã mời mới xem được.</p>
+
+<h2>3. Mục đích sử dụng</h2>
+<p>Dữ liệu chỉ dùng để vận hành các tính năng của ứng dụng: hiển thị lịch, giao bài, nhắc nhở, ghi chú giữa PT và học viên. FIT KIT <b>không bán dữ liệu, không dùng dữ liệu cho quảng cáo</b> và không có quảng cáo trong ứng dụng.</p>
+
+<h2>4. Bên thứ ba</h2>
+<ul>
+  <li><b>Google Firebase</b> (Authentication, Firestore): lưu tài khoản và dữ liệu PT ↔ học viên.</li>
+  <li><b>Phân tích ảnh bằng AI</b> (tuỳ chọn): chỉ hoạt động khi bạn tự nhập API key của OpenAI, Google Gemini hoặc xAI. Ảnh được gửi trực tiếp từ thiết bị của bạn tới nhà cung cấp bạn chọn, theo chính sách của nhà cung cấp đó.</li>
+  <li><b>Ảnh minh hoạ bài tập</b> được tải từ GitHub (free-exercise-db) và Pexels; các dịch vụ này có thể ghi nhận địa chỉ IP như mọi trang web thông thường.</li>
+</ul>
+
+<h2>5. Quyền truy cập trên thiết bị</h2>
+<ul>
+  <li><b>Camera / Thư viện ảnh:</b> chụp ảnh tiến trình, chọn ảnh đại diện, tải video tập — chỉ khi bạn chủ động bấm.</li>
+  <li><b>Thông báo:</b> nhắc giờ tập, giờ ăn, giờ ngủ và buổi tập với PT.</li>
+</ul>
+
+<h2>6. Xoá dữ liệu</h2>
+<ul>
+  <li><b>Xoá tài khoản ngay trong app:</b> Hồ sơ → Tài khoản → Xoá tài khoản. Tài khoản, hồ sơ và mọi form do bạn tạo bị xoá vĩnh viễn khỏi máy chủ.</li>
+  <li><b>Xoá dữ liệu trên máy:</b> Hồ sơ → Đặt lại toàn bộ dữ liệu, hoặc gỡ ứng dụng.</li>
+</ul>
+
+<h2>7. Trẻ em</h2>
+<p>FIT KIT không dành cho trẻ em dưới 13 tuổi và không cố ý thu thập dữ liệu của trẻ em dưới 13 tuổi.</p>
+
+<h2>8. Lưu ý sức khoẻ</h2>
+<p>Các số liệu calo, BMR, TDEE, tỉ lệ mỡ chỉ mang tính ước lượng tham khảo, không thay thế chẩn đoán hay tư vấn của bác sĩ, chuyên gia dinh dưỡng.</p>
+
+<h2>9. Liên hệ</h2>
+<p>Mọi câu hỏi về quyền riêng tư: <a href="mailto:thangvu030198@gmail.com">thangvu030198@gmail.com</a></p>
+</body>
+</html>
