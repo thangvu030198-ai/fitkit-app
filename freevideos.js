@@ -41,6 +41,25 @@ const YMOVE_FREE = [
   license:"YMove free licence", tags:"", duration:15, portrait:true,
 }));
 
+/* 3. Video bổ sung chọn tay (Pexels License / Wikimedia Commons CC BY, CC BY-SA, Public domain) */
+let _extraIdx = null, _extraLoading = null;
+async function loadExtraIndex(){
+  if(_extraIdx) return _extraIdx;
+  if(_extraLoading) return _extraLoading;
+  _extraLoading = (async ()=>{
+    try{
+      const r = await fetch(FV_REPO_CDN + "media/extra/index.json");
+      if(!r.ok) throw 0;
+      _extraIdx = (await r.json()).map(x=>({
+        provider:x.provider, name:x.name, alias:(x.alias||[]).map(a=>a.toLowerCase()), url:FV_REPO_CDN+"media/extra/"+x.file, thumb:FV_REPO_CDN+"media/extra/"+x.thumb,
+        author:x.author, authorUrl:x.licenseUrl, pageUrl:x.source, license:x.license, duration:x.duration, tags:"",
+      }));
+    }catch(e){ _extraIdx = []; }
+    return _extraIdx;
+  })();
+  return _extraLoading;
+}
+
 let _wgerIdx = null, _wgerLoading = null;
 async function loadWgerIndex(){
   if(_wgerIdx) return _wgerIdx;
@@ -62,7 +81,7 @@ async function loadWgerIndex(){
 
 /* ---- So khớp tên bài ---- */
 const FV_SYN = [
-  [/rowing seated|seated rowing/g,"row"],
+  [/rowing seated|seated rowing/g,"row"], [/incline (db|dumbbells?) press/g,"incline dumbbell benchpress"],
   [/bench ?press|benchpress/g,"benchpress"], [/pull[- ]?ups?|chin[- ]?ups?/g,"pullup"], [/push[- ]?ups?/g,"pushup"],
   [/lat ?pull ?downs?|pulldowns?/g,"pulldown"], [/sit[- ]?ups?/g,"situp"], [/face ?pulls?|facepull/g,"facepull"],
   [/push ?downs?/g,"pushdown"], [/skull ?crushers?/g,"skullcrusher"], [/hammer ?curls?|hammercurls/g,"hammercurl"],
@@ -76,7 +95,7 @@ const FV_SYN = [
 ];
 const FV_EQUIP = ["barbell","dumbbell","cable","machine","kettlebell","multipress","smith"];
 const FV_STOP = new Set(["the","with","on","and","a","of","exercise","standing","sitting","seated","laying","lying","one","arm","single","two","close","wide","grip","narrow","medium","legs","apart","mid","high","to","low","v","bar","sz","rope","back"]);
-const FV_MOD = new Set(["frontsquat","gobletsquat","rdl","bodyweight","inverted","incline","decline","bulgarian","split","hack","sumo","overhead","preacher","hipthrust","pushpress"]);
+const FV_MOD = new Set(["frontsquat","gobletsquat","rdl","bodyweight","inverted","incline","decline","bulgarian","split","hack","sumo","overhead","preacher","hipthrust","pushpress","supported"]);
 function fvTokens(name){
   let s = " " + String(name||"").toLowerCase().replace(/\(.*?\)/g, m=> " "+m.slice(1,-1)+" ").replace(/[-_,/]+/g," ") + " ";
   FV_SYN.forEach(([re, rep])=>{ s = s.replace(re, " "+rep+" "); });
@@ -84,6 +103,7 @@ function fvTokens(name){
   return { core: words.filter(w=> !FV_EQUIP.includes(w)), equip: words.filter(w=> FV_EQUIP.includes(w)) };
 }
 function fvScore(target, cand){
+  if(cand.alias && cand.alias.length){ const low = String(target||"").toLowerCase(); if(cand.alias.some(a=> a && low.includes(a))) return 60; }
   const t = fvTokens(target), c = fvTokens(cand.name);
   if(!c.core.length) return 0;
   const hits = c.core.filter(w=> t.core.includes(w)), hit = hits.length;
@@ -100,6 +120,7 @@ function fvMatchName(meta){
 }
 async function findFreeExerciseVideos(meta){
   const target = fvMatchName(meta);
-  const pool = [...YMOVE_FREE, ...(await loadWgerIndex())];
+  const [wg, ex] = await Promise.all([loadWgerIndex(), loadExtraIndex()]);
+  const pool = [...YMOVE_FREE, ...wg, ...ex];
   return pool.map(v=>({ v, s: fvScore(target, v) })).filter(x=> x.s > 0).sort((a,b)=> b.s-a.s).map(x=> x.v);
 }

@@ -294,9 +294,7 @@ const PROGRAM_TEMPLATES = [
       CN:TPL_REST } },
 ];
 /* Video tham khảo Pixabay cho bài cardio/tự do không có video hướng dẫn riêng */
-const TPL_PB_QUERY = { walking:"walking", inclinewalk:"treadmill", zone2:"cycling", intervalwalk:"walking", running:"running", rowing:"rowing machine",
-  jumprope:"jump rope", plank:"plank", pushup:"push up", burpee:"burpee", crunch:"crunches", stretch:"stretching", mountainclimber:"mountain climber",
-  sideplank:"plank", glutebridge:"glute bridge", wallball:"wall ball", sledpush:"sled", farmercarry:"kettlebell", deadbug:"abs workout", russiantwist:"abs workout" };
+const TPL_PB_QUERY = { walking:"walking", intervalwalk:"walking", running:"running" };
 const TPL_LEVEL = { beginner:"Mới tập", intermediate:"Trung bình", advanced:"Nâng cao" };
 const TPL_GENDER = { nam:"Nam", nu:"Nữ", chung:"Nam & Nữ" };
 
@@ -334,8 +332,8 @@ async function tplPixabayFallback(q){
     const key = (typeof mediaKeys==="function") ? mediaKeys().pixabay : "";
     if(!key) return null;
     const hits = await searchPixabay(q, key);
-    const w = q.split(" ")[0];
-    return hits.find(h=> h.tags.includes(w)) || null;
+    // chỉ nhận video có đúng cụm từ khoá VÀ thẻ thể thao (tránh "plank" ra ván gỗ…)
+    return hits.find(h=> h.tags.includes(q) && /exercise|workout|fitness|sport|jogging|run|walk|training|gym/.test(h.tags)) || null;
   }catch(e){ return null; }
 }
 const TPL_LV_ORDER = { beginner:0, intermediate:1, advanced:2 }, TPL_G_ORDER = { nam:0, nu:1, chung:2 };

@@ -613,6 +613,7 @@ function openCreditsSheet(){
       <p><b>Ảnh minh hoạ:</b> Pexels (pexels.com), theo Pexels License — dùng thương mại miễn phí.</p>
       <p><b>Video hướng dẫn bài tập:</b> Exercise video by Your Move (ymove.app/exercise-api) — 25 video miễn phí, dùng thương mại có ghi nguồn. Video từ wger.de (tác giả ghi dưới mỗi video), giấy phép CC BY-SA 4.0, FIT KIT đã nén lại; bản nén phát hành cùng giấy phép CC BY-SA 4.0.</p>
       <p><b>Video tham khảo:</b> Videos provided by Pexels (pexels.com) và Pixabay (pixabay.com), theo Pexels License / Pixabay Content License. Tên tác giả hiển thị dưới mỗi video.</p>
+      <p><b>Video bài tập bổ sung:</b> Pexels (Pexels License) và Wikimedia Commons — tác giả Taco Fleur (CC BY-SA 4.0), FitnessScape (CC BY 3.0), U.S. Army (public domain). Đã cắt ngắn và nén lại; tên tác giả & giấy phép hiển thị dưới mỗi video.</p>
       <p><b>Giá trị dinh dưỡng:</b> tham khảo USDA FoodData Central (dữ liệu công khai của Chính phủ Hoa Kỳ).</p>
       <p><b>Công thức khoa học:</b> Mifflin-St Jeor (1990), khuyến nghị đạm ISSN (2017), khuyến nghị giấc ngủ National Sleep Foundation &amp; CDC.</p>
       <p><b>Biểu tượng:</b> Font Awesome 4.7 của Dave Gandy (SIL Open Font License 1.1).</p>
