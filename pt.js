@@ -227,6 +227,7 @@ function showAuth(view){
     $("#auth").scrollTop = 0;
     setTimeout(reveal, 60);
     setTimeout(()=>{ const w=$("#wl"); if(w) w.classList.add("ready"); }, 30);
+    if(typeof mountWelcomeVideo==="function") mountWelcomeVideo();
   }
 
   else if(view==="login"){
@@ -549,6 +550,7 @@ function renderAccountCard(){
     ${modeNote}
     <div class="divider" style="margin:10px 0;"></div>
     <div class="link-row" onclick="openPrivacySheet()" style="cursor:pointer;"><div class="left"><span class="material-symbols-rounded">shield</span><div class="name">Chính sách bảo mật</div></div><span class="material-symbols-rounded">chevron_right</span></div>
+    <div class="link-row" onclick="openMediaSettings()" style="cursor:pointer;"><div class="left"><span class="material-symbols-rounded">video_library</span><div><div class="name">Nguồn video minh hoạ</div><div class="sub">${hasVideoSource() ? "Đã kết nối Pexels / Pixabay" : "Chưa kết nối — chạm để thêm API key"}</div></div></div><span class="material-symbols-rounded">chevron_right</span></div>
     <div class="link-row" onclick="openCreditsSheet()" style="cursor:pointer;"><div class="left"><span class="material-symbols-rounded">copyright</span><div class="name">Nguồn dữ liệu &amp; bản quyền</div></div><span class="material-symbols-rounded">chevron_right</span></div>
     <p class="small-note" style="text-align:center;margin-top:8px;">FIT KIT v${APP_VERSION}</p>
   `;
@@ -594,6 +596,7 @@ function openPrivacySheet(){
     <div class="policy-text">
       <p><b>Dữ liệu lưu trên máy bạn:</b> hồ sơ cơ thể, giáo án, nhật ký ăn uống, giấc ngủ, video và ảnh tiến trình. Không gửi lên máy chủ FIT KIT.</p>
       <p><b>Dữ liệu lưu trên máy chủ (chỉ khi bạn tạo tài khoản):</b> email, tên hiển thị, và nội dung form PT ↔ học viên (lịch buổi tập, bài tập được giao, ghi chú, phản hồi). Chỉ PT và học viên của chính form đó xem được.</p>
+      <p><b>Video minh hoạ:</b> khi bạn tìm video, từ khoá tìm kiếm (tên bài tập) được gửi tới Pexels/Pixabay để lấy danh sách video. Không gửi thông tin cá nhân.</p>
       <p><b>Phân tích ảnh bằng AI:</b> chỉ chạy khi bạn tự nhập API key của nhà cung cấp AI. Ảnh được gửi thẳng từ máy bạn tới nhà cung cấp đó.</p>
       <p><b>Không quảng cáo, không bán dữ liệu.</b> FIT KIT không chia sẻ dữ liệu của bạn cho bên thứ ba để quảng cáo.</p>
       <p><b>Xoá dữ liệu:</b> Hồ sơ → Tài khoản → Xoá tài khoản (xoá dữ liệu trên máy chủ); Hồ sơ → Đặt lại toàn bộ dữ liệu (xoá dữ liệu trên máy).</p>
@@ -608,6 +611,7 @@ function openCreditsSheet(){
     <div class="policy-text">
       <p><b>Thư viện 800+ bài tập:</b> free-exercise-db của yuhonas (github.com/yuhonas/free-exercise-db), giấy phép Unlicense (Public Domain).</p>
       <p><b>Ảnh minh hoạ:</b> Pexels (pexels.com), theo Pexels License — dùng thương mại miễn phí.</p>
+      <p><b>Video minh hoạ:</b> Videos provided by Pexels (pexels.com) và Pixabay (pixabay.com), theo Pexels License / Pixabay Content License. Tên tác giả hiển thị dưới mỗi video.</p>
       <p><b>Giá trị dinh dưỡng:</b> tham khảo USDA FoodData Central (dữ liệu công khai của Chính phủ Hoa Kỳ).</p>
       <p><b>Công thức khoa học:</b> Mifflin-St Jeor (1990), khuyến nghị đạm ISSN (2017), khuyến nghị giấc ngủ National Sleep Foundation &amp; CDC.</p>
       <p><b>Biểu tượng:</b> Font Awesome 4.7 của Dave Gandy (SIL Open Font License 1.1).</p>

@@ -29,6 +29,16 @@ Gói miễn phí (Spark) đủ cho vài nghìn người dùng: 50.000 lượt đ
 
 ---
 
+## 1b. Bật nguồn video minh hoạ (Pexels / Pixabay — miễn phí, dùng thương mại)
+
+Theo tài liệu tổng hợp (mục 4B), app tìm video tập luyện từ **Pexels** và **Pixabay**:
+1. Pexels: vào https://www.pexels.com/api/ → đăng ký → copy **API Key**.
+2. Pixabay (tuỳ chọn): https://pixabay.com/api/docs/ → đăng nhập → copy **key** trong mục Parameters.
+3. Dán vào file `media-config.js` (`pexelsKey`, `pixabayKey`) rồi đẩy lên GitHub → mọi người dùng đều tìm được video.
+   (Hoặc thử nhanh: trong app → Hồ sơ → **Nguồn video minh hoạ** → dán key, chỉ lưu trên máy đó.)
+
+Video dùng ở: chi tiết bài tập & khi đang tập (nút **Tìm video mẫu**), trình soạn buổi của PT (nút **Tìm** cạnh mỗi bài — học viên xem video ngay trong app), thư viện 800+ bài (**Xem video minh hoạ**), và **video nền màn mở app** (tự tìm video dọc "gym workout"; muốn dùng clip riêng thì dán link .mp4 vào `welcomeVideo`). Tên tác giả + nguồn luôn hiện dưới video (điều kiện của Pexels/Pixabay).
+
 ## 2. Đẩy code lên GitHub
 
 Repo `thangvu030198-ai/fitkit-app` → **Add file → Upload files** → kéo thả toàn bộ nội dung thư mục `FitKit` (kể cả thư mục `assets`, `scripts`, `.github`) → **Commit**. File trùng tên sẽ được thay bằng bản mới.

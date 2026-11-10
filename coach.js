@@ -487,9 +487,9 @@ function cfToday(body, c){
     <div style="display:flex;flex-direction:column;gap:8px;">
       ${ex.length ? ex.map((e,i)=>`
         <div class="list-item ${e.done?'done':''}">
-          ${e.img ? `<img class="thumb" src="${escapeHtml(e.img)}" style="object-fit:cover;background:#fff;" data-exi="${i}" onerror="this.style.visibility='hidden'">` : `<div class="thumb ex-num" data-exi="${i}">${i+1}</div>`}
+          ${(e.img||(e.stock&&e.stock.thumb)) ? `<img class="thumb" src="${escapeHtml(e.img||e.stock.thumb)}" style="object-fit:cover;background:#fff;" data-exi="${i}" onerror="this.style.visibility='hidden'">` : `<div class="thumb ex-num" data-exi="${i}">${i+1}</div>`}
           <div class="info" data-exi="${i}" style="cursor:pointer;"><div class="name">${escapeHtml(e.name)}</div>
-            <div class="meta">${e.sets||"-"} hiệp × ${escapeHtml(String(e.reps||"-"))} · nghỉ ${e.restSec||0}s${e.videoUrl?' · <span style="color:var(--primary-soft);">có video</span>':""}</div></div>
+            <div class="meta">${e.sets||"-"} hiệp × ${escapeHtml(String(e.reps||"-"))} · nghỉ ${e.restSec||0}s${e.videoUrl||e.stock?' · <span style="color:var(--mint-2);">▶ có video</span>':""}</div></div>
           ${canTick ? `<div class="check ${e.done?'checked':''}" data-tick="${i}"><span class="material-symbols-rounded">check</span></div>` : ""}
         </div>`).join("") : `<p class="empty-hint">Buổi này chưa có bài tập.${isPTView()?" Bấm Sửa buổi để thêm.":""}</p>`}
     </div>
@@ -535,14 +535,14 @@ function openSessionExerciseDetail(e){
   if(!e) return;
   openSheet(`
     <div class="sheet-header"><h3 style="font-size:18px;">${escapeHtml(e.name)}</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
-    ${e.img ? `<img src="${escapeHtml(e.img)}" style="width:100%;max-height:32vh;object-fit:contain;background:#fff;border-radius:14px;">` : ""}
+    ${e.stock ? stockVideoHTML(e.stock) : (e.videoUrl && /\.(mp4|webm|mov)(\?|$)/i.test(e.videoUrl) ? stockVideoHTML({ url:e.videoUrl, provider:"PT", author:"Video PT gửi", pageUrl:e.videoUrl }) : (e.img ? `<img src="${escapeHtml(e.img)}" style="width:100%;max-height:32vh;object-fit:contain;background:#fff;border-radius:14px;">` : ""))}
     <div class="stat-grid" style="margin-top:10px;">
       <div class="stat-box"><div class="num">${e.sets||"-"}</div><div class="cap">Hiệp</div></div>
       <div class="stat-box"><div class="num">${escapeHtml(String(e.reps||"-"))}</div><div class="cap">Lần</div></div>
       <div class="stat-box"><div class="num">${e.restSec||0}s</div><div class="cap">Nghỉ</div></div>
     </div>
     ${e.muscle ? `<p class="small-note" style="margin-top:8px;">Nhóm cơ: ${escapeHtml(e.muscle)}</p>` : ""}
-    ${e.videoUrl ? `<button class="btn btn-primary btn-block" style="margin-top:12px;" id="sx-video"><span class="material-symbols-rounded">play_circle</span>Xem video hướng dẫn</button>` : ""}
+    ${e.videoUrl && !e.stock && !/\.(mp4|webm|mov)(\?|$)/i.test(e.videoUrl) ? `<button class="btn btn-primary btn-block" style="margin-top:12px;" id="sx-video"><span class="material-symbols-rounded">play_circle</span>Xem video hướng dẫn</button>` : ""}
     ${e.guide ? `<div class="card-title" style="margin-top:12px;font-size:13px;">Hướng dẫn</div><p class="small-note" style="white-space:pre-line;">${escapeHtml(e.guide)}</p>` : ""}
   `);
   const v = $("#sx-video"); if(v) v.addEventListener("click", ()=> openExternal(e.videoUrl));
@@ -607,7 +607,8 @@ function openSessionEditor(s, draftIn){
     draft.mode = $("#se-mode").value; draft.title = $("#se-title").value; draft.ptNote = $("#se-note").value;
     const rp = $("#se-repeat"); if(rp) draft.repeat = Math.max(1, Math.min(12, Number(rp.value)||1));
     $$("[data-exf-i]").forEach(inp=>{ const [i,f] = inp.dataset.exfI.split(":"); const v = inp.value;
-      draft.exercises[i][f] = (f==="sets"||f==="restSec") ? (Number(v)||0) : v; });
+      draft.exercises[i][f] = (f==="sets"||f==="restSec") ? (Number(v)||0) : v;
+      if(f==="videoUrl" && draft.exercises[i].stock && draft.exercises[i].stock.url!==v) delete draft.exercises[i].stock; });
   };
   openSheet(`
     <div class="sheet-header"><h3>${draft.id?"Sửa buổi tập":"Buổi tập mới"}</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
@@ -638,7 +639,12 @@ function openSessionEditor(s, draftIn){
             <div class="field"><label>Lần</label><input data-exf-i="${i}:reps" value="${escapeHtml(String(e.reps||"10"))}"></div>
             <div class="field"><label>Nghỉ (s)</label><input type="number" data-exf-i="${i}:restSec" value="${e.restSec||60}"></div>
           </div>
-          <div class="field" style="margin-top:6px;"><input data-exf-i="${i}:videoUrl" value="${escapeHtml(e.videoUrl||"")}" placeholder="Link video hướng dẫn (YouTube, Drive...) — không bắt buộc"></div>
+          <div class="ex-video-row">
+            ${e.stock ? `<img src="${escapeHtml(e.stock.thumb||"")}" alt="" onerror="this.style.display='none'">` : ""}
+            <div class="field" style="flex:1;margin:0;"><input data-exf-i="${i}:videoUrl" value="${escapeHtml(e.videoUrl||"")}" placeholder="Link video (YouTube, Drive...) hoặc bấm Tìm"></div>
+            <button class="btn btn-soft btn-sm" data-exvid="${i}"><span class="material-symbols-rounded" style="font-size:15px;">video_library</span>Tìm</button>
+          </div>
+          ${e.stock ? stockCreditHTML(e.stock) : ""}
         </div>`).join("") || `<p class="empty-hint">Chưa có bài tập.</p>`}
     </div>
     <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
@@ -652,6 +658,10 @@ function openSessionEditor(s, draftIn){
   const reopen = ()=> openSessionEditor(s, draft);
   const newEx = o=> Object.assign({ uid: uid(), name:"", sets:3, reps:"10", restSec:60, videoUrl:"", img:"", guide:"", muscle:"", done:false }, o);
   $$("[data-exdel]").forEach(b=> b.addEventListener("click", ()=>{ sync(); draft.exercises.splice(Number(b.dataset.exdel),1); reopen(); }));
+  $$("[data-exvid]").forEach(b=> b.addEventListener("click", ()=>{
+    sync(); const ex = draft.exercises[Number(b.dataset.exvid)];
+    openVideoPicker(videoQueryFor(ex), stock=>{ ex.stock = stock; ex.videoUrl = stock.url; reopen(); toast("Đã gắn video", "videocam"); }, { onBack: reopen });
+  }));
   $$("[data-exmv]").forEach(b=> b.addEventListener("click", ()=>{ sync(); const [i,d]=b.dataset.exmv.split(":").map(Number); const t=draft.exercises[i]; draft.exercises[i]=draft.exercises[i+d]; draft.exercises[i+d]=t; reopen(); }));
   $("#se-add-db").addEventListener("click", ()=>{
     sync();
