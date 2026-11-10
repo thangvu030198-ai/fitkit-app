@@ -31,7 +31,7 @@ const RECIPE_TAGS = [
   { id:"all", label:"Tất cả", emoji:"🍽️" }, { id:"plan", label:"Hợp với bạn", emoji:"🎯" },
   { id:"giam-mo", label:"Giảm mỡ", emoji:"🔥" }, { id:"tang-co", label:"Tăng cơ", emoji:"💪" },
   { id:"vn", label:"Món Việt", emoji:"🍜" }, { id:"au", label:"Món Âu", emoji:"🥗" },
-  { id:"airfryer", label:"Nồi chiên KD", emoji:"🌀" }, { id:"chay", label:"Ăn chay", emoji:"🥬" }, { id:"an-vat", label:"Ăn vặt", emoji:"🍪" },
+  { id:"airfryer", label:"Nồi chiên KD", emoji:"🌀" }, { id:"chay", label:"Ăn chay", emoji:"🥬" }, { id:"re", label:"Rẻ – SV", emoji:"💰" }, { id:"an-vat", label:"Ăn vặt", emoji:"🍪" },
 ];
 function recipeMatchesTag(r, tag){
   if(tag==="all") return true;
@@ -311,7 +311,7 @@ function nuPlanCardHTML(){
   const recDef = GOALS.find(g=>g.id===a.rec);
   const mismatch = recDef && a.rec !== p.goal && a.cat !== "Bình thường";
   const di = nuUI.planDay != null ? nuUI.planDay : (new Date().getDay()+6)%7;
-  const plan = buildDayPlan(p, di, { cuisine: nuUI.planCuisine||"all" });
+  const plan = buildDayPlan(p, di, { cuisine: nuUI.planCuisine||"all", veg: !!nuUI.planVeg });
   const total = Object.values(plan).reduce((s,r)=> s + recipeMacros(r).kcal, 0);
   const prot = Object.values(plan).reduce((s,r)=> s + recipeMacros(r).protein, 0);
   const DAYS = ["T2","T3","T4","T5","T6","T7","CN"];
@@ -325,6 +325,7 @@ function nuPlanCardHTML(){
     <div class="nu-plan-goal"><span>Mục tiêu: <b>${goalDef.label}</b></span><span><b>${(p.goalKcal||0).toLocaleString("vi-VN")}</b> kcal/ngày · đạm ${p.protein}g</span></div>
     <div class="section-title" style="margin:12px 0 6px;"><h3 style="font-size:16px;">Thực đơn gợi ý cho bạn</h3>
       <a data-plan-cz="${(nuUI.planCuisine||"all")==="all"?"vn":(nuUI.planCuisine==="vn"?"au":"all")}">${(nuUI.planCuisine||"all")==="all"?"Việt + Âu":(nuUI.planCuisine==="vn"?"Chỉ món Việt":"Chỉ món Âu")} ⇄</a></div>
+    <div class="nu-plan-opts"><button class="${nuUI.planVeg?'on':''}" data-plan-veg>🥬 Chỉ món chay</button></div>
     <div class="nu-plan-days">${DAYS.map((d,i)=>`<button class="${i===di?'on':''}" data-plan-day="${i}">${d}</button>`).join("")}</div>
     <div class="nu-plan-meals">${MEAL_TYPES.map(mt=>{ const r = plan[mt.id]; if(!r) return ""; const m = recipeMacros(r); return `
       <div class="nu-plan-meal" data-plan-open="${mt.id}">
@@ -339,8 +340,9 @@ function nuPlanCardHTML(){
 function bindPlanCard(el){
   const p = state.profile;
   const di = nuUI.planDay != null ? nuUI.planDay : (new Date().getDay()+6)%7;
-  const plan = buildDayPlan(p, di, { cuisine: nuUI.planCuisine||"all" });
+  const plan = buildDayPlan(p, di, { cuisine: nuUI.planCuisine||"all", veg: !!nuUI.planVeg });
   $$("[data-plan-day]", el).forEach(b=> b.addEventListener("click", ()=>{ nuUI.planDay = Number(b.dataset.planDay); renderNutritionScreen(); }));
+  $$("[data-plan-veg]", el).forEach(b=> b.addEventListener("click", ()=>{ nuUI.planVeg = !nuUI.planVeg; renderNutritionScreen(); }));
   $$("[data-plan-cz]", el).forEach(b=> b.addEventListener("click", ()=>{ nuUI.planCuisine = b.dataset.planCz; renderNutritionScreen(); }));
   $$("[data-plan-open]", el).forEach(b=> b.addEventListener("click", ()=> openRecipe(plan[b.dataset.planOpen].id, plan[b.dataset.planOpen])));
   $$("[data-switch-goal]", el).forEach(b=> b.addEventListener("click", ()=>{
@@ -371,8 +373,8 @@ openAddFood = function(mealId){
     return results.map(f=>`
       <div class="food-result fr-pic" data-pick="${f.id}">
         ${foodPic(f.id, "fr-img")}
-        <div class="fr-t"><div class="name">${f.name}</div><div class="kcal">/100g · Đ${f.protein} · TB${f.carbs} · B${f.fat}</div></div>
-        <b>${f.kcal} kcal</b>
+        <div class="fr-t"><div class="name">${f.name}</div><div class="kcal">${f.portion ? `${f.unit} ≈ ${f.portion}g` : "/100g"} · Đ${f.protein} · TB${f.carbs} · B${f.fat} /100g</div></div>
+        <b>${f.portion ? Math.round(f.kcal*f.portion/100) : f.kcal} kcal</b>
       </div>`).join("") || `<p class="empty-hint">Không tìm thấy món ăn phù hợp</p>`;
   };
   openSheet(`

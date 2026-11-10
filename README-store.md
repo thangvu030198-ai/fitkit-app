@@ -65,7 +65,12 @@ npx cap sync
 - `capacitor.config.json` → `"plugins": { "FirebaseAuthentication": { "skipNativeAuth": true, "providers": ["google.com", "facebook.com"] } }`
 Code app (`cloud.js`) đã tự nhận plugin này; chưa cài thì nút báo "chưa cấu hình" thay vì lỗi.
 
-⚠️ **App Store**: Apple bắt buộc (Guideline 4.8) — app có đăng nhập Google/Facebook phải có thêm **Đăng nhập với Apple** (hoặc một cách đăng nhập tương đương bảo vệ quyền riêng tư). Cần bổ sung trước khi nộp iOS.
+**Apple (bắt buộc cho App Store — Guideline 4.8, nút đã có sẵn)**
+1. developer.apple.com → Certificates, IDs & Profiles → App ID `vn.thangvu.fitkit` → bật **Sign In with Apple**.
+2. Tạo **Services ID** (VD `vn.thangvu.fitkit.web`) → bật Sign In with Apple → Return URL = OAuth redirect URI mà Firebase đưa.
+3. Tạo **Key** có quyền Sign In with Apple → tải file .p8, ghi Key ID + Team ID.
+4. Firebase → Authentication → Sign-in method → **Apple** → Enable → điền Services ID, Team ID, Key ID, nội dung .p8.
+5. App iOS: Xcode → Signing & Capabilities → + **Sign In with Apple**. Plugin `@capacitor-firebase/authentication` thêm `"apple.com"` vào `providers`.
 
 ## 2. Đẩy code lên GitHub
 
@@ -117,6 +122,9 @@ Mỗi lần commit, 2 workflow tự chạy (xem tab **Actions**):
 ---
 
 ## 5. Link chính sách bảo mật (store bắt buộc)
+
+**Link xoá tài khoản (Google Play bắt buộc — mục Data safety → "Delete account URL"):**
+`https://<tên-miền-của-bạn>/delete-account.html` (file `delete-account.html` đã có trong repo; bật GitHub Pages hoặc Firebase Hosting để có link). Trang cho phép đăng nhập rồi xoá vĩnh viễn tài khoản + dữ liệu, và hướng dẫn xoá trong app.
 
 File `privacy-policy.html` đã có sẵn. Cách lấy link miễn phí: repo GitHub → **Settings → Pages → Source: Deploy from a branch → main / (root) → Save**. Link sẽ là:
 `https://thangvu030198-ai.github.io/fitkit-app/privacy-policy.html`

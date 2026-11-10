@@ -95,7 +95,7 @@ const FV_SYN = [
 ];
 const FV_EQUIP = ["barbell","dumbbell","cable","machine","kettlebell","multipress","smith"];
 const FV_STOP = new Set(["the","with","on","and","a","of","exercise","standing","sitting","seated","laying","lying","one","arm","single","two","close","wide","grip","narrow","medium","legs","apart","mid","high","to","low","v","bar","sz","rope","back"]);
-const FV_MOD = new Set(["frontsquat","gobletsquat","rdl","bodyweight","inverted","incline","decline","bulgarian","split","hack","sumo","overhead","preacher","hipthrust","pushpress","supported"]);
+const FV_MOD = new Set(["frontsquat","gobletsquat","rdl","bodyweight","inverted","incline","decline","bulgarian","split","hack","sumo","overhead","preacher","hipthrust","pushpress","supported","bent"]);
 function fvTokens(name){
   let s = " " + String(name||"").toLowerCase().replace(/\(.*?\)/g, m=> " "+m.slice(1,-1)+" ").replace(/[-_,/]+/g," ") + " ";
   FV_SYN.forEach(([re, rep])=>{ s = s.replace(re, " "+rep+" "); });
@@ -111,12 +111,16 @@ function fvScore(target, cand){
   const cAll = c.core.concat(c.equip);
   if(t.core.some(w=> FV_MOD.has(w) && !cAll.includes(w))) return 0;   // bài có biến thể đặc thù (Front, Goblet, RDL…) → video phải đúng biến thể
   let s = 10 + hits.reduce((a,w)=> a + Math.min(w.length,12)/2, 0) - (t.core.length - hit)*0.5;   // từ ghép dài (gobletsquat) khớp → điểm cao hơn
-  if(c.equip.length && t.equip.length) s += c.equip.some(e=> t.equip.includes(e)) ? 4 : -6;
+  if(c.equip.length && t.equip.length){ if(!c.equip.some(e=> t.equip.includes(e))) return 0; s += 4; }   // khác dụng cụ → không dùng video
   return s;
 }
 /* Tên dùng để so khớp: ưu tiên phần tiếng Anh trong ngoặc "Đẩy ngực (Bench Press)" */
+const FV_EQUIP_VI = [[/tạ đơn/i,"dumbbell"],[/thanh đòn|đòn ez|tạ đòn/i,"barbell"],[/cáp/i,"cable"],[/máy smith/i,"smith"],[/\bmáy\b/i,"machine"],[/tạ ấm/i,"kettlebell"]];
 function fvMatchName(meta){
-  return String(meta && meta.name || meta || "");   // fvTokens tự tách phần trong ngoặc
+  const name = String(meta && meta.name || meta || "");   // fvTokens tự tách phần trong ngoặc
+  const eq = meta && meta.equipment ? FV_EQUIP_VI.filter(([re])=> re.test(meta.equipment)).map(([,en])=>en) : [];
+  // Thêm dụng cụ (theo tiếng Anh) nếu tên bài chưa nói rõ → loại video khác dụng cụ
+  return eq.length && !/dumbbell|barbell|cable|machine|kettlebell|smith|\bdb\b|\bbb\b/i.test(name) ? name + " " + eq.join(" ") : name;
 }
 async function findFreeExerciseVideos(meta){
   const target = fvMatchName(meta);

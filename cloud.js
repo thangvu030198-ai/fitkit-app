@@ -109,7 +109,7 @@ const cloud = (() => {
       let acc = db.accounts[email];
       if(!acc){
         const uid = rid("u"); acc = db.accounts[email] = { uid, pw: dHash(rid("x")), provider: kind };
-        db.users[uid] = { uid, email, name: kind==="google" ? "Bạn (Google)" : "Bạn (Facebook)", provider: kind, isPT:false, mainRole:null, createdAt: now() };
+        db.users[uid] = { uid, email, name: kind==="google" ? "Bạn (Google)" : kind==="apple" ? "Bạn (Apple)" : "Bạn (Facebook)", provider: kind, isPT:false, mainRole:null, createdAt: now() };
         dSave(db);
       }
       localStorage.setItem(DEMO_AUTH, acc.uid);
@@ -166,15 +166,17 @@ const cloud = (() => {
     if(isNative()){
       const P = nativeAuthPlugin();
       if(!P) throw dErr("social/not-configured");
-      const res = kind==="google" ? await P.signInWithGoogle() : await P.signInWithFacebook();
+      const res = kind==="google" ? await P.signInWithGoogle() : kind==="apple" ? await P.signInWithApple() : await P.signInWithFacebook();
       const c = res && res.credential || {};
       const credential = kind==="google"
         ? firebase.auth.GoogleAuthProvider.credential(c.idToken || null, c.accessToken || null)
+        : kind==="apple"
+        ? new firebase.auth.OAuthProvider("apple.com").credential({ idToken: c.idToken, rawNonce: c.nonce })
         : firebase.auth.FacebookAuthProvider.credential(c.accessToken);
       return reauthUser ? reauthUser.reauthenticateWithCredential(credential) : fb.auth.signInWithCredential(credential);
     }
-    const provider = kind==="google" ? new firebase.auth.GoogleAuthProvider() : new firebase.auth.FacebookAuthProvider();
-    provider.addScope("email");
+    const provider = kind==="google" ? new firebase.auth.GoogleAuthProvider() : kind==="apple" ? new firebase.auth.OAuthProvider("apple.com") : new firebase.auth.FacebookAuthProvider();
+    provider.addScope("email"); if(kind==="apple") provider.addScope("name");
     if(kind==="google") provider.setCustomParameters({ prompt:"select_account" });
     if(reauthUser) return reauthUser.reauthenticateWithPopup(provider);
     try{ return await fb.auth.signInWithPopup(provider); }
@@ -193,7 +195,7 @@ const cloud = (() => {
       fb = { auth: firebase.auth(), db: firebase.firestore() };
       try{ await fb.db.enablePersistence({ synchronizeTabs:true }); }catch(e){ /* chạy tiếp không cache offline */ }
       // Hoàn tất đăng nhập Google/Facebook kiểu redirect (khi popup bị chặn): tạo hồ sơ nếu chưa có
-      try{ const rr = await fb.auth.getRedirectResult(); if(rr && rr.user && !(await firebaseEngine.getUser(rr.user.uid))){ const pid=(rr.additionalUserInfo&&rr.additionalUserInfo.providerId)||"google.com"; await fb.db.collection("users").doc(rr.user.uid).set({ uid:rr.user.uid, email:rr.user.email||"", name:rr.user.displayName||"Bạn", photo:rr.user.photoURL||null, provider: pid.startsWith("facebook")?"facebook":"google", isPT:false, mainRole:null, createdAt: now() }); } }catch(e){}
+      try{ const rr = await fb.auth.getRedirectResult(); if(rr && rr.user && !(await firebaseEngine.getUser(rr.user.uid))){ const pid=(rr.additionalUserInfo&&rr.additionalUserInfo.providerId)||"google.com"; await fb.db.collection("users").doc(rr.user.uid).set({ uid:rr.user.uid, email:rr.user.email||"", name:rr.user.displayName||"Bạn", photo:rr.user.photoURL||null, provider: pid.startsWith("facebook")?"facebook":pid.startsWith("apple")?"apple":"google", isPT:false, mainRole:null, createdAt: now() }); } }catch(e){}
       await new Promise(resolve=>{
         let first = true;
         fb.auth.onAuthStateChanged(async u=>{
@@ -279,7 +281,7 @@ const cloud = (() => {
       const u = fb.auth.currentUser;
       const pid = (u.providerData[0] && u.providerData[0].providerId) || "password";
       if(pid === "password") await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, pw));
-      else await socialCredentialSignIn(pid.startsWith("facebook") ? "facebook" : "google", u);   // xác thực lại bằng Google/Facebook
+      else await socialCredentialSignIn(pid.startsWith("facebook") ? "facebook" : pid.startsWith("apple") ? "apple" : "google", u);   // xác thực lại bằng Google/Facebook
       for(const c of await firebaseEngine.listClientsAsPT(u.uid)) await firebaseEngine.deleteClient(c.id);
       for(const c of await firebaseEngine.listClientsAsStudent(u.uid)){
         await fb.db.collection("clients").doc(c.id).update({ studentUid:null, studentName:null, studentEmail:null });
@@ -320,6 +322,7 @@ const cloud = (() => {
     signIn: wrap(async (email, pw)=>{ await engine.signIn(email, pw); emit(); return user; }),
     signInWithGoogle: wrap(async ()=>{ await engine.signInSocial("google"); emit(); return user; }),
     signInWithFacebook: wrap(async ()=>{ await engine.signInSocial("facebook"); emit(); return user; }),
+    signInWithApple: wrap(async ()=>{ await engine.signInSocial("apple"); emit(); return user; }),
     get isSocialUser(){ return !!(profile && profile.provider && profile.provider!=="password"); },
     signOut: wrap(async ()=>{ await engine.signOut(); emit(); }),
     resetPassword: wrap(email=> engine.resetPassword(email)),

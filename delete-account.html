@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Xoá tài khoản FIT KIT</title>
+<style>
+  body{ margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:#061A24; color:#E8F3F1; line-height:1.6; }
+  main{ max-width:620px; margin:0 auto; padding:32px 20px 60px; }
+  h1{ font-size:26px; margin:0 0 6px; } h2{ font-size:18px; margin:28px 0 8px; color:#5EE6C7; }
+  .card{ background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14); border-radius:18px; padding:18px; margin-top:14px; }
+  label{ display:block; font-size:13px; margin:10px 0 4px; color:#9FB1B9; }
+  input{ width:100%; box-sizing:border-box; height:46px; border-radius:12px; border:1px solid rgba(255,255,255,.2); background:rgba(0,0,0,.25); color:#fff; padding:0 12px; font-size:16px; }
+  button{ height:46px; border:0; border-radius:999px; padding:0 20px; font:600 15px/1 inherit; cursor:pointer; margin-top:12px; }
+  .danger{ background:#FF7A45; color:#fff; } .ghost{ background:rgba(255,255,255,.1); color:#fff; }
+  .muted{ color:#9FB1B9; font-size:14px; } .err{ color:#FFB08A; } .ok{ color:#5EE6C7; }
+  ul{ padding-left:20px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Xoá tài khoản FIT KIT</h1>
+  <p class="muted">Trang này dành cho người dùng muốn xoá tài khoản và dữ liệu của mình mà không cần mở app.</p>
+
+  <h2>Cách 1 — Xoá ngay trong app</h2>
+  <p>Mở FIT KIT → <b>Hồ sơ</b> → <b>Tài khoản</b> → <b>Xoá tài khoản</b> → xác nhận.</p>
+
+  <h2>Cách 2 — Xoá trên trang này</h2>
+  <div class="card" id="box">
+    <p class="muted" id="status">Đang kiểm tra cấu hình…</p>
+    <div id="form" hidden>
+      <label for="em">Email đăng nhập</label><input id="em" type="email" autocomplete="email">
+      <label for="pw">Mật khẩu</label><input id="pw" type="password" autocomplete="current-password">
+      <button class="danger" id="go">Đăng nhập & xoá vĩnh viễn</button>
+      <button class="ghost" id="gg">Tôi đăng nhập bằng Google</button>
+      <p class="err" id="err"></p>
+    </div>
+  </div>
+
+  <h2>Dữ liệu sẽ bị xoá</h2>
+  <ul>
+    <li>Tài khoản đăng nhập (email / Google / Facebook / Apple) và hồ sơ của bạn.</li>
+    <li>Nếu bạn là PT: toàn bộ hồ sơ học viên bạn tạo, buổi tập, ghi chú, mã mời.</li>
+    <li>Nếu bạn là học viên: liên kết của bạn với PT (dữ liệu PT tự quản lý vẫn thuộc PT).</li>
+  </ul>
+  <p class="muted">Việc xoá diễn ra ngay lập tức và không thể khôi phục. Dữ liệu tập luyện chỉ lưu trên điện thoại của bạn sẽ mất khi gỡ app. Bản sao lưu kỹ thuật (nếu có) được xoá tự động trong tối đa 30 ngày.</p>
+
+  <h2>Cần hỗ trợ?</h2>
+  <p class="muted">Liên hệ chủ ứng dụng qua email hỗ trợ ghi trong trang Chính sách bảo mật (privacy-policy.html) với tiêu đề "Xoá tài khoản" và email đã đăng ký. Chúng tôi xử lý trong 7 ngày làm việc.</p>
+</main>
+<script src="firebase-config.js"></script>
+<script>
+(async function(){
+  const st = document.getElementById("status");
+  const has = typeof FIREBASE_CONFIG !== "undefined" && FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey;
+  if(!has){ st.textContent = "Máy chủ tài khoản chưa được bật cho bản này — hãy xoá trong app (Cách 1) hoặc liên hệ hỗ trợ."; return; }
+  const V = "10.12.2", base = `https://www.gstatic.com/firebasejs/${V}`;
+  const load = src => new Promise((ok, no)=>{ const s=document.createElement("script"); s.src=src; s.onload=ok; s.onerror=no; document.head.appendChild(s); });
+  try{
+    await load(`${base}/firebase-app-compat.js`);
+    await Promise.all([load(`${base}/firebase-auth-compat.js`), load(`${base}/firebase-firestore-compat.js`)]);
+  }catch(e){ st.textContent = "Không tải được dịch vụ, kiểm tra mạng rồi thử lại."; return; }
+  firebase.initializeApp(FIREBASE_CONFIG);
+  const auth = firebase.auth(), db = firebase.firestore();
+  st.textContent = "Đăng nhập để xác nhận đúng chủ tài khoản:";
+  document.getElementById("form").hidden = false;
+  const err = document.getElementById("err");
+  async function wipe(u){
+    if(!confirm("Xoá vĩnh viễn tài khoản " + (u.email||"") + "? Không thể hoàn tác.")) return;
+    const asPT = await db.collection("clients").where("ptId","==",u.uid).get();
+    for(const d of asPT.docs){
+      for(const sub of ["sessions","notes"]){ const q = await d.ref.collection(sub).get(); await Promise.all(q.docs.map(x=>x.ref.delete())); }
+      const c = d.data(); if(c.joinCode) await db.collection("joinCodes").doc(c.joinCode).delete().catch(()=>{});
+      await d.ref.delete();
+    }
+    const asSt = await db.collection("clients").where("studentUid","==",u.uid).get();
+    for(const d of asSt.docs) await d.ref.update({ studentUid:null, studentName:null, studentEmail:null });
+    await db.collection("users").doc(u.uid).delete().catch(()=>{});
+    await u.delete();
+    document.getElementById("box").innerHTML = '<p class="ok">Đã xoá tài khoản và dữ liệu của bạn. Cảm ơn bạn đã dùng FIT KIT.</p>';
+  }
+  document.getElementById("go").onclick = async ()=>{
+    err.textContent = "";
+    try{ const c = await auth.signInWithEmailAndPassword(document.getElementById("em").value.trim(), document.getElementById("pw").value); await wipe(c.user); }
+    catch(e){ err.textContent = "Không xoá được: " + (e.code==="auth/invalid-credential"||e.code==="auth/wrong-password" ? "email hoặc mật khẩu không đúng." : e.message); }
+  };
+  document.getElementById("gg").onclick = async ()=>{
+    err.textContent = "";
+    try{ const c = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); await wipe(c.user); }
+    catch(e){ err.textContent = "Không xoá được: " + e.message; }
+  };
+})();
+</script>
+</body>
+</html>

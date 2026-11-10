@@ -664,32 +664,98 @@ function startSession(dayKey){
   session = { dayKey, idx:0, items: day.items.slice(), isToday: dayKey===todayDayKey(), completed: [] };
   renderSessionStep();
 }
+/* ---- Buổi tập: ghi kg × lần từng hiệp, nghỉ giữa hiệp (rung + âm báo), điền sẵn buổi trước ---- */
+function exKey(item){ return item.exerciseId || ("c:" + (getExerciseMeta(item).name||"")); }
+function repTop(reps){ const m = String(reps||"").match(/(\d+)\s*[-–]\s*(\d+)/); if(m) return Number(m[2]); const n = String(reps||"").match(/^\s*(\d+)/); return n ? Number(n[1]) : 0; }
+function isTimedReps(reps){ return /giây|phút|\bm\b|km|vòng/i.test(String(reps||"")) || !repTop(reps); }
+function beep(){
+  try{ navigator.vibrate && navigator.vibrate([200,100,200]); }catch(e){}
+  try{ const C = window.AudioContext || window.webkitAudioContext; const ctx = window._fkAudio || (window._fkAudio = new C());
+    [0, .25].forEach(t=>{ const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(.0001, ctx.currentTime+t); g.gain.exponentialRampToValueAtTime(.3, ctx.currentTime+t+.02); g.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime+t+.18);
+      o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+.2); }); }catch(e){}
+}
+async function keepAwake(on){
+  try{ if(on && "wakeLock" in navigator){ window._fkWake = await navigator.wakeLock.request("screen"); } else if(!on && window._fkWake){ await window._fkWake.release(); window._fkWake = null; } }catch(e){}
+}
 function renderSessionStep(){
+  if(!session) return;
   if(session.idx >= session.items.length){ return finishSession(); }
+  if(session.idx===0 && !session._awake){ session._awake = true; keepAwake(true); }
   const item = session.items[session.idx];
   const meta = getExerciseMeta(item);
-  const mediaHtml = item.clipId
-    ? mediaVideoHTML(item.clipId, "session-video", { maxHeight: "40vh" })
-    : `<img src="${meta.img}" style="width:100%;height:170px;object-fit:cover;border-radius:16px;margin-bottom:14px;">`;
-  openSheet(`
-    <div class="progress-row"><span class="label">Bài ${session.idx+1}/${session.items.length}</span><span class="value">${session.dayKey===todayDayKey()?'Hôm nay':'Xem trước'}</span></div>
-    <div class="progress-track" style="margin-bottom:14px;"><div class="progress-fill" style="width:${(session.idx/session.items.length)*100}%"></div></div>
-    ${mediaHtml}
-    <h3 style="font-size:20px;">${meta.name}</h3>
-    <div class="chip-row" style="margin:10px 0;"><span class="pill hot">${item.sets} hiệp × ${item.reps}</span><span class="pill">Nghỉ ${item.restSec}s</span></div>
-    <p style="font-size:13.5px;line-height:1.6;color:var(--text-muted);margin-bottom:16px;">${meta.guide}</p>
-    <button class="btn btn-primary btn-block" id="btn-session-done"><span class="material-symbols-rounded">check</span>Hoàn thành bài này</button>
-    <button class="btn btn-ghost btn-block" id="btn-session-skip" style="margin-top:8px;">Bỏ qua</button>
-  `);
-  if(item.clipId){
-    mountClipVideo("#session-video", item.clipId);
+  const key = exKey(item);
+  state.setLog = state.setLog || {};
+  const last = state.setLog[key];
+  const timed = isTimedReps(item.reps);
+  const nSets = Math.max(1, Number(item.sets)||1);
+  session.sets = session.sets || {};
+  if(!session.sets[item.uid]){
+    session.sets[item.uid] = Array.from({length:nSets}, (_,i)=>{ const l = last && last.sets && (last.sets[i] || last.sets[last.sets.length-1]); return { kg: l ? l.kg : "", reps: l ? l.reps : (timed ? "" : repTop(item.reps)||""), done:false }; });
   }
+  const rows = session.sets[item.uid];
+  const top = repTop(item.reps);
+  const hitTop = last && !timed && top && last.sets.length >= nSets && last.sets.every(x=> Number(x.reps) >= top && Number(x.kg) > 0);
+  const lastTxt = last && last.sets && last.sets.length ? `Lần trước (${last.date.slice(8,10)}/${last.date.slice(5,7)}): ${last.sets.map(x=> timed ? "✓" : `${x.kg||0}kg×${x.reps}`).join(" · ")}` : "";
+  const mediaHtml = item.clipId
+    ? mediaVideoHTML(item.clipId, "session-video", { maxHeight: "34vh" })
+    : `<img src="${meta.img}" style="width:100%;height:150px;object-fit:cover;border-radius:16px;margin-bottom:12px;" onerror="this.style.display='none'">`;
+  openSheet(`
+    <div class="progress-row"><span class="label">Bài ${session.idx+1}/${session.items.length}</span><span class="value">${session.isToday?'Hôm nay':'Xem trước'}</span></div>
+    <div class="progress-track" style="margin-bottom:12px;"><div class="progress-fill" style="width:${(session.idx/session.items.length)*100}%"></div></div>
+    ${mediaHtml}
+    <h3 style="font-size:19px;">${escapeHtml(meta.name)}</h3>
+    <div class="chip-row" style="margin:8px 0;"><span class="pill hot">${item.sets} hiệp × ${escapeHtml(String(item.reps))}</span><span class="pill">Nghỉ ${item.restSec}s</span></div>
+    ${lastTxt ? `<p class="small-note set-last">${escapeHtml(lastTxt)}</p>` : ""}
+    ${hitTop ? `<div class="set-up"><span class="material-symbols-rounded">trending_up</span><span>Lần trước bạn đạt ${top} lần ở mọi hiệp — hôm nay thử <b>tăng 2,5 kg</b> (tạ đơn: lên 1 nấc).</span></div>` : ""}
+    <div class="set-table">
+      <div class="set-head"><span>Hiệp</span>${timed ? `<span style="flex:2">Mục tiêu</span>` : `<span>Kg</span><span>Lần</span>`}<span></span></div>
+      ${rows.map((r,i)=>`
+      <div class="set-row ${r.done?'done':''}" data-set="${i}">
+        <b>${i+1}</b>
+        ${timed ? `<span style="flex:2" class="small-note">${escapeHtml(String(item.reps))}</span>`
+          : `<input type="number" inputmode="decimal" min="0" max="500" step="0.5" value="${r.kg}" data-kg="${i}" placeholder="kg">
+             <input type="number" inputmode="numeric" min="0" max="200" value="${r.reps}" data-reps="${i}" placeholder="lần">`}
+        <button class="set-check" data-done="${i}" aria-label="Xong hiệp ${i+1}"><span class="material-symbols-rounded">check</span></button>
+      </div>`).join("")}
+    </div>
+    <div class="set-rest" id="set-rest" hidden><span class="material-symbols-rounded">timer</span><b id="rest-num">0</b><small>giây nghỉ</small><button id="rest-plus">+15s</button><button id="rest-skip">Bỏ qua</button></div>
+    <details class="set-guide"><summary>Hướng dẫn kỹ thuật</summary><p>${escapeHtml(meta.guide||"")}</p></details>
+    <button class="btn btn-primary btn-block" id="btn-session-done" style="margin-top:12px;"><span class="material-symbols-rounded">check</span>${session.idx < session.items.length-1 ? "Xong bài — bài tiếp" : "Xong bài — kết thúc buổi"}</button>
+    <button class="btn btn-ghost btn-block" id="btn-session-skip" style="margin-top:6px;">Bỏ qua bài này</button>
+  `);
+  if(item.clipId) mountClipVideo("#session-video", item.clipId);
+  const clamp = (v,min,max)=> Math.min(max, Math.max(min, Number(v)||0));
+  $$("#sheet-content [data-kg]").forEach(inp=> inp.addEventListener("change", ()=>{ const v = clamp(inp.value,0,500); inp.value = v; rows[inp.dataset.kg].kg = v; }));
+  $$("#sheet-content [data-reps]").forEach(inp=> inp.addEventListener("change", ()=>{ const v = Math.round(clamp(inp.value,0,200)); inp.value = v; rows[inp.dataset.reps].reps = v; }));
+  $$("#sheet-content [data-done]").forEach(b=> b.addEventListener("click", ()=>{
+    const i = Number(b.dataset.done); const r = rows[i];
+    r.done = !r.done;
+    b.closest(".set-row").classList.toggle("done", r.done);
+    if(r.done && i < rows.length-1 && item.restSec > 0) startSetRest(item.restSec);
+  }));
   $("#btn-session-done").addEventListener("click", ()=>{
+    const doneRows = rows.filter(r=>r.done);
+    const keep = (doneRows.length ? doneRows : rows).map(r=>({ kg: Number(r.kg)||0, reps: timed ? 0 : Number(r.reps)||0 }));
+    state.setLog[key] = { date: todayStr(), sets: keep, reps: item.reps };
     session.completed.push(item.uid);
-    if(item.restSec>0 && session.idx < session.items.length-1) restCountdown(item.restSec);
-    else { session.idx++; renderSessionStep(); }
+    stopSetRest(); saveState();
+    session.idx++; renderSessionStep();
   });
-  $("#btn-session-skip").addEventListener("click", ()=>{ session.idx++; renderSessionStep(); });
+  $("#btn-session-skip").addEventListener("click", ()=>{ stopSetRest(); session.idx++; renderSessionStep(); });
+}
+function stopSetRest(){ clearInterval(window._restTimer); const el = $("#set-rest"); if(el) el.hidden = true; }
+function startSetRest(sec){
+  const box = $("#set-rest"); if(!box) return;
+  let remain = sec; box.hidden = false; $("#rest-num").textContent = remain;
+  clearInterval(window._restTimer);
+  window._restTimer = setInterval(()=>{
+    if(!session || !$("#rest-num")){ clearInterval(window._restTimer); return; }
+    remain--; $("#rest-num").textContent = Math.max(0, remain);
+    if(remain <= 0){ clearInterval(window._restTimer); box.hidden = true; beep(); toast("Hết giờ nghỉ — vào hiệp tiếp!", "timer"); }
+  }, 1000);
+  $("#rest-plus").onclick = ()=>{ remain += 15; $("#rest-num").textContent = remain; };
+  $("#rest-skip").onclick = stopSetRest;
 }
 function restCountdown(sec){
   let remain = sec;
@@ -712,6 +778,8 @@ function restCountdown(sec){
   $("#btn-skip-rest").addEventListener("click", ()=>{ clearInterval(timer); session.idx++; renderSessionStep(); });
 }
 function finishSession(){
+  keepAwake(false); clearInterval(window._restTimer);
+  if(session.sets){ let vol=0; Object.values(session.sets).forEach(rs=>rs.forEach(r=>{ if(r.done) vol += (Number(r.kg)||0)*(Number(r.reps)||0); })); session.volume = Math.round(vol); }
   if(session.isToday){
     const dateKey = todayStr();
     const prev = state.workoutLog[dateKey];
@@ -725,6 +793,7 @@ function finishSession(){
       <span class="material-symbols-rounded" style="font-size:56px;color:var(--success);">military_tech</span>
       <h3 style="font-size:22px;margin-top:10px;">Hoàn thành buổi tập!</h3>
       <p class="small-note" style="margin-top:6px;">${session.completed.length}/${session.items.length} bài tập đã hoàn thành${session.isToday ? " · Đã lưu vào nhật ký" : " · Chế độ xem trước, chưa lưu"}</p>
+      ${session.volume ? `<p style="margin-top:10px;font-size:15px;">Tổng khối lượng: <b>${session.volume.toLocaleString("vi-VN")} kg</b></p>` : ""}
       <button class="btn btn-primary btn-block" style="margin-top:20px;" onclick="closeSheet();renderWorkoutScreen();">Xong</button>
     </div>
   `);
@@ -2131,9 +2200,9 @@ function openFoodQuantity(food, mealId){
   });
   openSheet(`
     <div class="sheet-header"><h3>${food.name}</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
-    <div class="field"><label>Khối lượng (gram)</label><input type="number" id="qty-input" value="100" min="1"></div>
+    <div class="field"><label>Khối lượng (gram)${food.portion ? ` · ${food.unit} ≈ ${food.portion}g` : ""}</label><input type="number" id="qty-input" value="${food.portion||100}" min="1" max="3000"></div>
     <div class="stat-grid" style="margin-top:14px;">
-      <div class="stat-box"><div class="num" id="qty-kcal">${food.kcal}</div><div class="cap">Kcal</div></div>
+      <div class="stat-box"><div class="num" id="qty-kcal">${Math.round(food.kcal*(food.portion||100)/100)}</div><div class="cap">Kcal</div></div>
       <div class="stat-box"><div class="num" id="qty-protein">${food.protein}g</div><div class="cap">Protein</div></div>
       <div class="stat-box"><div class="num" id="qty-carbs">${food.carbs}g</div><div class="cap">Carbs</div></div>
     </div>
@@ -2148,7 +2217,8 @@ function openFoodQuantity(food, mealId){
   };
   $("#qty-input").addEventListener("input", update);
   $("#btn-confirm-food").addEventListener("click", ()=>{
-    const g = Number($("#qty-input").value)||100;
+    const g = Math.min(3000, Math.max(1, Number($("#qty-input").value)||0));
+    if(!Number($("#qty-input").value) || Number($("#qty-input").value) <= 0){ toast("Nhập khối lượng lớn hơn 0", "error"); return; }
     const c = calc(g);
     getDayFoodLog()[mealId].push({ name: food.name, grams: g, ...c });
     saveState();
@@ -2732,3 +2802,24 @@ function init(){
   }
 }
 // init() được gọi từ pt.js (appBoot) sau khi kiểm tra đăng nhập
+
+/* ---------------------------------------------------------------------
+   NÚT QUAY LẠI (Android) / phím Esc (web)
+   Thứ tự: đóng sheet → về màn trước (màn phụ) → về Trang chủ → thoát app
+   --------------------------------------------------------------------- */
+function fkHandleBack(){
+  if($("#sheet-backdrop") && $("#sheet-backdrop").classList.contains("open")){ closeSheet(); return true; }
+  const auth = $("#auth"); if(auth && !auth.hidden && getComputedStyle(auth).display!=="none") return false;
+  const cur = ($(".screen.active")||{}).id || "";
+  const name = cur.replace("screen-","");
+  if(SUB_SCREENS.includes(name)){ goto(name==="client" ? "coach" : name==="exlib" || name==="plans" || name==="library" ? "workout" : "home"); return true; }
+  if(name && name!=="home"){ goto("home"); return true; }
+  return false;
+}
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && $("#sheet-backdrop").classList.contains("open")) closeSheet(); });
+(function(){
+  try{
+    const App = window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.App;
+    if(App && App.addListener) App.addListener("backButton", ()=>{ if(!fkHandleBack()) App.exitApp(); });
+  }catch(e){}
+})();
