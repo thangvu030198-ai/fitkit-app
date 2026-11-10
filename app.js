@@ -690,12 +690,13 @@ function renderSessionStep(){
   const timed = isTimedReps(item.reps);
   const nSets = Math.max(1, Number(item.sets)||1);
   session.sets = session.sets || {};
+  const top = repTop(item.reps);
+  const prog = progressionFor(item, meta, last, timed, nSets);
   if(!session.sets[item.uid]){
-    session.sets[item.uid] = Array.from({length:nSets}, (_,i)=>{ const l = last && last.sets && (last.sets[i] || last.sets[last.sets.length-1]); return { kg: l ? l.kg : "", reps: l ? l.reps : (timed ? "" : repTop(item.reps)||""), done:false }; });
+    session.sets[item.uid] = Array.from({length:nSets}, (_,i)=>{ const l = last && last.sets && (last.sets[i] || last.sets[last.sets.length-1]);
+      return { kg: l ? (prog.delta ? prog.kg : l.kg) : "", reps: timed ? "" : (repBottom(item.reps)||top||""), rpe:"", done:false }; });
   }
   const rows = session.sets[item.uid];
-  const top = repTop(item.reps);
-  const hitTop = last && !timed && top && last.sets.length >= nSets && last.sets.every(x=> Number(x.reps) >= top && Number(x.kg) > 0);
   const lastTxt = last && last.sets && last.sets.length ? `Lần trước (${last.date.slice(8,10)}/${last.date.slice(5,7)}): ${last.sets.map(x=> timed ? "✓" : `${x.kg||0}kg×${x.reps}`).join(" · ")}` : "";
   const mediaHtml = item.clipId
     ? mediaVideoHTML(item.clipId, "session-video", { maxHeight: "34vh" })
@@ -707,15 +708,17 @@ function renderSessionStep(){
     <h3 style="font-size:19px;">${escapeHtml(meta.name)}</h3>
     <div class="chip-row" style="margin:8px 0;"><span class="pill hot">${item.sets} hiệp × ${escapeHtml(String(item.reps))}</span><span class="pill">Nghỉ ${item.restSec}s</span></div>
     ${lastTxt ? `<p class="small-note set-last">${escapeHtml(lastTxt)}</p>` : ""}
-    ${hitTop ? `<div class="set-up"><span class="material-symbols-rounded">trending_up</span><span>Lần trước bạn đạt ${top} lần ở mọi hiệp — hôm nay thử <b>tăng 2,5 kg</b> (tạ đơn: lên 1 nấc).</span></div>` : ""}
+    ${prog.msg ? `<div class="set-up ${prog.delta<0?'down':''}"><span class="material-symbols-rounded">${prog.delta<0?'trending_down':'trending_up'}</span><span>${prog.msg}</span></div>` : ""}
+    ${!timed ? `<div class="set-tools"><button data-tool="warm"><span class="material-symbols-rounded">local_fire_department</span>Khởi động</button><button data-tool="plate"><span class="material-symbols-rounded">fitness_center</span>Đĩa tạ</button><button data-tool="hist"><span class="material-symbols-rounded">show_chart</span>Lịch sử</button></div><div class="set-toolbox" id="set-toolbox" hidden></div>` : ""}
     <div class="set-table">
-      <div class="set-head"><span>Hiệp</span>${timed ? `<span style="flex:2">Mục tiêu</span>` : `<span>Kg</span><span>Lần</span>`}<span></span></div>
+      <div class="set-head"><span>Hiệp</span>${timed ? `<span style="flex:2">Mục tiêu</span>` : `<span>Kg</span><span>Lần</span><span class="rpe-h">RPE</span>`}<span></span></div>
       ${rows.map((r,i)=>`
       <div class="set-row ${r.done?'done':''}" data-set="${i}">
         <b>${i+1}</b>
         ${timed ? `<span style="flex:2" class="small-note">${escapeHtml(String(item.reps))}</span>`
           : `<input type="number" inputmode="decimal" min="0" max="500" step="0.5" value="${r.kg}" data-kg="${i}" placeholder="kg">
-             <input type="number" inputmode="numeric" min="0" max="200" value="${r.reps}" data-reps="${i}" placeholder="lần">`}
+             <input type="number" inputmode="numeric" min="0" max="200" value="${r.reps}" data-reps="${i}" placeholder="lần">
+             <select class="rpe" data-rpe="${i}" aria-label="RPE hiệp ${i+1}"><option value="">–</option>${[6,7,7.5,8,8.5,9,9.5,10].map(v=>`<option ${String(r.rpe)===String(v)?'selected':''}>${v}</option>`).join("")}</select>`}
         <button class="set-check" data-done="${i}" aria-label="Xong hiệp ${i+1}"><span class="material-symbols-rounded">check</span></button>
       </div>`).join("")}
     </div>
@@ -728,6 +731,15 @@ function renderSessionStep(){
   const clamp = (v,min,max)=> Math.min(max, Math.max(min, Number(v)||0));
   $$("#sheet-content [data-kg]").forEach(inp=> inp.addEventListener("change", ()=>{ const v = clamp(inp.value,0,500); inp.value = v; rows[inp.dataset.kg].kg = v; }));
   $$("#sheet-content [data-reps]").forEach(inp=> inp.addEventListener("change", ()=>{ const v = Math.round(clamp(inp.value,0,200)); inp.value = v; rows[inp.dataset.reps].reps = v; }));
+  $$("#sheet-content [data-rpe]").forEach(sel=> sel.addEventListener("change", ()=>{ rows[sel.dataset.rpe].rpe = sel.value; }));
+  $$("#sheet-content [data-tool]").forEach(b=> b.addEventListener("click", ()=>{
+    const box = $("#set-toolbox"); const k = b.dataset.tool;
+    if(k==="hist"){ openExerciseHistory(key, meta.name, ()=>renderSessionStep()); return; }
+    if(!box.hidden && box.dataset.k===k){ box.hidden = true; return; }
+    box.dataset.k = k; box.hidden = false;
+    const kg = Number((rows.find(r=>Number(r.kg)>0)||{}).kg)||0;
+    box.innerHTML = k==="warm" ? warmupHTML(kg, meta) : plateHTML(kg);
+  }));
   $$("#sheet-content [data-done]").forEach(b=> b.addEventListener("click", ()=>{
     const i = Number(b.dataset.done); const r = rows[i];
     r.done = !r.done;
@@ -736,25 +748,26 @@ function renderSessionStep(){
   }));
   $("#btn-session-done").addEventListener("click", ()=>{
     const doneRows = rows.filter(r=>r.done);
-    const keep = (doneRows.length ? doneRows : rows).map(r=>({ kg: Number(r.kg)||0, reps: timed ? 0 : Number(r.reps)||0 }));
-    state.setLog[key] = { date: todayStr(), sets: keep, reps: item.reps };
+    const keep = (doneRows.length ? doneRows : rows).map(r=>({ kg: Number(r.kg)||0, reps: timed ? 0 : Number(r.reps)||0, rpe: r.rpe ? Number(r.rpe) : undefined }));
+    recordExerciseResult(key, meta.name, item.reps, keep, timed);
     session.completed.push(item.uid);
     stopSetRest(); saveState();
     session.idx++; renderSessionStep();
   });
   $("#btn-session-skip").addEventListener("click", ()=>{ stopSetRest(); session.idx++; renderSessionStep(); });
 }
-function stopSetRest(){ clearInterval(window._restTimer); const el = $("#set-rest"); if(el) el.hidden = true; }
+function stopSetRest(){ clearInterval(window._restTimer); cancelRestNotif(); const el = $("#set-rest"); if(el) el.hidden = true; }
 function startSetRest(sec){
   const box = $("#set-rest"); if(!box) return;
   let remain = sec; box.hidden = false; $("#rest-num").textContent = remain;
+  scheduleRestNotif(sec);
   clearInterval(window._restTimer);
   window._restTimer = setInterval(()=>{
     if(!session || !$("#rest-num")){ clearInterval(window._restTimer); return; }
     remain--; $("#rest-num").textContent = Math.max(0, remain);
     if(remain <= 0){ clearInterval(window._restTimer); box.hidden = true; beep(); toast("Hết giờ nghỉ — vào hiệp tiếp!", "timer"); }
   }, 1000);
-  $("#rest-plus").onclick = ()=>{ remain += 15; $("#rest-num").textContent = remain; };
+  $("#rest-plus").onclick = ()=>{ remain += 15; $("#rest-num").textContent = remain; scheduleRestNotif(remain); };
   $("#rest-skip").onclick = stopSetRest;
 }
 function restCountdown(sec){
@@ -778,7 +791,7 @@ function restCountdown(sec){
   $("#btn-skip-rest").addEventListener("click", ()=>{ clearInterval(timer); session.idx++; renderSessionStep(); });
 }
 function finishSession(){
-  keepAwake(false); clearInterval(window._restTimer);
+  keepAwake(false); clearInterval(window._restTimer); cancelRestNotif();
   if(session.sets){ let vol=0; Object.values(session.sets).forEach(rs=>rs.forEach(r=>{ if(r.done) vol += (Number(r.kg)||0)*(Number(r.reps)||0); })); session.volume = Math.round(vol); }
   if(session.isToday){
     const dateKey = todayStr();
@@ -794,6 +807,7 @@ function finishSession(){
       <h3 style="font-size:22px;margin-top:10px;">Hoàn thành buổi tập!</h3>
       <p class="small-note" style="margin-top:6px;">${session.completed.length}/${session.items.length} bài tập đã hoàn thành${session.isToday ? " · Đã lưu vào nhật ký" : " · Chế độ xem trước, chưa lưu"}</p>
       ${session.volume ? `<p style="margin-top:10px;font-size:15px;">Tổng khối lượng: <b>${session.volume.toLocaleString("vi-VN")} kg</b></p>` : ""}
+      ${session.prs && session.prs.length ? `<div class="pr-list">${session.prs.map(x=>`<div>🏆 <b>${escapeHtml(x.name)}</b> — kỷ lục mới ~${x.e1rm} kg (1RM ước tính)</div>`).join("")}</div>` : ""}
       <button class="btn btn-primary btn-block" style="margin-top:20px;" onclick="closeSheet();renderWorkoutScreen();">Xong</button>
     </div>
   `);
@@ -2823,3 +2837,129 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape" && $("#sheet-backd
     if(App && App.addListener) App.addListener("backButton", ()=>{ if(!fkHandleBack()) App.exitApp(); });
   }catch(e){}
 })();
+
+
+/* =====================================================================
+   TIẾN TRÌNH TỰ ĐỘNG · KHỞI ĐỘNG · ĐĨA TẠ · LỊCH SỬ & KỶ LỤC · BÁO NGHỈ
+   ===================================================================== */
+function repBottom(reps){ const m = String(reps||"").match(/(\d+)\s*[-–]\s*(\d+)/); return m ? Number(m[1]) : repTop(reps); }
+function e1rm(kg, reps){ kg = Number(kg)||0; reps = Number(reps)||0; if(!kg || !reps) return 0; return reps===1 ? kg : kg*(1+reps/30); }   // công thức Epley
+function roundTo(x, step){ return Math.round(x/step)*step; }
+function weightStep(meta){ const eq = String(meta && meta.equipment || ""); return /tạ đơn|tạ ấm/i.test(eq) && !/thanh đòn/i.test(eq) ? 2 : 2.5; }
+/* Quy tắc: đạt ĐỈNH khoảng lần ở mọi hiệp → +1 nấc tạ · trượt (dưới ĐÁY khoảng lần) 2 buổi liền → giảm 10% */
+function progressionFor(item, meta, last, timed, nSets){
+  if(timed || !last || !last.sets || !last.sets.length) return { delta:0 };
+  const top = repTop(item.reps), step = weightStep(meta);
+  const baseKg = Math.max(...last.sets.map(x=>Number(x.kg)||0));
+  if(!baseKg) return { delta:0 };
+  if((last.fails||0) >= 2){
+    const kg = Math.max(step, roundTo(baseKg*0.9, step));
+    return { delta:-1, kg, msg:`Bạn đã trượt mục tiêu 2 buổi liền → app tự <b>giảm tải còn ${kg} kg</b> để lấy lại đà rồi tăng tiếp.` };
+  }
+  if(top && last.sets.length >= nSets && last.sets.every(x=> Number(x.reps) >= top)){
+    const kg = roundTo(baseKg + step, step === 2 ? 1 : 2.5);
+    return { delta:1, kg, msg:`Lần trước đạt ${top} lần ở mọi hiệp → app đã <b>tự tăng lên ${kg} kg</b> (+${step} kg).` };
+  }
+  return { delta:0 };
+}
+function recordExerciseResult(key, name, reps, sets, timed){
+  state.setLog = state.setLog || {}; state.setHist = state.setHist || {};
+  const prev = state.setLog[key];
+  const bottom = repBottom(reps);
+  const failed = !timed && bottom && sets.some(x=> x.kg>0 && x.reps < bottom);
+  state.setLog[key] = { date: todayStr(), sets, reps, fails: failed ? ((prev && prev.fails)||0) + 1 : 0 };
+  if(timed) return;
+  const best = Math.max(0, ...sets.map(x=> e1rm(x.kg, x.reps)));
+  const vol = sets.reduce((a,x)=> a + (x.kg||0)*(x.reps||0), 0);
+  const h = state.setHist[key] = state.setHist[key] || { name, list:[] };
+  h.name = name;
+  const prevBest = Math.max(0, ...h.list.map(x=> x.e1rm||0));
+  const today = todayStr();
+  h.list = h.list.filter(x=> x.date !== today);
+  h.list.push({ date: today, e1rm: Math.round(best*10)/10, top: Math.max(0,...sets.map(x=>x.kg||0)), vol: Math.round(vol), sets });
+  h.list.sort((a,b)=> a.date < b.date ? -1 : 1);
+  if(h.list.length > 120) h.list = h.list.slice(-120);
+  if(best > 0 && prevBest > 0 && best > prevBest + 0.4 && session){
+    session.prs = session.prs || []; session.prs.push({ name, e1rm: Math.round(best) });
+    toast(`🏆 Kỷ lục mới: ${name} ~${Math.round(best)} kg`, "military_tech");
+  }
+}
+function warmupHTML(kg, meta){
+  if(!kg || kg < 20) return `<p class="small-note">Nhập mức tạ hiệp chính (≥ 20 kg) để app chia hiệp khởi động. Tạ nhẹ: khởi động 1 hiệp 10–12 lần với ~50% mức tạ.</p>`;
+  const step = weightStep(meta);
+  const plan = [[0.4,8],[0.6,5],[0.8,3],[0.9,1]].filter(([p])=> kg*p >= 10);
+  return `<div class="tb-title">Khởi động trước hiệp chính ${kg} kg</div>` + plan.map(([p,r],i)=>`<div class="tb-row"><span>Hiệp ${i+1}</span><b>${roundTo(kg*p, step)} kg × ${r}</b><small>${Math.round(p*100)}%</small></div>`).join("") + `<p class="small-note">Nghỉ 30–60 giây giữa các hiệp khởi động.</p>`;
+}
+function plateHTML(kg){
+  const bar = 20, plates = [25,20,15,10,5,2.5,1.25];
+  if(!kg || kg <= bar) return `<p class="small-note">Thanh đòn tiêu chuẩn nặng 20 kg. Nhập mức tạ lớn hơn 20 kg để xem cách lắp đĩa.</p>`;
+  let side = (kg - bar)/2; const used = [];
+  plates.forEach(p=>{ while(side >= p - 1e-6){ used.push(p); side -= p; } });
+  const colors = {25:"#E5484D",20:"#3E7BFA",15:"#F5C542",10:"#3DBE7A",5:"#ECEDEE",2.5:"#9AA4AE",1.25:"#C6CCD2"};
+  return `<div class="tb-title">${kg} kg = thanh 20 kg + mỗi bên ${roundTo((kg-bar)/2,0.25)} kg</div>
+    <div class="plate-viz"><i class="bar"></i>${used.map(p=>`<i class="pl" style="--c:${colors[p]};--h:${30+p*1.6}px" title="${p} kg"></i>`).join("")}</div>
+    <div class="tb-row"><span>Mỗi bên</span><b>${used.join(" + ") || "—"}</b></div>${side>0.01?`<p class="small-note">Còn lẻ ${roundTo(side,0.25)} kg mỗi bên — làm tròn tạ cho vừa đĩa.</p>`:""}`;
+}
+function sparkSVG(vals, w=300, h=110){
+  if(vals.length < 2) return `<p class="small-note">Cần ít nhất 2 buổi để vẽ biểu đồ.</p>`;
+  const mn = Math.min(...vals), mx = Math.max(...vals), pad = 10, rng = (mx-mn)||1;
+  const pts = vals.map((v,i)=> [pad + i*(w-2*pad)/(vals.length-1), h-pad - (v-mn)/rng*(h-2*pad)]);
+  const d = pts.map((p,i)=> (i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  return `<svg viewBox="0 0 ${w} ${h}" class="spark"><path d="${d} L${pts[pts.length-1][0]} ${h} L${pts[0][0]} ${h} Z" class="area"/><path d="${d}" class="line"/>${pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3"/>`).join("")}</svg>`;
+}
+function openExerciseHistory(key, name, onBack){
+  const h = (state.setHist||{})[key];
+  const list = h ? h.list : [];
+  const best = list.reduce((a,x)=> x.e1rm > (a?a.e1rm:0) ? x : a, null);
+  const heaviest = list.reduce((a,x)=> Math.max(a, x.top||0), 0);
+  openSheet(`
+    <div class="sheet-header">${onBack?`<button class="icon-btn" id="hist-back"><span class="material-symbols-rounded">arrow_back</span></button>`:""}<h3 style="flex:1;margin-left:8px;font-size:17px;">${escapeHtml(name)}</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
+    ${list.length ? `
+    <div class="stat-grid" style="margin:4px 0 12px;">
+      <div class="stat-box"><div class="num">${best ? Math.round(best.e1rm) : "–"}</div><div class="cap">1RM ước tính (kg)</div></div>
+      <div class="stat-box"><div class="num">${heaviest||"–"}</div><div class="cap">Tạ nặng nhất</div></div>
+      <div class="stat-box"><div class="num">${list.length}</div><div class="cap">Buổi đã tập</div></div>
+    </div>
+    <div class="card-title" style="font-size:13px;">1RM ước tính qua các buổi</div>
+    ${sparkSVG(list.map(x=>x.e1rm))}
+    <div class="card-title" style="font-size:13px;margin-top:12px;">Các buổi gần đây</div>
+    ${list.slice(-8).reverse().map(x=>`<div class="tb-row"><span>${x.date.slice(8,10)}/${x.date.slice(5,7)}</span><b>${x.sets.map(s=>`${s.kg}×${s.reps}`).join(" · ")}</b><small>${x.vol.toLocaleString("vi-VN")} kg</small></div>`).join("")}
+    <p class="small-note" style="margin-top:8px;">1RM ước tính theo công thức Epley: tạ × (1 + lần/30).</p>`
+    : `<p class="empty-hint">Chưa có dữ liệu — hoàn thành bài này trong buổi tập để bắt đầu theo dõi.</p>`}
+  `);
+  const b = $("#hist-back"); if(b) b.addEventListener("click", onBack);
+}
+/* Kỷ lục cá nhân: thẻ trong màn Tiến độ */
+function prCardHTML(){
+  const H = state.setHist || {};
+  const rows = Object.entries(H).map(([k,h])=>({ k, name:h.name, best: Math.max(0,...h.list.map(x=>x.e1rm||0)), n:h.list.length, last:h.list[h.list.length-1] })).filter(x=>x.best>0).sort((a,b)=> b.best-a.best);
+  if(!rows.length) return "";
+  return `<div class="card pr-card"><div class="card-title"><span class="material-symbols-rounded">military_tech</span>Kỷ lục cá nhân</div>
+    ${rows.slice(0,12).map(x=>`<div class="tb-row" data-pr="${escapeHtml(x.k)}"><span>${escapeHtml(x.name)}</span><b>${Math.round(x.best)} kg</b><small>${x.n} buổi ›</small></div>`).join("")}
+    <p class="small-note">1RM ước tính · chạm vào một bài để xem biểu đồ.</p></div>`;
+}
+(function(){
+  const _rp = renderProgressScreen;
+  renderProgressScreen = function(){
+    _rp.apply(this, arguments);
+    const host = $("#screen-progress .content") || $("#screen-progress");
+    if(!host) return;
+    const old = host.querySelector(".pr-card"); if(old) old.remove();
+    const html = prCardHTML(); if(!html) return;
+    const w = document.createElement("div"); w.innerHTML = html; const card = w.firstElementChild;
+    host.insertBefore(card, host.children[1] || null);
+    $$("[data-pr]", card).forEach(r=> r.addEventListener("click", ()=>{ const h = state.setHist[r.dataset.pr]; openExerciseHistory(r.dataset.pr, h.name); }));
+  };
+})();
+/* Báo hết giờ nghỉ khi điện thoại khoá màn hình (thông báo cục bộ trên app cài từ store) */
+async function scheduleRestNotif(sec){
+  try{
+    const P = window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform() && Capacitor.Plugins.LocalNotifications;
+    if(!P) return;
+    await P.cancel({ notifications:[{ id: 900 }] }).catch(()=>{});
+    await P.schedule({ notifications:[{ id: 900, title:"Hết giờ nghỉ 💪", body:"Vào hiệp tiếp theo thôi!", schedule:{ at: new Date(Date.now()+sec*1000), allowWhileIdle:true } }] });
+  }catch(e){}
+}
+async function cancelRestNotif(){
+  try{ const P = window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.LocalNotifications; if(P && Capacitor.isNativePlatform()) await P.cancel({ notifications:[{ id: 900 }] }); }catch(e){}
+}

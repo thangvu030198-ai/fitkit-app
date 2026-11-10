@@ -11,6 +11,7 @@ const FKP = d=>d.split("|").map(s=> s.startsWith("c:") ? (a=>`<circle cx="${a[0]
 const FK_CAL = "r:3,4,18,18,2.5|M16 2v4|M8 2v4|M3 10h18";
 const FK_USER = "c:12,8,4|M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1";
 const FK_LINE = {
+  trending_down:"M22 17l-8.5-8.5-5 5L2 7|M16 17h6v-6",
   swap_horiz:"M16 3l4 4-4 4|M20 7H4|M8 21l-4-4 4-4|M4 17h16", playlist_add:"M3 6h12|M3 12h12|M3 18h8|M18 14v8|M14 18h8",
   lightbulb:"M9 18h6|M10 22h4|M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z", mode_fan:"c:12,12,2|M12 10c0-4 1-7 4-7s3 5-2 7|M14 12c4 0 7 1 7 4s-5 3-7-2|M12 14c0 4-1 7-4 7s-3-5 2-7|M10 12c-4 0-7-1-7-4s5-3 7 2",
   soup_kitchen:"M4 11h16a8 8 0 0 1-16 0z|M8 21h8|M9 3c0 2-1 2-1 4|M13 3c0 2-1 2-1 4|M17 3c0 2-1 2-1 4", skillet:"c:10,13,7|M17 13h5",

@@ -1419,3 +1419,22 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible, input:focu
 .nu-plan-opts button{ padding:7px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:#fff; font:600 12px/1 inherit; min-height:34px; }
 .nu-plan-opts button.on{ background:var(--mint,#5EE6C7); color:var(--navy,#061A24); border-color:transparent; }
 .btn-social.apple{ background:#000; color:#fff; border-color:#000; }
+
+/* Đợt 1: tiến trình tự động, khởi động, đĩa tạ, kỷ lục */
+.set-up.down{ background:rgba(255,122,69,.14); color:#FFB08A; }
+.set-tools{ display:flex; gap:6px; margin:0 0 8px; }
+.set-tools button{ flex:1; display:flex; align-items:center; justify-content:center; gap:6px; height:40px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:#fff; font:600 12.5px/1 inherit; }
+.set-tools svg, .set-tools .material-symbols-rounded{ width:16px; height:16px; }
+.set-toolbox{ margin:0 0 10px; padding:12px; border-radius:14px; background:rgba(6,26,36,.55); border:1px solid rgba(255,255,255,.12); }
+.set-toolbox[hidden]{ display:none; }
+.tb-title{ font-weight:600; font-size:13.5px; margin-bottom:6px; }
+.tb-row{ display:flex; align-items:center; gap:10px; padding:8px 2px; border-bottom:1px solid rgba(255,255,255,.08); font-size:13px; cursor:default; }
+.tb-row span{ flex:1; min-width:0; color:var(--text-muted); } .tb-row b{ font-weight:600; } .tb-row small{ color:var(--text-muted); min-width:52px; text-align:right; }
+.pr-card .tb-row{ cursor:pointer; }
+.plate-viz{ display:flex; align-items:center; gap:3px; height:80px; margin:6px 0; }
+.plate-viz .bar{ width:60px; height:8px; border-radius:4px; background:#9AA4AE; }
+.plate-viz .pl{ width:12px; height:var(--h); border-radius:3px; background:var(--c); box-shadow:inset 0 0 0 1px rgba(0,0,0,.25); }
+.set-row select.rpe{ flex:0 0 58px; height:44px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:rgba(6,26,36,.5); color:#fff; font:600 14px/1 inherit; text-align:center; }
+.set-head .rpe-h{ flex:0 0 58px; }
+.spark{ width:100%; height:auto; } .spark .line{ fill:none; stroke:var(--mint,#5EE6C7); stroke-width:2.5; } .spark .area{ fill:rgba(94,230,199,.12); } .spark circle{ fill:var(--coral,#FF7A45); }
+.pr-list{ margin-top:12px; display:flex; flex-direction:column; gap:6px; font-size:13.5px; }
