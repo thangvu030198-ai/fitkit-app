@@ -15,12 +15,12 @@ const MUSCLE_GROUPS_UI = [
   { id:"forearms",  label:"Cẳng tay",     icon:"fitness_center", ex:["forearms"],                               vi:[] },
   { id:"abs",       label:"Bụng",         icon:"fitness_center", ex:["abdominals"],                             vi:["Bụng"] },
   { id:"quads",     label:"Đùi trước",    icon:"fitness_center", ex:["quadriceps"],                             vi:["Chân"] },
-  { id:"hams",      label:"Đùi sau",      icon:"fitness_center", ex:["hamstrings"],                             vi:[] },
-  { id:"glutes",    label:"Mông & hông",  icon:"fitness_center", ex:["glutes","abductors","adductors"],         vi:[] },
+  { id:"hams",      label:"Đùi sau",      icon:"fitness_center", ex:["hamstrings"],                             vi:["Đùi sau"] },
+  { id:"glutes",    label:"Mông & hông",  icon:"fitness_center", ex:["glutes","abductors","adductors"],         vi:["Mông"] },
   { id:"calves",    label:"Bắp chân",     icon:"fitness_center", ex:["calves"],                                 vi:[] },
   { id:"full",      label:"Toàn thân",    icon:"bolt",           cat:["plyometrics","strongman","olympic weightlifting"], vi:["Toàn thân"] },
   { id:"cardio",    label:"Cardio",       icon:"directions_run", cat:["cardio"],                                vi:["Tim mạch"] },
-  { id:"stretch",   label:"Giãn cơ",      icon:"self_improvement", cat:["stretching"],                          vi:[] },
+  { id:"stretch",   label:"Giãn cơ",      icon:"self_improvement", cat:["stretching"],                          vi:["Giãn cơ"] },
 ];
 const EQUIP_FILTERS = [
   { id:"all", label:"Mọi dụng cụ" }, { id:"body only", label:"Không dụng cụ" }, { id:"dumbbell", label:"Tạ đơn" },
@@ -193,7 +193,7 @@ function openLibDetail(key){
     onSheetCloseHook = ()=> clearInterval(timer);
   }
   $("#ld-add").addEventListener("click", ()=> openAddToPlan(key));
-  mountVideoBlock(vb.id, videoQueryFor({ name:x.name, muscle:x.muscleVi }), {});
+  mountVideoBlock(vb.id, videoQueryFor({ name:x.name, muscle:x.muscleVi }), { name:x.name });
 }
 
 /* ---- Thêm vào giáo án: chọn ngày ---- */

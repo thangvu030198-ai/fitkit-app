@@ -490,7 +490,7 @@ function renderHomeScreen(){
       <div class="entry-tile" onclick="openFindPTSoon()"><span class="ic" style="--c:#FFB08A"><span class="material-symbols-rounded">travel_explore</span></span><b>Tìm PT</b><small class="soon-badge">Sắp ra mắt</small></div>
     </div>
     <div class="quick-row">
-      <button onclick="goto('plans')"><span class="material-symbols-rounded">edit_calendar</span>Giáo án</button>
+      <button onclick="openTemplateBrowser()"><span class="material-symbols-rounded">school</span>Giáo án mẫu</button>
       <button onclick="goto('progress')"><span class="material-symbols-rounded">insights</span>Tiến độ</button>
       <button onclick="openExLib()"><span class="material-symbols-rounded">library_books</span>Bài tập</button>
       <button onclick="goto('sleep')"><span class="material-symbols-rounded">bedtime</span>Giấc ngủ</button>
@@ -611,7 +611,8 @@ function openCreditsSheet(){
     <div class="policy-text">
       <p><b>Thư viện 800+ bài tập:</b> free-exercise-db của yuhonas (github.com/yuhonas/free-exercise-db), giấy phép Unlicense (Public Domain).</p>
       <p><b>Ảnh minh hoạ:</b> Pexels (pexels.com), theo Pexels License — dùng thương mại miễn phí.</p>
-      <p><b>Video minh hoạ:</b> Videos provided by Pexels (pexels.com) và Pixabay (pixabay.com), theo Pexels License / Pixabay Content License. Tên tác giả hiển thị dưới mỗi video.</p>
+      <p><b>Video hướng dẫn bài tập:</b> Exercise video by Your Move (ymove.app/exercise-api) — 25 video miễn phí, dùng thương mại có ghi nguồn. Video từ wger.de (tác giả ghi dưới mỗi video), giấy phép CC BY-SA 4.0, FIT KIT đã nén lại; bản nén phát hành cùng giấy phép CC BY-SA 4.0.</p>
+      <p><b>Video tham khảo:</b> Videos provided by Pexels (pexels.com) và Pixabay (pixabay.com), theo Pexels License / Pixabay Content License. Tên tác giả hiển thị dưới mỗi video.</p>
       <p><b>Giá trị dinh dưỡng:</b> tham khảo USDA FoodData Central (dữ liệu công khai của Chính phủ Hoa Kỳ).</p>
       <p><b>Công thức khoa học:</b> Mifflin-St Jeor (1990), khuyến nghị đạm ISSN (2017), khuyến nghị giấc ngủ National Sleep Foundation &amp; CDC.</p>
       <p><b>Biểu tượng:</b> Font Awesome 4.7 của Dave Gandy (SIL Open Font License 1.1).</p>

@@ -549,7 +549,7 @@ function openSessionExerciseDetail(e){
     ${e.guide ? `<div class="card-title" style="margin-top:12px;font-size:13px;">Hướng dẫn</div><p class="small-note" style="white-space:pre-line;">${escapeHtml(e.guide)}</p>` : ""}
   `);
   const stock = e.stock || (isMp4 ? { url:e.videoUrl, provider:"PT", author:"Video PT gửi", pageUrl:e.videoUrl } : null);
-  mountVideoBlock(vb.id, videoQueryFor(e), { stock });
+  mountVideoBlock(vb.id, videoQueryFor(e), { name:e.name, stock });
   const v = $("#sx-video"); if(v) v.addEventListener("click", ()=> openExternal(e.videoUrl));
 }
 function openExternal(url){

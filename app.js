@@ -347,6 +347,7 @@ $$(".btn-menu-trigger").forEach(btn=> btn.addEventListener("click", ()=>{
       <div class="link-row" onclick="goto('sleep');closeSheet();"><div class="left"><span class="material-symbols-rounded">bedtime</span><div class="name">Giấc ngủ</div></div><span class="material-symbols-rounded">chevron_right</span></div>
       <div class="link-row" onclick="goto('profile');closeSheet();"><div class="left"><span class="material-symbols-rounded">person</span><div class="name">Hồ sơ của tôi</div></div><span class="material-symbols-rounded">chevron_right</span></div>
       <div class="link-row" onclick="goto('reminders');closeSheet();"><div class="left"><span class="material-symbols-rounded">notifications_active</span><div class="name">Nhắc nhở</div></div><span class="material-symbols-rounded">chevron_right</span></div>
+      <div class="link-row" onclick="openTemplateBrowser();"><div class="left"><span class="material-symbols-rounded">school</span><div class="name">Giáo án mẫu Nam / Nữ theo cấp độ</div></div><span class="material-symbols-rounded">chevron_right</span></div>
       <div class="link-row" onclick="openExLib();closeSheet();"><div class="left"><span class="material-symbols-rounded">library_books</span><div class="name">Thư viện bài tập theo nhóm cơ</div></div><span class="material-symbols-rounded">chevron_right</span></div>
       <div class="link-row" onclick="goto('plans');closeSheet();"><div class="left"><span class="material-symbols-rounded">edit_calendar</span><div class="name">Quản lý chương trình tập</div></div><span class="material-symbols-rounded">chevron_right</span></div>
       <div class="link-row" onclick="goto('library');closeSheet();"><div class="left"><span class="material-symbols-rounded">video_library</span><div class="name">Kho video của tôi</div></div><span class="material-symbols-rounded">chevron_right</span></div>
@@ -964,7 +965,8 @@ function renderPlansScreen(){
   }
 }
 function renderPlanListHTML(){
-  return `<p class="small-note" style="margin-bottom:12px;">Tạo nhiều chương trình khác nhau, thêm bài tập của riêng bạn và chọn chương trình đang áp dụng.</p>` +
+  return `<button class="tpl-banner" onclick="openTemplateBrowser()"><span class="material-symbols-rounded">school</span><div><b>Giáo án mẫu quốc tế</b><small>Nam · Nữ · Mới tập → Nâng cao (5×5, PHUL, PPL, Glute, Couch to 5K…)</small></div><span class="material-symbols-rounded">chevron_right</span></button>
+    <p class="small-note" style="margin:12px 0;">Tạo nhiều chương trình khác nhau, thêm bài tập của riêng bạn và chọn chương trình đang áp dụng.</p>` +
     Object.values(state.plans).map(plan=>{
     const activeDays = Object.values(plan.days).filter(d=>d.items.length).length;
     const isActive = plan.id === state.activePlanId;

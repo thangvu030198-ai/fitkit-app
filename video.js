@@ -132,6 +132,8 @@ function stockVideoHTML(stock, opts={}){
 }
 function stockCreditHTML(s){
   if(!s) return "";
+  if(s.provider==="YMove") return `<div class="stock-credit">Exercise video by <a href="https://ymove.app/exercise-api" target="_blank" rel="noopener">Your Move</a></div>`;
+  if(s.provider==="wger") return `<div class="stock-credit">Video: <a href="${escapeHtml(s.pageUrl||"https://wger.de")}" target="_blank" rel="noopener">${escapeHtml(String(s.author||"").split(" · ")[0])} / wger.de</a> · <a href="${escapeHtml(s.authorUrl||"https://creativecommons.org/licenses/by-sa/4.0/")}" target="_blank" rel="noopener">CC BY-SA 4.0</a> · đã nén lại</div>`;
   return `<div class="stock-credit">Video: <a href="${escapeHtml(s.authorUrl||s.pageUrl||"#")}" target="_blank" rel="noopener">${escapeHtml(s.author||"")}</a> / <a href="${escapeHtml(s.pageUrl||"#")}" target="_blank" rel="noopener">${escapeHtml(s.provider||"")}</a></div>`;
 }
 function stockFromVideo(v){ return { url:v.url, thumb:v.thumb, provider:v.provider, author:v.author, authorUrl:v.authorUrl, pageUrl:v.pageUrl }; }
@@ -232,8 +234,16 @@ async function mountVideoBlock(id, query, opts={}){
   const host = document.getElementById(id); if(!host) return;
   let list = [];
   if(opts.stock && opts.stock.url) list.push(Object.assign({ duration:opts.stock.duration||0 }, opts.stock, { _saved:true }));
+  // 1) Video hướng dẫn đúng bài (YMove / wger) — ưu tiên tuyệt đối
   try{
-    if(hasVideoSource()){
+    if(typeof findFreeExerciseVideos==="function"){
+      const free = await findFreeExerciseVideos(opts.name || (Array.isArray(query) ? query[0] : query));
+      free.forEach(v=>{ if(!list.some(x=>x.url===v.url)) list.push(Object.assign({ _guide:true }, v)); });
+    }
+  }catch(e){}
+  // 2) Không có video hướng dẫn → video tham khảo từ Pixabay
+  try{
+    if(hasVideoSource() && !list.some(x=>x._guide)){
       const qs = Array.isArray(query) ? query : videoQueriesFromString(query);
       for(const q of qs){
         const found = await searchVideos(q);
@@ -256,7 +266,7 @@ async function mountVideoBlock(id, query, opts={}){
         <video playsinline preload="metadata" ${v.thumb?`poster="${escapeHtml(v.thumb)}"`:""} src="${escapeHtml(v.url)}"></video>
         <button class="vp-play" aria-label="Phát video"><span class="material-symbols-rounded">play_arrow</span></button>
         <span class="vp-time">${fmtDur(v.duration)}</span>
-        ${v._saved ? `<span class="vp-saved">Đã gắn cho bài</span>` : ""}
+        ${v._saved ? `<span class="vp-saved">Đã gắn cho bài</span>` : (v._guide || v.provider==="YMove" || v.provider==="wger") ? `<span class="vp-saved guide">Video hướng dẫn</span>` : `<span class="vp-saved ref">Video tham khảo</span>`}
       </div>
       <div class="vb-foot">${stockCreditHTML(v)}${opts.onSave && !v._saved ? `<button class="vb-save" type="button"><span class="material-symbols-rounded">check</span>Gắn video này</button>` : ""}</div>
       ${list.length > 1 ? `<div class="vthumbs">${list.slice(0,8).map((x,i)=>`
@@ -295,7 +305,7 @@ openExerciseDetail = function(itemUid, isToday){
   const wrap = document.createElement("div"); wrap.innerHTML = vb.html;
   if(!item.clipId){ const img = sheet.querySelector("img"); if(img) img.replaceWith(wrap.firstElementChild); else sheet.prepend(wrap.firstElementChild); }
   else { const after = $("#btn-fit-toggle-detail") || sheet.querySelector("video"); (after||sheet.firstElementChild).after(wrap.firstElementChild); }
-  mountVideoBlock(vb.id, videoQueryFor(meta), { stock:item.stock, onSave: st=>{ item.stock = st; saveState(); renderWorkoutScreen(); } });
+  mountVideoBlock(vb.id, videoQueryFor(meta), { name:meta.name, stock:item.stock, onSave: st=>{ item.stock = st; saveState(); renderWorkoutScreen(); } });
 };
 const _renderSessionStepV1 = renderSessionStep;
 renderSessionStep = function(){
@@ -305,7 +315,7 @@ renderSessionStep = function(){
   if(item && !item.clipId){
     const img = $("#sheet-content img"); if(!img) return;
     const vb = videoBlockHTML(); const w = document.createElement("div"); w.innerHTML = vb.html; img.replaceWith(w.firstElementChild);
-    mountVideoBlock(vb.id, videoQueryFor(getExerciseMeta(item)), { stock:item.stock, onSave: st=>{ item.stock = st; saveState(); } });
+    mountVideoBlock(vb.id, videoQueryFor(getExerciseMeta(item)), { name:getExerciseMeta(item).name, stock:item.stock, onSave: st=>{ item.stock = st; saveState(); } });
   }
 };
 
@@ -316,7 +326,7 @@ openExDbDetail = function(ex, onBack){
   const anim = $("#exdb-anim"); if(!anim) return;
   const vb = videoBlockHTML(); anim.insertAdjacentHTML("beforebegin", vb.html);
   anim.classList.add("exdb-anim-small");
-  mountVideoBlock(vb.id, ex.name + " exercise", {});
+  mountVideoBlock(vb.id, ex.name + " exercise", { name:ex.name });
 };
 
 /* 3. Màn mở app: video nền */
