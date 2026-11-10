@@ -269,7 +269,9 @@ function bodyAnalysis(p){
   else if(bmi < 18.5){ cat="Thiếu cân"; rec="gain"; color="#FFB08A"; advice="Bạn cần ăn DƯ khoảng 10–15% calo mỗi ngày, ưu tiên đạm và tinh bột tốt, kết hợp tập tạ để tăng cơ – tăng cân lành mạnh."; }
   else if(bmi < 23){ cat="Bình thường"; rec=p.goal||"maintain"; color="#5EE6C7"; advice="Cân nặng đang khoẻ mạnh. Giữ calo quanh mức duy trì để siết dáng, hoặc dư nhẹ nếu muốn tăng cơ."; }
   else if(bmi < 25){ cat="Thừa cân"; rec="lose"; color="#FFB08A"; advice="Nên ăn THÂM HỤT khoảng 15–20% calo để giảm mỡ ~0,5 kg/tuần, giữ đạm cao để không mất cơ."; }
-  else { cat="Béo phì"; rec="lose"; color="#FF7A45"; advice="Nên ăn THÂM HỤT khoảng 20% calo, tăng rau và đạm nạc, đi bộ nhiều hơn. Nếu có bệnh nền, hỏi ý kiến bác sĩ trước."; }
+  else { cat = bmi < 30 ? "Béo phì độ I" : "Béo phì độ II"; rec="lose"; color="#FF7A45"; advice="Nên ăn THÂM HỤT khoảng 20% calo, tăng rau và đạm nạc, đi bộ nhiều hơn. Nếu có bệnh nền, hỏi ý kiến bác sĩ trước."; }
+  if(bmi && bmi >= 23) advice += " (BMI không phân biệt cơ và mỡ — người tập tạ lâu năm có thể có BMI cao dù ít mỡ.)";
+  if(p.age && p.age < 18) advice = "Bạn dưới 18 tuổi: nên ăn đủ năng lượng để phát triển, không tự ăn kiêng thâm hụt — hãy hỏi ý kiến bác sĩ/chuyên gia dinh dưỡng.";
   return { bmi: Math.round(bmi*10)/10, cat, rec, color, advice };
 }
 
