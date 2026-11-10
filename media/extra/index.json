@@ -336,5 +336,328 @@
   "source": "https://commons.wikimedia.org/wiki/File:Kettlebell_Farmer_Walks.webm",
   "srcId": "Kettlebell Farmer Walks.webm",
   "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "bentoverrow",
+  "name": "Bent-over Row",
+  "alias": [
+   "Kéo tạ gập người"
+  ],
+  "file": "bentoverrow.mp4",
+  "thumb": "bentoverrow.jpg",
+  "duration": 5,
+  "provider": "Wikimedia Commons",
+  "author": "FitnessScape",
+  "license": "CC BY 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Bent-over_row_-_exercise_demonstration_video.webm",
+  "srcId": "Bent-over row - exercise demonstration video.webm",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "lunges",
+  "name": "Forward Lunge",
+  "alias": [
+   "Lunge (Bước chùng chân)"
+  ],
+  "file": "lunges.mp4",
+  "thumb": "lunges.jpg",
+  "duration": 20,
+  "provider": "Wikimedia Commons",
+  "author": "Army Combat Fitness Test",
+  "license": "Public domain",
+  "licenseUrl": "",
+  "source": "https://commons.wikimedia.org/wiki/File:Strength_Training_Circuit-_Forward_Lunge.webm",
+  "srcId": "Strength Training Circuit- Forward Lunge.webm",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-sledpush-1",
+  "name": "Sled Push",
+  "alias": [
+   "Đẩy xe trượt"
+  ],
+  "file": "ai-sledpush-1.mp4",
+  "thumb": "ai-sledpush-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-412cb355.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-sledpush-2",
+  "name": "Sled Push",
+  "alias": [
+   "Đẩy xe trượt"
+  ],
+  "file": "ai-sledpush-2.mp4",
+  "thumb": "ai-sledpush-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-529c58ca.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-wallball-1",
+  "name": "Wall Ball",
+  "alias": [
+   "Ném bóng tường"
+  ],
+  "file": "ai-wallball-1.mp4",
+  "thumb": "ai-wallball-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-f510788c.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-wallball-2",
+  "name": "Wall Ball",
+  "alias": [
+   "Ném bóng tường"
+  ],
+  "file": "ai-wallball-2.mp4",
+  "thumb": "ai-wallball-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-0e8fb632.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-russiantwist-1",
+  "name": "Russian Twist",
+  "alias": [
+   "russian twist"
+  ],
+  "file": "ai-russiantwist-1.mp4",
+  "thumb": "ai-russiantwist-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-1797d154.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-russiantwist-2",
+  "name": "Russian Twist",
+  "alias": [
+   "russian twist"
+  ],
+  "file": "ai-russiantwist-2.mp4",
+  "thumb": "ai-russiantwist-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-bb4f2b33.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-deadbug-1",
+  "name": "Dead Bug",
+  "alias": [
+   "Bọ chết"
+  ],
+  "file": "ai-deadbug-1.mp4",
+  "thumb": "ai-deadbug-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-44458f34.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-deadbug-2",
+  "name": "Dead Bug",
+  "alias": [
+   "Bọ chết"
+  ],
+  "file": "ai-deadbug-2.mp4",
+  "thumb": "ai-deadbug-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-e8cef05e.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-pullover-1",
+  "name": "Dumbbell Pullover",
+  "alias": [
+   "Pullover tạ đơn"
+  ],
+  "file": "ai-pullover-1.mp4",
+  "thumb": "ai-pullover-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-05f5734b.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-pullover-2",
+  "name": "Dumbbell Pullover",
+  "alias": [
+   "Pullover tạ đơn"
+  ],
+  "file": "ai-pullover-2.mp4",
+  "thumb": "ai-pullover-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-a415db3e.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-csrow-1",
+  "name": "Chest Supported Row",
+  "alias": [
+   "Kéo tạ tì ngực"
+  ],
+  "file": "ai-csrow-1.mp4",
+  "thumb": "ai-csrow-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-225a3b6f.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-csrow-2",
+  "name": "Chest Supported Row",
+  "alias": [
+   "Kéo tạ tì ngực"
+  ],
+  "file": "ai-csrow-2.mp4",
+  "thumb": "ai-csrow-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-489c0850_1.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-bentoverrow-1",
+  "name": "Barbell Bent-over Row",
+  "alias": [
+   "Kéo tạ gập người"
+  ],
+  "file": "ai-bentoverrow-1.mp4",
+  "thumb": "ai-bentoverrow-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-28c70f2f.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-bentoverrow-2",
+  "name": "Barbell Bent-over Row",
+  "alias": [
+   "Kéo tạ gập người"
+  ],
+  "file": "ai-bentoverrow-2.mp4",
+  "thumb": "ai-bentoverrow-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-786f4b33.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-overheadpress-1",
+  "name": "Barbell Overhead Press",
+  "alias": [
+   "Đẩy vai (Overhead Press)"
+  ],
+  "file": "ai-overheadpress-1.mp4",
+  "thumb": "ai-overheadpress-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-2bb2a6a9.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-overheadpress-2",
+  "name": "Barbell Overhead Press",
+  "alias": [
+   "Đẩy vai (Overhead Press)"
+  ],
+  "file": "ai-overheadpress-2.mp4",
+  "thumb": "ai-overheadpress-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-ffa37803.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-bulgarian-1",
+  "name": "Bulgarian Split Squat",
+  "alias": [
+   "Squat tách chân Bulgaria"
+  ],
+  "file": "ai-bulgarian-1.mp4",
+  "thumb": "ai-bulgarian-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "srcId": "media/intake/video-eb60b604.mp4",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
  }
 ]
