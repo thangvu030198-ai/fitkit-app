@@ -1,0 +1,30 @@
+name: Media — tải & nén video bài tập wger (CC BY-SA)
+
+# Lấy video bài tập miễn phí từ wger.de, nén nhẹ cho điện thoại, lưu vào media/wger/
+# App phát qua CDN jsDelivr: https://cdn.jsdelivr.net/gh/<repo>@main/media/wger/<id>.mp4
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "17 3 1 * *"   # ngày 1 hằng tháng: cập nhật video mới
+
+permissions:
+  contents: write
+
+jobs:
+  wger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cài ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Tải & nén video
+        run: python3 scripts/fetch_wger_videos.py
+      - name: Lưu vào repo
+        run: |
+          git config user.name "fitkit-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add media/wger
+          if git diff --cached --quiet; then echo "Không có gì mới"; exit 0; fi
+          git commit -m "media: cập nhật video bài tập wger (CC BY-SA 4.0)"
+          git push
