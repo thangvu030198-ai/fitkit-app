@@ -284,6 +284,13 @@ function nextReminderEvents(limit=3){
   return out.filter(e=> e.at > now).sort((a,b)=> a.at-b.at).slice(0, limit);
 }
 
+function ringSVG(pct, size=64, stroke=7, color="var(--primary)"){
+  const r = (size-stroke)/2, c = 2*Math.PI*r, off = c*(1-Math.max(0,Math.min(1,pct)));
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg)">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="${stroke}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}"/></svg>`;
+}
+
 function renderHomeScreen(){
   const el = $("#home-content"); if(!el) return;
   const p = state.profile;
@@ -292,35 +299,77 @@ function renderHomeScreen(){
   const log = state.workoutLog[todayStr()];
   const doneCount = log ? (log.completedExerciseIds||[]).length : 0;
   const finished = state.finishedDates.includes(todayStr());
+  const dayPct = day && day.items.length ? (finished ? 1 : doneCount/day.items.length) : 0;
 
   const food = getDayFoodLog(); let kcal = 0; Object.values(food).forEach(l=> l.forEach(i=> kcal += i.kcal));
   const water = state.waterLog[todayStr()] || 0;
+  const waterGoal = p.waterTargetOverride != null ? p.waterTargetOverride : fmt1((p.weight||65) * 0.035);
   const sl = state.sleepLog[todayStr()] || state.sleepLog[dateStrOffset(-1)];
+  const sleepGoal = p.sleepGoalHours || 8;
   const streak = calcStreak();
+
+  // Dải 7 ngày (Thứ 2 → Chủ nhật tuần này)
+  const monday = new Date(); monday.setDate(monday.getDate() - ((monday.getDay()+6)%7));
+  const week = Array.from({length:7}, (_,i)=>{ const d=new Date(monday); d.setDate(monday.getDate()+i); const ds=todayStr(d);
+    const k = todayDayKey(d), pd = plan && plan.days[k];
+    return { ds, k, n:d.getDate(), done: state.finishedDates.includes(ds), rest: !(pd && pd.items.length), today: ds===todayStr(), past: ds<todayStr() }; });
+  const weekDone = week.filter(w=>w.done).length, weekPlanned = week.filter(w=>!w.rest).length;
 
   const ptSoon = [...(state.coachUpcoming||[])].filter(u=> sessStart(u) > new Date(now.getTime()-2*3600000)).slice(0,3);
   const events = nextReminderEvents(3);
   const isPT = !!(cloud.profile && cloud.profile.isPT);
+  const first = escapeHtml((p.name||(cloud.user&&cloud.user.name)||"bạn").trim().split(" ").slice(-1)[0]);
+  const hour = now.getHours();
+  const hello = hour<11 ? "Chào buổi sáng" : hour<14 ? "Chào buổi trưa" : hour<18 ? "Chào buổi chiều" : "Chào buổi tối";
 
   el.innerHTML = `
     <div class="home-greet">
-      <div class="small-note" style="text-transform:uppercase;letter-spacing:1px;">${WD_SHORT[now.getDay()]==="CN"?"Chủ nhật":"Thứ "+(now.getDay()+1)}, ${pad2(now.getDate())}/${pad2(now.getMonth()+1)}</div>
-      <h2 style="font-size:28px;margin-top:4px;">Chào, <span style="color:var(--primary)">${escapeHtml((p.name||(cloud.user&&cloud.user.name)||"bạn").trim().split(" ").slice(-1)[0])}</span></h2>
+      <div>
+        <div class="small-note" style="text-transform:uppercase;letter-spacing:1px;">${now.getDay()===0?"Chủ nhật":"Thứ "+(now.getDay()+1)}, ${pad2(now.getDate())}/${pad2(now.getMonth()+1)}</div>
+        <h2 style="font-size:26px;margin-top:4px;">${hello},<br><span style="color:var(--primary)">${first}</span></h2>
+      </div>
+      <div class="streak-chip" onclick="goto('workout')"><span class="material-symbols-rounded">local_fire_department</span><b>${streak}</b><small>ngày</small></div>
     </div>
 
-    <div class="card home-today" style="background-image:linear-gradient(90deg,rgba(10,10,10,.95) 45%,rgba(10,10,10,.35)),url('${IMG.heroWorkout1}');">
-      <div class="hero-eyebrow">BUỔI HÔM NAY</div>
-      ${day && day.items.length ? `
-        <div class="headline" style="font-size:24px;margin:6px 0;">${escapeHtml(day.title)}</div>
-        <div class="small-note">${day.items.length} bài · ~${day.duration||30} phút · Cường độ ${day.intensity||"Vừa"}</div>
-        <div class="progress-track" style="margin:12px 0 6px;"><div class="progress-fill" style="width:${finished?100:Math.round(doneCount/day.items.length*100)}%"></div></div>
-        <div class="small-note">${finished ? "Đã hoàn thành buổi tập hôm nay" : `${doneCount}/${day.items.length} bài đã xong`}</div>
-        <button class="btn btn-primary" style="margin-top:12px;" onclick="goto('workout')"><span class="material-symbols-rounded">play_arrow</span>${finished?"Xem lại":doneCount?"Tập tiếp":"Bắt đầu tập"}</button>
-      ` : `
-        <div class="headline" style="font-size:24px;margin:6px 0;">Ngày nghỉ ngơi</div>
-        <div class="small-note">Phục hồi cũng là một phần của tập luyện. Đi bộ nhẹ, giãn cơ và ngủ đủ giấc.</div>
-        <button class="btn btn-outline" style="margin-top:12px;" onclick="goto('workout')">Xem lịch tuần</button>
-      `}
+    <div class="week-strip">
+      ${week.map(w=>`<div class="wd ${w.today?'today':''} ${w.done?'done':''} ${w.rest?'rest':''} ${w.past&&!w.done&&!w.rest?'miss':''}">
+        <small>${w.k==="CN"?"CN":w.k}</small><b>${w.n}</b><i>${w.done?'<span class="material-symbols-rounded">check</span>':''}</i></div>`).join("")}
+    </div>
+    <p class="small-note" style="margin:-4px 2px 2px;">Tuần này: <b style="color:var(--text)">${weekDone}/${weekPlanned}</b> buổi đã tập</p>
+
+    <div class="home-hero" style="background-image:url('${IMG.heroWorkout1}')">
+      <div class="home-hero-body">
+        <div class="hero-eyebrow">Buổi hôm nay · ${DAY_LABELS[dk]}</div>
+        ${day && day.items.length ? `
+          <div class="headline" style="font-size:26px;line-height:1.05;">${escapeHtml(day.title)}</div>
+          <div class="hero-meta">
+            <span><span class="material-symbols-rounded">fitness_center</span>${day.items.length} bài</span>
+            <span><span class="material-symbols-rounded">schedule</span>~${day.duration||30} phút</span>
+            <span><span class="material-symbols-rounded">bolt</span>${day.intensity||"Vừa"}</span>
+          </div>
+          <button class="btn btn-primary" style="margin-top:14px;" onclick="goto('workout')"><span class="material-symbols-rounded">play_arrow</span>${finished?"Xem lại buổi tập":doneCount?"Tập tiếp":"Bắt đầu tập"}</button>
+        ` : `
+          <div class="headline" style="font-size:26px;">Ngày nghỉ ngơi</div>
+          <div class="small-note" style="margin-top:6px;max-width:80%;">Phục hồi cũng là tập luyện. Đi bộ nhẹ, giãn cơ, ngủ đủ giấc.</div>
+          <button class="btn btn-outline" style="margin-top:14px;" onclick="goto('workout')">Xem lịch tuần</button>
+        `}
+      </div>
+      ${day && day.items.length ? `<div class="home-hero-ring">${ringSVG(dayPct, 78, 8)}<div><b>${Math.round(dayPct*100)}%</b><small>${doneCount}/${day.items.length}</small></div></div>` : ""}
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric" onclick="goto('nutrition')">
+        <div class="metric-ring">${ringSVG(p.goalKcal? kcal/p.goalKcal:0, 52, 6, "#ff3100")}<span class="material-symbols-rounded">local_fire_department</span></div>
+        <b>${Math.round(kcal)}</b><small>/ ${p.goalKcal||0} kcal</small>
+      </div>
+      <div class="metric" onclick="goto('nutrition')">
+        <div class="metric-ring">${ringSVG(waterGoal? water/waterGoal:0, 52, 6, "#2f9bff")}<span class="material-symbols-rounded" style="color:#5fb4ff">water_drop</span></div>
+        <b>${fmt1(water)}L</b><small>/ ${waterGoal}L nước</small>
+      </div>
+      <div class="metric" onclick="goto('sleep')">
+        <div class="metric-ring">${ringSVG(sl? sl.hours/sleepGoal:0, 52, 6, "#9b7bff")}<span class="material-symbols-rounded" style="color:#b39dff">bedtime</span></div>
+        <b>${sl ? fmt1(sl.hours)+"h" : "--"}</b><small>/ ${sleepGoal}h ngủ</small>
+      </div>
     </div>
 
     ${ptSoon.length ? `
@@ -330,14 +379,21 @@ function renderHomeScreen(){
         <div class="list-item" style="cursor:pointer;" onclick="openClientForm('${u.cid}','${u.role}','today')">
           <div class="date-chip"><b>${u.time}</b><small>${relDay(u.date)}</small></div>
           <div class="info"><div class="name">${escapeHtml(u.title||"Buổi tập")}</div><div class="meta">${u.role==="pt"?"Học viên":"PT"}: ${escapeHtml(u.who)} · ${u.mode==="online"?"Online":"Tại phòng tập"}</div></div>
-          <span class="material-symbols-rounded" style="color:var(--text-dim);">chevron_right</span>
+          <span class="material-symbols-rounded" style="color:var(--text-dim);font-size:18px;">chevron_right</span>
         </div>`).join("")}
     </div>` : ""}
 
-    <div class="stat-grid" style="margin-top:4px;">
-      <div class="stat-box" onclick="goto('nutrition')" style="cursor:pointer;"><div class="num">${Math.round(kcal)}</div><div class="cap">/ ${p.goalKcal||0} kcal</div></div>
-      <div class="stat-box" onclick="goto('nutrition')" style="cursor:pointer;"><div class="num">${fmt1(water)}L</div><div class="cap">Nước uống</div></div>
-      <div class="stat-box" onclick="goto('sleep')" style="cursor:pointer;"><div class="num">${sl ? fmt1(sl.hours)+"h" : "--"}</div><div class="cap">Giấc ngủ</div></div>
+    <div class="section-title"><h3>Bạn muốn làm gì?</h3></div>
+    <div class="entry-grid">
+      <div class="entry-tile" onclick="goto('workout')"><span class="ic" style="--c:#ff3100"><span class="material-symbols-rounded">fitness_center</span></span><b>Tập cá nhân</b><small>Giáo án &amp; lịch tập</small></div>
+      <div class="entry-tile" onclick="goto('coach')"><span class="ic" style="--c:#2f9bff"><span class="material-symbols-rounded">groups</span></span><b>${isPT ? "Tôi là PT" : "PT của tôi"}</b><small>${isPT ? "Quản lý học viên" : "Nhập mã PT"}</small></div>
+      <div class="entry-tile" onclick="openFindPTSoon()"><span class="ic" style="--c:#ffb020"><span class="material-symbols-rounded">travel_explore</span></span><b>Tìm PT</b><small class="soon-badge">Sắp ra mắt</small></div>
+    </div>
+    <div class="quick-row">
+      <button onclick="goto('plans')"><span class="material-symbols-rounded">edit_calendar</span>Giáo án</button>
+      <button onclick="goto('progress')"><span class="material-symbols-rounded">insights</span>Tiến độ</button>
+      <button onclick="goto('library')"><span class="material-symbols-rounded">video_library</span>Video</button>
+      <button onclick="goto('sleep')"><span class="material-symbols-rounded">bedtime</span>Giấc ngủ</button>
     </div>
 
     <div class="card">
@@ -347,25 +403,8 @@ function renderHomeScreen(){
       </div>
       ${events.length ? events.map(e=>`
         <div class="link-row"><div class="left"><span class="material-symbols-rounded">${e.icon}</span><div><div class="name">${escapeHtml(e.text)}</div><div class="sub">${hhmm(e.at)} · ${relDay(todayStr(e.at))}</div></div></div></div>
-      `).join("") : `<p class="small-note">${state.reminders.master ? "Chưa có nhắc nhở nào trong 7 ngày tới." : "Nhắc nhở đang tắt."}</p>
+      `).join("") : `<p class="small-note">${state.reminders.master ? "Chưa có nhắc nhở nào trong 7 ngày tới." : "Nhắc nhở đang tắt — bật để FIT KIT nhắc giờ tập, giờ ăn, giờ ngủ."}</p>
         ${state.reminders.master ? "" : `<button class="btn btn-soft btn-sm" style="margin-top:10px;" onclick="goto('reminders')">Bật nhắc nhở</button>`}`}
-    </div>
-
-    <div class="section-title"><h3>Bạn muốn làm gì?</h3></div>
-    <div class="entry-grid">
-      <div class="entry-tile" onclick="goto('workout')"><span class="material-symbols-rounded">fitness_center</span><b>Tập cá nhân</b><small>Giáo án &amp; lịch tập</small></div>
-      <div class="entry-tile" onclick="openFindPTSoon()"><span class="material-symbols-rounded">travel_explore</span><b>Tìm &amp; Book PT</b><small class="soon-badge">Sắp ra mắt</small></div>
-      <div class="entry-tile" onclick="goto('coach')"><span class="material-symbols-rounded">sports</span><b>${isPT ? "Tôi là PT" : "PT của tôi"}</b><small>${isPT ? "Quản lý học viên" : "Nhập mã PT"}</small></div>
-    </div>
-    <div class="entry-grid" style="margin-top:8px;">
-      <div class="entry-tile mini" onclick="goto('plans')"><span class="material-symbols-rounded">edit_calendar</span><b>Giáo án</b></div>
-      <div class="entry-tile mini" onclick="goto('progress')"><span class="material-symbols-rounded">insights</span><b>Tiến độ</b></div>
-      <div class="entry-tile mini" onclick="goto('sleep')"><span class="material-symbols-rounded">bedtime</span><b>Giấc ngủ</b></div>
-    </div>
-
-    <div class="card" style="margin-top:4px;">
-      <div class="card-title"><span class="material-symbols-rounded">local_fire_department</span>Chuỗi ngày tập</div>
-      <div style="display:flex;align-items:baseline;gap:8px;"><span class="headline" style="font-size:34px;color:var(--primary);">${streak}</span><span class="small-note">ngày liên tiếp · tổng ${state.finishedDates.length} buổi</span></div>
     </div>
   `;
 }
@@ -472,7 +511,8 @@ function openCreditsSheet(){
       <p><b>Ảnh minh hoạ:</b> Pexels (pexels.com), theo Pexels License — dùng thương mại miễn phí.</p>
       <p><b>Giá trị dinh dưỡng:</b> tham khảo USDA FoodData Central (dữ liệu công khai của Chính phủ Hoa Kỳ).</p>
       <p><b>Công thức khoa học:</b> Mifflin-St Jeor (1990), khuyến nghị đạm ISSN (2017), khuyến nghị giấc ngủ National Sleep Foundation &amp; CDC.</p>
-      <p><b>Biểu tượng &amp; phông chữ:</b> Material Symbols (Apache 2.0), Oswald &amp; Hanken Grotesk (SIL Open Font License).</p>
+      <p><b>Biểu tượng:</b> Font Awesome 4.7 của Dave Gandy (SIL Open Font License 1.1).</p>
+      <p><b>Phông chữ:</b> Oswald &amp; Hanken Grotesk (SIL Open Font License).</p>
     </div>
   `);
 }
