@@ -1,0 +1,78 @@
+name: iOS — bản nộp App Store (TestFlight)
+
+# CHỈ chạy khi bạn đã có tài khoản Apple Developer (99 USD/năm) và đã thêm
+# 4 secret vào repo (Settings → Secrets and variables → Actions):
+#   APPSTORE_KEY_ID      — Key ID của App Store Connect API key (quyền Admin)
+#   APPSTORE_ISSUER_ID   — Issuer ID (trang Users and Access → Integrations)
+#   APPSTORE_KEY_P8      — nội dung file AuthKey_XXXX.p8 đã mã hoá base64
+#   APPLE_TEAM_ID        — Team ID 10 ký tự (developer.apple.com → Membership)
+# Xcode tự tạo chứng chỉ + provisioning profile (cloud signing) rồi upload
+# bản build lên TestFlight. Lần chạy đầu có thể cần chỉnh — gửi log cho mình.
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  appstore:
+    runs-on: macos-14
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+
+      - name: Kiểm tra secret
+        run: |
+          for s in APPSTORE_KEY_ID APPSTORE_ISSUER_ID APPSTORE_KEY_P8 APPLE_TEAM_ID; do
+            [ -n "${!s}" ] || { echo "Thiếu secret $s"; exit 1; }
+          done
+        env:
+          APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+          APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+          APPSTORE_KEY_P8: ${{ secrets.APPSTORE_KEY_P8 }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - run: bash scripts/prepare-www.sh
+      - run: npm install
+      - run: npx cap add ios
+      - run: npm run assets -- --ios || echo "⚠️ Không tạo được icon, dùng icon mặc định"
+
+      - name: Info.plist
+        run: |
+          P=ios/App/App/Info.plist
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'FIT KIT dùng camera để chụp ảnh tiến trình cơ thể khi bạn bấm chụp.'" $P || true
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'FIT KIT cần truy cập thư viện để bạn chọn ảnh đại diện, ảnh tiến trình và video tập.'" $P || true
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryAddUsageDescription string 'FIT KIT lưu ảnh tiến trình vào thư viện khi bạn yêu cầu.'" $P || true
+          /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" $P || true
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $(node -p "require('./package.json').version")" $P
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ github.run_number }}" $P
+
+      - run: npx cap sync ios
+
+      - name: Archive (ký tự động bằng API key)
+        working-directory: ios/App
+        run: |
+          mkdir -p ~/private_keys
+          echo "${{ secrets.APPSTORE_KEY_P8 }}" | base64 -d > ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release \
+            -destination "generic/platform=iOS" -archivePath $RUNNER_TEMP/App.xcarchive \
+            DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }} CODE_SIGN_STYLE=Automatic \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
+            -authenticationKeyID ${{ secrets.APPSTORE_KEY_ID }} \
+            -authenticationKeyIssuerID ${{ secrets.APPSTORE_ISSUER_ID }} \
+            archive
+
+      - name: Xuất & tải lên App Store Connect
+        run: |
+          E=$RUNNER_TEMP/ExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Add :method string app-store" $E
+          /usr/libexec/PlistBuddy -c "Add :destination string upload" $E
+          /usr/libexec/PlistBuddy -c "Add :teamID string ${{ secrets.APPLE_TEAM_ID }}" $E
+          /usr/libexec/PlistBuddy -c "Add :signingStyle string automatic" $E
+          xcodebuild -exportArchive -archivePath $RUNNER_TEMP/App.xcarchive \
+            -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist -exportPath $RUNNER_TEMP/export \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
+            -authenticationKeyID ${{ secrets.APPSTORE_KEY_ID }} \
+            -authenticationKeyIssuerID ${{ secrets.APPSTORE_ISSUER_ID }}

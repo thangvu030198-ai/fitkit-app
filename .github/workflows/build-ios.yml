@@ -1,75 +1,62 @@
-name: Build unsigned iOS .ipa (FitKit)
+name: iOS — bản thử (unsigned .ipa cho AltStore)
 
-# Chạy trên máy ảo macOS miễn phí của GitHub (không cần bạn có Mac).
-# Kết quả: file FitKit-unsigned.ipa CHƯA KÝ — dùng AltStore/SideStore trên
-# iPhone để ký lại bằng Apple ID miễn phí của bạn rồi cài (xem README-ios-build.md).
+# Máy ảo macOS miễn phí của GitHub build file .ipa CHƯA KÝ → cài thử bằng AltStore.
+# Bản nộp App Store dùng workflow "ios-appstore.yml" (cần tài khoản Apple Developer).
 
 on:
-  workflow_dispatch: {}   # cho phép bấm nút "Run workflow" thủ công trên GitHub
+  workflow_dispatch: {}
   push:
     branches: [ main ]
-    paths:
-      - "index.html"
-      - "style.css"
-      - "app.js"
-      - "data.js"
-      - "manifest.json"
-      - "sw.js"
-      - "capacitor.config.json"
-      - "package.json"
-      - ".github/workflows/build-ios.yml"
+    paths-ignore: [ "**.md" ]
 
 jobs:
   build-ios:
     runs-on: macos-14
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+      - name: Gom file web vào www/ + tải thư viện bài tập
+        run: bash scripts/prepare-www.sh
 
-      - name: Gom các file web vào thư mục www/ (đúng như webDir trong capacitor.config.json)
-        run: |
-          mkdir -p www
-          cp index.html style.css app.js data.js manifest.json sw.js www/
-
-      - name: Cài dependency Capacitor
+      - name: Cài Capacitor + plugin
         run: npm install
 
-      - name: Thêm nền tảng iOS (tạo project Xcode)
+      - name: Tạo project iOS
         run: npx cap add ios
 
-      - name: Đồng bộ web assets vào project iOS
+      - name: Icon & màn hình chờ
+        run: npm run assets -- --ios || echo "⚠️ Không tạo được icon, dùng icon mặc định"
+
+      - name: Quyền camera/ảnh + khai báo mã hoá (bắt buộc khi nộp App Store)
+        run: |
+          P=ios/App/App/Info.plist
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'FIT KIT dùng camera để chụp ảnh tiến trình cơ thể khi bạn bấm chụp.'" $P || true
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'FIT KIT cần truy cập thư viện để bạn chọn ảnh đại diện, ảnh tiến trình và video tập.'" $P || true
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryAddUsageDescription string 'FIT KIT lưu ảnh tiến trình vào thư viện khi bạn yêu cầu.'" $P || true
+          /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" $P || true
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $(node -p "require('./package.json').version")" $P || true
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ github.run_number }}" $P || true
+
+      - name: Đồng bộ web + plugin vào iOS
         run: npx cap sync ios
 
-      - name: Build bản .app KHÔNG ký (unsigned)
+      - name: Build .app không ký
         working-directory: ios/App
         run: |
-          xcodebuild -workspace App.xcworkspace \
-            -scheme App \
-            -configuration Release \
-            -sdk iphoneos \
-            -derivedDataPath build \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGN_ENTITLEMENTS="" \
-            DEVELOPMENT_TEAM="" \
-            clean build
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" CODE_SIGN_ENTITLEMENTS="" DEVELOPMENT_TEAM="" clean build
 
-      - name: Đóng gói thành file .ipa
+      - name: Đóng gói .ipa
         working-directory: ios/App/build/Build/Products/Release-iphoneos
         run: |
-          mkdir -p Payload
-          cp -r App.app Payload/
-          zip -r FitKit-unsigned.ipa Payload
+          mkdir -p Payload && cp -r App.app Payload/
+          zip -qr FitKit-unsigned.ipa Payload
 
-      - name: Tải lên làm artifact (vào tab Actions của repo để tải về)
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: FitKit-ipa
           path: ios/App/build/Build/Products/Release-iphoneos/FitKit-unsigned.ipa

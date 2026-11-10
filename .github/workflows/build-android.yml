@@ -1,0 +1,79 @@
+name: Android — APK thử + AAB nộp Google Play
+
+# Luôn tạo:  FitKit-debug.apk  → cài thẳng lên điện thoại Android để thử.
+# Nếu repo có đủ 4 secret ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD,
+# ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD → tạo thêm FitKit-release.aab đã ký
+# để tải lên Google Play Console. (Xem README-store.md, mục Android.)
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [ main ]
+    paths-ignore: [ "**.md" ]
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      HAS_KEY: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+
+      - name: Gom file web vào www/ + tải thư viện bài tập
+        run: bash scripts/prepare-www.sh
+
+      - name: Cài Capacitor + plugin
+        run: npm install
+
+      - name: Tạo project Android
+        run: npx cap add android
+
+      - name: Icon & màn hình chờ
+        run: npm run assets -- --android || echo "⚠️ Không tạo được icon, dùng icon mặc định"
+
+      - name: Quyền camera/thông báo + số phiên bản
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          sed -i 's#<application#<uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <application#' $M
+          V=$(node -p "require('./package.json').version")
+          G=android/app/build.gradle
+          sed -i "s/versionCode [0-9]*/versionCode ${{ github.run_number }}/" $G
+          sed -i "s/versionName \"[^\"]*\"/versionName \"$V\"/" $G
+          grep -n "version" $G
+
+      - name: Đồng bộ web + plugin vào Android
+        run: npx cap sync android
+
+      - name: Build APK thử (debug)
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Build AAB phát hành (nếu có khoá ký)
+        if: env.HAS_KEY == 'true'
+        working-directory: android
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > release.keystore
+          ./gradlew bundleRelease --no-daemon
+          jarsigner -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore release.keystore -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+            -keypass "${{ secrets.ANDROID_KEY_PASSWORD }}" \
+            app/build/outputs/bundle/release/app-release.aab "${{ secrets.ANDROID_KEY_ALIAS }}"
+          rm release.keystore
+          cp app/build/outputs/bundle/release/app-release.aab ../FitKit-release.aab
+
+      - name: Gom file kết quả
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk FitKit-debug.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FitKit-android
+          path: |
+            FitKit-debug.apk
+            FitKit-release.aab
+          if-no-files-found: warn
+          retention-days: 30
