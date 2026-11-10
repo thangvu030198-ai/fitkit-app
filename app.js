@@ -319,6 +319,8 @@ const SUB_SCREENS = ["library","plans","progress","client","ptprofile"];
 function goto(screen){
   $$(".screen").forEach(s=>s.classList.remove("active"));
   $(`#screen-${screen}`).classList.add("active");
+  { const sc = $(`#screen-${screen}`); sc.classList.remove("enter"); void sc.offsetWidth; sc.classList.add("enter");
+    clearTimeout(sc._enterT); sc._enterT = setTimeout(()=> sc.classList.remove("enter"), 2400); }
   const navKey = ["sleep","reminders"].includes(screen) ? "home" : screen;
   $$(".nav-item").forEach(b=>b.classList.toggle("active", b.dataset.goto===navKey));
   $(".bottom-nav").classList.toggle("hidden", SUB_SCREENS.includes(screen));
@@ -328,6 +330,7 @@ function goto(screen){
   if(screen==="home" && typeof renderHomeScreen==="function") renderHomeScreen();
   if(screen==="coach" && typeof renderCoachScreen==="function") renderCoachScreen(true);
   if(screen==="workout") renderWorkoutScreen();
+  if(screen==="nutrition") renderNutritionScreen();
   if(screen==="sleep") renderSleepScreen();
   if(screen==="reminders") renderRemindersScreen();
   $("#app-scroll").scrollTo(0,0);

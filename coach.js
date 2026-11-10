@@ -351,7 +351,7 @@ $("#btn-client-refresh").addEventListener("click", ()=>{ toast("Đang làm mới
 function renderClientForm(){
   const c = cfClient();
   if(!c){ $("#client-content").innerHTML = `<p class="empty-hint">Đang tải...</p>`; return; }
-  $("#client-title").textContent = (isPTView() ? c.name : (c.ptName || "PT của tôi")).toUpperCase();
+  $("#client-title").textContent = (isPTView() ? c.name : (c.ptName || "PT của tôi"));
   const un = unreadFor(c, cf.role);
   $("#client-tabs").innerHTML = CF_TABS.map(t=>`<button class="day-tab ${cf.tab===t.id?'active':''}" data-cft="${t.id}">${t.label}${t.id==="notes"&&un?` <i class="cnt">${un}</i>`:""}</button>`).join("");
   $$("[data-cft]").forEach(b=> b.addEventListener("click", ()=>{ cf.tab = b.dataset.cft; cf.focusSid = null; renderClientForm(); $("#app-scroll").scrollTo(0,0); }));

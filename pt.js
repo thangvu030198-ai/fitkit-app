@@ -106,28 +106,127 @@ setInterval(checkCoachReminders, 15000);
    --------------------------------------------------------------------- */
 function showAuth(view){
   $("#auth").classList.add("open");
+  $("#auth").onscroll = null; $("#auth").scrollTop = 0;
+  $("#auth").classList.toggle("wl-mode", view==="welcome");
   const body = $("#auth-body");
   const demoNote = cloud.mode==="demo"
     ? `<p class="small-note auth-demo"><span class="material-symbols-rounded" style="font-size:14px;">science</span> Bản thử nghiệm: tài khoản chỉ lưu trên máy này.</p>` : "";
   const back = `<button class="icon-btn" data-auth="welcome" style="margin-bottom:6px;"><span class="material-symbols-rounded">arrow_back</span></button>`;
 
   if(view==="welcome"){
+    const routes = [
+      "M24 34 C60 0,104 58,140 22",
+      "M140 22 C188 -6,236 78,268 52",
+      "M268 52 C304 104,236 96,204 132",
+      "M204 132 C152 168,98 92,58 124",
+    ];
+    const stops = [[24,34,"Giáo án"],[140,22,"Lịch tập"],[268,52,"Dinh dưỡng"],[204,132,"Giấc ngủ"],[58,124,"Tiến độ"]];
     body.innerHTML = `
-      <div class="auth-hero" style="background-image:url('${IMG.heroWorkout3}')">
-        <div class="auth-hero-text">
-          <div class="logo-big">FIT KIT</div>
-          <div class="hero-title" style="font-size:30px;">TẬP ĐÚNG.<br><span class="accent">TIẾN BỘ THẬT.</span></div>
-          <p class="onboard-sub" style="margin-top:8px;">Giáo án cá nhân, dinh dưỡng, giấc ngủ — và kết nối PT với học viên trong một app.</p>
+    <div class="wl" id="wl">
+      <!-- 1. HERO -->
+      <section class="wl-hero">
+        <div class="wl-hero-bg" style="background-image:url('${IMG.heroWorkout3}')"></div>
+        <div class="wl-hero-shade"></div>
+        <div class="wl-speed"><i></i><i></i><i></i><i></i><i></i></div>
+        <nav class="wl-nav">
+          <div class="wl-brand wl-in-left">FIT<b>KIT</b></div>
+          <button class="wl-burger wl-in-right" id="wl-menu-btn" aria-label="Menu"><i></i><i></i><i></i></button>
+        </nav>
+        <div class="wl-hero-body">
+          <h1 class="wl-head">
+            <span class="l1">Tập đúng</span>
+            <span class="l2">Tiến bộ</span>
+            <span class="l3">Thật sự</span>
+          </h1>
+          <p class="wl-sub">Giáo án cá nhân, dinh dưỡng, giấc ngủ và kết nối PT ↔ học viên — trong một app.</p>
+          <button class="wl-cta" id="wl-start" aria-label="Bắt đầu ngay">
+            <svg viewBox="0 0 264 64" aria-hidden="true">
+              <rect x="0" y="0" width="264" height="64" rx="32" fill="#ffda00"/>
+              <circle cx="232" cy="32" r="26" fill="#0a0c14"/>
+              <g class="wl-arrow" transform-origin="232 32"><path d="M220 32 H244 M236 24 L244 32 L236 40" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g>
+            </svg>
+            <span>Bắt đầu ngay</span>
+          </button>
+          <button class="wl-link" data-auth="login">Đã có tài khoản? <b>Đăng nhập</b></button>
         </div>
-      </div>
-      <div class="auth-actions">
-        <button class="btn btn-primary btn-block" data-auth="signup">Tạo tài khoản</button>
-        <button class="btn btn-outline btn-block" data-auth="login">Đăng nhập</button>
-        <button class="btn btn-ghost btn-block" id="auth-guest">Dùng ngay, không cần tài khoản</button>
-        <p class="small-note" style="text-align:center;">Tập cá nhân dùng được không cần tài khoản. Tài khoản cần cho tính năng PT ↔ học viên.</p>
+        <div class="wl-scroll-cue"><span></span></div>
+      </section>
+
+      <!-- 2. GIỚI THIỆU -->
+      <section class="wl-info">
+        <div class="wl-rev wl-from-left">
+          <div class="wl-tag">FIT KIT</div>
+          <div class="wl-tag-sub">luyện tập có khoa học<br>đồng hành cùng PT</div>
+        </div>
+        <div class="wl-map wl-rev">
+          <svg viewBox="0 0 300 160" class="wl-routes" aria-hidden="true">
+            ${routes.map((d,i)=>`<path id="wlr${i}" d="${d}" class="wl-route" style="--i:${i}"/>`).join("")}
+            ${routes.map((d,i)=>`<polygon points="0,-4 8,0 0,4" class="wl-runner"><animateMotion dur="${3.2+i*0.4}s" repeatCount="indefinite" rotate="auto" begin="${1.2+i*0.3}s"><mpath href="#wlr${i}"/></animateMotion></polygon>`).join("")}
+            ${stops.map(([x,y,t],i)=>`<g class="wl-stop" style="--i:${i}"><circle cx="${x}" cy="${y}" r="8" fill="#ffda00"/><circle cx="${x}" cy="${y}" r="3" fill="#0a0c14"/><text x="${x}" y="${y+ (y>100?20:-13)}" text-anchor="middle">${t}</text></g>`).join("")}
+          </svg>
+          <div class="wl-bubble" style="left:30%;top:46%;--d:2.6s"><span class="material-symbols-rounded">fitness_center</span></div>
+          <div class="wl-bubble" style="left:63%;top:36%;--d:3.1s"><span class="material-symbols-rounded">restaurant</span></div>
+          <div class="wl-bubble" style="left:6%;top:56%;--d:2.9s"><span class="material-symbols-rounded">bedtime</span></div>
+        </div>
+        <div class="wl-stats">
+          <div class="wl-stat wl-rev wl-from-left"><b>800+</b><span>bài tập có<br>hình minh hoạ<br>và hướng dẫn</span></div>
+          <div class="wl-stat wl-rev wl-from-right" style="margin-left:clamp(40px,12vw,90px)"><b>7</b><span>mục quản lý<br>PT ↔ học viên<br>trong một form</span></div>
+        </div>
+      </section>
+
+      <!-- 3. BẮT ĐẦU -->
+      <section class="wl-start" id="wl-end">
+        <div class="wl-rev wl-from-bottom">
+          <div class="wl-tag" style="color:#fff">BẮT ĐẦU <span style="color:#ffda00">NGAY</span></div>
+          <p class="wl-muted">Miễn phí. Tập cá nhân không cần tài khoản — tài khoản dùng để kết nối với PT hoặc quản lý học viên.</p>
+        </div>
+        <div class="wl-actions">
+          <button class="wl-pill gold wl-rev wl-from-bottom" style="--d:.05s" data-auth="signup">Tạo tài khoản</button>
+          <button class="wl-pill ghost wl-rev wl-from-bottom" style="--d:.12s" data-auth="login">Đăng nhập</button>
+          <button class="wl-pill ghost wl-rev wl-from-bottom" style="--d:.19s" id="auth-guest">Dùng ngay, không cần tài khoản</button>
+        </div>
         ${demoNote}
-      </div>`;
-    $("#auth-guest").addEventListener("click", ()=>{ state.authDone = true; saveState(); finishBoot(); });
+        <div class="wl-foot">
+          <div>
+            <a class="wl-foot-link" id="wl-privacy">Chính sách bảo mật</a>
+            <a class="wl-foot-link" id="wl-credits">Nguồn dữ liệu &amp; bản quyền</a>
+          </div>
+          <button class="wl-round" id="wl-top" aria-label="Lên đầu trang"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="#0a1f2b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+        <p class="wl-copy">© 2026 FIT KIT. All rights reserved.</p>
+      </section>
+
+      <div class="wl-menu" id="wl-menu">
+        <button class="wl-menu-close" id="wl-menu-close" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button>
+        <button data-auth="signup" style="--i:0">Tạo tài khoản</button>
+        <button data-auth="login" style="--i:1">Đăng nhập</button>
+        <button id="wl-menu-guest" style="--i:2">Dùng ngay</button>
+        <button id="wl-menu-privacy" style="--i:3">Chính sách bảo mật</button>
+      </div>
+    </div>`;
+    const guest = ()=>{ state.authDone = true; saveState(); finishBoot(); };
+    $("#auth-guest").addEventListener("click", guest);
+    $("#wl-menu-guest").addEventListener("click", guest);
+    $("#wl-start").addEventListener("click", ()=> showAuth("signup"));
+    $("#wl-menu-btn").addEventListener("click", ()=>{ $("#auth").scrollTop = 0; $("#wl-menu").classList.add("open"); });
+    $("#wl-menu-close").addEventListener("click", ()=> $("#wl-menu").classList.remove("open"));
+    $("#wl-menu-privacy").addEventListener("click", ()=>{ $("#wl-menu").classList.remove("open"); openPrivacySheet(); });
+    $("#wl-privacy").addEventListener("click", openPrivacySheet);
+    $("#wl-credits").addEventListener("click", openCreditsSheet);
+    $("#wl-top").addEventListener("click", ()=> $("#auth").scrollTo({ top:0, behavior:"smooth" }));
+    // Hiệu ứng xuất hiện khi cuộn tới (chạy 1 lần), có hẹn giờ an toàn
+    const reveal = ()=>{
+      const box = $("#auth"); if(!box) return;
+      const h = box.clientHeight;
+      $$("#wl .wl-rev:not(.in)").forEach(el=>{
+        const r = el.getBoundingClientRect(), top = r.top - box.getBoundingClientRect().top;
+        if(top < h - 50){ el.classList.add("in"); setTimeout(()=> el.classList.add("done"), 2000); }
+      });
+    };
+    $("#auth").onscroll = ()=> requestAnimationFrame(reveal);
+    $("#auth").scrollTop = 0;
+    setTimeout(reveal, 60);
+    setTimeout(()=>{ const w=$("#wl"); if(w) w.classList.add("ready"); }, 30);
   }
 
   else if(view==="login"){
@@ -326,7 +425,7 @@ function renderHomeScreen(){
     <div class="home-greet">
       <div>
         <div class="small-note" style="text-transform:uppercase;letter-spacing:1px;">${now.getDay()===0?"Chủ nhật":"Thứ "+(now.getDay()+1)}, ${pad2(now.getDate())}/${pad2(now.getMonth()+1)}</div>
-        <h2 style="font-size:26px;margin-top:4px;">${hello},<br><span style="color:var(--primary)">${first}</span></h2>
+        <h2 style="font-size:28px;margin-top:4px;">${hello},<br><span style="color:rgba(255,255,255,.72)">${first}</span></h2>
       </div>
       <div class="streak-chip" onclick="goto('workout')"><span class="material-symbols-rounded">local_fire_department</span><b>${streak}</b><small>ngày</small></div>
     </div>
@@ -354,7 +453,7 @@ function renderHomeScreen(){
           <button class="btn btn-outline" style="margin-top:14px;" onclick="goto('workout')">Xem lịch tuần</button>
         `}
       </div>
-      ${day && day.items.length ? `<div class="home-hero-ring">${ringSVG(dayPct, 78, 8)}<div><b>${Math.round(dayPct*100)}%</b><small>${doneCount}/${day.items.length}</small></div></div>` : ""}
+      ${day && day.items.length ? `<div class="home-hero-ring">${ringSVG(dayPct, 78, 8, "#fff")}<div><b>${Math.round(dayPct*100)}%</b><small>${doneCount}/${day.items.length}</small></div></div>` : ""}
     </div>
 
     <div class="metric-grid">

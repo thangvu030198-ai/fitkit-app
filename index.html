@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600&family=Oswald:wght@500;600;700&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@700;800&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -28,7 +28,7 @@
 
         <div class="onboard-step active" data-step="0">
           <div style="text-align:center;margin-top:24px;">
-            <div style="font-family:'Oswald','Avenir Next Condensed','Roboto Condensed','Arial Narrow',sans-serif;color:var(--primary);font-size:26px;font-weight:700;letter-spacing:1px;">FIT KIT</div>
+            <div style="font-family:'Oswald','Avenir Next Condensed','Roboto Condensed',sans-serif-condensed,'Segoe UI',Arial,sans-serif;color:var(--primary);font-size:26px;font-weight:700;letter-spacing:1px;">FIT KIT</div>
             <div class="onboard-hero" style="margin-top:18px;">CHÀO MỪNG VẬN ĐỘNG VIÊN</div>
             <p class="onboard-sub">Trả lời vài câu hỏi để FIT KIT thiết kế chương trình tập luyện &amp; dinh dưỡng khoa học, đúng mục tiêu của riêng bạn.</p>
           </div>
@@ -110,7 +110,7 @@
   <section id="screen-coach" class="screen">
     <div class="topbar">
       <button class="icon-btn btn-menu-trigger"><span class="material-symbols-rounded">menu</span></button>
-      <div class="logo">PT &amp; HỌC VIÊN</div>
+      <div class="logo">PT &amp; Học viên</div>
       <button class="icon-btn" id="btn-coach-refresh"><span class="material-symbols-rounded">refresh</span></button>
     </div>
     <div class="content" id="coach-content"></div>
@@ -120,7 +120,7 @@
   <section id="screen-client" class="screen">
     <div class="topbar">
       <button class="icon-btn" id="btn-client-back"><span class="material-symbols-rounded">arrow_back</span></button>
-      <div class="logo" id="client-title" style="max-width:62%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">HỌC VIÊN</div>
+      <div class="logo" id="client-title" style="max-width:62%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Học viên</div>
       <button class="icon-btn" id="btn-client-refresh"><span class="material-symbols-rounded">refresh</span></button>
     </div>
     <div class="day-tabs" id="client-tabs"></div>
@@ -180,7 +180,7 @@
   <section id="screen-library" class="screen">
     <div class="topbar">
       <button class="icon-btn" data-back="workout"><span class="material-symbols-rounded">arrow_back</span></button>
-      <div class="logo">KHO VIDEO</div>
+      <div class="logo">Kho video</div>
       <button class="icon-btn" id="btn-add-clip-2"><span class="material-symbols-rounded">add</span></button>
     </div>
     <div class="day-tabs" id="library-cat-tabs"></div>
@@ -194,7 +194,7 @@
   <section id="screen-plans" class="screen">
     <div class="topbar">
       <button class="icon-btn" id="btn-plans-back"><span class="material-symbols-rounded">arrow_back</span></button>
-      <div class="logo" id="plans-topbar-title">CHƯƠNG TRÌNH</div>
+      <div class="logo" id="plans-topbar-title">Chương trình</div>
       <button class="icon-btn" id="btn-plans-action"><span class="material-symbols-rounded">add</span></button>
     </div>
     <div class="content" id="plans-content"></div>
@@ -204,7 +204,7 @@
   <section id="screen-progress" class="screen">
     <div class="topbar">
       <button class="icon-btn" id="btn-progress-back"><span class="material-symbols-rounded">arrow_back</span></button>
-      <div class="logo">TIẾN TRÌNH</div>
+      <div class="logo">Tiến trình</div>
       <button class="icon-btn" id="btn-progress-camera"><span class="material-symbols-rounded">photo_camera</span></button>
     </div>
     <div class="day-tabs" id="progress-tabs">
@@ -461,6 +461,7 @@
 <script src="data.js"></script>
 <script src="exdb.js"></script>
 <script src="app.js"></script>
+<script src="nutrition.js"></script>
 <script src="coach.js"></script>
 <script src="ptprofile.js"></script>
 <script src="pt.js"></script>
