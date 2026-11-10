@@ -11,6 +11,11 @@ const FKP = d=>d.split("|").map(s=> s.startsWith("c:") ? (a=>`<circle cx="${a[0]
 const FK_CAL = "r:3,4,18,18,2.5|M16 2v4|M8 2v4|M3 10h18";
 const FK_USER = "c:12,8,4|M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1";
 const FK_LINE = {
+  swap_horiz:"M16 3l4 4-4 4|M20 7H4|M8 21l-4-4 4-4|M4 17h16", playlist_add:"M3 6h12|M3 12h12|M3 18h8|M18 14v8|M14 18h8",
+  lightbulb:"M9 18h6|M10 22h4|M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z", mode_fan:"c:12,12,2|M12 10c0-4 1-7 4-7s3 5-2 7|M14 12c4 0 7 1 7 4s-5 3-7-2|M12 14c0 4-1 7-4 7s-3-5 2-7|M10 12c-4 0-7-1-7-4s5-3 7 2",
+  soup_kitchen:"M4 11h16a8 8 0 0 1-16 0z|M8 21h8|M9 3c0 2-1 2-1 4|M13 3c0 2-1 2-1 4|M17 3c0 2-1 2-1 4", skillet:"c:10,13,7|M17 13h5",
+  rice_bowl:"M3 12h18a9 9 0 0 1-18 0z|M7 12a5 5 0 0 1 10 0", nutrition:"M12 7c-4-3-8 0-8 5s3 10 6 10c1 0 1.5-.5 2-.5s1 .5 2 .5c3 0 6-5 6-10s-4-8-8-5z|M12 7c0-2 1-4 3-5",
+  blender:"M7 2h10l-2 13H9z|M9 15h6l1 3v4H8v-4z|c:12,19,0.5", cloud:"M17.5 19H7a5 5 0 1 1 1-9.9A6 6 0 0 1 19.5 11 4 4 0 0 1 17.5 19z",
   home:"M3 10.5 12 3l9 7.5|M5 9.5V21h14V9.5|M10 21v-6h4v6",
   fitness_center:"M6.5 6.5v11|M17.5 6.5v11|M3.5 9v6|M20.5 9v6|M6.5 12h11", exercise:"M22 12h-4l-3 9L9 3l-3 9H2", directions_run:"M22 12h-4l-3 9L9 3l-3 9H2",
   restaurant:"M7 2v9|M4 2v5a3 3 0 0 0 6 0V2|M7 11v11|M17 22V2c-2.5 1.5-4 4.5-4 8h4", dinner_dining:"M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9z|M7 21h10|M9 3c0 2-1 2-1 4|M13 3c0 2-1 2-1 4|M17 3c0 2-1 2-1 4",

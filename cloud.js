@@ -46,6 +46,13 @@ const cloud = (() => {
     "auth/too-many-requests": "Thử quá nhiều lần, vui lòng đợi một lát.",
     "auth/network-request-failed": "Không có kết nối mạng.",
     "auth/requires-recent-login": "Vui lòng đăng nhập lại rồi thử lại.",
+    "auth/popup-closed-by-user": "Bạn đã đóng cửa sổ đăng nhập.",
+    "auth/cancelled-popup-request": "Bạn đã đóng cửa sổ đăng nhập.",
+    "auth/popup-blocked": "Trình duyệt chặn cửa sổ đăng nhập, đang chuyển sang trang đăng nhập…",
+    "auth/account-exists-with-different-credential": "Email này đã đăng ký bằng cách khác (email/mật khẩu, Google hoặc Facebook). Hãy đăng nhập bằng cách cũ.",
+    "auth/operation-not-allowed": "Chủ app chưa bật đăng nhập bằng hình thức này trong Firebase.",
+    "auth/unauthorized-domain": "Tên miền này chưa được cho phép trong Firebase Authentication.",
+    "social/not-configured": "Bản app này chưa cấu hình đăng nhập Google/Facebook. Tạm thời hãy dùng email.",
     "permission-denied": "Bạn không có quyền thực hiện thao tác này.",
     "unavailable": "Máy chủ tạm thời không truy cập được, kiểm tra mạng.",
   };
@@ -95,6 +102,19 @@ const cloud = (() => {
       localStorage.setItem(DEMO_AUTH, acc.uid);
       user = { uid: acc.uid, email, name: db.users[acc.uid].name }; profile = db.users[acc.uid];
     },
+    async signInSocial(kind){
+      // Demo: giả lập tài khoản Google / Facebook trên máy này
+      await delay(300);
+      const email = `demo.${kind}@fitkit.local`, db = dLoad();
+      let acc = db.accounts[email];
+      if(!acc){
+        const uid = rid("u"); acc = db.accounts[email] = { uid, pw: dHash(rid("x")), provider: kind };
+        db.users[uid] = { uid, email, name: kind==="google" ? "Bạn (Google)" : "Bạn (Facebook)", provider: kind, isPT:false, mainRole:null, createdAt: now() };
+        dSave(db);
+      }
+      localStorage.setItem(DEMO_AUTH, acc.uid);
+      user = { uid: acc.uid, email, name: db.users[acc.uid].name }; profile = db.users[acc.uid];
+    },
     async signOut(){ localStorage.removeItem(DEMO_AUTH); user = null; profile = null; },
     async resetPassword(){ await delay(); /* demo: không gửi email thật */ },
     async getUser(uid){ return dLoad().users[uid] || null; },
@@ -117,7 +137,7 @@ const cloud = (() => {
     async addNote(cid, n){ const db=dLoad(); db.notes[cid]=db.notes[cid]||{}; const id=rid("n"); db.notes[cid][id]=Object.assign({ id, ts: now() }, n); dSave(db); return db.notes[cid][id]; },
     async deleteAccount(pw){
       const db=dLoad(); const acc=db.accounts[user.email];
-      if(!acc || acc.pw!==dHash(pw)) throw dErr("auth/wrong-password");
+      if(!acc || (!acc.provider && acc.pw!==dHash(pw))) throw dErr("auth/wrong-password");
       Object.values(db.clients).forEach(c=>{
         if(c.ptId===user.uid){ delete db.joinCodes[c.joinCode]; delete db.clients[c.id]; delete db.sessions[c.id]; delete db.notes[c.id]; }
         else if(c.studentUid===user.uid){ Object.assign(c, { studentUid:null, studentName:null, studentEmail:null }); }
@@ -135,6 +155,34 @@ const cloud = (() => {
   }
   const docData = d => d.exists ? Object.assign({ id: d.id }, d.data()) : null;
   const qData = q => q.docs.map(d=>Object.assign({ id: d.id }, d.data()));
+
+  /* ---- Đăng nhập Google / Facebook ----
+     · Web / PWA: cửa sổ popup của Firebase (tự chuyển sang redirect nếu bị chặn)
+     · App iOS/Android (Capacitor): plugin @capacitor-firebase/authentication đăng nhập bằng SDK gốc,
+       rồi đưa token cho Firebase JS (skipNativeAuth). Xem README-store.md mục "Đăng nhập Google/Facebook". */
+  function isNative(){ return !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform()); }
+  function nativeAuthPlugin(){ return isNative() && window.Capacitor.Plugins ? Capacitor.Plugins.FirebaseAuthentication : null; }
+  async function socialCredentialSignIn(kind, reauthUser){
+    if(isNative()){
+      const P = nativeAuthPlugin();
+      if(!P) throw dErr("social/not-configured");
+      const res = kind==="google" ? await P.signInWithGoogle() : await P.signInWithFacebook();
+      const c = res && res.credential || {};
+      const credential = kind==="google"
+        ? firebase.auth.GoogleAuthProvider.credential(c.idToken || null, c.accessToken || null)
+        : firebase.auth.FacebookAuthProvider.credential(c.accessToken);
+      return reauthUser ? reauthUser.reauthenticateWithCredential(credential) : fb.auth.signInWithCredential(credential);
+    }
+    const provider = kind==="google" ? new firebase.auth.GoogleAuthProvider() : new firebase.auth.FacebookAuthProvider();
+    provider.addScope("email");
+    if(kind==="google") provider.setCustomParameters({ prompt:"select_account" });
+    if(reauthUser) return reauthUser.reauthenticateWithPopup(provider);
+    try{ return await fb.auth.signInWithPopup(provider); }
+    catch(e){
+      if(e && e.code==="auth/popup-blocked"){ await fb.auth.signInWithRedirect(provider); return new Promise(()=>{}); }
+      throw e;
+    }
+  }
 
   const firebaseEngine = {
     async init(){
@@ -170,7 +218,20 @@ const cloud = (() => {
       profile = await firebaseEngine.getUser(cred.user.uid);
       if(!profile){ profile = { uid:user.uid, email:user.email, name:user.name, isPT:false, mainRole:null, createdAt: now() }; await fb.db.collection("users").doc(user.uid).set(profile); }
     },
-    async signOut(){ await fb.auth.signOut(); user=null; profile=null; },
+    async signInSocial(kind){
+      const cred = await socialCredentialSignIn(kind);
+      const u = cred.user;
+      user = { uid: u.uid, email: u.email || "", name: u.displayName || (u.email||"").split("@")[0] || "Bạn" };
+      profile = await firebaseEngine.getUser(u.uid);
+      if(!profile){
+        profile = { uid:user.uid, email:user.email, name:user.name, photo:u.photoURL||null, provider:kind, isPT:false, mainRole:null, createdAt: now() };
+        await fb.db.collection("users").doc(user.uid).set(profile);
+      }
+    },
+    async signOut(){
+      await fb.auth.signOut(); user=null; profile=null;
+      try{ const P = nativeAuthPlugin(); if(P) await P.signOut(); }catch(e){}
+    },
     async resetPassword(email){ await fb.auth.sendPasswordResetEmail(String(email).trim()); },
     async getUser(uid){ return docData(await fb.db.collection("users").doc(uid).get()); },
     async updateUser(uid, partial){ await fb.db.collection("users").doc(uid).set(partial, { merge:true }); return firebaseEngine.getUser(uid); },
@@ -214,8 +275,9 @@ const cloud = (() => {
     async addNote(cid, n){ const ref = await fb.db.collection("clients").doc(cid).collection("notes").add(Object.assign({ ts: now() }, n)); return Object.assign({ id: ref.id, ts: now() }, n); },
     async deleteAccount(pw){
       const u = fb.auth.currentUser;
-      const cred = firebase.auth.EmailAuthProvider.credential(u.email, pw);
-      await u.reauthenticateWithCredential(cred);
+      const pid = (u.providerData[0] && u.providerData[0].providerId) || "password";
+      if(pid === "password") await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, pw));
+      else await socialCredentialSignIn(pid.startsWith("facebook") ? "facebook" : "google", u);   // xác thực lại bằng Google/Facebook
       for(const c of await firebaseEngine.listClientsAsPT(u.uid)) await firebaseEngine.deleteClient(c.id);
       for(const c of await firebaseEngine.listClientsAsStudent(u.uid)){
         await fb.db.collection("clients").doc(c.id).update({ studentUid:null, studentName:null, studentEmail:null });
@@ -254,6 +316,9 @@ const cloud = (() => {
 
     signUp: wrap(async (email, pw, name)=>{ await engine.signUp(email, pw, name); emit(); return user; }),
     signIn: wrap(async (email, pw)=>{ await engine.signIn(email, pw); emit(); return user; }),
+    signInWithGoogle: wrap(async ()=>{ await engine.signInSocial("google"); emit(); return user; }),
+    signInWithFacebook: wrap(async ()=>{ await engine.signInSocial("facebook"); emit(); return user; }),
+    get isSocialUser(){ return !!(profile && profile.provider && profile.provider!=="password"); },
     signOut: wrap(async ()=>{ await engine.signOut(); emit(); }),
     resetPassword: wrap(email=> engine.resetPassword(email)),
     deleteAccount: wrap(async pw=>{ await engine.deleteAccount(pw); emit(); }),

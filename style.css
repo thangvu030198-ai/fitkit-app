@@ -1333,3 +1333,58 @@ i.cnt{ background:var(--coral); }
 .tpl-view{ padding:10px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.2); background:transparent; color:#fff; font-size:13px; font-family:inherit; }
 .thumb-wrap .cam-badge.play{ background:var(--mint); }
 .thumb-wrap .cam-badge.play .material-symbols-rounded, .thumb-wrap .cam-badge.play svg{ color:var(--navy); }
+
+/* Đăng nhập Google / Facebook */
+.auth-social{ display:flex; flex-direction:column; gap:10px; margin:14px 0 4px; }
+.btn-social{ display:flex; align-items:center; justify-content:center; gap:10px; width:100%; padding:13px 16px; border-radius:999px; font:600 15px/1 var(--font-body, Inter, sans-serif); cursor:pointer; border:1px solid rgba(255,255,255,.18); }
+.btn-social.google{ background:#fff; color:#1f1f1f; border-color:#dadce0; }
+.btn-social.facebook{ background:#1877F2; color:#fff; border-color:#1877F2; }
+.btn-social:active{ transform:scale(.98); }
+.btn-social svg{ flex:none; }
+.auth-or{ display:flex; align-items:center; gap:10px; margin:6px 0 2px; color:var(--text-muted); font-size:12px; }
+.auth-or::before, .auth-or::after{ content:""; flex:1; height:1px; background:rgba(255,255,255,.15); }
+
+/* ===== Dinh dưỡng v3: ảnh thật tách nền, thực đơn theo thể trạng ===== */
+.fp{ width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 6px 10px rgba(0,0,0,.35)); }
+.fp.emo{ display:flex; align-items:center; justify-content:center; font-size:inherit; filter:none; }
+.nu-thumb img.fp, .nu-thumb .fp{ width:40px; height:40px; }
+.nu-item .e{ width:40px; height:40px; display:flex; align-items:center; justify-content:center; flex:none; }
+.nu-item .e .fp{ width:40px; height:40px; }
+.nu-bowl .fp{ width:84%; height:84%; }
+.nu-bowl.big .fp{ width:92%; height:92%; }
+.nu-recipe-top .cz{ margin-left:auto; font-size:10px; padding:2px 7px; border-radius:999px; background:rgba(255,255,255,.12); }
+.nu-method{ font-size:10.5px; color:var(--mint-2, #9AF1DD); text-align:center; margin-top:-2px; }
+.nu-steps{ margin:6px 0 0; padding-left:20px; display:flex; flex-direction:column; gap:8px; font-size:13.5px; line-height:1.5; color:var(--text, #fff); }
+.nu-steps li::marker{ color:var(--coral, #FF7A45); font-weight:700; }
+.nu-tip{ display:flex; gap:8px; align-items:flex-start; margin-top:12px; padding:10px 12px; border-radius:14px; background:rgba(94,230,199,.12); color:var(--mint-2,#9AF1DD); font-size:12.5px; line-height:1.45; }
+.nu-tip .material-symbols-rounded, .nu-tip svg{ font-size:18px; width:18px; height:18px; flex:none; }
+.nu-plan{ margin:14px 0 6px; padding:16px; border-radius:22px; background:linear-gradient(160deg, rgba(94,230,199,.16), rgba(255,255,255,.06)); border:1px solid rgba(255,255,255,.14); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); }
+.nu-plan-head{ display:flex; gap:12px; align-items:center; }
+.nu-bmi{ width:64px; height:64px; border-radius:50%; flex:none; display:flex; flex-direction:column; align-items:center; justify-content:center; border:3px solid var(--c); box-shadow:0 0 18px color-mix(in srgb, var(--c) 40%, transparent); }
+.nu-bmi b{ font:700 19px/1 var(--font-head, "Inter Tight", sans-serif); }
+.nu-bmi small{ font-size:10px; opacity:.75; }
+.nu-plan-txt b{ display:block; font-size:15px; margin-bottom:3px; }
+.nu-plan-txt small{ display:block; font-size:12px; line-height:1.45; color:var(--text-muted); }
+.nu-plan-switch{ display:flex; align-items:center; gap:8px; width:100%; margin-top:12px; padding:10px 12px; border-radius:14px; border:1px dashed var(--coral,#FF7A45); background:rgba(255,122,69,.12); color:#fff; font:500 12.5px/1.35 inherit; text-align:left; cursor:pointer; }
+.nu-plan-goal{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; margin-top:12px; font-size:12.5px; color:var(--text-muted); }
+.nu-plan-goal b{ color:#fff; }
+.nu-plan-days{ display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; }
+.nu-plan-days button{ flex:1; min-width:40px; padding:8px 0; border-radius:12px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:#fff; font:600 12px/1 inherit; }
+.nu-plan-days button.on{ background:var(--mint,#5EE6C7); color:var(--navy,#061A24); border-color:transparent; }
+.nu-plan-meals{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+.nu-plan-meal{ display:flex; align-items:center; gap:12px; padding:8px 12px 8px 8px; border-radius:16px; background:rgba(6,26,36,.45); cursor:pointer; }
+.nu-plan-meal .ph{ width:56px; height:56px; flex:none; border-radius:14px; background:radial-gradient(circle at 50% 60%, rgba(255,255,255,.18), rgba(255,255,255,.04)); display:flex; align-items:center; justify-content:center; font-size:28px; }
+.nu-plan-meal .ph .fp{ width:52px; height:52px; }
+.nu-plan-meal .t{ flex:1; min-width:0; }
+.nu-plan-meal .t small{ display:block; font-size:11px; color:var(--mint-2,#9AF1DD); }
+.nu-plan-meal .t b{ display:block; font-size:13.5px; line-height:1.3; }
+.nu-plan-meal .k{ text-align:right; }
+.nu-plan-meal .k b{ display:block; font:700 16px/1 var(--font-head, "Inter Tight", sans-serif); }
+.nu-plan-meal .k small{ font-size:10px; color:var(--text-muted); }
+.nu-plan-foot{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; font-size:12.5px; color:var(--text-muted); }
+.nu-plan-foot b{ color:#fff; }
+.food-result.fr-pic{ display:flex; align-items:center; gap:12px; cursor:pointer; }
+.fr-img{ width:46px; height:46px; flex:none; border-radius:12px; background:rgba(255,255,255,.92); padding:3px; object-fit:contain; }
+.fr-img.emo{ display:flex; align-items:center; justify-content:center; font-size:24px; }
+.fr-t{ flex:1; min-width:0; }
+.nu-bowl .fp.emo{ font-size:46px; } .nu-bowl.big .fp.emo{ font-size:64px; } .nu-thumb .fp.emo{ font-size:22px; } .nu-item .e .fp.emo{ font-size:22px; }

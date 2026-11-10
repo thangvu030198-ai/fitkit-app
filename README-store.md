@@ -39,6 +39,34 @@ Theo tài liệu tổng hợp (mục 4B), app tìm video tập luyện từ **Pe
 
 Video dùng ở: chi tiết bài tập & khi đang tập (nút **Tìm video mẫu**), trình soạn buổi của PT (nút **Tìm** cạnh mỗi bài — học viên xem video ngay trong app), thư viện 800+ bài (**Xem video minh hoạ**), và **video nền màn mở app** (tự tìm video dọc "gym workout"; muốn dùng clip riêng thì dán link .mp4 vào `welcomeVideo`). Tên tác giả + nguồn luôn hiện dưới video (điều kiện của Pexels/Pixabay).
 
+## 1c. Đăng nhập Google / Facebook
+
+Nút "Tiếp tục với Google / Facebook" đã có trên màn Đăng nhập & Đăng ký. Khi chưa có Firebase, app chạy chế độ demo (giả lập tài khoản). Để chạy thật:
+
+**Google (≈5 phút)**
+1. Firebase Console → Authentication → Sign-in method → **Google** → Enable → chọn email hỗ trợ → Save.
+2. Authentication → Settings → **Authorized domains**: thêm tên miền web của app (VD `thangvu030198-ai.github.io`).
+
+**Facebook (≈15 phút)**
+1. Vào developers.facebook.com → My Apps → Create App → loại "Consumer" (hoặc "Authenticate and request data from users with Facebook Login").
+2. Lấy **App ID** và **App Secret** (Settings → Basic).
+3. Firebase → Authentication → Sign-in method → **Facebook** → Enable → dán App ID + App Secret → copy **OAuth redirect URI** Firebase đưa.
+4. Facebook App → Facebook Login → Settings → dán URI đó vào "Valid OAuth Redirect URIs" → Save.
+5. Điền Privacy Policy URL (link mục 5) và chuyển app sang chế độ **Live**.
+
+**Trong app iOS / Android (bản cài từ store)**
+Trên web dùng cửa sổ popup; trong app native cần plugin đăng nhập gốc (Google/Apple chặn đăng nhập trong WebView):
+```
+npm i @capacitor-firebase/authentication@^6 firebase
+npx cap sync
+```
+- Android: tải `google-services.json` (Firebase → Project settings → app Android `vn.thangvu.fitkit`, nhớ thêm SHA-1 của keystore) đặt vào `android/app/`; thêm `facebook_app_id` + `facebook_client_token` vào `android/app/src/main/res/values/strings.xml`.
+- iOS: tải `GoogleService-Info.plist` vào `ios/App/App/`; thêm URL Scheme `REVERSED_CLIENT_ID` và `fb<APP_ID>` trong Info.plist.
+- `capacitor.config.json` → `"plugins": { "FirebaseAuthentication": { "skipNativeAuth": true, "providers": ["google.com", "facebook.com"] } }`
+Code app (`cloud.js`) đã tự nhận plugin này; chưa cài thì nút báo "chưa cấu hình" thay vì lỗi.
+
+⚠️ **App Store**: Apple bắt buộc (Guideline 4.8) — app có đăng nhập Google/Facebook phải có thêm **Đăng nhập với Apple** (hoặc một cách đăng nhập tương đương bảo vệ quyền riêng tư). Cần bổ sung trước khi nộp iOS.
+
 ## 2. Đẩy code lên GitHub
 
 Repo `thangvu030198-ai/fitkit-app` → **Add file → Upload files** → kéo thả toàn bộ nội dung thư mục `FitKit` (kể cả thư mục `assets`, `scripts`, `.github`) → **Commit**. File trùng tên sẽ được thay bằng bản mới.
