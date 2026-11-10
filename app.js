@@ -315,7 +315,7 @@ async function dbPutRaw(storeName, record){
 /* ---------------------------------------------------------------------
    4. ĐIỀU HƯỚNG
    --------------------------------------------------------------------- */
-const SUB_SCREENS = ["library","plans","progress","client","ptprofile"];
+const SUB_SCREENS = ["library","plans","progress","client","ptprofile","exlib"];
 function goto(screen){
   $$(".screen").forEach(s=>s.classList.remove("active"));
   $(`#screen-${screen}`).classList.add("active");
@@ -331,6 +331,7 @@ function goto(screen){
   if(screen==="coach" && typeof renderCoachScreen==="function") renderCoachScreen(true);
   if(screen==="workout") renderWorkoutScreen();
   if(screen==="nutrition") renderNutritionScreen();
+  if(screen==="exlib" && typeof renderExLib==="function") renderExLib();
   if(screen==="sleep") renderSleepScreen();
   if(screen==="reminders") renderRemindersScreen();
   $("#app-scroll").scrollTo(0,0);
@@ -346,6 +347,7 @@ $$(".btn-menu-trigger").forEach(btn=> btn.addEventListener("click", ()=>{
       <div class="link-row" onclick="goto('sleep');closeSheet();"><div class="left"><span class="material-symbols-rounded">bedtime</span><div class="name">Giấc ngủ</div></div><span class="material-symbols-rounded">chevron_right</span></div>
       <div class="link-row" onclick="goto('profile');closeSheet();"><div class="left"><span class="material-symbols-rounded">person</span><div class="name">Hồ sơ của tôi</div></div><span class="material-symbols-rounded">chevron_right</span></div>
       <div class="link-row" onclick="goto('reminders');closeSheet();"><div class="left"><span class="material-symbols-rounded">notifications_active</span><div class="name">Nhắc nhở</div></div><span class="material-symbols-rounded">chevron_right</span></div>
+      <div class="link-row" onclick="openExLib();closeSheet();"><div class="left"><span class="material-symbols-rounded">library_books</span><div class="name">Thư viện bài tập theo nhóm cơ</div></div><span class="material-symbols-rounded">chevron_right</span></div>
       <div class="link-row" onclick="goto('plans');closeSheet();"><div class="left"><span class="material-symbols-rounded">edit_calendar</span><div class="name">Quản lý chương trình tập</div></div><span class="material-symbols-rounded">chevron_right</span></div>
       <div class="link-row" onclick="goto('library');closeSheet();"><div class="left"><span class="material-symbols-rounded">video_library</span><div class="name">Kho video của tôi</div></div><span class="material-symbols-rounded">chevron_right</span></div>
       <div class="link-row" onclick="goto('progress');closeSheet();"><div class="left"><span class="material-symbols-rounded">insights</span><div class="name">Ảnh tiến trình &amp; InBody</div></div><span class="material-symbols-rounded">chevron_right</span></div>

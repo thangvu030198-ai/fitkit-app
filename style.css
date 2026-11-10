@@ -1228,3 +1228,38 @@ i.cnt{ background:var(--coral); }
 .wl-hero-video.on{ opacity:1; }
 .wl-credit{ position:absolute; z-index:4; left:20px; top:calc(64px + env(safe-area-inset-top)); }
 .wl-credit .stock-credit{ margin:0; font-size:10px; }
+
+/* =========================================================================
+   THƯ VIỆN BÀI TẬP THEO NHÓM CƠ
+   ========================================================================= */
+.exlib-hero{ padding:4px 2px 2px; }
+.exlib-chips{ display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
+.exlib-chips::-webkit-scrollbar{ display:none; }
+.exlib-chips .pill{ flex-shrink:0; }
+.mg-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.mg-card{ position:relative; overflow:hidden; aspect-ratio:1.15; border-radius:22px; border:1px solid rgba(255,255,255,.16); padding:0; text-align:left; color:#fff;
+  background:radial-gradient(120% 90% at 100% 0%, rgba(94,230,199,.22), transparent 60%), linear-gradient(160deg, var(--navy-3), var(--navy-2));
+  animation:fkRise .7s var(--e-out) both; animation-delay:calc(var(--i)*40ms); }
+.mg-card img{ position:absolute; right:-6%; bottom:-4%; width:78%; height:78%; object-fit:cover; border-radius:18px; opacity:.9; mix-blend-mode:luminosity; filter:contrast(1.05); transition:transform .5s var(--e-out); }
+.mg-card:hover img{ transform:scale(1.05); }
+.mg-shade{ position:absolute; inset:0; background:linear-gradient(115deg, rgba(6,26,36,.92) 25%, rgba(6,26,36,.35) 70%, rgba(6,26,36,.1)); }
+.mg-ic{ position:absolute; left:12px; top:12px; width:34px; height:34px; border-radius:11px; background:rgba(255,122,69,.22); color:var(--coral-2); display:flex; align-items:center; justify-content:center; }
+.mg-ic .material-symbols-rounded{ font-size:18px; }
+.mg-name{ position:absolute; left:12px; bottom:30px; right:8px; font-family:var(--font-head); font-size:18px; font-weight:600; letter-spacing:-.02em; line-height:1.1; }
+.mg-count{ position:absolute; left:12px; bottom:11px; font-size:11.5px; color:var(--mint-2); font-weight:600; }
+.exlib-list{ display:flex; flex-direction:column; gap:8px; }
+.exlib-row{ cursor:pointer; }
+.exlib-row .thumb{ background:#fff; object-fit:cover; }
+.exlib-row .ex-num .material-symbols-rounded{ font-size:20px; color:var(--mint); }
+.exlib-tags{ display:flex; gap:4px; margin-top:4px; }
+.exlib-tags .tg{ font-size:9.5px; font-weight:700; padding:2px 6px; border-radius:6px; background:rgba(255,255,255,.12); color:rgba(255,255,255,.75); }
+.exlib-tags .tg.fk{ background:rgba(255,122,69,.2); color:var(--coral-2); }
+.exlib-row .nu-mini{ margin-left:0; flex-shrink:0; }
+.ld-img{ width:100%; max-height:34vh; object-fit:cover; border-radius:16px; display:block; }
+.ld-img.white{ object-fit:contain; background:#fff; }
+.ld-steps{ padding-left:18px; display:flex; flex-direction:column; gap:6px; font-size:13px; color:var(--text-muted); }
+.atp-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.atp-day{ display:flex; flex-direction:column; align-items:flex-start; gap:2px; padding:12px; border-radius:16px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.08); color:#fff; text-align:left; }
+.atp-day small{ font-size:11.5px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+.atp-day i{ font-style:normal; font-size:10.5px; color:var(--mint-2); font-weight:700; }
+.atp-day.today{ border-color:var(--mint); background:rgba(94,230,199,.12); }

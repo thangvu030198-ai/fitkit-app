@@ -55,6 +55,7 @@ const FK_LINE = {
   monitor_weight:"r:3,3,18,18,4|M7.5 10a6 6 0 0 1 9 0|M12 10l1.5-2", park:"M12 22v-6|M12 3 5 14h14z", percent:"M19 5 5 19|c:6.5,6.5,2.5|c:17.5,17.5,2.5",
   school:"M22 10 12 5 2 10l10 5 10-5z|M6 12v5c3 3 9 3 12 0v-5", tips_and_updates:"M9 18h6|M10 22h4|M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z",
   compare:"r:3,3,18,18,2|M12 3v18", aspect_ratio:"M15 3h6v6|M9 21H3v-6|M21 3l-7 7|M3 21l7-7", progress_activity:"M21 12a9 9 0 1 1-6.2-8.6",
+  self_improvement:"c:12,4.5,2|M4 20c2-4 4.5-6 8-6s6 2 8 6|M12 7v7|M5.5 10.5l6.5 1.5 6.5-1.5",
   summarize:"M8 6h13|M8 12h13|M8 18h13|M3 6h.01|M3 12h.01|M3 18h.01", copyright:"c:12,12,10|M15 9.4a4 4 0 1 0 0 5.2", mail_outline:"r:2,4,20,16,2|M22 7l-10 6L2 7",
 };
 

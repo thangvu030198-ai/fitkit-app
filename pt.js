@@ -492,7 +492,7 @@ function renderHomeScreen(){
     <div class="quick-row">
       <button onclick="goto('plans')"><span class="material-symbols-rounded">edit_calendar</span>Giáo án</button>
       <button onclick="goto('progress')"><span class="material-symbols-rounded">insights</span>Tiến độ</button>
-      <button onclick="goto('library')"><span class="material-symbols-rounded">video_library</span>Video</button>
+      <button onclick="openExLib()"><span class="material-symbols-rounded">library_books</span>Bài tập</button>
       <button onclick="goto('sleep')"><span class="material-symbols-rounded">bedtime</span>Giấc ngủ</button>
     </div>
 
