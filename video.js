@@ -44,6 +44,35 @@ function videoQueryFor(meta){
   return VID_MUSCLE_EN[m] || "gym workout";
 }
 
+/* Pixabay tìm theo thẻ → tên dài (VD "Barbell Bench Press - Medium Grip") thường ra 0 kết quả.
+   Tạo chuỗi từ khoá từ cụ thể → chung, thử lần lượt tới khi có video. */
+const VID_EN_KEYWORDS = [
+  ["bench press"],["push up","push-up","pushup"],["pull up","pull-up","pullup","chin up","chin-up"],["lat pulldown","pulldown"],
+  ["deadlift"],["squat"],["lunge","lunges"],["leg press"],["leg curl","hamstring curl"],["leg extension"],["calf raise","calf press"],
+  ["hip thrust","glute bridge","bridge"],["bicep curl","biceps curl","hammer curl","curl"],["tricep","triceps","pushdown","kickback","skullcrusher"],
+  ["shoulder press","overhead press","military press"],["lateral raise","front raise","rear delt"],["chest fly","fly","flye","pec deck"],
+  ["row","rowing"],["shrug"],["dip","dips"],["plank"],["crunch","crunches","sit up","sit-up"],["russian twist","twist"],["leg raise"],
+  ["burpee"],["jump rope","rope jumping","skipping"],["kettlebell"],["clean","snatch","jerk"],["stretch","stretching"],["yoga"],
+  ["running","run","jog","sprint"],["cycling","bike"],["rowing machine","rower"],["box jump","jump"],
+];
+const VID_KW_QUERY = { "tricep":"arm workout", "triceps":"arm workout", "pushdown":"arm workout", "kickback":"arm workout", "skullcrusher":"arm workout",
+  "deadlift":"deadlift", "row":"rowing exercise", "rowing":"rowing exercise", "curl":"bicep curl", "hammer curl":"bicep curl", "biceps curl":"bicep curl",
+  "fly":"chest fly", "flye":"chest fly", "pec deck":"chest fly", "crunch":"abs workout", "crunches":"abs workout", "sit up":"abs workout", "sit-up":"abs workout",
+  "twist":"abs workout", "leg raise":"abs workout", "plank":"plank", "dip":"dips", "shrug":"shoulder workout", "lateral raise":"shoulder workout",
+  "front raise":"shoulder workout", "rear delt":"shoulder workout", "run":"running", "jog":"running", "sprint":"running", "bike":"cycling",
+  "jump":"jumping exercise", "bridge":"glute bridge", "clean":"weightlifting", "snatch":"weightlifting", "jerk":"weightlifting", "stretch":"stretching" };
+function videoQueriesFromString(q){
+  const raw = String(q||"");
+  let s = raw.replace(/\s+-\s.*$/,"").replace(/\(.*?\)/g,"").replace(/\bexercise\b/ig,"").replace(/\s+/g," ").trim();
+  const low = (raw+" "+s).toLowerCase();
+  let kw = null;
+  for(const group of VID_EN_KEYWORDS){ const hit = group.find(k=> low.includes(k)); if(hit){ kw = VID_KW_QUERY[hit] || group[0]; break; } }
+  const stripped = s.replace(/\b(barbell|dumbbells?|cable|machine|smith|kettlebells?|bands?|ez[- ]?bar|lever|weighted|alternating|alternate|seated|standing|lying|incline|decline|one[- ]arm|single[- ]arm|single[- ]leg|one[- ]leg|close[- ]grip|wide[- ]grip|reverse|medium grip|with|on|the|and)\b/gi,"").replace(/\s+/g," ").trim();
+  const out = [];
+  [raw.trim(), kw && kw+" exercise", kw, stripped && stripped.split(" ").length<=3 ? stripped : null, "gym workout"].forEach(x=>{ if(x && !out.some(o=>o.toLowerCase()===x.toLowerCase())) out.push(x); });
+  return out;
+}
+
 /* ---- Gọi API ---- */
 function pickPexelsFile(files){
   const mp4 = (files||[]).filter(f=> (f.file_type||"").includes("mp4") && f.link);
@@ -122,7 +151,8 @@ function openVideoPicker(query, onPick, opts={}){
   const load = async ()=>{
     render();
     try{
-      const list = await searchVideos(q, { orientation: opts.orientation });
+      let list = [];
+      for(const qq of videoQueriesFromString(q)){ list = await searchVideos(qq, { orientation: opts.orientation }); if(list.length) break; }
       if(!$("#vp-body")) return;
       $("#vp-body").innerHTML = list.length ? `<div class="vp-grid">${list.map((v,i)=>`
         <button class="vp-item" data-vi="${i}">
@@ -201,7 +231,14 @@ async function mountVideoBlock(id, query, opts={}){
   let list = [];
   if(opts.stock && opts.stock.url) list.push(Object.assign({ duration:opts.stock.duration||0 }, opts.stock, { _saved:true }));
   try{
-    if(hasVideoSource()){ const found = await searchVideos(query); found.forEach(v=>{ if(!list.some(x=>x.url===v.url)) list.push(v); }); }
+    if(hasVideoSource()){
+      const qs = Array.isArray(query) ? query : videoQueriesFromString(query);
+      for(const q of qs){
+        const found = await searchVideos(q);
+        found.forEach(v=>{ if(!list.some(x=>x.url===v.url)) list.push(v); });
+        if(list.length >= 4) break;
+      }
+    }
   }catch(e){ if(!list.length){ host.innerHTML = `<div class="vb-msg"><span class="material-symbols-rounded">videocam</span>${escapeHtml(e.message==="NO_KEY" ? "Chưa kết nối nguồn video." : e.message)}</div>`; return; } }
   if(!document.getElementById(id)) return;
   if(!list.length){ host.innerHTML = hasVideoSource() ? `<div class="vb-msg"><span class="material-symbols-rounded">videocam</span>Chưa tìm thấy video cho bài này.</div>` : `<div class="vb-msg"><span class="material-symbols-rounded">videocam</span>Chưa kết nối nguồn video.</div>`; return; }
