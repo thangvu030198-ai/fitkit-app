@@ -150,8 +150,8 @@ const PROGRAM_TEMPLATES = [
     desc:"Dành cho người tập trên 2 năm, ngủ ≥7 giờ. Bài đa khớp dừng RIR 1–2, bài cô lập tới RIR 0. Theo dõi phục hồi, deload mỗi 5 tuần.",
     days:{
       T2:{ title:"Push 1 — nặng", intensity:"Cao", duration:70, ex:[TPL_R("benchpress",3,"5-8",180),TPL_R("dbpress",3,"8-10",90),TPL_R("pecdeck",3,"12-15",60),TPL_R("cablelateral",4,"12-15",45),TPL_R("ohtriext",3,"10-12",60)] },
-      T3:{ title:"Pull 1 — nặng", intensity:"Cao", duration:70, ex:[TPL_R("deadlift",2,"4-6",180),TPL_R("pullup",3,"6-10",120),TPL_R("csrow",3,"8-10",90),TPL_R("facepull",3,"15",45),TPL_R("preacher",3,"10-12",60)] },
-      T4:{ title:"Legs 1 — nặng", intensity:"Cao", duration:70, ex:[TPL_R("squat",3,"5-8",180),TPL_R("hipthrust",3,"8-10",120),TPL_R("legext",3,"12-15",60),TPL_R("legcurl",3,"10-12",60),TPL_R("calfraise",4,"10-15",45)] },
+      T3:{ title:"Pull 1 — nặng", intensity:"Cao", duration:70, ex:[TPL_R("deadlift",2,"4-6 · RPE 7",180),TPL_R("pullup",3,"6-10",120),TPL_R("csrow",3,"8-10",90),TPL_R("facepull",3,"15",45),TPL_R("preacher",3,"10-12",60)] },
+      T4:{ title:"Legs 1 — nặng", intensity:"Cao", duration:70, ex:[TPL_R("squat",3,"5-8",180),TPL_R("legpress",3,"10-12",90),TPL_R("legext",3,"12-15",60),TPL_R("legcurl",3,"10-12",60),TPL_R("calfraise",4,"10-15",45)] },
       T5:{ title:"Push 2 — khối lượng", intensity:"Vừa", duration:65, ex:[TPL_R("inclinedb",3,"8-12",90),TPL_R("machinepress",3,"10-12",75),TPL_R("tricepdip",3,"8-12",75),TPL_R("cablelateral",4,"15-20",45),TPL_R("tricepsdown",3,"12-15",45)] },
       T6:{ title:"Pull 2 — khối lượng", intensity:"Vừa", duration:65, ex:[TPL_R("latpulldown",3,"10-12",90),TPL_R("cablerow",3,"10-12",75),TPL_R("pullover",3,"12-15",60),TPL_R("hammercurl",3,"10-12",45),TPL_R("bicepcurl",2,"12-15",45)] },
       T7:{ title:"Legs 2 — khối lượng", intensity:"Vừa", duration:65, ex:[TPL_R("hacksquat",3,"8-12",120),TPL_R("bulgarian",3,"10-12",90),TPL_R("legcurl",3,"12-15",60),TPL_R("legext",2,"15-20",45),TPL_R("hangingleg",3,"12-15",45)] },
@@ -273,7 +273,7 @@ const PROGRAM_TEMPLATES = [
     origin:"Hyrox — giải thể lực đang bùng nổ toàn cầu: chạy xen kẽ các trạm sled, chèo, wall ball, farmer carry",
     desc:"2 buổi sức mạnh/functional, 1 buổi chạy Zone 2, 1 buổi mô phỏng Hyrox (chạy 1 km + 1 trạm). Không có xe trượt thì thay bằng đẩy máy chạy tắt điện hoặc lunge.",
     days:{
-      T2:{ title:"Strength", intensity:"Cao", duration:60, ex:[TPL_R("squat",4,"5-6",150),TPL_R("rdl",3,"8",120),TPL_R("dbrow",3,"10 mỗi tay",60),TPL_R("farmercarry",4,"40 m",60)] },
+      T2:{ title:"Strength", intensity:"Cao", duration:60, ex:[TPL_R("squat",4,"5-6",150),TPL_R("rdl",3,"8",120),TPL_R("dbpress",3,"10",75),TPL_R("dbrow",3,"10 mỗi tay",60),TPL_R("farmercarry",4,"40 m",60)] },
       T3:{ title:"Chạy Zone 2", intensity:"Thấp", duration:40, ex:[TPL_R("running",1,"30-40 phút nhẹ",0)] },
       T4:TPL_REST,
       T5:{ title:"Functional", intensity:"Cao", duration:50, ex:[TPL_R("sledpush",4,"20 m",90),TPL_R("wallball",4,"20",60),TPL_R("lunges",3,"20 bước",60),TPL_R("burpee",3,"10",60),TPL_R("rowing",3,"500 m",90)] },

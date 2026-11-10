@@ -1369,7 +1369,7 @@ i.cnt{ background:var(--coral); }
 .nu-plan-goal{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; margin-top:12px; font-size:12.5px; color:var(--text-muted); }
 .nu-plan-goal b{ color:#fff; }
 .nu-plan-days{ display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; }
-.nu-plan-days button{ flex:1; min-width:40px; padding:8px 0; border-radius:12px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:#fff; font:600 12px/1 inherit; }
+.nu-plan-days button{ flex:1; min-width:40px; padding:8px 0; border-radius:12px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:#fff; font-family:inherit; font-weight:600; font-size:12px; line-height:1; }
 .nu-plan-days button.on{ background:var(--mint,#5EE6C7); color:var(--navy,#061A24); border-color:transparent; }
 .nu-plan-meals{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
 .nu-plan-meal{ display:flex; align-items:center; gap:12px; padding:8px 12px 8px 8px; border-radius:16px; background:rgba(6,26,36,.45); cursor:pointer; }
@@ -1404,7 +1404,7 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible, input:focu
 .set-head span{ flex:1; text-align:center; } .set-head span:first-child{ flex:0 0 34px; } .set-head span:last-child{ flex:0 0 48px; }
 .set-row{ padding:6px; border-radius:14px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); transition:background .2s; }
 .set-row b{ flex:0 0 34px; text-align:center; font-size:15px; }
-.set-row input{ flex:1; min-width:0; height:44px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:rgba(6,26,36,.5); color:#fff; text-align:center; font:600 16px/1 inherit; }
+.set-row input{ flex:1; min-width:0; height:44px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:rgba(6,26,36,.5); color:#fff; text-align:center; font-family:inherit; font-weight:600; font-size:16px; line-height:1; }
 .set-check{ flex:0 0 48px; height:44px; border-radius:12px; border:1px solid rgba(255,255,255,.2); background:transparent; color:#fff; display:flex; align-items:center; justify-content:center; }
 .set-row.done{ background:rgba(94,230,199,.16); border-color:rgba(94,230,199,.4); }
 .set-row.done .set-check{ background:var(--mint,#5EE6C7); color:var(--navy,#061A24); border-color:transparent; }
@@ -1412,18 +1412,18 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible, input:focu
 .set-rest[hidden]{ display:none; }
 .set-rest b{ font:700 28px/1 var(--font-head,"Inter Tight",sans-serif); color:var(--coral,#FF7A45); min-width:44px; }
 .set-rest small{ flex:1; color:var(--text-muted); }
-.set-rest button{ height:36px; padding:0 12px; border-radius:999px; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.08); color:#fff; font:600 12px/1 inherit; }
+.set-rest button{ height:36px; padding:0 12px; border-radius:999px; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.08); color:#fff; font-family:inherit; font-weight:600; font-size:12px; line-height:1; }
 .set-guide{ margin-top:10px; font-size:13px; color:var(--text-muted); }
 .set-guide summary{ cursor:pointer; color:#fff; font-weight:600; padding:6px 0; }
 .nu-plan-opts{ display:flex; gap:6px; margin:-2px 0 8px; }
-.nu-plan-opts button{ padding:7px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:#fff; font:600 12px/1 inherit; min-height:34px; }
+.nu-plan-opts button{ padding:7px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:#fff; font-family:inherit; font-weight:600; font-size:12px; line-height:1; min-height:34px; }
 .nu-plan-opts button.on{ background:var(--mint,#5EE6C7); color:var(--navy,#061A24); border-color:transparent; }
 .btn-social.apple{ background:#000; color:#fff; border-color:#000; }
 
 /* Đợt 1: tiến trình tự động, khởi động, đĩa tạ, kỷ lục */
 .set-up.down{ background:rgba(255,122,69,.14); color:#FFB08A; }
 .set-tools{ display:flex; gap:6px; margin:0 0 8px; }
-.set-tools button{ flex:1; display:flex; align-items:center; justify-content:center; gap:6px; height:40px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:#fff; font:600 12.5px/1 inherit; }
+.set-tools button{ flex:1; display:flex; align-items:center; justify-content:center; gap:6px; height:40px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:#fff; font-family:inherit; font-weight:600; font-size:12.5px; line-height:1; }
 .set-tools svg, .set-tools .material-symbols-rounded{ width:16px; height:16px; }
 .set-toolbox{ margin:0 0 10px; padding:12px; border-radius:14px; background:rgba(6,26,36,.55); border:1px solid rgba(255,255,255,.12); }
 .set-toolbox[hidden]{ display:none; }
@@ -1434,7 +1434,15 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible, input:focu
 .plate-viz{ display:flex; align-items:center; gap:3px; height:80px; margin:6px 0; }
 .plate-viz .bar{ width:60px; height:8px; border-radius:4px; background:#9AA4AE; }
 .plate-viz .pl{ width:12px; height:var(--h); border-radius:3px; background:var(--c); box-shadow:inset 0 0 0 1px rgba(0,0,0,.25); }
-.set-row select.rpe{ flex:0 0 58px; height:44px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:rgba(6,26,36,.5); color:#fff; font:600 14px/1 inherit; text-align:center; }
+.set-row select.rpe{ flex:0 0 58px; height:44px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:rgba(6,26,36,.5); color:#fff; font-family:inherit; font-weight:600; font-size:14px; line-height:1; text-align:center; }
 .set-head .rpe-h{ flex:0 0 58px; }
 .spark{ width:100%; height:auto; } .spark .line{ fill:none; stroke:var(--mint,#5EE6C7); stroke-width:2.5; } .spark .area{ fill:rgba(94,230,199,.12); } .spark circle{ fill:var(--coral,#FF7A45); }
 .pr-list{ margin-top:12px; display:flex; flex-direction:column; gap:6px; font-size:13.5px; }
+
+/* Vòng 2: vùng chạm ≥44px, căn bảng hiệp, chữ tối thiểu */
+.nu-plan-days button, .nu-plan-opts button, .set-rest button, .set-tools button, .tpl-add, .tpl-view{ min-height:44px; }
+.set-head{ padding:0 7px; font-size:12px; }
+.set-row{ gap:6px; } .set-row input{ padding:0 2px; } .set-row select.rpe{ flex-basis:54px; font-size:16px; }
+.nu-bmi small, .nu-plan-meal .k small, .nu-recipe-top .cz{ font-size:11px; } .nu-method, .nu-plan-meal .t small{ font-size:12px; }
+.btn-social.apple{ border-color:rgba(255,255,255,.35); }
+:root{ --text-dim: rgba(255,255,255,.58); }

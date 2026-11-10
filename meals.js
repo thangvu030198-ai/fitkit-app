@@ -235,6 +235,19 @@ const RECIPES = [
     items:[["ca-ngu",120],["ca-chua",100],["com-trang",200],["dua-leo",60]],
     steps:["Phi tỏi, cho cà chua băm vào nấu sệt.", "Cho cá ngừ hộp (đã chắt dầu/nước) vào đảo 2 phút, nêm nhẹ.", "Ăn với cơm và dưa leo."],
     tip:"1 hộp cá ngừ ≈ 25 g đạm, giá rẻ, để được lâu." },
+  { id:"chao-yen-mach-dau-hu", name:"Cháo yến mạch đậu hũ nấm (chay)", emoji:"🥣", cuisine:"vn", method:"boil", min:15, level:1, tags:["chay","thuan-chay","giam-mo"], meal:"breakfast",
+    items:[["yen-mach",50],["dau-hu",150],["nam",60],["rau-thom",10]],
+    steps:["Đun 400 ml nước, cho yến mạch vào khuấy 5 phút đến khi sánh.", "Thêm đậu hũ cắt hạt lựu và nấm, nấu 3 phút, nêm nước tương/muối.", "Rắc rau thơm, tiêu."],
+    tip:"Bữa sáng chay ấm bụng, ~20 g đạm thực vật." },
+  { id:"sua-dau-chuoi-hat", name:"Sữa đậu nành, chuối & hạnh nhân", emoji:"🥛", cuisine:"vn", method:"nocook", min:2, level:1, tags:["chay","thuan-chay","an-vat"], meal:"snack",
+    items:[["sua-dau-nanh",300],["chuoi",100],["hanh-nhan",20]],
+    steps:["Uống 1 ly sữa đậu nành không đường, ăn kèm 1 quả chuối và một nắm hạnh nhân."],
+    tip:"Bữa phụ chay tiện mua ở cửa hàng tiện lợi." },
+  { id:"dau-hu-trung-hap", name:"Trứng hấp đậu hũ, cơm, rau luộc", emoji:"🍳", cuisine:"vn", method:"steam", min:20, level:1, tags:["chay","tang-co","re"], meal:"lunch",
+    items:[["trung-ga",100],["dau-hu",150],["com-trang",180],["rau-muong",120]],
+    steps:["Đánh 2 quả trứng với đậu hũ bóp nhuyễn, chút hành lá, nước tương.", "Hấp cách thủy 12–15 phút đến khi đông.", "Ăn với cơm và rau muống luộc."],
+    tip:"Rẻ, nhiều đạm (~28 g), hợp người ăn chay có trứng." },
+
   /* ===================== MÓN ÂU ===================== */
   { id:"overnight-oats", name:"Overnight oats hạt chia & việt quất", emoji:"🫐", cuisine:"au", method:"nocook", min:5, level:1, tags:["giam-mo","chay"], meal:"breakfast",
     items:[["yen-mach",50],["sua-chua-hy-lap",100],["sua-tuoi-khong-duong",120],["hat-chia",10],["viet-quat",60]],
@@ -367,8 +380,23 @@ function buildDayPlan(p, dayIndex, prefs={}){
     // xoay vòng: mỗi ngày một món khác, các bữa lệch nhau
     const r = pool[(dayIndex + mi*2) % pool.length];
     const mealTarget = target * split[meal];
-    const factor = Math.min(1.8, Math.max(0.6, mealTarget / recipeKcal(r)));
+    const factor = Math.min(1.4, Math.max(0.6, mealTarget / recipeKcal(r)));   // không phóng to món quá 1,4 lần
     plan[meal] = scaleRecipe(r, factor);
   });
+  // Còn thiếu calo → thêm "món phụ" thực tế (sữa, chuối, yến mạch, hạt…) vào bữa phụ thay vì phóng to món chính
+  const total = ()=> Object.values(plan).reduce((s,r)=> s + recipeKcal(r), 0);
+  const fillers = prefs.veg ? [["sua-dau-nanh",250],["chuoi",120],["yen-mach",40],["hanh-nhan",20],["com-gao-lut",150]]
+                            : [["sua-tuoi-khong-duong",250],["chuoi",120],["yen-mach",40],["trung-ga",50],["bo-dau-phong",15],["com-gao-lut",150]];
+  const snack = plan.snack || plan[Object.keys(plan).pop()];
+  let guard = 0;
+  while(total() < target*0.95 && guard < 18){
+    const f = fillers[guard % fillers.length]; guard++;
+    if(total() + FOODS.find(x=>x.id===f[0]).kcal*f[1]/100 > target*1.05) continue;
+    const ex = snack.items.find(([id])=>id===f[0]);
+    if(ex && ex[1] >= f[1]*1.5) continue;   // không dồn quá nhiều 1 món
+    if(ex) ex[1] += f[1]; else snack.items.push([f[0], f[1]]);
+    snack.extra = true;
+  }
+  if(snack.extra && !/\+ món phụ/.test(snack.name)) snack.name = snack.name + " + món phụ";
   return plan;
 }

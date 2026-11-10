@@ -112,7 +112,10 @@ function calcGoalKcal(tdee, goalId){
   return Math.round(tdee * (1 + goal.kcalAdjust));
 }
 function calcMacros(weight, goalKcal){
-  const protein = Math.round(weight * 2.0);               // 2 g/kg — mức cao trong khuyến nghị ISSN 1.6-2.2g/kg
+  // 2 g/kg (ISSN 1,6–2,2) theo cân nặng điều chỉnh: người thừa cân tính theo ~BMI 25, trần 180 g
+  const h = (state.profile && state.profile.height || 0)/100;
+  const ref = h ? Math.min(weight, 25*h*h) : weight;
+  const protein = Math.min(180, Math.round(ref * 2.0));
   const fatKcal = goalKcal * 0.25;                         // 25% tổng năng lượng
   const fat = Math.round(fatKcal / 9);
   const proteinKcal = protein * 4;
@@ -125,7 +128,9 @@ function recomputeProfile(){
   p.bmr = calcBMR(p);
   p.tdee = calcTDEE(p.bmr, p.activity);
   if(p.autoTargets !== false){
-    p.goalKcal = Math.max(calcGoalKcal(p.tdee, p.goal), p.gender==="male" ? 1500 : 1200, p.bmr||0);
+    const hh = (p.height||0)/100, bmi = hh ? p.weight/(hh*hh) : 22;
+    p.goalBlocked = p.goal==="lose" && (bmi < 18.5 || (p.age && p.age < 18));   // không cho thâm hụt khi thiếu cân / dưới 18 tuổi
+    p.goalKcal = Math.max(calcGoalKcal(p.tdee, p.goalBlocked ? "maintain" : p.goal), p.gender==="male" ? 1500 : 1200, p.bmr||0);
     const m = calcMacros(p.weight, p.goalKcal);
     p.protein = m.protein; p.carbs = m.carbs; p.fat = m.fat;
   }
@@ -661,13 +666,15 @@ let session = null;
 function startSession(dayKey){
   const plan = getActivePlan();
   const day = plan.days[dayKey];
+  if(session && session.dayKey===dayKey && session.paused){ session.paused = false; toast("Tiếp tục buổi tập", "play_arrow"); renderSessionStep(); return; }
   session = { dayKey, idx:0, items: day.items.slice(), isToday: dayKey===todayDayKey(), completed: [] };
   renderSessionStep();
 }
 /* ---- Buổi tập: ghi kg × lần từng hiệp, nghỉ giữa hiệp (rung + âm báo), điền sẵn buổi trước ---- */
 function exKey(item){ return item.exerciseId || ("c:" + (getExerciseMeta(item).name||"")); }
 function repTop(reps){ const m = String(reps||"").match(/(\d+)\s*[-–]\s*(\d+)/); if(m) return Number(m[2]); const n = String(reps||"").match(/^\s*(\d+)/); return n ? Number(n[1]) : 0; }
-function isTimedReps(reps){ return /giây|phút|\bm\b|km|vòng/i.test(String(reps||"")) || !repTop(reps); }
+function isMaxReps(reps){ return /tối đa|max|amrap/i.test(String(reps||"")); }
+function isTimedReps(reps){ const r = String(reps||""); if(isMaxReps(r)) return false; return /giây|phút|(^|\s)\d*\s*m(\s|$|\/)|km|vòng|\d+\s*s(\s|$|\/)/i.test(r) || !repTop(r); }
 function beep(){
   try{ navigator.vibrate && navigator.vibrate([200,100,200]); }catch(e){}
   try{ const C = window.AudioContext || window.webkitAudioContext; const ctx = window._fkAudio || (window._fkAudio = new C());
@@ -681,7 +688,8 @@ async function keepAwake(on){
 function renderSessionStep(){
   if(!session) return;
   if(session.idx >= session.items.length){ return finishSession(); }
-  if(session.idx===0 && !session._awake){ session._awake = true; keepAwake(true); }
+  if(!session._awake){ session._awake = true; keepAwake(true); }
+  onSheetCloseHook = ()=>{ if(session && !session.finished){ stopSetRest(); keepAwake(false); session._awake = false; session.paused = true; toast("Đã tạm dừng buổi tập — bấm Bắt đầu để tiếp tục", "pause"); } };
   const item = session.items[session.idx];
   const meta = getExerciseMeta(item);
   const key = exKey(item);
@@ -694,7 +702,7 @@ function renderSessionStep(){
   const prog = progressionFor(item, meta, last, timed, nSets);
   if(!session.sets[item.uid]){
     session.sets[item.uid] = Array.from({length:nSets}, (_,i)=>{ const l = last && last.sets && (last.sets[i] || last.sets[last.sets.length-1]);
-      return { kg: l ? (prog.delta ? prog.kg : l.kg) : "", reps: timed ? "" : (repBottom(item.reps)||top||""), rpe:"", done:false }; });
+      return { kg: l ? (prog.delta ? prog.kg : l.kg) : "", reps: timed || isMaxReps(item.reps) ? (l && isMaxReps(item.reps) ? l.reps : "") : (repBottom(item.reps)||top||""), rpe:"", done:false }; });
   }
   const rows = session.sets[item.uid];
   const lastTxt = last && last.sets && last.sets.length ? `Lần trước (${last.date.slice(8,10)}/${last.date.slice(5,7)}): ${last.sets.map(x=> timed ? "✓" : `${x.kg||0}kg×${x.reps}`).join(" · ")}` : "";
@@ -747,9 +755,13 @@ function renderSessionStep(){
     if(r.done && i < rows.length-1 && item.restSec > 0) startSetRest(item.restSec);
   }));
   $("#btn-session-done").addEventListener("click", ()=>{
-    const doneRows = rows.filter(r=>r.done);
-    const keep = (doneRows.length ? doneRows : rows).map(r=>({ kg: Number(r.kg)||0, reps: timed ? 0 : Number(r.reps)||0, rpe: r.rpe ? Number(r.rpe) : undefined }));
-    recordExerciseResult(key, meta.name, item.reps, keep, timed);
+    let doneRows = rows.filter(r=>r.done);
+    if(!doneRows.length){
+      if(!confirm("Bạn chưa đánh dấu hiệp nào. Ghi nhận tất cả " + rows.length + " hiệp như đang hiển thị?")) return;
+      rows.forEach(r=> r.done = true); doneRows = rows;
+    }
+    const keep = doneRows.map(r=>({ kg: Number(r.kg)||0, reps: timed ? 0 : Number(r.reps)||0, rpe: r.rpe ? Number(r.rpe) : undefined }));
+    if(session.isToday) recordExerciseResult(key, meta.name, item.reps, keep, timed);
     session.completed.push(item.uid);
     stopSetRest(); saveState();
     session.idx++; renderSessionStep();
@@ -791,6 +803,7 @@ function restCountdown(sec){
   $("#btn-skip-rest").addEventListener("click", ()=>{ clearInterval(timer); session.idx++; renderSessionStep(); });
 }
 function finishSession(){
+  session.finished = true; onSheetCloseHook = null;
   keepAwake(false); clearInterval(window._restTimer); cancelRestNotif();
   if(session.sets){ let vol=0; Object.values(session.sets).forEach(rs=>rs.forEach(r=>{ if(r.done) vol += (Number(r.kg)||0)*(Number(r.reps)||0); })); session.volume = Math.round(vol); }
   if(session.isToday){
@@ -2230,6 +2243,7 @@ function openFoodQuantity(food, mealId){
     $("#qty-carbs").textContent = c.carbs+"g";
   };
   $("#qty-input").addEventListener("input", update);
+  update();
   $("#btn-confirm-food").addEventListener("click", ()=>{
     const g = Math.min(3000, Math.max(1, Number($("#qty-input").value)||0));
     if(!Number($("#qty-input").value) || Number($("#qty-input").value) <= 0){ toast("Nhập khối lượng lớn hơn 0", "error"); return; }
@@ -2826,7 +2840,7 @@ function fkHandleBack(){
   const auth = $("#auth"); if(auth && !auth.hidden && getComputedStyle(auth).display!=="none") return false;
   const cur = ($(".screen.active")||{}).id || "";
   const name = cur.replace("screen-","");
-  if(SUB_SCREENS.includes(name)){ goto(name==="client" ? "coach" : name==="exlib" || name==="plans" || name==="library" ? "workout" : "home"); return true; }
+  if(SUB_SCREENS.includes(name)){ goto(name==="client" || name==="ptprofile" ? "coach" : name==="exlib" || name==="plans" || name==="library" ? "workout" : "home"); return true; }
   if(name && name!=="home"){ goto("home"); return true; }
   return false;
 }
@@ -2843,12 +2857,12 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape" && $("#sheet-backd
    TIẾN TRÌNH TỰ ĐỘNG · KHỞI ĐỘNG · ĐĨA TẠ · LỊCH SỬ & KỶ LỤC · BÁO NGHỈ
    ===================================================================== */
 function repBottom(reps){ const m = String(reps||"").match(/(\d+)\s*[-–]\s*(\d+)/); return m ? Number(m[1]) : repTop(reps); }
-function e1rm(kg, reps){ kg = Number(kg)||0; reps = Number(reps)||0; if(!kg || !reps) return 0; return reps===1 ? kg : kg*(1+reps/30); }   // công thức Epley
+function e1rm(kg, reps){ kg = Number(kg)||0; reps = Math.min(12, Number(reps)||0); if(!kg || !reps) return 0; return reps===1 ? kg : kg*(1+reps/30); }   // giới hạn 12 lần để tránh phóng đại   // công thức Epley
 function roundTo(x, step){ return Math.round(x/step)*step; }
 function weightStep(meta){ const eq = String(meta && meta.equipment || ""); return /tạ đơn|tạ ấm/i.test(eq) && !/thanh đòn/i.test(eq) ? 2 : 2.5; }
 /* Quy tắc: đạt ĐỈNH khoảng lần ở mọi hiệp → +1 nấc tạ · trượt (dưới ĐÁY khoảng lần) 2 buổi liền → giảm 10% */
 function progressionFor(item, meta, last, timed, nSets){
-  if(timed || !last || !last.sets || !last.sets.length) return { delta:0 };
+  if(timed || !last || !last.sets || !last.sets.length || last.date === todayStr()) return { delta:0 };
   const top = repTop(item.reps), step = weightStep(meta);
   const baseKg = Math.max(...last.sets.map(x=>Number(x.kg)||0));
   if(!baseKg) return { delta:0 };
@@ -2856,9 +2870,11 @@ function progressionFor(item, meta, last, timed, nSets){
     const kg = Math.max(step, roundTo(baseKg*0.9, step));
     return { delta:-1, kg, msg:`Bạn đã trượt mục tiêu 2 buổi liền → app tự <b>giảm tải còn ${kg} kg</b> để lấy lại đà rồi tăng tiếp.` };
   }
-  if(top && last.sets.length >= nSets && last.sets.every(x=> Number(x.reps) >= top)){
-    const kg = roundTo(baseKg + step, step === 2 ? 1 : 2.5);
-    return { delta:1, kg, msg:`Lần trước đạt ${top} lần ở mọi hiệp → app đã <b>tự tăng lên ${kg} kg</b> (+${step} kg).` };
+  const hardRpe = last.sets.some(x=> Number(x.rpe) >= 9.5);
+  if(top && last.sets.length >= nSets && last.sets.every(x=> Number(x.reps) >= top) && !hardRpe){
+    const st = baseKg <= 10 && step === 2 ? 1 : step;
+    const kg = roundTo(baseKg + st, st === 2.5 ? 2.5 : 1);
+    return { delta:1, kg, msg:`Lần trước đạt ${top} lần ở mọi hiệp → app đã <b>tự tăng lên ${kg} kg</b> (+${st} kg).` };
   }
   return { delta:0 };
 }
@@ -2866,8 +2882,10 @@ function recordExerciseResult(key, name, reps, sets, timed){
   state.setLog = state.setLog || {}; state.setHist = state.setHist || {};
   const prev = state.setLog[key];
   const bottom = repBottom(reps);
-  const failed = !timed && bottom && sets.some(x=> x.kg>0 && x.reps < bottom);
-  state.setLog[key] = { date: todayStr(), sets, reps, fails: failed ? ((prev && prev.fails)||0) + 1 : 0 };
+  // Trượt = từ 2 hiệp trở lên dưới đáy khoảng lần. Sau khi đã giảm tải thì đếm lại từ 0.
+  const failed = !timed && bottom && sets.filter(x=> x.kg>0 && x.reps < bottom).length >= Math.min(2, sets.length);
+  const prevFails = prev && prev.date !== todayStr() ? (prev.fails >= 2 ? 0 : (prev.fails||0)) : ((prev && prev.prevFails)||0);
+  state.setLog[key] = { date: todayStr(), sets, reps, fails: failed ? prevFails + 1 : 0, prevFails };
   if(timed) return;
   const best = Math.max(0, ...sets.map(x=> e1rm(x.kg, x.reps)));
   const vol = sets.reduce((a,x)=> a + (x.kg||0)*(x.reps||0), 0);

@@ -322,6 +322,7 @@ function nuPlanCardHTML(){
       <div class="nu-plan-txt"><b>${a.cat}${a.bmi?` · ${p.weight} kg, ${p.height} cm`:""}</b><small>${escapeHtml(a.advice)}</small></div>
     </div>
     ${mismatch ? `<button class="nu-plan-switch" data-switch-goal="${a.rec}"><span class="material-symbols-rounded">swap_horiz</span>Mục tiêu hiện tại là "${goalDef.label}". Chuyển sang "${recDef.label}"?</button>` : ""}
+    ${p.goalBlocked ? `<div class="nu-tip" style="margin-top:10px;"><span class="material-symbols-rounded">lightbulb</span><span>Bạn đang thiếu cân hoặc dưới 18 tuổi nên app <b>không áp dụng thâm hụt calo</b> — calo được giữ ở mức duy trì để an toàn.</span></div>` : ""}
     <div class="nu-plan-goal"><span>Mục tiêu: <b>${goalDef.label}</b></span><span><b>${(p.goalKcal||0).toLocaleString("vi-VN")}</b> kcal/ngày · đạm ${p.protein}g</span></div>
     <div class="section-title" style="margin:12px 0 6px;"><h3 style="font-size:16px;">Thực đơn gợi ý cho bạn</h3>
       <a data-plan-cz="${(nuUI.planCuisine||"all")==="all"?"vn":(nuUI.planCuisine==="vn"?"au":"all")}">${(nuUI.planCuisine||"all")==="all"?"Việt + Âu":(nuUI.planCuisine==="vn"?"Chỉ món Việt":"Chỉ món Âu")} ⇄</a></div>
@@ -334,7 +335,7 @@ function nuPlanCardHTML(){
         <div class="k"><b>${m.kcal}</b><small>kcal</small></div>
       </div>`; }).join("")}</div>
     <div class="nu-plan-foot"><span>Tổng <b>${total.toLocaleString("vi-VN")}</b> kcal · đạm <b>${Math.round(prot)}g</b></span>
-      <button class="btn btn-primary btn-sm" id="nu-plan-apply"><span class="material-symbols-rounded">playlist_add</span>Ghi vào hôm nay</button></div>
+      <button class="btn btn-primary btn-sm" id="nu-plan-apply"><span class="material-symbols-rounded">playlist_add</span>${di===(new Date().getDay()+6)%7 ? "Ghi vào hôm nay" : `Ghi thực đơn ${DAYS[di]} vào hôm nay`}</button></div>
   </div>`;
 }
 function bindPlanCard(el){

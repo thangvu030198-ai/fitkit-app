@@ -33,6 +33,8 @@
       <label for="pw">Mật khẩu</label><input id="pw" type="password" autocomplete="current-password">
       <button class="danger" id="go">Đăng nhập & xoá vĩnh viễn</button>
       <button class="ghost" id="gg">Tôi đăng nhập bằng Google</button>
+      <button class="ghost" id="ap">Tôi đăng nhập bằng Apple</button>
+      <button class="ghost" id="fb">Tôi đăng nhập bằng Facebook</button>
       <p class="err" id="err"></p>
     </div>
   </div>
@@ -84,11 +86,14 @@
     try{ const c = await auth.signInWithEmailAndPassword(document.getElementById("em").value.trim(), document.getElementById("pw").value); await wipe(c.user); }
     catch(e){ err.textContent = "Không xoá được: " + (e.code==="auth/invalid-credential"||e.code==="auth/wrong-password" ? "email hoặc mật khẩu không đúng." : e.message); }
   };
-  document.getElementById("gg").onclick = async ()=>{
+  const viaPopup = mk => async ()=>{
     err.textContent = "";
-    try{ const c = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); await wipe(c.user); }
+    try{ const c = await auth.signInWithPopup(mk()); await wipe(c.user); }
     catch(e){ err.textContent = "Không xoá được: " + e.message; }
   };
+  document.getElementById("gg").onclick = viaPopup(()=> new firebase.auth.GoogleAuthProvider());
+  document.getElementById("ap").onclick = viaPopup(()=>{ const p = new firebase.auth.OAuthProvider("apple.com"); p.addScope("email"); return p; });
+  document.getElementById("fb").onclick = viaPopup(()=> new firebase.auth.FacebookAuthProvider());
 })();
 </script>
 </body>
