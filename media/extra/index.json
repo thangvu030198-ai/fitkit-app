@@ -1,0 +1,340 @@
+[
+ {
+  "key": "stepup",
+  "name": "Dumbbell Step-up",
+  "alias": [
+   "Bước bục"
+  ],
+  "file": "stepup.mp4",
+  "thumb": "stepup.jpg",
+  "duration": 11,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-woman-doing-weighted-box-step-ups-8402107/",
+  "srcId": "8402107",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "hangingleg",
+  "name": "Hanging Leg Raise",
+  "alias": [
+   "Nâng chân treo xà"
+  ],
+  "file": "hangingleg.mp4",
+  "thumb": "hangingleg.jpg",
+  "duration": 11,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-man-lifting-his-legs-while-hanging-on-a-steel-bar-4804761/",
+  "srcId": "4804761",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "inclinepushup",
+  "name": "Incline Push-up",
+  "alias": [
+   "Chống đẩy nghiêng"
+  ],
+  "file": "inclinepushup.mp4",
+  "thumb": "inclinepushup.jpg",
+  "duration": 12,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-woman-doing-push-ups-on-the-wooden-bench-8402109/",
+  "srcId": "8402109",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "pushup",
+  "name": "Push-up",
+  "alias": [
+   "Chống đẩy (Push-up)"
+  ],
+  "file": "pushup.mp4",
+  "thumb": "pushup.jpg",
+  "duration": 20,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-man-doing-push-ups-4367576/",
+  "srcId": "4367576",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "plank",
+  "name": "Plank",
+  "alias": [],
+  "file": "plank.mp4",
+  "thumb": "plank.jpg",
+  "duration": 20,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-woman-doing-plank-exercise-on-a-yoga-mat-7801720/",
+  "srcId": "7801720",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "sideplank",
+  "name": "Side Plank",
+  "alias": [
+   "Plank nghiêng"
+  ],
+  "file": "sideplank.mp4",
+  "thumb": "sideplank.jpg",
+  "duration": 9,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-man-doing-a-side-plank-6023266/",
+  "srcId": "6023266",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "glutebridge",
+  "name": "Glute Bridge",
+  "alias": [
+   "Cầu mông"
+  ],
+  "file": "glutebridge.mp4",
+  "thumb": "glutebridge.jpg",
+  "duration": 7,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/woman-doing-glute-bridge-exercise-6525487/",
+  "srcId": "6525487",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "mountainclimber",
+  "name": "Mountain Climber",
+  "alias": [
+   "Leo núi (Mountain"
+  ],
+  "file": "mountainclimber.mp4",
+  "thumb": "mountainclimber.jpg",
+  "duration": 2,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/woman-doing-mountain-climbers-exercise-6525467/",
+  "srcId": "6525467",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "crunch",
+  "name": "Crunch",
+  "alias": [
+   "Gập bụng"
+  ],
+  "file": "crunch.mp4",
+  "thumb": "crunch.jpg",
+  "duration": 20,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-woman-doing-crunches-8472284/",
+  "srcId": "8472284",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "bwsquat",
+  "name": "Bodyweight Squat",
+  "alias": [
+   "Squat tay không"
+  ],
+  "file": "bwsquat.mp4",
+  "thumb": "bwsquat.jpg",
+  "duration": 13,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/video-of-woman-doing-squats-4267356/",
+  "srcId": "4267356",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "inclinewalk",
+  "name": "Incline Treadmill Walk",
+  "alias": [
+   "Đi bộ dốc",
+   "Đi bộ nhanh",
+   "Đi bộ ngắt quãng"
+  ],
+  "file": "inclinewalk.mp4",
+  "thumb": "inclinewalk.jpg",
+  "duration": 7,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-person-walking-on-a-treadmill-in-a-gym-27861377/",
+  "srcId": "27861377",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "zone2",
+  "name": "Zone 2 Cardio",
+  "alias": [
+   "Cardio Zone 2"
+  ],
+  "file": "zone2.mp4",
+  "thumb": "zone2.jpg",
+  "duration": 10,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-person-riding-a-stationary-bike-7934714/",
+  "srcId": "7934714",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "rowing",
+  "name": "Rowing Machine",
+  "alias": [
+   "Máy chèo thuyền"
+  ],
+  "file": "rowing.mp4",
+  "thumb": "rowing.jpg",
+  "duration": 20,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-man-using-a-rowing-machine-6389558/",
+  "srcId": "6389558",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "jumprope",
+  "name": "Jump Rope",
+  "alias": [
+   "Nhảy dây"
+  ],
+  "file": "jumprope.mp4",
+  "thumb": "jumprope.jpg",
+  "duration": 7,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/two-men-using-jump-ropes-in-exercising-4761426/",
+  "srcId": "4761426",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "running",
+  "name": "Treadmill Running",
+  "alias": [
+   "Chạy bộ"
+  ],
+  "file": "running.mp4",
+  "thumb": "running.jpg",
+  "duration": 10,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-man-on-a-treadmill-6454274/",
+  "srcId": "6454274",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "stretch",
+  "name": "Full Body Stretch",
+  "alias": [
+   "Giãn cơ"
+  ],
+  "file": "stretch.mp4",
+  "thumb": "stretch.jpg",
+  "duration": 20,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/person-stretching-legs-5310935/",
+  "srcId": "5310935",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "hacksquat",
+  "name": "Hack Squat",
+  "alias": [
+   "Squat máy Hack"
+  ],
+  "file": "hacksquat.mp4",
+  "thumb": "hacksquat.jpg",
+  "duration": 20,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/man-performing-squats-in-gym-with-weight-machine-37997498/",
+  "srcId": "37997498",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "abduction",
+  "name": "Hip Abduction",
+  "alias": [
+   "Mở hông"
+  ],
+  "file": "abduction.mp4",
+  "thumb": "abduction.jpg",
+  "duration": 15,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-woman-doing-a-lateral-leg-raise-exercise-6967418/",
+  "srcId": "6967418",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "burpee",
+  "name": "Burpee",
+  "alias": [],
+  "file": "burpee.mp4",
+  "thumb": "burpee.jpg",
+  "duration": 14,
+  "provider": "Wikimedia Commons",
+  "author": "Taco fleur",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:CrossFit_Burpee.webm",
+  "srcId": "CrossFit Burpee.webm",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "farmercarry",
+  "name": "Farmer's Carry",
+  "alias": [
+   "Xách tạ đi bộ"
+  ],
+  "file": "farmercarry.mp4",
+  "thumb": "farmercarry.jpg",
+  "duration": 20,
+  "provider": "Wikimedia Commons",
+  "author": "Taco fleur",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Kettlebell_Farmer_Walks.webm",
+  "srcId": "Kettlebell Farmer Walks.webm",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ }
+]
