@@ -1,5 +1,5 @@
 /* =========================================================================
-   FIT KIT — Cơ sở dữ liệu món ăn healthy (Việt & Âu) + thực phẩm bổ sung
+   TapEasy — Cơ sở dữ liệu món ăn healthy (Việt & Âu) + thực phẩm bổ sung
    · Calo/macro mỗi 100 g lấy theo USDA FoodData Central (giá trị làm tròn, ước lượng)
    · Mỗi món có: nguyên liệu (gram), cách nấu gần gũi (nồi chiên không dầu, luộc, hấp,
      áp chảo, nồi cơm điện, không cần nấu), các bước làm và mẹo cho người tập.
@@ -8,12 +8,15 @@
 
 /* ---------- Thực phẩm bổ sung ---------- */
 FOODS.push(
-  { id:"ca-thu", name:"Cá thu (nướng)", kcal:262, protein:24, carbs:0, fat:18 },
+  /* QN-11: cá thu bán ở VN là cá thu Tây Ban Nha/cá thu vạch (Scomberomorus). USDA FDC 175120 "Mackerel, spanish, cooked, dry heat":
+     158 kcal · đạm 23,6 · béo 6,3 (262 cũ là cá thu Đại Tây Dương/Nauy — Scomber scombrus) */
+  { id:"ca-thu", name:"Cá thu (nướng)", kcal:158, protein:23.6, carbs:0, fat:6.3 },
   { id:"muc", name:"Mực (hấp)", kcal:115, protein:21, carbs:3.5, fat:1.5 },
   { id:"thit-bo-xay", name:"Bò xay nạc 90% (chín)", kcal:217, protein:26, carbs:0, fat:12 },
   { id:"dui-ga-bo-da", name:"Đùi gà bỏ da (chín)", kcal:177, protein:24, carbs:0, fat:8 },
   { id:"trung-trang", name:"Lòng trắng trứng", kcal:52, protein:11, carbs:0.7, fat:0.2 },
-  { id:"banh-trang", name:"Bánh tráng (khô)", kcal:340, protein:6, carbs:78, fat:0.5 },
+  /* QN-11: Bảng TPTP VN 2007 "Bánh đa nem": 333 kcal · đạm 4,0 · carb 78,9 · béo 0,2 (đạm 6 cũ lệch +50 %) */
+  { id:"banh-trang", name:"Bánh tráng (khô)", kcal:333, protein:4, carbs:78.9, fat:0.2 },
   { id:"mi-y-nguyen-cam", name:"Mì Ý nguyên cám (đã nấu)", kcal:124, protein:5.3, carbs:27, fat:0.5 },
   { id:"banh-mi-nguyen-cam", name:"Bánh mì nguyên cám", kcal:252, protein:12.4, carbs:43, fat:3.5 },
   { id:"tortilla", name:"Bánh tortilla nguyên cám", kcal:300, protein:9, carbs:50, fat:7 },
@@ -60,7 +63,7 @@ FOODS.push(
   { id:"tra-sua", name:"Trà sữa trân châu (ly)", kcal:70, protein:0.8, carbs:12, fat:2.2, portion:500, unit:"1 ly 500 ml" },
   { id:"ca-phe-sua-da", name:"Cà phê sữa đá (ly)", kcal:75, protein:1.5, carbs:13, fat:2, portion:200, unit:"1 ly" },
   { id:"nuoc-ngot", name:"Nước ngọt có ga (lon)", kcal:42, protein:0, carbs:10.6, fat:0, portion:330, unit:"1 lon" },
-  { id:"bia", name:"Bia (lon)", kcal:43, protein:0.5, carbs:3.6, fat:0, portion:330, unit:"1 lon" },
+  { id:"bia", name:"Bia (lon)", kcal:43, protein:0.5, carbs:3.6, fat:0, alcohol:3.9, portion:330, unit:"1 lon" },   /* QN-11/§4: cồn 3,9 g/100 g × 7 kcal → 0,5×4 + 3,6×4 + 3,9×7 ≈ 44 kcal (USDA 14003 beer, regular) */
 );
 
 /* ---------- Cách nấu ---------- */
@@ -94,12 +97,17 @@ const RECIPES = [
       "Xếp xà lách, rau thơm, bún, thịt rồi đặt tôm lên trên cùng, cuộn chặt tay.",
       "Chấm nước mắm chua ngọt pha loãng hoặc tương đen ít đường."],
     tip:"Ăn 3–4 cuốn là một bữa nhẹ ~400 kcal, nhiều đạm, gần như không dầu mỡ." },
-  { id:"pho-bo-nac", name:"Phở bò tái nạc", emoji:"🍜", cuisine:"vn", method:"boil", min:20, level:1, tags:["giam-mo"], meal:"breakfast",
+  /* QN-03: rare:true = có bước để thịt TÁI → không gợi ý cho thai phụ; stepsPreg = cách làm chín kỹ (USDA FSIS) */
+  { id:"pho-bo-nac", rare:true, name:"Phở bò tái nạc", emoji:"🍜", cuisine:"vn", method:"boil", min:20, level:1, tags:["giam-mo"], meal:"breakfast",
     items:[["bun-pho",200],["thit-bo-nac",100],["hanh-tay",30],["rau-thom",20],["gia-do",50]],
     steps:["Đun nước dùng phở (xương hầm sẵn hoặc gói gia vị phở ít muối).",
       "Trụng bánh phở và giá qua nước sôi, cho vào tô.",
       "Xếp thịt bò nạc thái thật mỏng lên trên, chan nước dùng đang sôi để thịt tái.",
       "Thêm hành tây, rau thơm, chanh, ớt."],
+    stepsPreg:["Đun nước dùng phở (xương hầm sẵn hoặc gói gia vị phở ít muối).",
+      "Trụng bánh phở qua nước sôi, cho vào tô. Giá đỗ chần chín (không ăn giá sống).",
+      "Nhúng thịt bò thái mỏng vào nồi nước dùng đang sôi 1–2 phút đến khi chín hẳn, không còn màu hồng (bò chín).",
+      "Thêm hành tây, rau thơm đã rửa kỹ, chanh, ớt."],
     tip:"Bỏ váng mỡ trên nước dùng và hạn chế tương đen, tương ớt để giảm đường và muối." },
   { id:"bun-ga-xe", name:"Bún gà xé rau thơm", emoji:"🍲", cuisine:"vn", method:"boil", min:30, level:1, tags:["giam-mo"], meal:"lunch",
     items:[["bun-pho",180],["uc-ga",120],["rau-thom",30],["gia-do",50],["hanh-tay",20]],
@@ -158,7 +166,7 @@ const RECIPES = [
       "Xếp mực lên đĩa cùng gừng thái sợi, sả đập dập, hành lá.",
       "Hấp cách thủy 7–8 phút (không hấp lâu kẻo mực dai).",
       "Ăn kèm bông cải luộc, ít cơm lứt, chấm muối tiêu chanh."],
-    tip:"200 g mực chỉ ~180 kcal nhưng cho hơn 30 g đạm." },
+    tip:"200 g mực ≈ 230 kcal nhưng cho tới ~42 g đạm — rất \"đáng\" khi giảm mỡ." },   /* QN-12: 200 g × 115 kcal = 230 kcal, 21 g đạm/100 g */
   { id:"com-ga", name:"Cơm lứt gà luộc & bông cải", emoji:"🍱", cuisine:"vn", method:"boil", min:25, level:1, tags:["giam-mo","tang-co"], meal:"lunch",
     items:[["com-gao-lut",150],["uc-ga",150],["bong-cai-xanh",100]],
     steps:["Nấu cơm gạo lứt bằng nồi cơm điện (ngâm gạo 1–2 giờ trước, nước gấp 1,5 lần gạo).",
@@ -294,11 +302,15 @@ const RECIPES = [
       "Làm nóng bánh tortilla trên chảo khô 20 giây mỗi mặt.",
       "Phết sữa chua Hy Lạp thay mayonnaise, xếp xà lách, ớt chuông, gà, cuộn chặt."],
     tip:"Gói giấy bạc mang đi — bữa trưa văn phòng gọn nhẹ." },
-  { id:"steak-khoai", name:"Bò áp chảo, khoai tây nồi chiên, bông cải", emoji:"🥩", cuisine:"au", method:"pan", min:30, level:2, tags:["tang-co"], meal:"dinner",
+  { id:"steak-khoai", rare:true, name:"Bò áp chảo, khoai tây nồi chiên, bông cải", emoji:"🥩", cuisine:"au", method:"pan", min:30, level:2, tags:["tang-co"], meal:"dinner",
     items:[["thit-bo-nac",180],["khoai-tay",200],["bong-cai-xanh",120],["dau-oliu",5]],
     steps:["Khoai tây cắt múi, trộn ít dầu, muối, hương thảo; nồi chiên không dầu 200°C 20 phút.",
       "Bò để nhiệt độ phòng 20 phút, thấm khô, rắc muối tiêu.",
       "Chảo thật nóng, áp bò 2–3 phút mỗi mặt (tái vừa), nghỉ 5 phút rồi thái.",
+      "Bông cải hấp 4 phút."],
+    stepsPreg:["Khoai tây cắt múi, trộn ít dầu, muối, hương thảo; nồi chiên không dầu 200°C 20 phút.",
+      "Bò thấm khô, rắc muối tiêu (không để ngoài tủ lạnh quá 30 phút).",
+      "Áp chảo 4–5 phút mỗi mặt rồi hạ lửa vừa đến khi lõi miếng thịt đạt ≥ 63 °C (chín tới, không còn đỏ), nghỉ 3 phút rồi thái.",
       "Bông cải hấp 4 phút."],
     tip:"Thịt bò cung cấp sắt và kẽm — quan trọng cho người tập nặng." },
   { id:"tuna-sandwich", name:"Sandwich cá ngừ nguyên cám", emoji:"🥪", cuisine:"au", method:"nocook", min:8, level:1, tags:["giam-mo"], meal:"lunch",
@@ -326,7 +338,7 @@ const RECIPES = [
     items:[["sua-tuoi-khong-duong",300],["chuoi",120],["yen-mach",40],["bo-dau-phong",20],["whey",30]],
     steps:["Cho tất cả vào máy xay, xay 40–60 giây đến khi mịn.",
       "Uống sau tập hoặc giữa các bữa."],
-    tip:"~750 kcal trong 1 ly — cách dễ nhất để người gầy ăn đủ calo." },
+    tip:"~680 kcal trong 1 ly — cách dễ nhất để người gầy ăn đủ calo." },   /* QN-12: 300 g sữa tươi nguyên kem 183 + chuối 107 + yến mạch 156 + bơ đậu phộng 118 + whey 120 ≈ 683 kcal */
   { id:"smoothie-dau", name:"Sinh tố dâu sữa chua protein", emoji:"🍓", cuisine:"au", method:"blender", min:5, level:1, tags:["giam-mo","an-vat"], meal:"snack",
     items:[["dau-tay",120],["sua-chua-khong-duong",150],["whey",20]],
     steps:["Xay dâu tây, sữa chua và whey với vài viên đá trong 30 giây."],
@@ -344,9 +356,24 @@ const RECIPES = [
 /* ---------- Phân tích cơ thể → hướng ăn ----------
    Ngưỡng BMI cho người châu Á (WHO khu vực Tây Thái Bình Dương, 2000):
    < 18,5 thiếu cân · 18,5–22,9 bình thường · 23–24,9 thừa cân · ≥ 25 béo phì */
-function bodyAnalysis(p){
+/* QN-02: cờ sức khoẻ của chính người dùng (health-safety.js) — chỉ áp khi p là hồ sơ đang dùng; truyền hs để kiểm thử */
+function nutritionHealthFlags(p, hs){
+  if(hs !== undefined) return hs || null;
+  try{
+    if(typeof FKHealth !== "undefined" && FKHealth && typeof FKHealth.current === "function" && typeof state !== "undefined" && state && p === state.profile){
+      const f = FKHealth.current(); return f && f.screened ? f : null;
+    }
+  }catch(e){}
+  return null;
+}
+function bodyAnalysis(p, hs){
+  p = p || {};
+  const f = nutritionHealthFlags(p, hs);
   const h = (p.height||0)/100, w = p.weight||0;
-  const bmi = h ? w/(h*h) : 0;
+  const bmiRaw = h ? w/(h*h) : 0;
+  // BUG-09: hiển thị 1 số lẻ bằng cách CẮT (không làm tròn lên) → 18,48 hiện 18,4 "Thiếu cân", không bao giờ vượt ngưỡng
+  // phân loại; phân loại trên đúng giá trị hiển thị (ngưỡng 18,5/23/25/30 đều có 1 số lẻ nên tương đương giá trị thật).
+  const bmi = Math.floor(bmiRaw*10 + 1e-9)/10;
   let cat, rec, color, advice;
   if(!bmi){ cat="Chưa đủ thông tin"; rec=p.goal||"maintain"; color="#9AF1DD"; advice="Nhập chiều cao, cân nặng để app gợi ý thực đơn phù hợp."; }
   else if(bmi < 18.5){ cat="Thiếu cân"; rec="gain"; color="#FFB08A"; advice="Bạn cần ăn DƯ khoảng 10–15% calo mỗi ngày, ưu tiên đạm và tinh bột tốt, kết hợp tập tạ để tăng cơ – tăng cân lành mạnh."; }
@@ -354,8 +381,39 @@ function bodyAnalysis(p){
   else if(bmi < 25){ cat="Thừa cân"; rec="lose"; color="#FFB08A"; advice="Nên ăn THÂM HỤT khoảng 15–20% calo để giảm mỡ ~0,5 kg/tuần, giữ đạm cao để không mất cơ."; }
   else { cat = bmi < 30 ? "Béo phì độ I" : "Béo phì độ II"; rec="lose"; color="#FF7A45"; advice="Nên ăn THÂM HỤT khoảng 20% calo, tăng rau và đạm nạc, đi bộ nhiều hơn. Nếu có bệnh nền, hỏi ý kiến bác sĩ trước."; }
   if(bmi && bmi >= 23) advice += " (BMI không phân biệt cơ và mỡ — người tập tạ lâu năm có thể có BMI cao dù ít mỡ.)";
-  if(p.age && p.age < 18) advice = "Bạn dưới 18 tuổi: nên ăn đủ năng lượng để phát triển, không tự ăn kiêng thâm hụt — hãy hỏi ý kiến bác sĩ/chuyên gia dinh dưỡng.";
-  return { bmi: Math.round(bmi*10)/10, cat, rec, color, advice };
+  let hideBmi = false;
+  if(p.age && p.age < 18){
+    /* QN-24: ngưỡng BMI người lớn không dùng cho tuổi < 18 (WHO 2007: BMI theo tuổi & giới, dạng z-score) */
+    if(bmi){ cat = "Dưới 18 tuổi"; color = "#9AF1DD"; }
+    advice = "Bạn dưới 18 tuổi: BMI phải so theo biểu đồ BMI-theo-tuổi (WHO 2007), không dùng ngưỡng người lớn. Nên ăn đủ năng lượng để phát triển, không tự ăn kiêng thâm hụt — hãy hỏi ý kiến bác sĩ/chuyên gia dinh dưỡng.";
+    if(rec === "lose") rec = "maintain";   // BUG-04: không khuyến nghị "Giảm mỡ" cho người dưới 18 tuổi
+  }
+  if(f && f.preg){
+    /* QN-02: BMI lúc mang thai không dùng để đánh giá; tăng cân theo IOM 2009 dựa trên BMI TRƯỚC khi mang thai */
+    cat = "Đang mang thai"; color = "#9AF1DD"; rec = "maintain"; hideBmi = true;
+    advice = "BMI lúc mang thai không dùng để đánh giá cân nặng. Mức tăng cân khuyến nghị cả thai kỳ (IOM 2009) dựa trên BMI TRƯỚC khi mang thai: < 18,5 → 12,5–18 kg; 18,5–24,9 → 11,5–16 kg; 25–29,9 → 7–11,5 kg; ≥ 30 → 5–9 kg. Không ăn kiêng thâm hụt — theo dõi cùng bác sĩ sản khoa.";
+  } else if(f && f.ed){
+    /* QN-02: tiền sử rối loạn ăn uống → ẩn xếp loại cân nặng và mọi lời khuyên thâm hụt */
+    cat = "Ăn uống đều đặn"; color = "#9AF1DD"; rec = p.goal === "gain" ? "gain" : "maintain"; hideBmi = true;
+    advice = "Ăn đủ 3 bữa chính và bữa phụ, đủ năng lượng. TapEasy không hiển thị xếp loại cân nặng và không gợi ý ăn thâm hụt — nếu việc ghi chép khiến bạn căng thẳng, hãy tạm dừng và trao đổi với bác sĩ / chuyên gia tâm lý.";
+  } else if(f && f.bf){
+    if(rec === "lose") rec = "maintain";
+    advice = "Đang cho con bú: app giữ calo ở mức duy trì + năng lượng tạo sữa, không thâm hụt. Nếu muốn giảm cân: đợi ≥ 6–8 tuần sau sinh khi sữa đã ổn định, thâm hụt không quá 500 kcal/ngày (giảm ≤ 0,5 kg/tuần) và hỏi bác sĩ.";
+  } else if(f && f.noDeficit && rec === "lose") rec = "maintain";
+  return { bmi, cat, rec, color, advice, hideBmi };
+}
+
+/* QN-02: nhãn mục tiêu HIỂN THỊ phản ánh đúng điều chỉnh an toàn (không ghi "Giảm mỡ" khi app đã chặn thâm hụt) */
+function goalDisplay(p, hs){
+  p = p || {};
+  const f = nutritionHealthFlags(p, hs);
+  const def = (typeof GOALS !== "undefined" && GOALS.find(g=> g.id === p.goal)) || { id:"maintain", label:"Duy trì vóc dáng" };
+  if(f && f.preg) return { label:"Thai kỳ — không thâm hụt", eff:"maintain", safe:true };
+  if(f && f.bf) return { label:"Cho con bú — không thâm hụt", eff:"maintain", safe:true };
+  if(f && f.ed) return { label:"Duy trì có giám sát", eff: p.goal === "gain" ? "gain" : "maintain", safe:true };
+  if(p.goal === "lose" && (p.goalBlocked || (f && f.noDeficit)))
+    return { label: (p.age && p.age < 18) ? "Duy trì (dưới 18 tuổi)" : "Duy trì có giám sát", eff:"maintain", safe:true };
+  return { label: def.label, eff: def.id, safe:false };
 }
 
 /* ---------- Tạo thực đơn theo calo mục tiêu ---------- */
@@ -364,39 +422,70 @@ function recipeKcal(r){ return r.items.reduce((s,[id,g])=>{ const f=FOODS.find(x
 function scaleRecipe(r, factor){
   return Object.assign({}, r, { items: r.items.map(([id,g])=>[id, Math.max(5, Math.round(g*factor/5)*5)]), factor });
 }
-function buildDayPlan(p, dayIndex, prefs={}){
-  const goal = p.goal || "maintain";
+/* Thuật toán thực đơn CƠ BẢN — dự phòng khi nutrition-pro.js (ghi đè buildDayPlan) lỗi/không nạp.
+   Sửa sau QA: BUG-05 (chay thiếu calo), BUG-06 (món > 600 g, món phụ dồn 1 bữa), BUG-14 (chay lùi về món mặn). */
+const MAIN_DISH_MAX_G = 600, EXTRA_MAX_G = 400;
+const FILLER_MAIN_ONLY = new Set(["com-gao-lut","dau-hu"]);
+function buildDayPlan(p, dayIndex, prefs){ return buildDayPlanBasic(p, dayIndex, prefs); }
+function buildDayPlanBasic(p, dayIndex, prefs={}){
+  prefs = prefs || {};
+  const goal = (p.goalBlocked ? "maintain" : p.goal) || "maintain";
   const target = p.goalKcal || 2000;
   const split = MEAL_SPLIT[goal] || MEAL_SPLIT.maintain;
   const want = goal==="lose" ? "giam-mo" : goal==="gain" ? "tang-co" : null;
+  const isVeg = r => (r.tags||[]).includes("chay") || (r.tags||[]).includes("thuan-chay");
   const plan = {};
   Object.keys(split).forEach((meal, mi)=>{
-    let pool = RECIPES.filter(r=> r.meal===meal || (meal==="snack" && r.tags.includes("an-vat")) || (meal==="breakfast" && r.meal==="snack" && goal==="gain"));
+    const forMeal = r => r.meal===meal || (meal==="snack" && (r.tags||[]).includes("an-vat")) || (meal==="breakfast" && r.meal==="snack" && goal==="gain");
+    let pool = RECIPES.filter(forMeal);
+    if(prefs.veg){
+      // BUG-14: lọc chay TRƯỚC khi lọc ẩm thực và KHÔNG lùi về món mặn — thiếu thì mượn món chay của bữa chính
+      pool = pool.filter(isVeg);
+      if(!pool.length) pool = RECIPES.filter(r=> isVeg(r) && (r.meal==="lunch" || r.meal==="dinner"));
+    }
     if(prefs.cuisine && prefs.cuisine!=="all") { const f = pool.filter(r=>r.cuisine===prefs.cuisine); if(f.length) pool = f; }
-    if(prefs.veg){ const f = pool.filter(r=>r.tags.includes("chay")); if(f.length) pool = f; }
-    if(want){ const f = pool.filter(r=>r.tags.includes(want)); if(f.length >= 2) pool = f; }
-    if(!pool.length) pool = RECIPES.filter(r=>r.meal===meal);
+    if(want){ const f = pool.filter(r=>(r.tags||[]).includes(want)); if(f.length >= 2) pool = f; }
+    if(!pool.length) pool = RECIPES.filter(r=> r.meal===meal && (!prefs.veg || isVeg(r)));
+    if(!pool.length) pool = RECIPES.filter(r=> r.meal===meal);
     if(goal!=="gain"){ const f = pool.filter(r=>!r.gainOnly); if(f.length) pool = f; }
-    // xoay vòng: mỗi ngày một món khác, các bữa lệch nhau
-    const r = pool[(dayIndex + mi*2) % pool.length];
+    // xoay vòng: mỗi ngày một món khác, các bữa lệch nhau; không lặp lại món đã chọn cho bữa khác trong ngày
+    const used = new Set(Object.values(plan).map(x=> x.id));
+    let r = pool[(dayIndex + mi*2) % pool.length];
+    for(let k = 1; used.has(r.id) && k < pool.length; k++) r = pool[(dayIndex + mi*2 + k) % pool.length];
     const mealTarget = target * split[meal];
-    const factor = Math.min(1.4, Math.max(0.6, mealTarget / recipeKcal(r)));   // không phóng to món quá 1,4 lần
+    const g0 = r.items.reduce((a,[,g])=> a+g, 0) || 1;
+    const capF = (MAIN_DISH_MAX_G - 2.5*r.items.length) / g0;            // BUG-06: món chính sau khi phóng ≤ 600 g (trừ hao làm tròn)
+    const factor = Math.min(capF, Math.min(1.4, Math.max(0.6, mealTarget / Math.max(1, recipeKcal(r)))));
     plan[meal] = scaleRecipe(r, factor);
   });
-  // Còn thiếu calo → thêm "món phụ" thực tế (sữa, chuối, yến mạch, hạt…) vào bữa phụ thay vì phóng to món chính
+  // Còn thiếu calo → thêm "món phụ" thực tế, CHIA cho bữa phụ + bữa sáng (mỗi bữa ≤ 400 g món phụ — BUG-06)
   const total = ()=> Object.values(plan).reduce((s,r)=> s + recipeKcal(r), 0);
-  const fillers = prefs.veg ? [["sua-dau-nanh",250],["chuoi",120],["yen-mach",40],["hanh-nhan",20],["com-gao-lut",150]]
-                            : [["sua-tuoi-khong-duong",250],["chuoi",120],["yen-mach",40],["trung-ga",50],["bo-dau-phong",15],["com-gao-lut",150]];
-  const snack = plan.snack || plan[Object.keys(plan).pop()];
-  let guard = 0;
-  while(total() < target*0.95 && guard < 18){
-    const f = fillers[guard % fillers.length]; guard++;
-    if(total() + FOODS.find(x=>x.id===f[0]).kcal*f[1]/100 > target*1.05) continue;
-    const ex = snack.items.find(([id])=>id===f[0]);
-    if(ex && ex[1] >= f[1]*1.5) continue;   // không dồn quá nhiều 1 món
-    if(ex) ex[1] += f[1]; else snack.items.push([f[0], f[1]]);
-    snack.extra = true;
+  const fillers = prefs.veg ? [["sua-dau-nanh",250],["chuoi",120],["yen-mach",40],["hanh-nhan",20],["com-gao-lut",150],["bo-dau-phong",15],["dau-hu",100]]
+                            : [["sua-tuoi-khong-duong",250],["chuoi",120],["yen-mach",40],["trung-ga",50],["bo-dau-phong",15],["com-gao-lut",150],["hanh-nhan",20]];
+  const hosts = ["snack","breakfast","lunch","dinner"].filter(m=> plan[m]);
+  const added = {}; hosts.forEach(m=> added[m] = 0);
+  // Thiếu nhiều (> 15 %) → ưu tiên món phụ giàu năng lượng trước để không vượt giới hạn gam
+  const dens = f=>{ const fd = FOODS.find(x=>x.id===f[0]); return fd ? fd.kcal*f[1]/100 / f[1] : 0; };
+  const order = total() < target*0.85 ? fillers.slice().sort((a,b)=> dens(b)-dens(a)) : fillers;
+  for(let pass = 0; pass < 6 && total() < target*0.95; pass++){
+    let addedAny = false;
+    for(const f of order){
+      if(total() >= target*0.95) break;
+      const fd = FOODS.find(x=>x.id===f[0]); if(!fd) continue;
+      if(total() + fd.kcal*f[1]/100 > target*1.05) continue;
+      // bữa nhận: còn chỗ (≤ 400 g món phụ) và chưa có quá 2 phần món này; ưu tiên bữa đang ít món phụ nhất
+      const host = hosts.filter(m=>{ const ex = plan[m].items.find(([id])=>id===f[0]);
+          if(FILLER_MAIN_ONLY.has(f[0]) && (m === "snack" || m === "breakfast")) return false;   // cơm, đậu hũ chỉ thêm vào bữa chính
+          return added[m] + f[1] <= EXTRA_MAX_G && !(ex && ex[1] >= f[1]*2); })
+        .sort((a,b)=> added[a]-added[b] || hosts.indexOf(a)-hosts.indexOf(b))[0];
+      if(!host) continue;
+      const meal = plan[host];
+      const ex = meal.items.find(([id])=>id===f[0]);
+      if(ex) ex[1] += f[1]; else meal.items.push([f[0], f[1]]);
+      added[host] += f[1]; meal.extra = true; addedAny = true;
+    }
+    if(!addedAny) break;
   }
-  if(snack.extra && !/\+ món phụ/.test(snack.name)) snack.name = snack.name + " + món phụ";
+  hosts.forEach(m=>{ const r = plan[m]; if(r.extra && !/\+ món phụ/.test(r.name)) r.name = r.name + " + món phụ"; });
   return plan;
 }

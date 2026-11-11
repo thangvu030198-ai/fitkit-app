@@ -1,0 +1,426 @@
+/* =========================================================================
+   TapEasy — GÓI GIAO DIỆN (theme-packs.css) · đi kèm theme-packs.js, đăng ký trong themes.js
+   Gói = màu + chất liệu kính + font + bo góc + nền + chuyển động. 5 gói (học phong cách, KHÔNG dùng tài sản của mẫu):
+     aurora    — đen tuyệt đối, thẻ xám #1A1A1A, chữ trắng, Inter 300–700, nút trắng chữ đen
+     espresso  — nâu ấm #180A06, chữ kem, nền nhiều quầng cam nâu, nút "kính lỏng" (khúc xạ SVG ở theme-packs.js)
+     alpine    — SÁNG: thẻ kính kem, mực #2E2D2A, hổ phách/cam/tím, tiêu đề Inter Tight 300, nhãn mono "::"
+     wellness  — xanh xám sương, kính viền gradient (::before + mask exclude), thẻ chọn bo lớn, quầng vàng
+     sanctuary — nâu cà phê/kem, Manrope mảnh, tiêu đề editorial cực lớn, sheet trắng kem ở đáy
+   Nạp SAU themes.css + mọi CSS module, TRƯỚC brand.css / themes-modules.css (2 file này luôn cuối — tests/00-boot).
+   Mọi luật ở đây có tiền tố :root[data-theme=…] / html[data-theme=…] / html.tp-pack → độ ưu tiên cao hơn luật cùng
+   đối tượng trong brand.css (:root) và themes-modules.css (:where() = độ ưu tiên gốc) nên vẫn thắng dù nạp trước.
+   Cấu trúc:  1. token từng gói (:root[data-theme=…])   2. lớp dùng chung html.tp-pack (đọc --tp-*)
+              3–7. chi tiết từng gói   8. máy yếu / giảm chuyển động
+   Token riêng của gói (--tp-*): --tp-r-card · --tp-r-tile · --tp-r-btn · --tp-r-input · --tp-r-dock · --tp-btn-h
+     --tp-head-w · --tp-head-track · --tp-ease · --tp-stagger · --tp-rise · --tp-rise-dur · --tp-gauge-a/-b (ui-signature)
+   ========================================================================= */
+
+/* ---------- 1a. AURORA — đen tuyệt đối ---------- */
+:root[data-theme="aurora"]{
+  --bg:#000000;
+  --navy:#000000; --navy-2:#0D0D0D; --navy-3:#1A1A1A; --navy-4:#2A2A2A;
+  --mint:#C8F25A; --mint-2:#E2F9A8; --mint-3:#A3D12E;                 /* "cực quang" chanh: dữ liệu, tiến độ */
+  --coral:#FFFFFF; --coral-2:#EDEDED; --coral-3:#D9D9D9; --coral-4:#F5F5F5; --coral-hot:#FF5C5C;   /* CTA trắng */
+  --navy-rgb:0,0,0; --mint-rgb:200,242,90; --coral-rgb:255,255,255; --coral-2-rgb:237,237,237;
+  --on-mint:#0A0A0A; --on-coral:#000000;                                /* 15,4:1 · 21:1 */
+  --text-muted:rgba(255,255,255,.78); --text-dim:rgba(255,255,255,.62); /* 7,3:1 trên #1A1A1A */
+  --fk-line-k:.6;
+  --fk-veil-rgb:0,0,0; --fk-scrim-rgb:0,0,0;
+  --fk-sheet-1-rgb:26,26,26; --fk-sheet-2-rgb:12,12,12;
+  --fk-toast-rgb:255,255,255; --fk-toast-ink:#000; --fk-toast-accent:#4D7C0F;
+  --fk-dock-bg:rgba(16,16,16,.94); --fk-chip-bg:#1A1A1A;
+  --glass:linear-gradient(#1A1A1A, #1A1A1A); --glass-blur:none; --glass-solid:#1A1A1A;
+  --fk-shell-bg:radial-gradient(120% 38% at 50% -8%, rgba(255,255,255,.07), transparent 62%), #000;
+  --fk-shell-blend:normal; --fk-theme-color:#000000;
+  --font-ui:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-head:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --tp-r-card:20px; --tp-r-tile:16px; --tp-r-btn:14px; --tp-r-input:12px; --tp-r-dock:20px; --tp-btn-h:56px;
+  --tp-head-w:600; --tp-head-track:-.03em;
+  --tp-ease:cubic-bezier(.22,1,.36,1); --tp-stagger:.15s; --tp-rise:10px; --tp-rise-dur:.6s;
+  --tp-gauge-a:#E2F9A8; --tp-gauge-b:#C8F25A;
+  --sig-step-on-bg:#FFFFFF; --sig-step-on-ink:#000000; --sig-step-off-bg:#1A1A1A;
+  --tp-hero-grad:linear-gradient(160deg, #262626, #0A0A0A);
+}
+
+/* ---------- 1b. ESPRESSO — nâu ấm, chữ kem, kính lỏng ---------- */
+:root[data-theme="espresso"]{
+  --bg:#180A06;
+  --navy:#180A06; --navy-2:#24120B; --navy-3:#3A1F14; --navy-4:#5A3322;
+  --mint:#F2BC85; --mint-2:#F8D9B6; --mint-3:#D99A5B;                 /* caramel: dữ liệu */
+  --coral:#FF9A5C; --coral-2:#FFC6A3; --coral-3:#E46A2E; --coral-4:#FFA572; --coral-hot:#FF6B5A;  /* than hồng: CTA */
+  --navy-rgb:24,10,6; --mint-rgb:242,188,133; --coral-rgb:255,154,92; --coral-2-rgb:255,198,163;
+  --on-mint:#180A06; --on-coral:#1A0A04;                                /* 11,3:1 · 8,4:1 */
+  --fk-ink:#EDE4D8; --fk-ink-rgb:237,228,216; --text:#EDE4D8;
+  --text-muted:rgba(237,228,216,.86); --text-dim:rgba(235,220,205,.85); /* muted .55 của mẫu → .85 để đạt AA cả ở vùng quầng cam + thẻ */
+  --fk-ov-rgb:255,236,220; --fk-text-boost:.12;                          /* chữ trắng-mờ cứng trong CSS cũ (.6–.72) đậm thêm 12 % */
+  --fk-veil-rgb:24,10,6; --fk-scrim-rgb:24,10,6;
+  --fk-sheet-1-rgb:52,28,18; --fk-sheet-2-rgb:26,12,7;
+  --fk-toast-rgb:237,228,216; --fk-toast-ink:#180A06; --fk-toast-accent:#B4531F;
+  --fk-dock-bg:linear-gradient(180deg, rgba(255,236,220,.10), rgba(255,236,220,.06)); --fk-chip-bg:rgba(255,255,255,.03);
+  --glass:linear-gradient(180deg, rgba(255,236,220,.08), rgba(255,236,220,.05)); --glass-blur:blur(18px) saturate(130%);
+  --glass-solid:linear-gradient(180deg, #301B12, #28160F);
+  --fk-shell-bg:
+    radial-gradient(80% 42% at 8% -4%, rgba(214,120,60,.42), transparent 62%),
+    radial-gradient(70% 38% at 108% 26%, rgba(176,82,36,.32), transparent 66%),
+    radial-gradient(60% 30% at -10% 62%, rgba(150,66,28,.22), transparent 70%),
+    radial-gradient(90% 46% at 45% 108%, rgba(130,58,26,.42), transparent 70%),
+    linear-gradient(180deg, #1F0E08, #180A06);
+  --fk-shell-blend:normal; --fk-theme-color:#180A06;
+  --tp-r-card:24px; --tp-r-tile:20px; --tp-r-btn:999px; --tp-r-input:16px; --tp-r-dock:28px; --tp-btn-h:52px;
+  --tp-head-w:500; --tp-head-track:-.035em;
+  --tp-ease:cubic-bezier(.16,1,.3,1); --tp-stagger:.09s; --tp-rise:18px; --tp-rise-dur:.9s;
+  --tp-gauge-a:#FFC6A3; --tp-gauge-b:#FF8C4E;
+  --tp-hero-grad:radial-gradient(90% 80% at 100% 0%, rgba(255,154,92,.45), transparent 60%), linear-gradient(150deg, #6A3218, #2A140C);
+}
+
+/* ---------- 1c. THU ALPINE — sáng, kem + hổ phách, nhãn mono ---------- */
+:root[data-theme="alpine"]{
+  --bg:#EAE6DE;
+  --navy:#2E2D2A; --navy-2:#3A3935; --navy-3:#4A4843; --navy-4:#6B675F;
+  --mint:#5A49CF; --mint-2:#4636B8; --mint-3:#7C6CF2;                 /* tím: dữ liệu/liên kết (5,6:1 trên kem) */
+  --coral:#A9520A; --coral-2:#8F4508; --coral-3:#7C3A06; --coral-4:#F59E0B; --coral-hot:#B42318;   /* hổ phách đậm: chữ năng lượng (4,7:1) */
+  --navy-rgb:46,45,42; --mint-rgb:90,73,207; --coral-rgb:169,82,10; --coral-2-rgb:143,69,8;
+  --on-mint:#FFFFFF; --on-coral:#FFFFFF;
+  --fk-ink:#2E2D2A; --fk-ink-rgb:46,45,42;
+  --fk-ov-rgb:46,45,42; --fk-ov-k:.5; --fk-line-k:.7; --fk-text-boost:.25;
+  --fk-veil-rgb:234,230,222; --fk-scrim-rgb:36,34,30;
+  --fk-sheet-1-rgb:246,243,237; --fk-sheet-2-rgb:238,234,226;
+  --fk-toast-rgb:46,45,42; --fk-toast-ink:#F4F0E9; --fk-toast-accent:#FBD06A;
+  --fk-dock-bg:rgba(244,240,233,.94); --fk-chip-bg:rgba(244,240,233,.94);
+  --text:#2E2D2A; --text-muted:rgba(46,45,42,.78); --text-dim:rgba(46,45,42,.70);   /* 6,2:1 · 4,9:1 trên thẻ kem */
+  --surface:rgba(46,45,42,.04); --surface-2:rgba(46,45,42,.06); --surface-3:rgba(46,45,42,.09);
+  --border:rgba(46,45,42,.12); --border-strong:rgba(46,45,42,.2);
+  --glass:linear-gradient(rgba(244,240,233,.94), rgba(244,240,233,.94)); --glass-blur:blur(14px);
+  --glass-solid:#F4F0E9; --shadow-card:none;
+  --fk-shell-bg:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'><path d='M0 96 L34 78 L58 88 L96 52 L122 66 L152 34 L180 58 L214 44 L238 64 L276 22 L306 52 L338 42 L366 60 L400 50 L400 120 L0 120Z' fill='%23E3DED4'/><path d='M0 96 L34 78 L58 88 L96 52 L122 66 L152 34 L180 58 L214 44 L238 64 L276 22 L306 52 L338 42 L366 60 L400 50' fill='none' stroke='%232E2D2A' stroke-opacity='.16' stroke-width='1.2' vector-effect='non-scaling-stroke'/></svg>") center 64px / 100% 150px no-repeat,
+    radial-gradient(70% 34% at 104% -4%, rgba(251,208,106,.55), transparent 62%),
+    radial-gradient(60% 30% at -8% 100%, rgba(124,108,242,.12), transparent 64%),
+    linear-gradient(180deg, #EFEBE4 0%, #EAE6DE 40%, #E6E1D8 100%);
+  --fk-shell-blend:normal; --fk-theme-color:#EAE6DE;
+  --font-head:'Inter Tight', 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --tp-amber:#F6B733; --tp-amber-2:#FBD06A; --tp-orange:#F59E0B; --tp-violet:#7C6CF2; --tp-peach:#F8DCC6; --tp-panel:#EAE6DE;
+  --tp-r-card:22px; --tp-r-tile:16px; --tp-r-btn:14px; --tp-r-input:12px; --tp-r-dock:22px; --tp-btn-h:52px;
+  --tp-head-w:300; --tp-head-track:-.045em;
+  --tp-ease:cubic-bezier(.16,1,.3,1); --tp-stagger:.12s; --tp-rise:14px; --tp-rise-dur:.9s;
+  --tp-gauge-a:#FBD06A; --tp-gauge-b:#F59E0B;
+  --sig-gauge-dur:2.4s;
+  --tp-hero-grad:radial-gradient(90% 80% at 100% 0%, rgba(251,208,106,.35), transparent 60%), linear-gradient(150deg, #4A4843, #24221E);
+}
+
+/* ---------- 1d. SƯƠNG WELLNESS — xanh xám sương, kính viền gradient ---------- */
+:root[data-theme="wellness"]{
+  --bg:#34414D;
+  --navy:#2F3B47; --navy-2:#394654; --navy-3:#4A5866; --navy-4:#66788A;
+  --mint:#F6D873; --mint-2:#FBE8AE; --mint-3:#E5C04A;                 /* vàng nắng: dữ liệu + quầng sáng */
+  --coral:#F6F3EC; --coral-2:#FFE1C7; --coral-3:#E3DED3; --coral-4:#FFFFFF; --coral-hot:#FFB4A6;  /* CTA trắng ấm */
+  --navy-rgb:47,59,71; --mint-rgb:246,216,115; --coral-rgb:246,243,236; --coral-2-rgb:255,225,199;
+  --on-mint:#26313C; --on-coral:#26313C;
+  --text-muted:rgba(255,255,255,.90); --text-dim:rgba(255,255,255,.86);   /* nền sương sáng hơn → chữ mờ đậm hơn để đạt AA (cả vùng quầng + thẻ) */
+  --fk-text-boost:.45;                                                    /* chữ trắng-mờ cứng (.6–.72) → .78–.85 */
+  --fk-veil-rgb:52,64,77; --fk-scrim-rgb:38,49,60;
+  --fk-sheet-1-rgb:78,92,106; --fk-sheet-2-rgb:52,64,77;
+  --fk-toast-rgb:246,243,236; --fk-toast-ink:#26313C; --fk-toast-accent:#8A6A00;
+  --fk-dock-bg:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.07)); --fk-chip-bg:rgba(255,255,255,.10);
+  --glass:linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.045)); --glass-blur:blur(20px) saturate(120%);
+  --glass-solid:linear-gradient(180deg, #4A5764, #43505C);
+  --fk-shell-bg:
+    radial-gradient(120% 55% at 50% 118%, rgba(26,34,44,.55), transparent 70%),
+    radial-gradient(70% 22% at 12% 36%, rgba(226,233,240,.06), transparent 70%),
+    radial-gradient(60% 20% at 92% 20%, rgba(240,236,220,.06), transparent 70%),
+    radial-gradient(80% 26% at 60% 62%, rgba(214,224,234,.07), transparent 70%),
+    linear-gradient(180deg, #384656 0%, #34414D 38%, #2C353F 100%);   /* #8A9AAA của mẫu + phủ tối → chữ trắng (kể cả trên chip/nút kính .2) đạt AA */
+  --fk-shell-blend:normal; --fk-theme-color:#34414D;
+  --tp-r-card:28px; --tp-r-tile:22px; --tp-r-btn:999px; --tp-r-input:18px; --tp-r-dock:30px; --tp-btn-h:54px;
+  --tp-head-w:400; --tp-head-track:-.03em;
+  --tp-ease:cubic-bezier(.22,1,.36,1); --tp-stagger:.08s; --tp-rise:16px; --tp-rise-dur:.85s;
+  --tp-gauge-a:#FBE8AE; --tp-gauge-b:#F6D873;
+  --sig-choice-r:32px; --sig-choice-h:100px;
+  --tp-hero-grad:radial-gradient(90% 80% at 0% 0%, rgba(255,255,255,.16), transparent 60%), linear-gradient(160deg, #56677A, #343F4B);
+}
+
+/* ---------- 1e. SANCTUARY — nâu cà phê · kem · Manrope mảnh ---------- */
+:root[data-theme="sanctuary"]{
+  --bg:#2A2322;
+  --navy:#1D191A; --navy-2:#2A2324; --navy-3:#3D3330; --navy-4:#5A4C41;
+  --mint:#F1E5C6; --mint-2:#F8F0DC; --mint-3:#D9C79B;                 /* kem vàng: dữ liệu */
+  --coral:#F4BC9C; --coral-2:#F6CDB4; --coral-3:#D98F68; --coral-4:#F4C2A4; --coral-hot:#FF9A86;  /* đất nung nhạt: năng lượng */
+  --navy-rgb:29,25,26; --mint-rgb:241,229,198; --coral-rgb:244,188,156; --coral-2-rgb:246,205,180;
+  --on-mint:#1D191A; --on-coral:#1D191A;
+  --fk-ink:#F5F0E8; --fk-ink-rgb:245,240,232; --text:#F5F0E8;
+  --text-muted:rgba(245,240,232,.88); --text-dim:rgba(245,240,232,.86);   /* AA ở đỉnh nền (quầng kem + thẻ) */
+  --fk-ov-rgb:245,240,232; --fk-text-boost:.35;                          /* chữ kem-mờ cứng (.6–.72) → .74–.82 (AA) */
+  --fk-veil-rgb:42,35,33; --fk-scrim-rgb:29,25,26;
+  --fk-sheet-1-rgb:245,240,232; --fk-sheet-2-rgb:239,232,221;          /* sheet = "thẻ trắng ở đáy" (xem mục 7) */
+  --fk-toast-rgb:245,240,232; --fk-toast-ink:#1D191A; --fk-toast-accent:#7A5B1F;
+  --fk-dock-bg:linear-gradient(180deg, rgba(245,240,232,.12), rgba(245,240,232,.07)); --fk-chip-bg:rgba(245,240,232,.10);
+  --glass:linear-gradient(180deg, rgba(245,240,232,.08), rgba(245,240,232,.05)); --glass-blur:blur(16px) saturate(110%);
+  --glass-solid:linear-gradient(180deg, #3A302C, #332A27);
+  --fk-shell-bg:
+    radial-gradient(110% 34% at 50% -6%, rgba(241,229,198,.09), transparent 70%),
+    linear-gradient(180deg, #3E342D 0%, #352C27 26%, #2A2322 56%, #1D191A 100%);
+  --fk-shell-blend:normal; --fk-theme-color:#2A2322;
+  --font-ui:'Manrope', 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-head:'Manrope', 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --tp-r-card:24px; --tp-r-tile:18px; --tp-r-btn:999px; --tp-r-input:14px; --tp-r-dock:26px; --tp-btn-h:54px;
+  --tp-head-w:300; --tp-head-track:-.048em;
+  --tp-ease:cubic-bezier(.22,1,.36,1); --tp-stagger:.1s; --tp-rise:12px; --tp-rise-dur:.9s;
+  --tp-gauge-a:#F8F0DC; --tp-gauge-b:#D9C79B;
+  --tp-hero-grad:radial-gradient(90% 70% at 100% 0%, rgba(241,229,198,.18), transparent 60%), linear-gradient(160deg, #5A4C41, #2A2322);
+}
+
+/* =========================================================================
+   2. LỚP DÙNG CHUNG CHO MỌI GÓI (html.tp-pack) — chỉ đọc token --tp-*
+   ========================================================================= */
+html.tp-pack :is(.card, .nu-gauge-card, .nu-meal, .nu-water, .home-hero, .sig-gauge-card){ border-radius:var(--tp-r-card); }
+html.tp-pack :is(.stat-box, .list-item, .metric, .entry-tile, .plan-card, .role-card, .tpl-card, .nu-recipe, .quick-row button, .wd){ border-radius:var(--tp-r-tile); }
+html.tp-pack .btn{ border-radius:var(--tp-r-btn); }
+html.tp-pack .btn-block.btn-primary{ min-height:var(--tp-btn-h, 48px); }
+html.tp-pack :is(.field input, .field select, .field textarea, .search-box, .fb-input){ border-radius:var(--tp-r-input); min-height:44px; }
+html.tp-pack .bottom-nav{ border-radius:var(--tp-r-dock, 24px); }
+html.tp-pack :is(h1, h2, .headline, .hero-title, .onboard-hero){ font-weight:var(--tp-head-w); letter-spacing:var(--tp-head-track); }
+html.tp-pack :is(h3, .section-title h3, .sheet-header h3){ letter-spacing:-.02em; }
+html.tp-pack .home-greet h2{ line-height:1.04; }
+html.tp-pack :is(.wd small, .streak-chip small){ font-size:12px; letter-spacing:0; }   /* style.css đặt 9,5 px — gói nâng lên sàn 12 px */
+html.tp-pack .topbar .icon-btn{ width:44px; height:44px; min-width:44px; }                /* style.css 38 px → vùng chạm 44 px */
+/* Nút nhỏ của style.css → vùng chạm 44 px (đo bằng Playwright: ngày 36×26, nút +/– món 34×34, nút chỉnh mục tiêu 30×30) */
+html.tp-pack .day-tabs{ gap:4px; }
+html.tp-pack .day-tab{ min-width:44px; min-height:44px; padding:10px 4px; }
+html.tp-pack .nu-mini{ box-sizing:content-box; width:34px; height:34px; padding:5px; margin-top:-5px; margin-bottom:-5px; background-clip:content-box; }   /* hình tròn 34 như cũ, vùng chạm 44 */
+html.tp-pack .card-title .icon-btn{ width:44px !important; height:44px !important; min-width:44px; margin:-7px -7px -7px auto; }
+
+@keyframes tpRise{ from{ opacity:0; transform:translate3d(0, var(--tp-rise, 14px), 0); } to{ opacity:1; transform:none; } }
+@keyframes tpHeroReveal{ from{ opacity:0; transform:scale(.965); filter:blur(8px); } to{ opacity:1; transform:none; filter:none; } }
+@keyframes tpDropIn{ from{ opacity:0; transform:translate3d(0, -16px, 0); } to{ opacity:1; transform:none; } }
+@keyframes tpFade{ from{ opacity:0; } to{ opacity:1; } }
+@media (prefers-reduced-motion: no-preference){
+  html.tp-pack .screen.enter .content > *{ animation:tpRise var(--tp-rise-dur, .8s) var(--tp-ease, var(--e-out)) both; }
+  html.tp-pack .screen.enter .content > *:nth-child(1){ animation-delay:.04s; }
+  html.tp-pack .screen.enter .content > *:nth-child(2){ animation-delay:calc(.04s + var(--tp-stagger) * 1); }
+  html.tp-pack .screen.enter .content > *:nth-child(3){ animation-delay:calc(.04s + var(--tp-stagger) * 2); }
+  html.tp-pack .screen.enter .content > *:nth-child(4){ animation-delay:calc(.04s + var(--tp-stagger) * 3); }
+  html.tp-pack .screen.enter .content > *:nth-child(5){ animation-delay:calc(.04s + var(--tp-stagger) * 4); }
+  html.tp-pack .screen.enter .content > *:nth-child(6){ animation-delay:calc(.04s + var(--tp-stagger) * 5); }
+  html.tp-pack .screen.enter .content > *:nth-child(7){ animation-delay:calc(.04s + var(--tp-stagger) * 6); }
+  html.tp-pack .screen.enter .content > *:nth-child(8){ animation-delay:calc(.04s + var(--tp-stagger) * 7); }
+  html.tp-pack .screen.enter .content > *:nth-child(n+9){ animation-delay:calc(.04s + var(--tp-stagger) * 8); }
+  html.tp-pack .screen.enter .topbar .logo{ animation:tpDropIn .7s var(--tp-ease, var(--e-out)) .05s both; }
+}
+
+/* =========================================================================
+   3. AURORA
+   ========================================================================= */
+html[data-theme="aurora"] .topbar{ background:linear-gradient(180deg, #000 34%, rgba(0,0,0,0)) !important; }
+html[data-theme="aurora"] #app-shell::before{ opacity:0; }
+html[data-theme="aurora"] :is(.card, .stat-box, .list-item, .metric, .entry-tile, .quick-row button, .wd, .nu-gauge-card, .nu-meal,
+  .nu-water, .nu-recipe, .plan-card, .role-card, .streak-chip, .date-chip, .choice-card, .pb-opt){
+  -webkit-backdrop-filter:none; backdrop-filter:none; }
+html[data-theme="aurora"] .card::after{ display:none; }   /* không vệt sáng — phẳng, tối giản */
+html[data-theme="aurora"] .home-hero{ background-color:#111 !important; }
+html[data-theme="aurora"] :is(.pill.active, .pill.hot, .choice-card.selected, .pb-opt.on, .fk-seg button[aria-checked="true"]){
+  background:#fff !important; color:#000 !important; border-color:#fff !important; }
+html[data-theme="aurora"] :is(.choice-card.selected, .pb-opt.on) :is(small, .material-symbols-rounded){ color:#000 !important; }
+html[data-theme="aurora"] .nav-item.active .material-symbols-rounded{ background:#fff; color:#000; }
+html[data-theme="aurora"] .nav-item.active{ color:#fff; }
+html[data-theme="aurora"] .btn-primary{ background:#fff !important; color:#000 !important; font-weight:600; }
+html[data-theme="aurora"] .btn-primary .material-symbols-rounded{ color:#000; }
+html[data-theme="aurora"] .btn-outline{ background:#1A1A1A !important; border-color:rgba(255,255,255,.14) !important; -webkit-backdrop-filter:none; backdrop-filter:none; }
+html[data-theme="aurora"] :is(.field input, .field select, .field textarea, .search-box, .fb-input){
+  background:#1A1A1A !important; border:1px solid rgba(255,255,255,.10) !important; }
+html[data-theme="aurora"] :is(.field input, .field select, .field textarea, .fb-input):focus{ border-color:#fff !important; background:#1F1F1F !important; }
+html[data-theme="aurora"] .sheet{ background:#0E0E0E !important; -webkit-backdrop-filter:none; backdrop-filter:none; border-top:1px solid rgba(255,255,255,.10); }
+html[data-theme="aurora"] .sheet-backdrop{ background:rgba(0,0,0,.66); }
+html[data-theme="aurora"] .wd.today{ background:#fff !important; border-color:#fff !important; }
+html[data-theme="aurora"] .wd.today :is(small, b){ color:#000 !important; }
+
+/* =========================================================================
+   4. ESPRESSO — kính lỏng: nền .03, viền sáng trong, blur(2px) saturate(1.3) (+ khúc xạ SVG khi html.tp-refract)
+   ========================================================================= */
+html[data-theme="espresso"] :is(.btn-outline, .btn-soft, .topbar .icon-btn, .pill:not(.active):not(.hot), .streak-chip, .tp-lg){
+  background:rgba(255,255,255,.03) !important;
+  border:1px solid rgba(255,236,220,.10) !important;
+  box-shadow:inset 0 1px 0 rgba(255,244,232,.30), inset 0 -1px 0 rgba(255,244,232,.06),
+             inset 0 0 14px rgba(255,190,140,.07), 0 8px 24px rgba(10,4,2,.30) !important;
+  -webkit-backdrop-filter:blur(2px) saturate(1.3); backdrop-filter:blur(2px) saturate(1.3);
+}
+html.tp-refract[data-theme="espresso"] :is(.btn-outline, .btn-soft, .topbar .icon-btn, .pill:not(.active):not(.hot), .streak-chip, .tp-lg){
+  -webkit-backdrop-filter:blur(2px) saturate(1.3); backdrop-filter:url(#tp-lg-refract) blur(1px) saturate(1.3);
+}
+html[data-theme="espresso"] .btn-primary{
+  background:linear-gradient(180deg, #FFA36C 0%, #F27A3B 100%) !important; color:#1A0A04 !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45), inset 0 -2px 6px rgba(120,40,10,.25), 0 10px 28px rgba(240,122,58,.28) !important; }
+html[data-theme="espresso"] .btn-primary .material-symbols-rounded{ color:#1A0A04; }
+html[data-theme="espresso"] .home-hero::before{ background:radial-gradient(90% 90% at 100% 0%, rgba(255,140,78,.30), transparent 60%),
+  linear-gradient(90deg, rgba(24,10,6,.92) 22%, rgba(24,10,6,.45) 70%, rgba(24,10,6,.2)) !important; }
+html[data-theme="espresso"] .nav-item.active .material-symbols-rounded{ background:rgba(255,236,220,.14);
+  box-shadow:inset 0 1px 0 rgba(255,244,232,.30); color:#FFE4CC; }
+html[data-theme="espresso"] .sheet{ border-top:1px solid rgba(255,236,220,.18); }
+@media (prefers-reduced-motion: no-preference){
+  html[data-theme="espresso"] .screen.enter .content > *:first-child{ animation-name:tpHeroReveal; animation-duration:1.1s; }
+  html.lowfx[data-theme="espresso"] .screen.enter .content > *:first-child{ animation-name:tpRise; }
+}
+
+/* =========================================================================
+   5. THU ALPINE (sáng)
+   ========================================================================= */
+/* Không đổ bóng thẻ (ghi đè bóng mềm của theme Sáng — themes.css §4) */
+html.fk-light[data-theme="alpine"] :is(.card, .nu-gauge-card, .nu-meal, .nu-water, .home-hero, .nu-plan, .plan-card, .role-card,
+  .metric, .entry-tile, .stat-box, .list-item, .wd, .quick-row button, .streak-chip, .nu-recipe, .tpl-card, .atp-day, .icon-btn, .bottom-nav){
+  box-shadow:none !important; }
+html[data-theme="alpine"] .bottom-nav{ border:1px solid rgba(46,45,42,.10) !important; }
+/* Panel trong thẻ: #EAE6DE */
+html[data-theme="alpine"] .card :is(.stat-box, .list-item, .metric, .link-row){ background:var(--tp-panel) !important; border-color:transparent !important; }
+html[data-theme="alpine"] .card .link-row{ border-radius:14px; padding-left:10px; padding-right:10px; }
+/* Tiêu đề Inter Tight 300 rất lớn */
+html[data-theme="alpine"] :is(h1, h2, .headline, .hero-title, .onboard-hero){ font-family:var(--font-head); font-weight:300; letter-spacing:-.045em; }
+html[data-theme="alpine"] #home-content .home-greet h2{ font-size:38px !important; }
+html[data-theme="alpine"] .home-greet h2 span{ color:var(--text-dim) !important; }
+html[data-theme="alpine"] #screen-profile #profile-name{ font-size:30px !important; font-weight:300; text-transform:none; }
+html[data-theme="alpine"] :is(.stat-box .num, .ring-center .num, .metric b){ font-family:var(--font-head); font-weight:400; letter-spacing:-.03em; }
+/* Nhãn mono JetBrains Mono 500 in hoa, tiền tố "::" */
+html[data-theme="alpine"] :is(.hero-eyebrow, .home-greet .small-note, .metric small, .field label, .card-title, .sig-mono, .te-eyebrow){
+  font-family:var(--font-mono); font-weight:500; text-transform:uppercase; letter-spacing:.04em; font-size:12px; }
+html[data-theme="alpine"] .card-title{ font-size:12px; color:var(--text); }
+html[data-theme="alpine"] :is(.hero-eyebrow, .home-greet .small-note, .te-eyebrow)::before{ content:":: "; opacity:.55; }
+/* Chip đào · chip đang chọn mực đậm */
+html[data-theme="alpine"] .pill:not(.active):not(.hot){ background:var(--tp-peach) !important; color:#5A3A1E !important; border-color:transparent !important; }
+html[data-theme="alpine"] :is(.pill.active, .pill.hot, .fk-seg button[aria-checked="true"]){ background:#2E2D2A !important; color:#F4F0E9 !important; border-color:#2E2D2A !important; }
+/* CTA hổ phách, chữ mực */
+html[data-theme="alpine"] .btn-primary{ background:linear-gradient(180deg, #FBD06A, #F6B733) !important; color:#2E2D2A !important; }
+html[data-theme="alpine"] .btn-primary .material-symbols-rounded{ color:#2E2D2A; }
+html[data-theme="alpine"] .nav-item.active .material-symbols-rounded{ background:#FBD06A; color:#2E2D2A; }
+html[data-theme="alpine"] .wd.today{ background:#2E2D2A !important; border-color:#2E2D2A !important; }
+html[data-theme="alpine"] .wd.today :is(small, b){ color:#F4F0E9 !important; }
+html[data-theme="alpine"] .streak-chip .material-symbols-rounded{ color:var(--tp-orange); }
+/* "Đảo tối" (ảnh/video) của theme sáng → bảng hổ phách thay vì teal/coral */
+html.fk-light[data-theme="alpine"] :is(.hero, #screen-workout > .topbar.transparent, .mg-card, .wl, #auth.wl-mode, .auth-hero,
+  #screen-ptprofile, .vplayer, .clip-thumb, .vthumb, .vp-item, .ld-media, .fk-dark-island){
+  --mint:#FBD06A; --mint-2:#FDE3A0; --mint-3:#F6B733; --mint-rgb:251,208,106; --success:#FBD06A; --gold:#FBD06A;
+  --coral:#F6B733; --coral-rgb:246,183,51; --coral-2:#FBD06A; --coral-2-rgb:251,208,106; --coral-4:#FBD06A;
+  --primary:#F6B733; --primary-soft:#FBD06A; --warn:#FBD06A;
+  --on-mint:#2E2D2A; --on-coral:#2E2D2A; --fk-veil-rgb:36,34,30; --fk-scrim-rgb:36,34,30;
+}
+html.fk-light[data-theme="alpine"] .hero{ background-color:#3A3935; }
+html.fk-light[data-theme="alpine"] #screen-ptprofile, html.fk-light[data-theme="alpine"] #auth.wl-mode{ background:#24221E; }
+
+/* =========================================================================
+   6. SƯƠNG WELLNESS — viền gradient bằng ::before + mask-composite exclude (alpha .45 → 0 → .45)
+   ========================================================================= */
+html[data-theme="wellness"] :is(.metric, .stat-box, .choice-card, .pb-opt){ position:relative; }
+html[data-theme="wellness"] :is(.card, .nu-gauge-card, .nu-meal, .nu-water, .metric, .stat-box, .choice-card, .pb-opt, .sig-gauge-card, .sig-stat){
+  border-color:transparent !important; }
+html[data-theme="wellness"] :is(.card, .nu-gauge-card, .nu-meal, .nu-water, .metric, .stat-box, .choice-card, .pb-opt, .sig-gauge-card, .sig-stat, .bottom-nav, .tp-lg)::before{
+  content:""; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none; z-index:2;
+  background:linear-gradient(135deg, rgba(255,255,255,.45) 0%, rgba(255,255,255,0) 38%, rgba(255,255,255,0) 62%, rgba(255,255,255,.45) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor;
+          mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite:exclude;
+}
+html[data-theme="wellness"] .bottom-nav{ border-color:transparent !important; }
+/* Thẻ chọn đã chọn: sáng hẳn lên (trắng ấm, chữ đậm) */
+html[data-theme="wellness"] :is(.choice-card.selected, .pb-opt.on){ background:#F6F3EC !important; color:#26313C !important; }
+html[data-theme="wellness"] :is(.choice-card.selected, .pb-opt.on) :is(small, .material-symbols-rounded){ color:rgba(38,49,60,.8) !important; }
+html[data-theme="wellness"] :is(.choice-card.selected, .pb-opt.on)::before{ background:linear-gradient(135deg, rgba(246,216,115,.9), rgba(246,216,115,.15) 50%, rgba(246,216,115,.9)); }
+html[data-theme="wellness"] :is(.pill.active, .pill.hot){ background:#F6F3EC !important; color:#26313C !important; border-color:#F6F3EC !important; }
+html[data-theme="wellness"] .btn-primary{ background:#F6F3EC !important; color:#26313C !important; }
+html[data-theme="wellness"] .btn-primary .material-symbols-rounded{ color:#26313C; }
+/* Nút tròn có quầng vàng (giống nút giọng nói của mẫu): FAB, nút "Bắt đầu tập" trên hero, .tp-halo */
+html[data-theme="wellness"] :is(.btn-fab, .tp-halo, #home-content .home-hero .btn-primary){
+  box-shadow:0 0 0 4px rgba(246,216,115,.20), 0 0 26px 4px rgba(246,216,115,.42) !important; }
+@media (prefers-reduced-motion: no-preference){
+  html[data-theme="wellness"]:not(.lowfx) :is(.btn-fab, .tp-halo){ animation:tpHalo 3.2s ease-in-out infinite; }
+  @keyframes tpHalo{ 0%,100%{ box-shadow:0 0 0 4px rgba(246,216,115,.20), 0 0 22px 2px rgba(246,216,115,.36); }
+                     50%{ box-shadow:0 0 0 8px rgba(246,216,115,.10), 0 0 34px 8px rgba(246,216,115,.50); } }
+}
+html[data-theme="wellness"] .nav-item.active .material-symbols-rounded{ background:rgba(255,255,255,.20); color:#fff; box-shadow:0 0 18px rgba(246,216,115,.30); }
+html[data-theme="wellness"] .wd.today{ background:rgba(246,243,236,.92) !important; border-color:transparent !important; }
+html[data-theme="wellness"] .wd.today :is(small, b){ color:#26313C !important; }
+html[data-theme="wellness"] .sheet{ border-top:1px solid rgba(255,255,255,.34); }
+html[data-theme="wellness"] .ach-rank{ color:#fff; background:rgba(246,216,115,.12); }
+
+/* =========================================================================
+   7. SANCTUARY — Manrope mảnh, tiêu đề editorial, sheet trắng kem ở đáy
+   ========================================================================= */
+html[data-theme="sanctuary"] :is(h1, h2, .headline, .hero-title, .onboard-hero){ font-family:var(--font-head); font-weight:300; letter-spacing:-.048em; }
+html[data-theme="sanctuary"] #home-content .home-greet h2{ font-size:40px !important; line-height:1; }
+html[data-theme="sanctuary"] #screen-profile #profile-name{ font-size:32px !important; font-weight:300; text-transform:none; letter-spacing:-.04em; }
+html[data-theme="sanctuary"] :is(.section-title h3, .sheet-header h3, .card-title){ font-weight:500; }
+html[data-theme="sanctuary"] :is(.stat-box .num, .ring-center .num, .metric b){ font-weight:300; letter-spacing:-.04em; }
+html[data-theme="sanctuary"] .btn-primary{ background:#F1E5C6 !important; color:#1D191A !important; font-weight:600; }
+html[data-theme="sanctuary"] .btn-primary .material-symbols-rounded{ color:#1D191A; }
+html[data-theme="sanctuary"] :is(.pill.active, .pill.hot){ background:#F1E5C6 !important; color:#1D191A !important; border-color:#F1E5C6 !important; }
+html[data-theme="sanctuary"] .nav-item.active .material-symbols-rounded{ background:#F5F0E8; color:#1D191A; }
+html[data-theme="sanctuary"] .wd.today{ background:#F5F0E8 !important; border-color:#F5F0E8 !important; }
+html[data-theme="sanctuary"] .wd.today :is(small, b){ color:#1D191A !important; }
+/* Sheet = thẻ trắng kem ở đáy: đổi token chữ/bề mặt bên trong sheet sang "nền sáng" */
+html[data-theme="sanctuary"] .sheet{
+  --fk-ink:#1D191A; --fk-ink-rgb:29,25,26; --fk-ov-rgb:29,25,26; --fk-ov-k:.5; --fk-line-k:.75; --fk-text-boost:.25;
+  --fk-veil-rgb:245,240,232; --fk-chip-bg:rgba(29,25,26,.06);
+  --text:#1D191A; --text-muted:rgba(29,25,26,.78); --text-dim:rgba(29,25,26,.70);
+  --surface:rgba(29,25,26,.04); --surface-2:rgba(29,25,26,.06); --surface-3:rgba(29,25,26,.09);
+  --border:rgba(29,25,26,.12); --border-strong:rgba(29,25,26,.2);
+  --glass:linear-gradient(180deg, #FFFFFF, #FBF8F2); --glass-solid:#FFFFFF; --glass-blur:none;
+  --mint:#7A5B1F; --mint-2:#6A4E18; --mint-3:#9C7A35; --mint-rgb:122,91,31;
+  --coral:#A4512B; --coral-2:#8E4423; --coral-3:#7E3B1E; --coral-4:#C46A3F; --coral-hot:#B42318;
+  --coral-rgb:164,81,43; --coral-2-rgb:142,68,35;
+  --primary:#A4512B; --primary-dark:#7E3B1E; --primary-soft:#8E4423; --success:#7A5B1F; --warn:#8E4423; --gold:#7A5B1F;
+  --on-mint:#FFFFFF; --on-coral:#FFFFFF;
+  color:var(--text); border-top:none; box-shadow:0 -18px 40px rgba(0,0,0,.35);
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+}
+html[data-theme="sanctuary"] .sheet ::placeholder{ color:rgba(29,25,26,.55); }
+html[data-theme="sanctuary"] .sheet [style*="color:rgba(255,255,255" i]{ color:var(--text-muted) !important; }
+html[data-theme="sanctuary"] .sheet :is(input, textarea, select)[style*="color:#fff" i]{ color:var(--fk-ink) !important; }
+html[data-theme="sanctuary"] .sheet .btn-primary{ background:#1D191A !important; color:#F5F0E8 !important; }
+html[data-theme="sanctuary"] .sheet .btn-primary .material-symbols-rounded{ color:#F5F0E8; }
+html[data-theme="sanctuary"] .sheet .btn-outline{ background:#fff; border-color:rgba(29,25,26,.18) !important; -webkit-backdrop-filter:none; backdrop-filter:none; }
+html[data-theme="sanctuary"] .sheet .icon-btn{ background:rgba(29,25,26,.07); color:#1D191A; }
+html[data-theme="sanctuary"] .sheet .tp-logo.brand-swap img.brand-wm.on-dark{ display:none; }
+html[data-theme="sanctuary"] .sheet .tp-logo.brand-swap img.brand-wm.on-light{ display:block; }
+html[data-theme="sanctuary"] .sheet .brand-swap .brand-text{ color:var(--ink, #242D33); }
+html[data-theme="sanctuary"] .sheet-backdrop{ background:rgba(20,16,15,.55); }
+/* khối nằm trên ảnh/video trong sheet vẫn tối */
+html[data-theme="sanctuary"] .sheet :is(.hero, .mg-card, .vplayer, .clip-thumb, .vthumb, .vp-item, .ld-media, .fk-dark-island){
+  --fk-ink:#fff; --fk-ink-rgb:255,255,255; --fk-ov-rgb:255,255,255; --fk-ov-k:1; --fk-line-k:1; --fk-text-boost:0;
+  --fk-veil-rgb:29,25,26; --text:#fff; --text-muted:rgba(255,255,255,.82); --text-dim:rgba(255,255,255,.68);
+  --surface:rgba(255,255,255,.10); --surface-2:rgba(255,255,255,.14); --surface-3:rgba(255,255,255,.18);
+  --border:rgba(255,255,255,.16); --border-strong:rgba(255,255,255,.26);
+  --mint:#F1E5C6; --mint-2:#F8F0DC; --mint-rgb:241,229,198; --coral:#F0B08C; --coral-rgb:240,176,140; --coral-2:#F6CDB4;
+  --primary:#F0B08C; --primary-soft:#F6CDB4; --on-mint:#1D191A; --on-coral:#1D191A;
+  color:var(--text);
+}
+/* Menu: chữ lớn mảnh như menu phủ toàn màn của mẫu */
+html[data-theme="sanctuary"] [data-te-menu] .link-row .name{ font-family:var(--font-head); font-size:22px; font-weight:300; letter-spacing:-.03em; }
+html[data-theme="sanctuary"] [data-te-menu] .link-row{ min-height:52px; border-bottom:1px solid rgba(29,25,26,.08); border-radius:0; background:none !important; }
+/* Sự kiện: thẻ ngày 68×90, chữ dọc xoay −90° bên hero */
+html[data-theme="sanctuary"] .te-ev-cover{ height:118px; }
+html[data-theme="sanctuary"] .te-ev-date{ width:68px; height:90px; padding:0; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:#F5F0E8 !important; border:none !important; -webkit-backdrop-filter:none; backdrop-filter:none; box-shadow:0 8px 20px rgba(0,0,0,.25); }
+html[data-theme="sanctuary"] .te-ev-date b{ font-family:var(--font-head); font-weight:300; font-size:36px; letter-spacing:-.05em; color:#1D191A; }
+html[data-theme="sanctuary"] .te-ev-date small{ color:rgba(29,25,26,.72); letter-spacing:.14em; margin-top:6px; }
+html[data-theme="sanctuary"] .te-hero{ padding-right:44px; }
+html[data-theme="sanctuary"] .te-hero::after{ content:"CỘNG ĐỒNG · TAPEASY"; position:absolute; right:14px; bottom:18px; writing-mode:vertical-rl; transform:rotate(180deg);
+  font:500 12px/1 var(--font-ui); letter-spacing:.32em; color:var(--text-dim); pointer-events:none; }
+html[data-theme="sanctuary"] :is(.te-h, .kb-hero h2){ font-family:var(--font-head); font-weight:300; font-size:34px; line-height:1.04; letter-spacing:-.05em; }
+
+/* =========================================================================
+   8. MÁY YẾU / GIẢM TRONG SUỐT / GIẢM CHUYỂN ĐỘNG
+   ========================================================================= */
+html.lowfx[data-theme="espresso"] :is(.btn-outline, .btn-soft, .topbar .icon-btn, .pill:not(.active):not(.hot), .streak-chip, .tp-lg){
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important; background:rgba(255,236,220,.08) !important; }
+html.lowfx[data-theme="wellness"] :is(.card, .metric, .stat-box)::before{ display:none; }
+html.lowfx[data-theme="wellness"] :is(.card, .metric, .stat-box){ border-color:rgba(255,255,255,.22) !important; }
+@media (prefers-reduced-transparency: reduce){
+  html[data-theme="espresso"] :is(.btn-outline, .btn-soft, .topbar .icon-btn, .pill:not(.active):not(.hot), .streak-chip, .tp-lg){
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important; background:rgba(255,236,220,.08) !important; }
+}
+@media (prefers-reduced-motion: reduce){
+  html.tp-pack .screen.enter *, html.tp-pack .screen.enter *::after{ animation:none !important; }
+  html[data-theme="wellness"] :is(.btn-fab, .tp-halo){ animation:none !important; }
+}
+
+/* Hero có nền thương hiệu teal cứng (Kho kiến thức) → nền theo gói */
+html.tp-pack .kb-hero{ background:var(--tp-hero-grad); }
+
+/* Lớp phủ "Sức khoẻ & an toàn" (health-safety.css đặt cứng ảnh nền bão) → nền của gói */
+html.tp-pack #hs-overlay{ background:var(--fk-shell-bg); }

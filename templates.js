@@ -1,8 +1,8 @@
 /* =========================================================================
-   FIT KIT — Bài tập bổ sung + Giáo án mẫu quốc tế (Nam / Nữ / Chung × 3 cấp độ)
+   TapEasy — Bài tập bổ sung + Giáo án mẫu quốc tế (Nam / Nữ / Chung × 3 cấp độ)
    Giáo án theo xu hướng & nguyên tắc tập luyện hiện đại (RIR, tăng tiến kép, Upper/Lower,
    ULPPL, PPL, Powerbuilding, Hybrid/Hyrox, Zone 2, đi bộ dốc 12-3-30, glute focus).
-   Bố cục buổi tập/hiệp/lần là ý tưởng huấn luyện phổ thông — FIT KIT tự biên soạn lại
+   Bố cục buổi tập/hiệp/lần là ý tưởng huấn luyện phổ thông — TapEasy tự biên soạn lại
    bằng tiếng Việt, không sao chép tài liệu gốc.
    Nạp NGAY SAU data.js.
    ========================================================================= */
@@ -102,10 +102,19 @@ Object.assign(EXERCISES, {
    · Tăng tiến kép (double progression): đạt đỉnh khoảng lần ở mọi hiệp → tăng tạ
    · Nhấn giai đoạn cơ bị kéo giãn (hạ chậm 2–3 giây, biên độ đầy đủ)
    · Giảm tải (deload) mỗi 5–6 tuần
-   ex: [mãBài, hiệp, lần, nghỉ(giây)]  */
+   ex: [mãBài, hiệp, lần, nghỉ(giây), tuỳChọn?]
+   tuỳChọn { scheme:"topback" } = 1 hiệp nặng nhất (top set) + các hiệp còn lại giảm ~10% tạ (back-off) —
+   training-pro.js điền sẵn tạ theo kiểu này và xét tăng tạ theo hiệp nặng (QT-08). */
 const TPL_R = (id, s, r, rest)=> [id, s, r, rest];
+const TPL_TB = (id, s, r, rest)=> [id, s, r, rest, { scheme:"topback" }];
 const TPL_REST = { title:"Nghỉ ngơi", intensity:"Nghỉ", duration:0, ex:[] };
-const TPL_PRINCIPLES = "Nguyên tắc chung: dừng cách thất bại 1–2 lần (RIR 1–2) · đạt đỉnh khoảng lần ở mọi hiệp thì tăng tạ · hạ chậm 2–3 giây, biên độ đầy đủ · cứ 5–6 tuần giảm tải 1 tuần (bớt ~40% hiệp).";
+/* GLOSSARY §8.2: RIR viết "còn ~N lần (RIR)"; ẩn phần viết tắt ở cấp Mới tập (giáo án mới tập / hồ sơ chế độ đơn giản) */
+function tplPrinciplesText(t){
+  let simple = !!(t && t.level === "beginner");
+  try{ if(typeof fkSimpleMode === "function" && fkSimpleMode()) simple = true; }catch(e){}
+  return simple ? TPL_PRINCIPLES.replace(/\s*\(RIR[^)]*\)/g, "") : TPL_PRINCIPLES;
+}
+const TPL_PRINCIPLES = "Nguyên tắc chung: dừng khi còn 1–2 lần nữa mới hết sức (RIR 1–2) · đạt đỉnh khoảng lần ở mọi hiệp thì tăng tạ · hạ chậm 2–3 giây, biên độ đầy đủ · cứ 5–6 tuần giảm tải 1 tuần (bớt ~40% hiệp).";
 const PROGRAM_TEMPLATES = [
   /* ===================== NAM ===================== */
   { id:"tpl-m-fb", gender:"nam", level:"beginner", goal:"Tăng cơ nền tảng", weeks:10, perWeek:3,
@@ -121,23 +130,23 @@ const PROGRAM_TEMPLATES = [
       T7:{ title:"Đi bộ 8–10k bước", intensity:"Thấp", duration:40, ex:[TPL_R("walking",1,"40 phút",0)] },
       CN:TPL_REST } },
   { id:"tpl-m-ul", gender:"nam", level:"intermediate", goal:"Tăng cơ", weeks:12, perWeek:4,
-    name:"Upper / Lower 4 buổi — hypertrophy RIR 1–2",
+    name:"Thân trên / Thân dưới 4 buổi — tăng cơ, còn 1–2 lần (RIR)",
     origin:"Kiểu chia buổi phổ biến nhất hiện nay cho người tập 1–2 năm: Thân trên/Thân dưới, 12–16 hiệp/nhóm cơ/tuần",
     desc:"Buổi 1–2 thiên về tạ nặng (6–10 lần), buổi 3–4 thiên về khối lượng (10–15 lần), nhiều bài tập ở tư thế cơ bị kéo giãn.",
     days:{
-      T2:{ title:"Upper — nặng", intensity:"Cao", duration:65, ex:[TPL_R("benchpress",3,"6-8",150),TPL_R("csrow",3,"6-10",120),TPL_R("dbpress",3,"8-10",90),TPL_R("latpulldown",3,"8-12",90),TPL_R("ohtriext",2,"10-12",60),TPL_R("preacher",2,"10-12",60)] },
+      T2:{ title:"Upper — nặng", intensity:"Cao", duration:70, ex:[TPL_R("benchpress",4,"6-8",150),TPL_R("csrow",3,"6-10",120),TPL_R("dbpress",4,"8-10",90),TPL_R("latpulldown",3,"8-12",90),TPL_R("ohtriext",2,"10-12",60),TPL_R("preacher",2,"10-12",60)] },
       T3:{ title:"Lower — nặng", intensity:"Cao", duration:60, ex:[TPL_R("squat",3,"5-8",180),TPL_R("rdl",3,"6-10",120),TPL_R("legpress",2,"10-12",90),TPL_R("legcurl",3,"10-12",60),TPL_R("calfraise",3,"10-15",45)] },
       T4:TPL_REST,
-      T5:{ title:"Upper — khối lượng", intensity:"Vừa", duration:65, ex:[TPL_R("inclinedb",3,"8-12",90),TPL_R("cablerow",3,"10-12",75),TPL_R("pecdeck",2,"12-15",60),TPL_R("pullup",3,"6-10",90),TPL_R("cablelateral",3,"12-15",45),TPL_R("tricepsdown",2,"12-15",45),TPL_R("hammercurl",2,"12-15",45)] },
+      T5:{ title:"Upper — khối lượng", intensity:"Vừa", duration:70, ex:[TPL_R("inclinedb",3,"8-12",90),TPL_R("cablerow",3,"10-12",75),TPL_R("pecdeck",3,"12-15",60),TPL_R("pullup",3,"6-10",90),TPL_R("cablelateral",4,"12-15",45),TPL_R("tricepsdown",2,"12-15",45),TPL_R("hammercurl",2,"12-15",45)] },
       T6:{ title:"Lower — khối lượng", intensity:"Vừa", duration:60, ex:[TPL_R("hacksquat",3,"8-12",120),TPL_R("bulgarian",3,"8-12",90),TPL_R("legext",3,"12-15",60),TPL_R("legcurl",3,"12-15",60),TPL_R("calfraise",3,"12-15",45),TPL_R("hangingleg",3,"10-15",45)] },
       T7:{ title:"Zone 2", intensity:"Thấp", duration:35, ex:[TPL_R("zone2",1,"30 phút",0)] },
       CN:TPL_REST } },
   { id:"tpl-m-ulppl", gender:"nam", level:"intermediate", goal:"Tăng cơ tối đa", weeks:12, perWeek:5,
-    name:"ULPPL 5 buổi — Upper · Lower · Push · Pull · Legs",
+    name:"Trên–Dưới–Đẩy–Kéo–Chân 5 buổi (ULPPL)",
     origin:"Kết hợp Upper/Lower + Push/Pull/Legs — kiểu chia 5 buổi đang rất thịnh hành vì mỗi nhóm cơ được tập 2 lần/tuần",
     desc:"2 buổi đầu tập nặng, 3 buổi sau Push/Pull/Legs tập khối lượng. Phù hợp người có 5 buổi/tuần và đã tập ổn định.",
     days:{
-      T2:{ title:"Upper", intensity:"Cao", duration:60, ex:[TPL_R("benchpress",3,"6-8",150),TPL_R("bentoverrow",3,"6-10",120),TPL_R("overheadpress",2,"6-10",120),TPL_R("pullup",3,"6-10",90),TPL_R("cablelateral",2,"12-15",45)] },
+      T2:{ title:"Upper", intensity:"Cao", duration:65, ex:[TPL_R("benchpress",4,"6-8",150),TPL_R("bentoverrow",3,"6-10",120),TPL_R("overheadpress",3,"6-10",120),TPL_R("pullup",3,"6-10",90),TPL_R("cablelateral",2,"12-15",45)] },
       T3:{ title:"Lower", intensity:"Cao", duration:60, ex:[TPL_R("squat",3,"5-8",180),TPL_R("rdl",3,"6-10",120),TPL_R("legcurl",2,"10-12",60),TPL_R("calfraise",3,"10-15",45),TPL_R("hangingleg",2,"10-15",45)] },
       T4:TPL_REST,
       T5:{ title:"Push", intensity:"Vừa", duration:60, ex:[TPL_R("inclinedb",3,"8-12",90),TPL_R("machinepress",3,"10-12",75),TPL_R("dbpress",2,"10-12",75),TPL_R("cablelateral",3,"12-15",45),TPL_R("ohtriext",3,"10-15",60)] },
@@ -145,9 +154,9 @@ const PROGRAM_TEMPLATES = [
       T7:{ title:"Legs", intensity:"Vừa", duration:60, ex:[TPL_R("hacksquat",3,"8-12",120),TPL_R("bulgarian",2,"10-12",90),TPL_R("legext",3,"12-15",60),TPL_R("legcurl",3,"12-15",60),TPL_R("calfraise",3,"12-15",45)] },
       CN:TPL_REST } },
   { id:"tpl-m-ppl6", gender:"nam", level:"advanced", goal:"Tăng cơ nâng cao", weeks:12, perWeek:6,
-    name:"PPL 6 buổi — volume cao, RIR 0–1",
+    name:"Đẩy–Kéo–Chân 6 buổi (PPL) — khối lượng cao, còn 0–1 lần (RIR)",
     origin:"Push/Pull/Legs × 2 theo hướng bodybuilding hiện đại: 16–20 hiệp/nhóm cơ/tuần, tập sát thất bại ở bài cô lập",
-    desc:"Dành cho người tập trên 2 năm, ngủ ≥7 giờ. Bài đa khớp dừng RIR 1–2, bài cô lập tới RIR 0. Theo dõi phục hồi, deload mỗi 5 tuần.",
+    desc:"Dành cho người tập trên 2 năm, ngủ ≥7 giờ. Bài đa khớp dừng khi còn 1–2 lần (RIR 1–2), bài cô lập tới hết sức (RIR 0). Theo dõi phục hồi, tuần giảm tải mỗi 5 tuần.",
     days:{
       T2:{ title:"Push 1 — nặng", intensity:"Cao", duration:70, ex:[TPL_R("benchpress",3,"5-8",180),TPL_R("dbpress",3,"8-10",90),TPL_R("pecdeck",3,"12-15",60),TPL_R("cablelateral",4,"12-15",45),TPL_R("ohtriext",3,"10-12",60)] },
       T3:{ title:"Pull 1 — nặng", intensity:"Cao", duration:70, ex:[TPL_R("deadlift",2,"4-6 · RPE 7",180),TPL_R("pullup",3,"6-10",120),TPL_R("csrow",3,"8-10",90),TPL_R("facepull",3,"15",45),TPL_R("preacher",3,"10-12",60)] },
@@ -156,16 +165,16 @@ const PROGRAM_TEMPLATES = [
       T6:{ title:"Pull 2 — khối lượng", intensity:"Vừa", duration:65, ex:[TPL_R("latpulldown",3,"10-12",90),TPL_R("cablerow",3,"10-12",75),TPL_R("pullover",3,"12-15",60),TPL_R("hammercurl",3,"10-12",45),TPL_R("bicepcurl",2,"12-15",45)] },
       T7:{ title:"Legs 2 — khối lượng", intensity:"Vừa", duration:65, ex:[TPL_R("hacksquat",3,"8-12",120),TPL_R("bulgarian",3,"10-12",90),TPL_R("legcurl",3,"12-15",60),TPL_R("legext",2,"15-20",45),TPL_R("hangingleg",3,"12-15",45)] },
       CN:TPL_REST } },
-  { id:"tpl-m-pb", gender:"nam", level:"advanced", goal:"Sức mạnh + cơ bắp", weeks:12, perWeek:4,
+  { id:"tpl-m-pb", gender:"nam", level:"advanced", goal:"Sức mạnh + cơ bắp", weeks:12, perWeek:4, deloadEvery:4,   /* QT-09: "tuần 4 nhẹ" */
     name:"Powerbuilding 4 buổi — Squat · Bench · Deadlift · Press",
-    origin:"Powerbuilding hiện đại: 1 bài chính nặng theo RPE 7–9 + bài phụ tăng cơ",
-    desc:"Bài chính: 1 hiệp nặng nhất RPE 8 rồi 3 hiệp giảm 10% tạ. Bài phụ 8–15 lần, RIR 1–2. Chu kỳ 4 tuần, tuần 4 nhẹ.",
+    origin:"Powerbuilding hiện đại: 1 bài chính nặng theo độ nặng cảm nhận (RPE 7–9) + bài phụ tăng cơ",
+    desc:"Bài chính: 1 hiệp nặng nhất ở độ nặng cảm nhận RPE 8 (còn ~2 lần) rồi 3 hiệp giảm 10% tạ (app tự điền sẵn và tăng tạ theo hiệp nặng). Bài phụ 8–15 lần, còn 1–2 lần (RIR). Chu kỳ 4 tuần, tuần 4 nhẹ.",
     days:{
-      T2:{ title:"Squat", intensity:"Cao", duration:70, ex:[TPL_R("squat",4,"3-5 · RPE 8",180),TPL_R("rdl",3,"8",120),TPL_R("legpress",3,"10-12",90),TPL_R("legcurl",3,"12",60)] },
-      T3:{ title:"Bench", intensity:"Cao", duration:70, ex:[TPL_R("benchpress",4,"3-5 · RPE 8",180),TPL_R("csrow",4,"8-10",90),TPL_R("inclinedb",3,"10",90),TPL_R("ohtriext",3,"12",60)] },
+      T2:{ title:"Squat", intensity:"Cao", duration:70, ex:[TPL_TB("squat",4,"3-5 · RPE 8",180),TPL_R("rdl",3,"8",120),TPL_R("legpress",3,"10-12",90),TPL_R("legcurl",3,"12",60)] },
+      T3:{ title:"Bench", intensity:"Cao", duration:70, ex:[TPL_TB("benchpress",4,"3-5 · RPE 8",180),TPL_R("csrow",4,"8-10",90),TPL_R("inclinedb",3,"10",90),TPL_R("ohtriext",3,"12",60)] },
       T4:TPL_REST,
-      T5:{ title:"Deadlift", intensity:"Cao", duration:70, ex:[TPL_R("deadlift",4,"2-4 · RPE 8",210),TPL_R("bulgarian",3,"8-10",90),TPL_R("pullup",4,"6-8",120),TPL_R("hangingleg",3,"10",45)] },
-      T6:{ title:"Press", intensity:"Cao", duration:65, ex:[TPL_R("overheadpress",4,"4-6 · RPE 8",150),TPL_R("dbbench",3,"10",75),TPL_R("latpulldown",3,"10-12",75),TPL_R("cablelateral",3,"15",45),TPL_R("preacher",3,"12",45)] },
+      T5:{ title:"Deadlift", intensity:"Cao", duration:70, ex:[TPL_TB("deadlift",4,"2-4 · RPE 8",210),TPL_R("bulgarian",3,"8-10",90),TPL_R("pullup",4,"6-8",120),TPL_R("hangingleg",3,"10",45)] },
+      T6:{ title:"Press", intensity:"Cao", duration:65, ex:[TPL_TB("overheadpress",4,"4-6 · RPE 8",150),TPL_R("dbbench",3,"10",75),TPL_R("latpulldown",3,"10-12",75),TPL_R("cablelateral",3,"15",45),TPL_R("preacher",3,"12",45)] },
       T7:{ title:"Zone 2", intensity:"Thấp", duration:35, ex:[TPL_R("zone2",1,"30 phút",0)] },
       CN:TPL_REST } },
 
@@ -182,7 +191,7 @@ const PROGRAM_TEMPLATES = [
       T6:{ title:"Full Body C", intensity:"Vừa", duration:50, ex:[TPL_R("stepup",3,"10 mỗi chân",75),TPL_R("glutebridge",3,"15",60),TPL_R("abduction",3,"15-20",45),TPL_R("cablerow",3,"12",60),TPL_R("inclinepushup",2,"8-12",60),TPL_R("tricepsdown",2,"12-15",45)] },
       T7:{ title:"Đi bộ dốc 12-3-30", intensity:"Vừa", duration:30, ex:[TPL_R("inclinewalk",1,"30 phút",0)] },
       CN:TPL_REST } },
-  { id:"tpl-f-home", gender:"nu", level:"beginner", goal:"Giảm mỡ tại nhà", weeks:8, perWeek:4,
+  { id:"tpl-f-home", gender:"nu", level:"beginner", goal:"Giảm mỡ tại nhà", weeks:8, perWeek:5,   /* BUG-17: = tổng số ngày có bài (3 tạ + 2 cardio) */
     name:"Tại nhà cho nữ — tạ đơn + đi bộ ngắt quãng",
     origin:"Xu hướng tập tại nhà hiện nay: 3 buổi tạ đơn toàn thân + đi bộ ngắt quãng kiểu Nhật (3 phút nhanh / 3 phút chậm)",
     desc:"Chỉ cần 1 cặp tạ đơn (2–6 kg) và thảm. Không có tạ thì dùng chai nước hoặc balo sách. Mỗi buổi 30–40 phút.",
@@ -221,7 +230,7 @@ const PROGRAM_TEMPLATES = [
   { id:"tpl-f-lower3", gender:"nu", level:"advanced", goal:"Mông – chân nâng cao", weeks:12, perWeek:5,
     name:"Lower ×3 / Upper ×2 — 5 buổi chuyên mông chân",
     origin:"Phân chia nâng cao phổ biến của nữ tập lâu năm: 3 buổi thân dưới, 2 buổi thân trên, mông ~20–24 hiệp/tuần",
-    desc:"Dành cho người tập trên 2 năm. Bài cô lập mông có thể tới thất bại (RIR 0). Deload mỗi 5 tuần.",
+    desc:"Dành cho người tập trên 2 năm. Bài cô lập mông có thể tới hết sức (RIR 0). Tuần giảm tải mỗi 5 tuần.",
     days:{
       T2:{ title:"Lower A — mông nặng", intensity:"Cao", duration:65, ex:[TPL_R("squat",3,"6-8",180),TPL_R("hipthrust",4,"6-10",150),TPL_R("legcurl",3,"10-12",60)] },
       T3:{ title:"Upper A", intensity:"Vừa", duration:55, ex:[TPL_R("pullup",3,"4-8",120),TPL_R("dbbench",3,"8-10",90),TPL_R("dbpress",3,"8-10",90),TPL_R("csrow",3,"10-12",75),TPL_R("cablelateral",3,"15",45),TPL_R("ohtriext",2,"12",45)] },
@@ -232,7 +241,7 @@ const PROGRAM_TEMPLATES = [
       CN:TPL_REST } },
   { id:"tpl-f-pb", gender:"nu", level:"advanced", goal:"Sức mạnh & vóc dáng", weeks:12, perWeek:4,
     name:"Powerbuilding cho nữ — 4 buổi",
-    origin:"Xu hướng nữ tập tạ đòn ngày càng phổ biến: 1 bài chính nặng (RPE 7–9) + bài phụ tạo dáng",
+    origin:"Xu hướng nữ tập tạ đòn ngày càng phổ biến: 1 bài chính nặng (độ nặng cảm nhận RPE 7–9) + bài phụ tạo dáng",
     desc:"Squat, Bench, Deadlift, Overhead Press làm bài chính, Hip Thrust nặng đi kèm buổi Squat. Bài phụ 10–15 lần. Chu kỳ 4 tuần, tuần 4 giảm tải.",
     days:{
       T2:{ title:"Squat", intensity:"Cao", duration:65, ex:[TPL_R("squat",4,"3-5 · RPE 8",180),TPL_R("hipthrust",4,"6-8 · RPE 8",150),TPL_R("legcurl",3,"12",60),TPL_R("plank",3,"45 giây",30)] },
@@ -256,7 +265,7 @@ const PROGRAM_TEMPLATES = [
       T6:{ title:"Toàn thân C", intensity:"Vừa", duration:35, ex:[TPL_R("bwsquat",3,"20",45),TPL_R("pushup",3,"tối đa −2",60),TPL_R("glutebridge",3,"20",45),TPL_R("burpee",3,"8",60),TPL_R("deadbug",3,"10 mỗi bên",30)] },
       T7:{ title:"Đi bộ ngắt quãng", intensity:"Vừa", duration:30, ex:[TPL_R("intervalwalk",5,"3 phút nhanh + 3 phút chậm",0)] },
       CN:TPL_REST } },
-  { id:"tpl-u-cardio", gender:"chung", level:"beginner", goal:"Giảm cân, tim mạch", weeks:8, perWeek:4,
+  { id:"tpl-u-cardio", gender:"chung", level:"beginner", goal:"Giảm cân, tim mạch", weeks:8, perWeek:5,   /* BUG-17: 1 tạ + 4 cardio */
     name:"Zone 2 + Đi bộ dốc 12-3-30 (tăng dần) + tạ nhẹ",
     origin:"Xu hướng cardio hiện đại: nền Zone 2 cường độ nhẹ, đi bộ dốc 12-3-30 và đi bộ ngắt quãng — dễ duy trì, ít chấn thương",
     desc:"Phù hợp người thừa cân hoặc mới bắt đầu: bắt đầu dốc 6–8% và 15–20 phút, tăng dần mỗi tuần. Có 1 buổi tạ nhẹ để giữ cơ khi giảm cân. Kết hợp 8–10k bước/ngày và ăn thâm hụt nhẹ.",
@@ -307,9 +316,44 @@ function tplToPlan(t){
   DAY_KEYS.forEach(k=>{
     const d = t.days[k] || TPL_REST;
     days[k] = { title:d.title, intensity:d.intensity, duration:d.duration,
-      items: d.ex.map(([id,sets,reps,rest])=>({ uid:id+"_"+uid(), exerciseId:id, custom:null, sets, reps, restSec:rest, clipId:null })) };
+      items: d.ex.map(([id,sets,reps,rest,o])=> Object.assign({ uid:id+"_"+uid(), exerciseId:id, custom:null, sets, reps, restSec:rest, clipId:null },
+        o && o.scheme ? { scheme:o.scheme } : {})) };
+    if(tplDayOptional(t, k)) days[k].optional = true;     // QT-22: ngày đi bộ/Zone 2 "tuỳ chọn" — không tính vào chỉ tiêu buổi/tuần
   });
-  return { id:"plan_"+uid(), name:t.name, tagline:(TPL_GENDER[t.gender]+" · "+TPL_LEVEL[t.level]).toUpperCase(), builtin:false, fromTemplate:t.id, days };
+  return { id:"plan_"+uid(), name:t.name, tagline:(TPL_GENDER[t.gender]+" · "+TPL_LEVEL[t.level]).toUpperCase(), builtin:false, fromTemplate:t.id, createdAt: Date.now(), days };
+}
+/* QT-22: ngày chỉ có cardio nhẹ là "tuỳ chọn" khi perWeek của giáo án chỉ đếm buổi tạ
+   (vd Full Body 3 buổi + 1 ngày đi bộ → chỉ tiêu 3/tuần, không phải 4). */
+function tplDayOptional(t, k){
+  const d = t && t.days && t.days[k]; if(!d || !d.ex || !d.ex.length) return false;
+  if(!d.ex.every(e=> TPL_CARDIO.has(e[0]))) return false;
+  let lift = 0; Object.values(t.days).forEach(x=>{ if(x && x.ex && x.ex.length && !x.ex.every(e=> TPL_CARDIO.has(e[0]))) lift++; });
+  return Number(t.perWeek) === lift;
+}
+/* Các ngày BẮT BUỘC của 1 giáo án (dùng cho chỉ tiêu buổi/tuần, chuyên cần, tổng kết tuần, chuỗi).
+   Plan cũ tạo từ giáo án mẫu (chưa có cờ optional) → tra lại giáo án gốc. */
+function planRequiredDays(plan){
+  if(!plan || !plan.days) return [];
+  const t = plan.fromTemplate && typeof PROGRAM_TEMPLATES !== "undefined" ? PROGRAM_TEMPLATES.find(x=> x.id === plan.fromTemplate) : null;
+  return DAY_KEYS.filter(k=>{
+    const d = plan.days[k]; if(!d || !Array.isArray(d.items) || !d.items.length) return false;
+    if(d.optional) return false;
+    if(t && tplDayOptional(t, k) && d.items.every(it=> TPL_CARDIO.has(it.exerciseId))) return false;
+    return true;
+  });
+}
+/* QT-05: giáo án gợi ý cho người chưa tự chọn (onboarding chưa hỏi kinh nghiệm → coi là mới tập).
+   p = state.profile, h = state.health (tuỳ chọn), lv = "beginner" | "intermediate" | "advanced" */
+function tplRecommend(p, h, lv){
+  p = p || {}; h = h || {};
+  const level = lv || p.level || "beginner";
+  const g = p.gender === "female" ? "nu" : p.gender === "male" ? "nam" : "chung";
+  const hide = !!(h.completedAt && (h.cardio === "heart" || h.cardio === "htn_bad" || (h.parq && (h.parq.chestPain || h.parq.dizzy || h.parq.supervised)) || h.pregComplication));
+  const ok = t=> t.level === level && (t.gender === g || t.gender === "chung") && !(hide && Object.values(t.days).some(d=> d.intensity === "Rất cao"));
+  const pref = { nam:["tpl-m-fb"], nu:["tpl-f-fb","tpl-f-home"], chung:["tpl-u-home"] }[g];
+  const byId = id=> PROGRAM_TEMPLATES.find(t=> t.id === id);
+  if(level === "beginner"){ for(const id of pref){ const t = byId(id); if(t && ok(t)) return t; } }
+  return PROGRAM_TEMPLATES.filter(ok).sort((a,b)=> (a.gender === g ? 0 : 1) - (b.gender === g ? 0 : 1) || a.perWeek - b.perWeek)[0] || byId("tpl-u-home");
 }
 /* Gắn sẵn video hướng dẫn (YMove / wger) cho mọi bài trong giáo án */
 async function tplAttachVideos(plan){
@@ -357,8 +401,8 @@ function openTemplateBrowser(){
     .slice().sort((a,b)=> (TPL_G_ORDER[a.gender]-TPL_G_ORDER[b.gender]) || (TPL_LV_ORDER[a.level]-TPL_LV_ORDER[b.level]));
   const chip = (k,v,label)=>`<button class="pill ${tplUI[k]===v?'active':''}" data-tf="${k}:${v}">${label}</button>`;
   openSheet(`
-    <div class="sheet-header"><h3>Giáo án mẫu hiện đại</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
-    <p class="small-note" style="margin-bottom:10px;">Giáo án theo xu hướng tập hiện đại (RIR, Upper/Lower, ULPPL, Hybrid, Zone 2…). Bấm <b>Thêm vào tuần tập</b> → app tạo lịch tuần và tự gắn video cho từng bài.</p>
+    <div class="sheet-header"><h3>Giáo án mẫu hiện đại</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
+    <p class="small-note" style="margin-bottom:10px;">Giáo án theo xu hướng tập hiện đại (dừng khi còn 1–2 lần, Thân trên/Thân dưới, Đẩy–Kéo–Chân, Hybrid, Zone 2…). Bấm <b>Thêm vào tuần tập</b> → app tạo lịch tuần và tự gắn video cho từng bài.</p>
     <div class="exlib-chips">${chip("gender","all","Tất cả")}${chip("gender","nam","Nam")}${chip("gender","nu","Nữ")}${chip("gender","chung","Nam & Nữ")}</div>
     <div class="exlib-chips" style="margin:6px 0 12px;">${chip("level","all","Mọi cấp độ")}${chip("level","beginner","Mới tập")}${chip("level","intermediate","Trung bình")}${chip("level","advanced","Nâng cao")}</div>
     <div class="tpl-list">${list.map(t=>`
@@ -380,18 +424,18 @@ function openTemplateBrowser(){
 function openTemplateDetail(id){
   const t = PROGRAM_TEMPLATES.find(x=>x.id===id); if(!t) return;
   openSheet(`
-    <div class="sheet-header"><button class="icon-btn" id="tpl-back"><span class="material-symbols-rounded">arrow_back</span></button><h3 style="flex:1;margin-left:8px;font-size:17px;">${escapeHtml(t.name)}</h3></div>
+    <div class="sheet-header"><button class="icon-btn" id="tpl-back" aria-label="Quay lại danh sách giáo án"><span class="material-symbols-rounded">arrow_back</span></button><h3 style="flex:1;margin-left:8px;font-size:17px;">${escapeHtml(t.name)}</h3></div>
     <div class="tpl-top" style="margin-bottom:8px;"><span class="tpl-g g-${t.gender}">${TPL_GENDER[t.gender]}</span><span class="tpl-lv lv-${t.level}">${TPL_LEVEL[t.level]}</span><span class="tpl-lv">${tplWeekLabel(t)}</span><span class="tpl-lv">${t.weeks} tuần</span></div>
     <p class="small-note" style="line-height:1.55;">${escapeHtml(t.desc)}</p>
-    <p class="small-note tpl-principles">${escapeHtml(TPL_PRINCIPLES)}</p>
+    <p class="small-note tpl-principles">${escapeHtml(tplPrinciplesText(t))}</p>
     <p class="small-note" style="margin-top:6px;color:var(--mint-2);">${escapeHtml(t.origin)}</p>
     <div class="tpl-week">${DAY_KEYS.map(k=>{ const d = t.days[k] || TPL_REST; return `
       <div class="tpl-day ${d.ex.length?'':'rest'}">
         <div class="tpl-day-h"><b>${DAY_LABELS[k]}</b><span>${escapeHtml(d.title)}</span>${d.duration?`<i>~${d.duration} phút</i>`:""}</div>
-        ${d.ex.length ? `<ol>${d.ex.map(([id,s,r])=>`<li><span>${escapeHtml(EXERCISES[id].name)}</span><b>${s} × ${escapeHtml(String(r))}</b></li>`).join("")}</ol>` : ""}
+        ${d.ex.length ? `<ol>${d.ex.map(([id,s,r,,o])=>`<li><span>${escapeHtml(EXERCISES[id].name)}${o && o.scheme === "topback" ? `<small class="tpl-tb"> · 1 hiệp nặng + ${s-1} hiệp −10%</small>` : ""}</span><b>${s} × ${escapeHtml(String(r))}</b></li>`).join("")}</ol>` : ""}
       </div>`; }).join("")}</div>
     <button class="btn btn-primary btn-block" id="tpl-use" style="margin-top:14px;"><span class="material-symbols-rounded">add</span>Thêm giáo án vào tuần tập</button>
-    <p class="small-note" style="text-align:center;margin-top:6px;">App tự gắn video hướng dẫn cho từng bài. Giáo án cũ vẫn được giữ trong "Chương trình của tôi".</p>
+    <p class="small-note" style="text-align:center;margin-top:6px;">App tự gắn video hướng dẫn cho từng bài. Giáo án cũ vẫn được giữ trong "Giáo án của tôi".</p>
   `);
   $("#tpl-back").addEventListener("click", openTemplateBrowser);
   $("#tpl-use").addEventListener("click", e=>{ e.currentTarget.disabled = true; e.currentTarget.innerHTML = "Đang thêm & gắn video…"; tplAddToWeek(t); });
@@ -399,13 +443,17 @@ function openTemplateDetail(id){
 
 /* ---------------------------------------------------------------------
    Làm mới video đã gắn trong giáo án: bỏ video tham khảo Pixabay cũ (có thể sai bài),
-   gắn video hướng dẫn mới nhất (YMove / wger / Pexels / video AI của FIT KIT) — chạy 1 lần/ngày.
+   gắn video hướng dẫn mới nhất (YMove / wger / Pexels / video AI của TapEasy) — chạy 1 lần/ngày.
    --------------------------------------------------------------------- */
 async function refreshPlanVideos(force){
   try{
     if(!state || !state.plans || typeof findFreeExerciseVideos!=="function") return;
     const today = todayStr();
     if(!force && state.videoRefreshAt === today) return;
+    /* integrator (FIX-core vòng 2 #5): mất mạng / index video chưa tải được → KHÔNG làm mới (không xoá video cũ, không đánh dấu "đã làm hôm nay")
+       và không gọi lại index cho từng bài — lần sau (có mạng) chạy lại */
+    if(typeof navigator !== "undefined" && navigator && navigator.onLine === false) return;
+    if(typeof fvIndexesReady === "function" && !(await fvIndexesReady())) return;
     const cache = {};
     for(const plan of Object.values(state.plans)){
       for(const k of DAY_KEYS){
@@ -413,7 +461,7 @@ async function refreshPlanVideos(force){
         for(const it of d.items||[]){
           if(it.clipId) continue;                                   // video người dùng tự quay → giữ nguyên
           const meta = it.exerciseId && EXERCISES[it.exerciseId]; if(!meta) continue;
-          const isGuide = it.stock && ["YMove","wger","Pexels","Wikimedia Commons","FIT KIT"].includes(it.stock.provider);
+          const isGuide = it.stock && ["YMove","wger","Pexels","Wikimedia Commons","FIT KIT","TapEasy"].includes(it.stock.provider);   // "FIT KIT" = khoá provider cũ trong dữ liệu video
           if(isGuide) continue;
           if(!(it.exerciseId in cache)){ const r = await findFreeExerciseVideos(meta); cache[it.exerciseId] = r[0] ? Object.assign(stockFromVideo(r[0]), { duration:r[0].duration||0 }) : null; }
           if(cache[it.exerciseId]) it.stock = Object.assign({}, cache[it.exerciseId]);
@@ -425,4 +473,5 @@ async function refreshPlanVideos(force){
     if($("#screen-workout.active") && typeof renderWorkoutScreen==="function") renderWorkoutScreen();
   }catch(e){}
 }
-setTimeout(()=> refreshPlanVideos(), 3500);
+/* Hiệu năng (QU-02): chạy lúc rảnh, không tranh luồng với lần vẽ đầu */
+setTimeout(()=>{ try{ if(typeof requestIdleCallback === "function") requestIdleCallback(()=> refreshPlanVideos(), { timeout:8000 }); else refreshPlanVideos(); }catch(e){ refreshPlanVideos(); } }, 3500);

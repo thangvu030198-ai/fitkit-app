@@ -2,19 +2,21 @@
   "name": "fitkit-app",
   "version": "2.0.0",
   "private": true,
-  "description": "FIT KIT \u2014 app t\u1eadp luy\u1ec7n c\u00e1 nh\u00e2n + PT, \u0111\u00f3ng g\u00f3i iOS/Android b\u1eb1ng Capacitor (build tr\u00ean GitHub Actions, kh\u00f4ng c\u1ea7n Mac).",
+  "description": "TapEasy — app tập luyện cá nhân + PT (tiếng Việt), đóng gói iOS/Android bằng Capacitor (build trên GitHub Actions, không cần Mac).",
   "scripts": {
     "prepare:www": "bash scripts/prepare-www.sh",
-    "assets": "capacitor-assets generate --iconBackgroundColor '#0a0a0a' --iconBackgroundColorDark '#0a0a0a' --splashBackgroundColor '#0a0a0a' --splashBackgroundColorDark '#0a0a0a'"
+    "assets": "capacitor-assets generate --iconBackgroundColor '#02A69E' --iconBackgroundColorDark '#061A24' --splashBackgroundColor '#F7FBFA' --splashBackgroundColorDark '#061A24'"
   },
   "dependencies": {
+    "@capacitor-firebase/authentication": "^6.0.0",
     "@capacitor/android": "^6.1.2",
+    "@capacitor/app": "^6.0.2",
     "@capacitor/browser": "^6.0.2",
     "@capacitor/core": "^6.1.2",
     "@capacitor/ios": "^6.1.2",
     "@capacitor/local-notifications": "^6.1.0",
     "@capacitor/share": "^6.0.2",
-    "@capacitor/app": "^6.0.2"
+    "firebase": "^10.9.0"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",

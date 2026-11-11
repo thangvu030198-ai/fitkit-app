@@ -2,23 +2,64 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<!-- QS-22 (vòng sửa UX): CSP. 'unsafe-inline' TẠM cho onclick nội tuyến của module — lộ trình bỏ: docs/qa/FIX-ux.md §CSP -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://accounts.google.com https://apis.google.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.cloudfunctions.net https://*.run.app https://*.firebaseapp.com https://*.web.app https://accounts.google.com https://www.gstatic.com https://pixabay.com https://api.pexels.com https://api.openai.com https://api.x.ai https://thangvu030198-ai.github.io https://raw.githubusercontent.com; frame-src 'self' https://accounts.google.com https://*.firebaseapp.com https://*.web.app https://www.youtube-nocookie.com https://player.vimeo.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>FIT KIT — Huấn luyện & Dinh dưỡng thông minh</title>
+<title>TapEasy — Huấn luyện & Dinh dưỡng thông minh</title>
+<meta name="description" content="TapEasy — app tập luyện & dinh dưỡng tiếng Việt: giáo án cá nhân, thực đơn theo mục tiêu, kết nối PT với học viên.">
+<meta name="application-name" content="TapEasy">
+<meta name="apple-mobile-web-app-title" content="TapEasy">
+<meta property="og:title" content="TapEasy — Huấn luyện & Dinh dưỡng thông minh">
+<meta property="og:site_name" content="TapEasy">
 <meta name="theme-color" content="#061A24">
 <link rel="manifest" href="manifest.json">
+<meta property="og:image" content="https://thangvu030198-ai.github.io/fitkit-app/assets/og-tapeasy.jpg">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="assets/favicon-16.png" type="image/png" sizes="16x16">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600&family=Oswald:wght@500;600;700&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@700;800&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- QU-08: chỉ 4 họ font đang dùng (Inter · Inter Tight · JetBrains Mono cho ui-signature · Barlow Condensed 800 cho tiêu đề màn chào);
+     nạp KHÔNG chặn vẽ (media=print → all), display=swap; mất mạng thì dùng font hệ thống -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@500&family=Barlow+Condensed:wght@800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@500&family=Barlow+Condensed:wght@800&display=swap"></noscript>
+<link rel="preload" href="assets/bg-storm.jpg" as="image" fetchpriority="high">  <!-- nền app (CSS biến --fk-shell-bg → phát hiện muộn) -->
+<link rel="preload" href="assets/brand/logo-lockup-light.svg" as="image">        <!-- logo màn khởi động -->
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="themes.css">          <!-- NGAY sau style.css (lớp màu :where() cùng độ ưu tiên) -->
+<link rel="stylesheet" href="ui-kit.css">
+<link rel="stylesheet" href="nutrition-pro.css">
+<link rel="stylesheet" href="training-pro.css">
+<link rel="stylesheet" href="program-builder.css">
+<link rel="stylesheet" href="pt-pro.css">
+<link rel="stylesheet" href="pt-connect.css">
+<link rel="stylesheet" href="community.css">
+<link rel="stylesheet" href="achievements.css">
+<link rel="stylesheet" href="health-safety.css">
+<link rel="stylesheet" href="events.css">
+<link rel="stylesheet" href="shop.css">
+<link rel="stylesheet" href="findpt.css">        <!-- vòng 3: Tìm PT (album luôn tối, .fk-dark-island) -->
+<link rel="stylesheet" href="kb.css">            <!-- vòng 3: Kho kiến thức -->
+<link rel="stylesheet" href="admin.css">         <!-- vòng 3: Bảng quản trị (luôn tối, tiền tố .adm) — trước brand.css / themes-modules.css -->
+<link rel="stylesheet" href="theme-packs.css">     <!-- 5 gói giao diện (docs/THEME-PACKS.md): sau mọi CSS module, trước brand.css; thắng nhờ độ ưu tiên html[data-theme=…] -->
+<link rel="stylesheet" href="ui-signature.css">    <!-- thành phần chữ ký (trượt xác nhận, stepper, gauge, thẻ chọn số…) — chỉ dùng token -->
+<link rel="stylesheet" href="brand.css">           <!-- thương hiệu TapEasy: sau themes.css + CSS module (theo docs brand.css), trước themes-modules.css -->
+<link rel="stylesheet" href="themes-modules.css">  <!-- SAU CÙNG trong các stylesheet -->
+<script src="themes.js"></script>                  <!-- trong <head>: áp theme trước khi vẽ → không nháy màu -->
+<script src="fk-lazy.js"></script>                 <!-- vòng 2 (ux, QU-01): window.fkLazy.load('exdbvi'|'kb') — nạp lười dữ liệu lớn; trong <head> để mọi file sau gọi được -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<!-- QU-08: JSZip KHÔNG còn nạp đồng bộ — loadJSZip() (ui-kit.js) tải khi sao lưu/khôi phục Google Drive -->
 </head>
 <body>
 
 <div id="app-shell">
+  <a class="fk-skip" href="#app-scroll">Bỏ qua tới nội dung chính</a>
+  <h1 class="fk-sr" id="fk-page-title">TapEasy — Trang chủ</h1>
 
   <!-- ======================= ĐĂNG NHẬP / CHỌN VAI TRÒ ======================= -->
-  <div id="auth"><div class="auth-wrap" id="auth-body"></div></div>
+  <div id="auth" aria-live="polite"><div class="auth-wrap" id="auth-body"></div></div>
 
   <!-- ======================= ONBOARDING ======================= -->
   <div id="onboarding">
@@ -28,11 +69,11 @@
 
         <div class="onboard-step active" data-step="0">
           <div style="text-align:center;margin-top:24px;">
-            <div style="font-family:'Oswald','Avenir Next Condensed','Roboto Condensed',sans-serif-condensed,'Segoe UI',Arial,sans-serif;color:var(--primary);font-size:26px;font-weight:700;letter-spacing:1px;">FIT KIT</div>
-            <div class="onboard-hero" style="margin-top:18px;">CHÀO MỪNG VẬN ĐỘNG VIÊN</div>
-            <p class="onboard-sub">Trả lời vài câu hỏi để FIT KIT thiết kế chương trình tập luyện &amp; dinh dưỡng khoa học, đúng mục tiêu của riêng bạn.</p>
+            <div class="brand-onboard"><img class="brand-wm on-dark" src="assets/brand/logo-wordmark-light.svg" alt="TapEasy" data-no-fallback style="height:34px" onerror="this.onerror=null;this.outerHTML='<span class=&quot;brand-text&quot;>Tap<b>Easy</b></span>'"></div>
+            <div class="onboard-hero" style="margin-top:18px;">Chào mừng bạn đến với TapEasy</div>
+            <p class="onboard-sub">Trả lời vài câu hỏi để TapEasy thiết kế chương trình tập luyện &amp; dinh dưỡng khoa học, đúng mục tiêu của riêng bạn.</p>
           </div>
-          <img src="" data-src="hero" style="width:100%;height:180px;object-fit:cover;border-radius:20px;margin-top:8px;">
+          <img src="" data-src="hero" alt="" width="390" height="180" decoding="async" style="width:100%;height:180px;object-fit:cover;border-radius:20px;margin-top:8px;">
           <div class="field" style="margin-top:14px;">
             <label>Tên của bạn</label>
             <input type="text" id="in-name" placeholder="VD: Thắng">
@@ -42,9 +83,9 @@
         <div class="onboard-step" data-step="1">
           <h3 class="onboard-hero">Giới tính &amp; Tuổi</h3>
           <p class="onboard-sub">Dữ liệu này giúp tính chính xác mức trao đổi chất cơ bản (BMR).</p>
-          <div class="choice-grid">
-            <div class="choice-card" data-field="gender" data-value="male">Nam</div>
-            <div class="choice-card" data-field="gender" data-value="female">Nữ</div>
+          <div class="choice-grid" role="radiogroup" aria-label="Giới tính">
+            <div class="choice-card" role="radio" aria-checked="false" tabindex="0" data-field="gender" data-value="male">Nam</div>
+            <div class="choice-card" role="radio" aria-checked="false" tabindex="0" data-field="gender" data-value="female">Nữ</div>
           </div>
           <div class="field">
             <label>Tuổi</label>
@@ -79,12 +120,12 @@
 
         <div class="onboard-step" data-step="4">
           <h3 class="onboard-hero">Mục tiêu của bạn</h3>
-          <p class="onboard-sub">FIT KIT sẽ tự tạo chương trình tập &amp; hạn mức calo phù hợp.</p>
+          <p class="onboard-sub">TapEasy sẽ tự tạo chương trình tập &amp; hạn mức calo phù hợp.</p>
           <div id="goal-list" style="display:flex;flex-direction:column;gap:8px;"></div>
         </div>
 
         <div class="onboard-footer">
-          <button type="button" class="btn btn-outline" id="onboard-back" style="display:none;">
+          <button type="button" class="btn btn-outline" id="onboard-back" style="display:none;" aria-label="Quay lại bước trước">
             <span class="material-symbols-rounded">arrow_back</span>
           </button>
           <button type="button" class="btn btn-primary btn-block" id="onboard-next">Tiếp tục</button>
@@ -94,14 +135,14 @@
   </div>
 
   <!-- ======================= SCROLLABLE CONTENT ======================= -->
-  <div id="app-scroll">
+  <main id="app-scroll" tabindex="-1" aria-labelledby="fk-page-title">
 
   <!-- ======================= HOME ======================= -->
   <section id="screen-home" class="screen active">
     <div class="topbar">
-      <button class="icon-btn btn-menu-trigger"><span class="material-symbols-rounded">menu</span></button>
-      <div class="logo">FIT KIT</div>
-      <button class="icon-btn" data-goto="profile"><span class="material-symbols-rounded">account_circle</span></button>
+      <button type="button" class="icon-btn btn-menu-trigger" aria-label="Mở menu"><span class="material-symbols-rounded">menu</span></button>
+      <div class="logo tp-logo brand-swap"><img class="brand-wm on-dark" src="assets/brand/logo-wordmark-light.svg" alt="TapEasy" data-no-fallback onerror="this.onerror=null;this.outerHTML='<span class=&quot;brand-text&quot;>Tap<b>Easy</b></span>'"><img class="brand-wm on-light" src="assets/brand/logo-wordmark-dark.svg" alt="" aria-hidden="true" data-no-fallback onerror="this.onerror=null;this.remove()"></div>
+      <button type="button" class="icon-btn" data-goto="profile" aria-label="Mở hồ sơ của bạn"><span class="material-symbols-rounded">account_circle</span></button>
     </div>
     <div class="content" id="home-content"></div>
   </section>
@@ -109,9 +150,9 @@
   <!-- ======================= PT (Tôi là PT / PT của tôi) ======================= -->
   <section id="screen-coach" class="screen">
     <div class="topbar">
-      <button class="icon-btn btn-menu-trigger"><span class="material-symbols-rounded">menu</span></button>
-      <div class="logo">PT &amp; Học viên</div>
-      <button class="icon-btn" id="btn-coach-refresh"><span class="material-symbols-rounded">refresh</span></button>
+      <button type="button" class="icon-btn btn-menu-trigger" aria-label="Mở menu"><span class="material-symbols-rounded">menu</span></button>
+      <div class="logo">TapEasy PT</div>
+      <button type="button" class="icon-btn" id="btn-coach-refresh" aria-label="Làm mới dữ liệu PT"><span class="material-symbols-rounded">refresh</span></button>
     </div>
     <div class="content" id="coach-content"></div>
   </section>
@@ -119,9 +160,9 @@
   <!-- ======================= FORM QUẢN LÝ PT ↔ HỌC VIÊN ======================= -->
   <section id="screen-client" class="screen">
     <div class="topbar">
-      <button class="icon-btn" id="btn-client-back"><span class="material-symbols-rounded">arrow_back</span></button>
+      <button type="button" class="icon-btn" id="btn-client-back" aria-label="Quay lại danh sách học viên"><span class="material-symbols-rounded">arrow_back</span></button>
       <div class="logo" id="client-title" style="max-width:62%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Học viên</div>
-      <button class="icon-btn" id="btn-client-refresh"><span class="material-symbols-rounded">refresh</span></button>
+      <button type="button" class="icon-btn" id="btn-client-refresh" aria-label="Làm mới dữ liệu học viên"><span class="material-symbols-rounded">refresh</span></button>
     </div>
     <div class="day-tabs" id="client-tabs"></div>
     <div class="content" id="client-content"></div>
@@ -133,14 +174,14 @@
   <!-- ======================= WORKOUT ======================= -->
   <section id="screen-workout" class="screen">
     <div class="topbar transparent">
-      <button class="icon-btn btn-menu-trigger" id="btn-menu"><span class="material-symbols-rounded">menu</span></button>
-      <div class="logo">FIT KIT</div>
-      <button class="icon-btn" data-goto="profile"><span class="material-symbols-rounded">account_circle</span></button>
+      <button type="button" class="icon-btn btn-menu-trigger" id="btn-menu" aria-label="Mở menu"><span class="material-symbols-rounded">menu</span></button>
+      <div class="logo tp-logo"><img class="brand-wm on-dark" src="assets/brand/logo-wordmark-light.svg" alt="TapEasy" data-no-fallback onerror="this.onerror=null;this.outerHTML='<span class=&quot;brand-text&quot;>Tap<b>Easy</b></span>'"></div>
+      <button type="button" class="icon-btn" data-goto="profile" aria-label="Mở hồ sơ của bạn"><span class="material-symbols-rounded">account_circle</span></button>
     </div>
 
     <div class="hero" id="workout-hero">
       <div class="hero-content">
-        <div class="hero-eyebrow" id="workout-tagline">CHƯƠNG TRÌNH TẬP LUYỆN ELITE</div>
+        <div class="hero-eyebrow" id="workout-tagline">Giáo án của bạn</div>
         <div class="hero-title" id="workout-heroTitle">CHINH PHỤC<br><span class="accent">GIỚI HẠN</span></div>
       </div>
     </div>
@@ -151,7 +192,7 @@
       <div class="chip-row">
         <button class="pill" onclick="openTemplateBrowser()" style="cursor:pointer;"><span class="material-symbols-rounded" style="font-size:14px;">school</span>&nbsp;Giáo án mẫu</button>
         <button class="pill" onclick="openExLib()" style="cursor:pointer;"><span class="material-symbols-rounded" style="font-size:14px;">library_books</span>&nbsp;Thư viện bài tập</button>
-        <button class="pill" id="btn-open-plans" style="cursor:pointer;"><span class="material-symbols-rounded" style="font-size:14px;">edit_calendar</span>&nbsp;Chương trình của tôi</button>
+        <button class="pill" id="btn-open-plans" style="cursor:pointer;"><span class="material-symbols-rounded" style="font-size:14px;">edit_calendar</span>&nbsp;Giáo án của tôi</button>
         <button class="pill" id="btn-open-library" style="cursor:pointer;"><span class="material-symbols-rounded" style="font-size:14px;">video_library</span>&nbsp;Kho video</button>
       </div>
 
@@ -165,11 +206,11 @@
 
       <div class="section-title" style="margin-top:8px;">
         <h3>Kho video của tôi</h3>
-        <a id="btn-add-clip">+ Thêm clip</a>
+        <a id="btn-add-clip" role="button" tabindex="0" aria-label="Thêm clip vào kho video">+ Thêm clip</a>
       </div>
       <div class="clip-grid" id="clip-grid"></div>
       <p class="empty-hint" id="clip-empty">Chưa có video nào. Tải lên clip tập luyện (trong nhà, ngoài trời, phòng gym...) để gắn vào từng bài tập!</p>
-      <a id="link-view-library" style="font-size:11px;color:var(--primary-soft);text-transform:uppercase;font-weight:700;letter-spacing:0.5px;text-align:right;display:block;">Xem toàn bộ kho video →</a>
+      <a id="link-view-library" role="button" tabindex="0" style="font-size:12px;color:var(--primary-soft);text-transform:uppercase;font-weight:700;letter-spacing:0.5px;text-align:right;display:block;">Xem toàn bộ kho video →</a>
 
       <div class="card">
         <div class="card-title"><span class="material-symbols-rounded">local_fire_department</span>Chuỗi ngày tập luyện</div>
@@ -181,9 +222,9 @@
   <!-- ======================= VIDEO LIBRARY ======================= -->
   <section id="screen-library" class="screen">
     <div class="topbar">
-      <button class="icon-btn" data-back="workout"><span class="material-symbols-rounded">arrow_back</span></button>
+      <button type="button" class="icon-btn" data-back="workout" aria-label="Quay lại Tập luyện"><span class="material-symbols-rounded">arrow_back</span></button>
       <div class="logo">Kho video</div>
-      <button class="icon-btn" id="btn-add-clip-2"><span class="material-symbols-rounded">add</span></button>
+      <button type="button" class="icon-btn" id="btn-add-clip-2" aria-label="Thêm video vào kho"><span class="material-symbols-rounded">add</span></button>
     </div>
     <div class="day-tabs" id="library-cat-tabs"></div>
     <div class="content">
@@ -195,23 +236,24 @@
   <!-- ======================= PLAN MANAGEMENT ======================= -->
   <section id="screen-plans" class="screen">
     <div class="topbar">
-      <button class="icon-btn" id="btn-plans-back"><span class="material-symbols-rounded">arrow_back</span></button>
-      <div class="logo" id="plans-topbar-title">Chương trình</div>
-      <button class="icon-btn" id="btn-plans-action"><span class="material-symbols-rounded">add</span></button>
+      <button type="button" class="icon-btn" id="btn-plans-back" aria-label="Quay lại"><span class="material-symbols-rounded">arrow_back</span></button>
+      <div class="logo" id="plans-topbar-title">Giáo án</div>
+      <button type="button" class="icon-btn" id="btn-plans-action" aria-label="Tạo giáo án mới" data-fk-al="1"><span class="material-symbols-rounded">add</span></button>
     </div>
     <div class="content" id="plans-content"></div>
   </section>
 
-  <!-- ======================= ẢNH TIẾN TRÌNH & INBODY ======================= -->
+  <!-- ======================= TIẾN ĐỘ: ẢNH & INBODY ======================= -->
   <section id="screen-progress" class="screen">
     <div class="topbar">
-      <button class="icon-btn" id="btn-progress-back"><span class="material-symbols-rounded">arrow_back</span></button>
-      <div class="logo">Tiến trình</div>
-      <button class="icon-btn" id="btn-progress-camera"><span class="material-symbols-rounded">photo_camera</span></button>
+      <button type="button" class="icon-btn" id="btn-progress-back" aria-label="Quay lại"><span class="material-symbols-rounded">arrow_back</span></button>
+      <div class="logo">Tiến độ</div>
+      <button type="button" class="icon-btn" id="btn-progress-camera" aria-label="Chụp ảnh tiến độ"><span class="material-symbols-rounded">photo_camera</span></button>
     </div>
-    <div class="day-tabs" id="progress-tabs">
-      <button class="day-tab active" data-ptab="photos">Ảnh tiến trình</button>
-      <button class="day-tab" data-ptab="inbody">Chỉ số InBody</button>
+    <div class="day-tabs" id="progress-tabs" aria-label="Mục tiến độ">
+      <button type="button" class="day-tab active" data-ptab="records" aria-pressed="true">Kỷ lục</button>
+      <button type="button" class="day-tab" data-ptab="photos" aria-pressed="false">Ảnh tiến độ</button>
+      <button type="button" class="day-tab" data-ptab="inbody" aria-pressed="false">Chỉ số InBody</button>
     </div>
     <div class="content" id="progress-content"></div>
   </section>
@@ -220,9 +262,9 @@
   <section id="screen-nutrition" class="screen">
     <div class="hero small" style="background-image:url('');" id="nutrition-hero">
       <div class="topbar transparent" style="position:absolute;top:0;left:0;right:0;">
-        <button class="icon-btn btn-menu-trigger"><span class="material-symbols-rounded">menu</span></button>
-        <div class="logo">FIT KIT</div>
-        <button class="icon-btn" data-goto="profile"><span class="material-symbols-rounded">account_circle</span></button>
+        <button type="button" class="icon-btn btn-menu-trigger" aria-label="Mở menu"><span class="material-symbols-rounded">menu</span></button>
+        <div class="logo tp-logo"><img class="brand-wm on-dark" src="assets/brand/logo-wordmark-light.svg" alt="TapEasy" data-no-fallback onerror="this.onerror=null;this.outerHTML='<span class=&quot;brand-text&quot;>Tap<b>Easy</b></span>'"></div>
+        <button type="button" class="icon-btn" data-goto="profile" aria-label="Mở hồ sơ của bạn"><span class="material-symbols-rounded">account_circle</span></button>
       </div>
       <div class="hero-content">
         <div class="hero-eyebrow">HIỆU SUẤT TỐI ĐA</div>
@@ -234,7 +276,7 @@
       <div class="card">
         <div class="card-title" style="justify-content:space-between;">
           <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded">local_fire_department</span>Theo dõi calo hôm nay</span>
-          <button class="icon-btn" id="btn-edit-targets" style="width:30px;height:30px;"><span class="material-symbols-rounded" style="font-size:18px;">tune</span></button>
+          <button type="button" class="icon-btn fk-tap-sm" id="btn-edit-targets" aria-label="Chỉnh mục tiêu calo và dinh dưỡng"><span class="material-symbols-rounded" style="font-size:18px;">tune</span></button>
         </div>
         <div style="display:flex;align-items:center;gap:18px;">
           <div class="ring-wrap">
@@ -254,9 +296,9 @@
           </div>
         </div>
         <div class="stat-grid" style="margin-top:14px;">
-          <div class="stat-box"><div class="num" id="macro-protein">0g</div><div class="cap">Protein</div></div>
-          <div class="stat-box"><div class="num" id="macro-carbs">0g</div><div class="cap">Carbs</div></div>
-          <div class="stat-box"><div class="num" id="macro-fat">0g</div><div class="cap">Fat</div></div>
+          <div class="stat-box"><div class="num" id="macro-protein">0g</div><div class="cap">Đạm</div></div>
+          <div class="stat-box"><div class="num" id="macro-carbs">0g</div><div class="cap">Tinh bột</div></div>
+          <div class="stat-box"><div class="num" id="macro-fat">0g</div><div class="cap">Chất béo</div></div>
         </div>
       </div>
 
@@ -265,7 +307,7 @@
       <div class="card">
         <div class="card-title" style="justify-content:space-between;">
           <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded">water_drop</span>Nước uống</span>
-          <button class="icon-btn" id="btn-edit-water" style="width:30px;height:30px;"><span class="material-symbols-rounded" style="font-size:18px;">tune</span></button>
+          <button type="button" class="icon-btn fk-tap-sm" id="btn-edit-water" aria-label="Chỉnh mục tiêu nước uống"><span class="material-symbols-rounded" style="font-size:18px;">tune</span></button>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;">
           <div class="progress-row" style="flex:1;margin-right:12px;">
@@ -275,9 +317,9 @@
         </div>
         <div class="progress-track"><div class="progress-fill" id="water-fill" style="width:0%;background:linear-gradient(90deg,#2FB99A,#9AF1DD)"></div></div>
         <div style="display:flex;gap:8px;margin-top:12px;">
-          <button class="btn btn-outline btn-sm" data-water="0.25">+250ml</button>
-          <button class="btn btn-outline btn-sm" data-water="0.5">+500ml</button>
-          <button class="btn btn-ghost btn-sm" data-water="reset">Đặt lại</button>
+          <button type="button" class="btn btn-outline btn-sm" data-water="0.25" aria-label="Uống thêm 250 ml nước">+250 ml</button>
+          <button type="button" class="btn btn-outline btn-sm" data-water="0.5" aria-label="Uống thêm 500 ml nước">+500 ml</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-water="reset" aria-label="Đặt lại lượng nước hôm nay">Đặt lại</button>
         </div>
       </div>
     </div>
@@ -287,9 +329,9 @@
   <section id="screen-sleep" class="screen">
     <div class="hero small" id="sleep-hero">
       <div class="topbar transparent" style="position:absolute;top:0;left:0;right:0;">
-        <button class="icon-btn btn-menu-trigger"><span class="material-symbols-rounded">menu</span></button>
-        <div class="logo">FIT KIT</div>
-        <button class="icon-btn" data-goto="profile"><span class="material-symbols-rounded">account_circle</span></button>
+        <button type="button" class="icon-btn btn-menu-trigger" aria-label="Mở menu"><span class="material-symbols-rounded">menu</span></button>
+        <div class="logo tp-logo"><img class="brand-wm on-dark" src="assets/brand/logo-wordmark-light.svg" alt="TapEasy" data-no-fallback onerror="this.onerror=null;this.outerHTML='<span class=&quot;brand-text&quot;>Tap<b>Easy</b></span>'"></div>
+        <button type="button" class="icon-btn" data-goto="profile" aria-label="Mở hồ sơ của bạn"><span class="material-symbols-rounded">account_circle</span></button>
       </div>
       <div class="hero-content">
         <div class="hero-eyebrow">PHỤC HỒI THÔNG MINH</div>
@@ -314,13 +356,13 @@
             <button class="pill" data-q="5">Tuyệt vời</button>
           </div>
         </div>
-        <button class="btn btn-primary btn-block" style="margin-top:14px;" id="btn-save-sleep">Lưu nhật ký giấc ngủ</button>
+        <button type="button" class="btn btn-primary btn-block" style="margin-top:14px;" id="btn-save-sleep">Lưu nhật ký giấc ngủ</button>
       </div>
 
       <div class="card">
         <div class="card-title" style="justify-content:space-between;">
           <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded">nightlight</span>Thống kê 7 ngày qua</span>
-          <button class="icon-btn" id="btn-edit-sleep-goal" style="width:30px;height:30px;"><span class="material-symbols-rounded" style="font-size:18px;">tune</span></button>
+          <button type="button" class="icon-btn fk-tap-sm" id="btn-edit-sleep-goal" aria-label="Chỉnh mục tiêu giấc ngủ"><span class="material-symbols-rounded" style="font-size:18px;">tune</span></button>
         </div>
         <p class="small-note" id="sleep-goal-label" style="margin:-6px 0 10px;"></p>
         <div style="display:flex;align-items:center;gap:16px;">
@@ -351,18 +393,18 @@
   <!-- ======================= REMINDERS ======================= -->
   <section id="screen-reminders" class="screen">
     <div class="topbar">
-      <button class="icon-btn btn-menu-trigger"><span class="material-symbols-rounded">menu</span></button>
-      <div class="logo">FIT KIT</div>
-      <button class="icon-btn" data-goto="profile"><span class="material-symbols-rounded">account_circle</span></button>
+      <button type="button" class="icon-btn btn-menu-trigger" aria-label="Mở menu"><span class="material-symbols-rounded">menu</span></button>
+      <div class="logo tp-logo brand-swap"><img class="brand-wm on-dark" src="assets/brand/logo-wordmark-light.svg" alt="TapEasy" data-no-fallback onerror="this.onerror=null;this.outerHTML='<span class=&quot;brand-text&quot;>Tap<b>Easy</b></span>'"><img class="brand-wm on-light" src="assets/brand/logo-wordmark-dark.svg" alt="" aria-hidden="true" data-no-fallback onerror="this.onerror=null;this.remove()"></div>
+      <button type="button" class="icon-btn" data-goto="profile" aria-label="Mở hồ sơ của bạn"><span class="material-symbols-rounded">account_circle</span></button>
     </div>
     <div class="content">
       <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;">
           <div>
             <div class="card-title" style="margin-bottom:2px;"><span class="material-symbols-rounded">notifications_active</span>Thông báo nhắc nhở</div>
-            <p class="small-note">Bật để FIT KIT nhắc bạn đúng giờ tập, giờ ăn &amp; giờ ngủ.</p>
+            <p class="small-note">Bật để TapEasy nhắc bạn đúng giờ tập, giờ ăn &amp; giờ ngủ.</p>
           </div>
-          <div class="toggle" id="master-toggle"></div>
+          <div class="toggle" id="master-toggle" role="switch" aria-checked="false" tabindex="0" aria-label="Bật thông báo nhắc nhở"></div>
         </div>
         <p class="small-note" id="notif-permission-note" style="margin-top:10px;color:var(--warn);"></p>
       </div>
@@ -382,13 +424,13 @@
         <div class="link-row">
           <div class="left">
             <span class="material-symbols-rounded">nightlight</span>
-            <div><div class="name">Giờ đi ngủ</div><div class="sub" id="reminder-bedtime-label" data-edit-time="bedtime:bedtime" style="cursor:pointer;text-decoration:underline;">22:30</div></div>
+            <div><div class="name">Giờ đi ngủ</div><div class="sub" id="reminder-bedtime-label" data-edit-time="bedtime:bedtime" role="button" tabindex="0" aria-label="Đổi giờ đi ngủ" style="cursor:pointer;text-decoration:underline;">22:30</div></div>
           </div>
-          <div class="toggle" id="toggle-bedtime"></div>
+          <div class="toggle" id="toggle-bedtime" role="switch" aria-checked="false" tabindex="0" aria-label="Nhắc giờ đi ngủ"></div>
         </div>
       </div>
 
-      <p class="small-note" style="text-align:center;padding:0 12px;">Thông báo hoạt động khi FIT KIT đang mở hoặc khi bạn đã "Thêm vào Màn hình chính" (cài như ứng dụng PWA) trên điện thoại.</p>
+      <p class="small-note" style="text-align:center;padding:0 12px;">Thông báo hoạt động khi TapEasy đang mở hoặc khi bạn đã "Thêm vào Màn hình chính" (cài như ứng dụng PWA) trên điện thoại.</p>
     </div>
   </section>
 
@@ -396,9 +438,9 @@
   <section id="screen-profile" class="screen">
     <div class="content" style="padding-top:24px;">
       <div style="text-align:center;">
-        <div class="avatar-ring"><img id="profile-avatar" src="" alt="avatar"></div>
-        <div class="headline" style="font-size:22px;" id="profile-name">VẬN ĐỘNG VIÊN ELITE</div>
-        <div class="badge-pro" id="profile-badge" style="margin-top:8px;">HẠNG PRO</div>
+        <div class="avatar-ring"><img id="profile-avatar" src="" alt="Ảnh đại diện" width="96" height="96" decoding="async"></div>
+        <div class="headline" style="font-size:22px;" id="profile-name">Bạn</div>
+        <div class="badge-pro" id="profile-badge" style="margin-top:8px;">Thành viên</div>
         <p class="small-note" style="margin-top:8px;" id="profile-sub">Cấp độ 1 · Thành viên mới</p>
       </div>
 
@@ -411,7 +453,7 @@
       <div class="card">
         <div class="card-title" style="justify-content:space-between;">
           <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded">insights</span>Chỉ số năng lượng khoa học</span>
-          <button class="icon-btn" id="btn-edit-targets-profile" style="width:30px;height:30px;"><span class="material-symbols-rounded" style="font-size:18px;">tune</span></button>
+          <button type="button" class="icon-btn fk-tap-sm" id="btn-edit-targets-profile" aria-label="Chỉnh mục tiêu năng lượng"><span class="material-symbols-rounded" style="font-size:18px;">tune</span></button>
         </div>
         <div class="link-row"><div class="left"><span class="material-symbols-rounded">bolt</span><div><div class="name">BMR (Mifflin-St Jeor)</div><div class="sub">Năng lượng tiêu hao khi nghỉ</div></div></div><div class="name" id="profile-bmr">--</div></div>
         <div class="link-row"><div class="left"><span class="material-symbols-rounded">directions_run</span><div><div class="name">TDEE</div><div class="sub">Tổng năng lượng tiêu hao/ngày</div></div></div><div class="name" id="profile-tdee">--</div></div>
@@ -420,11 +462,11 @@
       </div>
 
       <button class="btn btn-outline btn-block" id="btn-edit-profile"><span class="material-symbols-rounded">edit</span>Chỉnh sửa thông tin</button>
-      <button class="btn btn-outline btn-block" id="btn-open-progress"><span class="material-symbols-rounded">photo_camera</span>Ảnh tiến trình &amp; chỉ số InBody</button>
+      <button class="btn btn-outline btn-block" id="btn-open-progress"><span class="material-symbols-rounded">photo_camera</span>Tiến độ: ảnh &amp; chỉ số InBody</button>
       <button class="btn btn-outline btn-block" id="btn-open-drive"><span class="material-symbols-rounded">cloud_sync</span>Đồng bộ Google Drive</button>
 
       <div class="card">
-        <div class="card-title"><span class="material-symbols-rounded">school</span>Cơ sở khoa học của FIT KIT</div>
+        <div class="card-title"><span class="material-symbols-rounded">school</span>Cơ sở khoa học của TapEasy</div>
         <p class="small-note">• Công thức BMR: Mifflin-St Jeor (1990), được ACSM khuyến nghị.<br>
         • Đạm khuyến nghị 1.6–2.2g/kg theo Hiệp hội Dinh dưỡng Thể thao Quốc tế (ISSN, 2017).<br>
         • Chất béo 20–35% tổng năng lượng theo Viện Y học Hoa Kỳ (IOM).<br>
@@ -438,10 +480,10 @@
     </div>
   </section>
 
-  </div><!-- /#app-scroll -->
+  </main><!-- /#app-scroll -->
 
   <!-- ======================= BOTTOM NAV ======================= -->
-  <nav class="bottom-nav">
+  <nav class="bottom-nav" aria-label="Điều hướng chính">
     <button class="nav-item active" data-goto="home"><span class="material-symbols-rounded">home</span>Trang chủ</button>
     <button class="nav-item" data-goto="workout"><span class="material-symbols-rounded">fitness_center</span>Tập luyện</button>
     <button class="nav-item" data-goto="nutrition"><span class="material-symbols-rounded">restaurant</span>Dinh dưỡng</button>
@@ -461,11 +503,13 @@
 <script src="firebase-config.js"></script>
 <script src="media-config.js"></script>
 <script src="cloud.js"></script>
+<script src="rbac.js"></script>          <!-- vòng 3: NGAY SAU cloud.js — phân quyền quản trị (TE_RBAC, teCan); vô hiệu state.isAdmin cũ trước khi app.js nạp state -->
 <script src="data.js"></script>
 <script src="templates.js"></script>
 <script src="exdb.js"></script>
 <script src="app.js"></script>
 <script src="meals.js"></script>
+<script src="meals-extra.js"></script>
 <script src="nutrition.js"></script>
 <script src="freevideos.js"></script>
 <script src="video.js"></script>
@@ -473,5 +517,41 @@
 <script src="coach.js"></script>
 <script src="ptprofile.js"></script>
 <script src="pt.js"></script>
+<!-- ===== Module mở rộng (nạp SAU pt.js — app đã khởi động, module bọc hàm toàn cục) ===== -->
+<script src="ui-kit.js"></script>
+<!-- vòng 2 (ux, QU-01 · fkLazy): dữ liệu lớn KHÔNG chạy lúc mở app — type="text/fk-lazy" là KHAI BÁO (trình duyệt không tải/chạy);
+     fk-lazy.js chèn khi module gọi fkLazy.load('exdbvi'|'kb') hoặc lúc rảnh ~4 s sau "load". Giữ đúng vị trí/thứ tự cũ để
+     tests (nạp mọi src= theo thứ tự), prepare-www.sh (chép + precache), build-single-html.py (nhúng + đăng ký sẵn) vẫn thấy file. -->
+<script type="text/fk-lazy" data-group="exdbvi" src="exdb-vi-1.js"></script>
+<script type="text/fk-lazy" data-group="exdbvi" src="exdb-vi-2.js"></script>
+<script type="text/fk-lazy" data-group="exdbvi" src="exdb-vi-3.js"></script>
+<script src="exdb-vi.js"></script>
+<script src="nutrition-pro.js"></script>
+<script src="training-pro.js"></script>
+<script src="program-builder.js"></script>
+<script src="pt-pro.js"></script>
+<script src="cloud-social.js"></script>   <!-- lớp dữ liệu PT Connect + Cộng đồng (trước 2 module dưới) -->
+<script src="pt-connect.js"></script>
+<script src="community.js"></script>
+<script src="cloud-pt-directory.js"></script>   <!-- vòng 3: lớp dữ liệu Tìm PT (sau cloud-social: bộ lọc từ ngữ) -->
+<script src="findpt.js"></script>               <!-- vòng 3: album PT công khai, lọc, hồ sơ, đánh giá -->
+<script src="achievements.js"></script>
+<script src="cloud-events.js"></script>   <!-- lớp dữ liệu Sự kiện / Gian hàng (cần cloud.js) -->
+<script src="events-media.js"></script>   <!-- vòng 3: ảnh/clip bắt buộc cho sự kiện (TapMedia) — trước events.js -->
+<script src="events.js"></script>         <!-- cần cloud-events.js; dùng FKAch nếu có -->
+<script src="shop-data.js"></script>      <!-- danh mục mặc định của Gian hàng (shop.js tự nạp nếu thiếu) -->
+<script src="shop.js"></script>           <!-- cần events.js -->
+<script type="text/fk-lazy" data-group="kb" src="kb-data-1.js"></script>      <!-- vòng 3: Kho kiến thức — dữ liệu (vòng 2: nạp lười, fkLazy.load('kb')) -->
+<script type="text/fk-lazy" data-group="kb" src="kb-data-2.js"></script>
+<script type="text/fk-lazy" data-group="kb" src="kb-data-3.js"></script>
+<script type="text/fk-lazy" data-group="kb" src="kb-data-4.js"></script>
+<script type="text/fk-lazy" data-group="kb" src="kb-data-5.js"></script>
+<script type="text/fk-lazy" data-group="kb" src="kb-data-6.js"></script>
+<script src="kb.js"></script>
+<script src="cloud-admin.js"></script>    <!-- vòng 3: SAU cloud-events/events/shop/cloud-social/community/findpt/kb — bọc quyền các API đó -->
+<script src="admin.js"></script>          <!-- vòng 3: Bảng quản trị -->
+<script src="theme-packs.js"></script>     <!-- gói giao diện: khúc xạ kính lỏng Espresso (chỉ hiệu ứng, không đổi DOM app) -->
+<script src="ui-signature.js"></script>    <!-- thành phần chữ ký: trượt xác nhận, stepper, gauge, hồ sơ, typewriter — trước health-safety.js -->
+<script src="health-safety.js"></script>   <!-- LUÔN CUỐI: lớp an toàn bọc mọi hàm render/startSession -->
 </body>
 </html>

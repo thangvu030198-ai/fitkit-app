@@ -1,5 +1,5 @@
 /* =========================================================================
-   FIT KIT — Cấu hình Firebase (máy chủ online cho phần PT ↔ Học viên)
+   TapEasy — Cấu hình Firebase (máy chủ online cho phần PT ↔ Học viên)
 
    ĐỂ TRỐNG  → app chạy ở CHẾ ĐỘ DEMO: tài khoản & dữ liệu PT/học viên chỉ
                lưu trên máy này (dùng để thử luồng, không đồng bộ giữa 2 máy).

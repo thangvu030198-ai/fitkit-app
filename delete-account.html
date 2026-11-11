@@ -3,27 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Xoá tài khoản FIT KIT</title>
+<title>Xoá tài khoản TapEasy</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
 <style>
   body{ margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:#061A24; color:#E8F3F1; line-height:1.6; }
   main{ max-width:620px; margin:0 auto; padding:32px 20px 60px; }
-  h1{ font-size:26px; margin:0 0 6px; } h2{ font-size:18px; margin:28px 0 8px; color:#5EE6C7; }
+  h1{ font-size:26px; margin:0 0 6px; } h2{ font-size:18px; margin:28px 0 8px; color:#33D6C9; }
+  .brand-head{ display:block; height:32px; width:auto; margin-bottom:18px; }
   .card{ background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14); border-radius:18px; padding:18px; margin-top:14px; }
   label{ display:block; font-size:13px; margin:10px 0 4px; color:#9FB1B9; }
   input{ width:100%; box-sizing:border-box; height:46px; border-radius:12px; border:1px solid rgba(255,255,255,.2); background:rgba(0,0,0,.25); color:#fff; padding:0 12px; font-size:16px; }
-  button{ height:46px; border:0; border-radius:999px; padding:0 20px; font:600 15px/1 inherit; cursor:pointer; margin-top:12px; }
+  button{ height:46px; border:0; border-radius:999px; padding:0 20px; font-family:inherit; font-size:15px; font-weight:600; line-height:1; cursor:pointer; margin-top:12px; }
   .danger{ background:#FF7A45; color:#fff; } .ghost{ background:rgba(255,255,255,.1); color:#fff; }
-  .muted{ color:#9FB1B9; font-size:14px; } .err{ color:#FFB08A; } .ok{ color:#5EE6C7; }
+  .muted{ color:#9FB1B9; font-size:14px; } .err{ color:#FFB08A; } .ok{ color:#33D6C9; }
   ul{ padding-left:20px; }
 </style>
 </head>
 <body>
 <main>
-  <h1>Xoá tài khoản FIT KIT</h1>
-  <p class="muted">Trang này dành cho người dùng muốn xoá tài khoản và dữ liệu của mình mà không cần mở app.</p>
+  <img class="brand-head" src="assets/brand/logo-wordmark-light.svg" alt="TapEasy" width="137" height="32">
+  <h1>Xoá tài khoản TapEasy</h1>
+  <p class="muted">Trang này dành cho người dùng muốn xoá tài khoản và dữ liệu của mình mà không cần mở app. TapEasy là tên mới của ứng dụng FIT KIT — tài khoản cũ vẫn dùng được và xoá được tại đây.</p>
 
   <h2>Cách 1 — Xoá ngay trong app</h2>
-  <p>Mở FIT KIT → <b>Hồ sơ</b> → <b>Tài khoản</b> → <b>Xoá tài khoản</b> → xác nhận.</p>
+  <p>Mở TapEasy → <b>Hồ sơ</b> → <b>Tài khoản</b> → <b>Xoá tài khoản</b> → xác nhận.</p>
 
   <h2>Cách 2 — Xoá trên trang này</h2>
   <div class="card" id="box">
@@ -41,17 +45,28 @@
 
   <h2>Dữ liệu sẽ bị xoá</h2>
   <ul>
-    <li>Tài khoản đăng nhập (email / Google / Facebook / Apple) và hồ sơ của bạn.</li>
-    <li>Nếu bạn là PT: toàn bộ hồ sơ học viên bạn tạo, buổi tập, ghi chú, mã mời.</li>
-    <li>Nếu bạn là học viên: liên kết của bạn với PT (dữ liệu PT tự quản lý vẫn thuộc PT).</li>
+    <li>Tài khoản đăng nhập (email / Google / Facebook / Apple) và hồ sơ của bạn, số điện thoại liên hệ, ảnh đại diện.</li>
+    <li>Nếu bạn là PT: toàn bộ form học viên bạn tạo (buổi tập, ghi chú, tin nhắn, mã mời, lời mời), niêm yết Tìm PT (album, đánh giá, yêu cầu), hồ sơ xác minh chứng chỉ.</li>
+    <li>Nếu bạn là học viên: liên kết với PT, hồ sơ sức khoẻ (PAR-Q), số đo, ảnh tiến trình, nhật ký tập đã chia sẻ, tin nhắn và ghi chú bạn viết.</li>
+    <li>Cộng đồng: routine bạn đăng, lượt thích / lưu / sao chép, bình luận, báo cáo bạn gửi.</li>
+    <li>Đánh giá PT, review &amp; ảnh/clip "Khoảnh khắc" sự kiện, đăng ký sự kiện (kể cả SĐT và người liên hệ khẩn cấp), điểm thi đua và bảng xếp hạng, TapEasy Points, voucher cá nhân.</li>
+    <li>Yêu cầu hỗ trợ, yêu cầu buổi thử / câu hỏi gửi PT, danh sách người bạn đã chặn.</li>
   </ul>
-  <p class="muted">Việc xoá diễn ra ngay lập tức và không thể khôi phục. Dữ liệu tập luyện chỉ lưu trên điện thoại của bạn sẽ mất khi gỡ app. Bản sao lưu kỹ thuật (nếu có) được xoá tự động trong tối đa 30 ngày.</p>
+  <h2>Dữ liệu được giữ lại (ẩn danh)</h2>
+  <ul>
+    <li><b>Đơn hàng và quà đã gửi</b>: giữ mã đơn, mặt hàng, số tiền, ngày mua để đáp ứng nghĩa vụ kế toán – thuế (tối đa 10 năm), nhưng <b>xoá tên, số điện thoại, địa chỉ, ghi chú</b> và gỡ liên kết với tài khoản.</li>
+    <li>Nhật ký kiểm toán của đội ngũ quản trị (nếu bạn từng là nhân sự): ghi thao tác quản trị, không chứa dữ liệu sức khoẻ.</li>
+  </ul>
+  <p class="muted">Việc xoá diễn ra ngay khi bạn xác nhận và không thể khôi phục. Dữ liệu tập luyện chỉ lưu trên điện thoại của bạn sẽ mất khi gỡ app. Bản sao lưu kỹ thuật (nếu có) được xoá tự động trong tối đa 30 ngày. Nếu bạn đăng nhập bằng Apple, TapEasy đồng thời thu hồi quyền "Đăng nhập với Apple".</p>
+  <p class="muted"><b>Chủ sở hữu ứng dụng</b> phải chuyển nhượng quyền Chủ sở hữu (Quản trị → Đội ngũ) trước khi xoá tài khoản.</p>
 
   <h2>Cần hỗ trợ?</h2>
   <p class="muted">Liên hệ chủ ứng dụng qua email hỗ trợ ghi trong trang Chính sách bảo mật (privacy-policy.html) với tiêu đề "Xoá tài khoản" và email đã đăng ký. Chúng tôi xử lý trong 7 ngày làm việc.</p>
 </main>
 <script src="firebase-config.js"></script>
 <script>
+/* QS-10 / QS-21 / App Store 5.1.1(v): xoá bằng Cloud Function deleteMyAccount (máy chủ chặn Chủ sở hữu, thu hồi token Apple,
+   dọn TOÀN BỘ dữ liệu gắn với tài khoản rồi xoá Auth). Trang KHÔNG tự xoá từng collection. */
 (async function(){
   const st = document.getElementById("status");
   const has = typeof FIREBASE_CONFIG !== "undefined" && FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey;
@@ -60,39 +75,46 @@
   const load = src => new Promise((ok, no)=>{ const s=document.createElement("script"); s.src=src; s.onload=ok; s.onerror=no; document.head.appendChild(s); });
   try{
     await load(`${base}/firebase-app-compat.js`);
-    await Promise.all([load(`${base}/firebase-auth-compat.js`), load(`${base}/firebase-firestore-compat.js`)]);
+    await Promise.all([load(`${base}/firebase-auth-compat.js`), load(`${base}/firebase-functions-compat.js`)]);
   }catch(e){ st.textContent = "Không tải được dịch vụ, kiểm tra mạng rồi thử lại."; return; }
   firebase.initializeApp(FIREBASE_CONFIG);
-  const auth = firebase.auth(), db = firebase.firestore();
+  const auth = firebase.auth();
+  const callDelete = firebase.app().functions("asia-southeast1").httpsCallable("deleteMyAccount");
   st.textContent = "Đăng nhập để xác nhận đúng chủ tài khoản:";
   document.getElementById("form").hidden = false;
   const err = document.getElementById("err");
-  async function wipe(u){
-    if(!confirm("Xoá vĩnh viễn tài khoản " + (u.email||"") + "? Không thể hoàn tác.")) return;
-    const asPT = await db.collection("clients").where("ptId","==",u.uid).get();
-    for(const d of asPT.docs){
-      for(const sub of ["sessions","notes"]){ const q = await d.ref.collection(sub).get(); await Promise.all(q.docs.map(x=>x.ref.delete())); }
-      const c = d.data(); if(c.joinCode) await db.collection("joinCodes").doc(c.joinCode).delete().catch(()=>{});
-      await d.ref.delete();
+  const box = document.getElementById("box");
+  function done(){ box.textContent = ""; const p = document.createElement("p"); p.className = "ok"; p.textContent = "Đã xoá tài khoản và dữ liệu của bạn. Cảm ơn bạn đã dùng TapEasy."; box.appendChild(p); }
+  async function wipe(u, apple){
+    if(!confirm("Xoá vĩnh viễn tài khoản " + (u.email || "") + " và toàn bộ dữ liệu? Không thể hoàn tác.")) { await auth.signOut().catch(()=>{}); return; }
+    try{
+      await callDelete(apple ? { apple } : {});
+    }catch(e){
+      await auth.signOut().catch(()=>{});
+      const code = String(e && e.code || "").replace(/^functions\//, "");
+      if(code === "not-found" || code === "unimplemented") throw new Error("Máy chủ chưa bật chức năng xoá tài khoản. Hãy xoá trong app hoặc liên hệ hỗ trợ.");
+      throw e;                                   // VD: Chủ sở hữu chưa chuyển nhượng, cần xác thực lại — thông báo tiếng Việt từ máy chủ
     }
-    const asSt = await db.collection("clients").where("studentUid","==",u.uid).get();
-    for(const d of asSt.docs) await d.ref.update({ studentUid:null, studentName:null, studentEmail:null });
-    await db.collection("users").doc(u.uid).delete().catch(()=>{});
-    await u.delete();
-    document.getElementById("box").innerHTML = '<p class="ok">Đã xoá tài khoản và dữ liệu của bạn. Cảm ơn bạn đã dùng FIT KIT.</p>';
+    await auth.signOut().catch(()=>{});
+    done();
   }
+  const show = e=>{ err.textContent = "Không xoá được: " + (e && (e.code === "auth/invalid-credential" || e.code === "auth/wrong-password") ? "email hoặc mật khẩu không đúng." : (e && e.message) || "đã có lỗi."); };
   document.getElementById("go").onclick = async ()=>{
     err.textContent = "";
-    try{ const c = await auth.signInWithEmailAndPassword(document.getElementById("em").value.trim(), document.getElementById("pw").value); await wipe(c.user); }
-    catch(e){ err.textContent = "Không xoá được: " + (e.code==="auth/invalid-credential"||e.code==="auth/wrong-password" ? "email hoặc mật khẩu không đúng." : e.message); }
+    try{ const c = await auth.signInWithEmailAndPassword(document.getElementById("em").value.trim(), document.getElementById("pw").value); await wipe(c.user, null); }
+    catch(e){ show(e); }
   };
-  const viaPopup = mk => async ()=>{
+  const viaPopup = (mk, isApple) => async ()=>{
     err.textContent = "";
-    try{ const c = await auth.signInWithPopup(mk()); await wipe(c.user); }
-    catch(e){ err.textContent = "Không xoá được: " + e.message; }
+    try{
+      const c = await auth.signInWithPopup(mk());
+      // Apple: accessToken của lần đăng nhập này → máy chủ thu hồi token Sign in with Apple (App Store 5.1.1(v))
+      const apple = isApple ? { accessToken: (c && c.credential && c.credential.accessToken) || null, platform: "web" } : null;
+      await wipe(c.user, apple && apple.accessToken ? apple : null);
+    }catch(e){ show(e); }
   };
   document.getElementById("gg").onclick = viaPopup(()=> new firebase.auth.GoogleAuthProvider());
-  document.getElementById("ap").onclick = viaPopup(()=>{ const p = new firebase.auth.OAuthProvider("apple.com"); p.addScope("email"); return p; });
+  document.getElementById("ap").onclick = viaPopup(()=>{ const p = new firebase.auth.OAuthProvider("apple.com"); p.addScope("email"); return p; }, true);
   document.getElementById("fb").onclick = viaPopup(()=> new firebase.auth.FacebookAuthProvider());
 })();
 </script>

@@ -1,0 +1,48 @@
+// TapEasy — Firebase Storage Security Rules (vòng tích hợp 3 · 11/2026)
+// Ảnh/clip sự kiện, thử thách, "Khoảnh khắc" (events-media.js — docs/INTEGRATION-events-shop.md §10.4).
+// Triển khai: firebase deploy --only storage   (firebase.json → "storage": { "rules": "storage.rules" })
+// Quyền ghi của ban tổ chức / kiểm duyệt lấy từ custom claim `role` do Cloud Function setRole cấp (docs/RBAC.md)
+// VÀ phải khớp roles/{uid} hiện tại (giống staffFresh() trong firestore.rules) → thu hồi vai trò có hiệu lực ngay.
+// Cơ chế cũ admins/{uid} KHÔNG còn cấp quyền (đồng bộ firestore.rules vòng 3).
+// Xoá tài khoản: Cloud Function cleanupDeletedUser xoá media/moments/*/{uid}/* của người dùng (QS-10).
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() { return request.auth != null; }
+    function role() { return signedIn() ? request.auth.token.get('role', '') : ''; }
+    function px() { return signedIn() ? request.auth.token.get('px', []) : []; }
+    // QS-13 (vòng sửa bảo mật): khớp cả quyền lẻ px và cờ suspended (banUser treo vai trò) → khoá / thu hồi có hiệu lực ngay;
+    // QS-05: phiên xác thực ≤ 12 giờ như firestore.rules hasPerm(). (1 tài liệu Firestore / lần kiểm — trong giới hạn của Storage)
+    function fresh() {
+      return firestore.exists(/databases/(default)/documents/roles/$(request.auth.uid))
+        && firestore.get(/databases/(default)/documents/roles/$(request.auth.uid)).data.role == role()
+        && firestore.get(/databases/(default)/documents/roles/$(request.auth.uid)).data.get('px', []) == px()
+        && firestore.get(/databases/(default)/documents/roles/$(request.auth.uid)).data.get('suspended', false) == false
+        && request.time.toMillis() / 1000 - request.auth.token.get('auth_time', 0) < 43200
+        && (!firestore.exists(/databases/(default)/documents/bans/$(request.auth.uid))
+            || firestore.get(/databases/(default)/documents/bans/$(request.auth.uid)).data.get('liftedAt', null) != null);
+    }
+    // = vai trò có events.manage / challenges.manage trong ma trận rbac.js (không bị bớt bằng px "-events.manage")
+    function evStaff() {
+      return signedIn() && role() in ['owner', 'super_admin', 'admin', 'event_manager']
+        && (role() == 'owner' || !('-events.manage' in px())) && fresh();
+    }
+    // = vai trò có community.moderate hoặc reviews.moderate
+    function mod() {
+      return signedIn() && role() in ['owner', 'super_admin', 'admin', 'content_manager', 'moderator', 'pt_manager'] && fresh();
+    }
+    function isImg() { return request.resource.contentType.matches('image/(jpeg|webp|png)'); }
+    function isVid() { return request.resource.contentType.matches('video/(mp4|webm|quicktime)'); }
+    function okFile() { return (isImg() && request.resource.size < 3 * 1024 * 1024) || (isVid() && request.resource.size <= 25 * 1024 * 1024); }
+
+    match /media/events/{evId}/{rest=**}     { allow read: if true; allow create, update: if evStaff() && okFile(); allow delete: if evStaff(); }
+    match /media/challenges/{chId}/{rest=**} { allow read: if true; allow create, update: if evStaff() && okFile(); allow delete: if evStaff(); }
+    match /media/moments/{evId}/{uid}/{file} {
+      allow read: if true;
+      allow create: if signedIn() && request.auth.uid == uid && okFile()
+        && firestore.get(/databases/(default)/documents/events/$(evId)/regs/$(uid)).data.status == 'checked_in';
+      allow delete: if signedIn() && (request.auth.uid == uid || mod());
+    }
+    match /{all=**} { allow read, write: if false; }
+  }
+}

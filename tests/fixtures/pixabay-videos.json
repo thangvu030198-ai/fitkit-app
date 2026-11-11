@@ -1,0 +1,12 @@
+{
+ "total": 2, "totalHits": 2,
+ "hits": [
+  { "id": 101, "pageURL": "https://pixabay.com/videos/id-101/", "tags": "walking, people, park, exercise", "duration": 12,
+    "videos": { "large": { "url": "", "width": 0, "height": 0 }, "medium": { "url": "https://cdn.pixabay.com/video/101-medium.mp4", "width": 1280, "height": 720, "thumbnail": "https://cdn.pixabay.com/video/101-thumb.jpg" },
+                "small": { "url": "https://cdn.pixabay.com/video/101-small.mp4", "width": 960, "height": 540 }, "tiny": { "url": "https://cdn.pixabay.com/video/101-tiny.mp4", "width": 640, "height": 360 } },
+    "user_id": 1, "user": "tester" },
+  { "id": 102, "pageURL": "https://pixabay.com/videos/id-102/", "tags": "walking, city", "duration": 8,
+    "videos": { "large": { "url": "", "width": 0, "height": 0 }, "medium": { "url": "", "width": 0, "height": 0 }, "small": { "url": "", "width": 0, "height": 0 }, "tiny": { "url": "", "width": 0, "height": 0 } },
+    "user_id": 2, "user": "tester2" }
+ ]
+}

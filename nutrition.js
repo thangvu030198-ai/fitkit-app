@@ -1,5 +1,5 @@
 /* =========================================================================
-   FIT KIT — Màn Dinh dưỡng v2 (thiết kế lại)
+   TapEasy — Màn Dinh dưỡng v2 (thiết kế lại)
    - Đồng hồ calo dạng cung phân đoạn, số calo đếm tăng
    - Thanh macro (đạm / tinh bột / béo) so với mục tiêu
    - Thẻ bữa ăn: ảnh món (emoji), giờ ăn, kcal lớn + % mục tiêu, macro
@@ -44,8 +44,29 @@ function recipeMatchesTag(r, tag){
 /* ---- Ảnh thật đã tách nền (media/food, phát qua jsDelivr). Chưa có ảnh → dùng emoji ---- */
 const FOOD_IMG_BASE = "https://thangvu030198-ai.github.io/fitkit-app/media/food/";
 let FOOD_IMG = {};
+/* QN-13: ảnh Pixabay tự chọn bị SAI món (đã duyệt tay 11/2026: món chay hiện thịt/trứng, đậu đen/whey hiện cà phê, gỏi cuốn hiện
+   chả giò chiên, cơm cá ngừ hiện sashimi sống…) → bỏ ánh xạ, hiện emoji. Khoá = id món → mã ảnh Pixabay (px) sai: khi chạy lại
+   media-food.yml với từ khoá mới (scripts/food_sources.json) thì px đổi và ảnh mới tự hiện, không cần sửa lại danh sách này. */
+const FOOD_IMG_BAD = {
+  "dau-hu-trung-hap":916629, "dau-den-bowl":5181831, "quinoa-edamame":1334632, "dau-hu-nam-af":1832922, "quinoa":1334632,
+  "dau-den":2714970, "whey":5959810, "sua-chua-hy-lap":1468416, "pho-mai":7580676, "duong-trang":2697904, "rau-thom":1239422,
+  "banh-cuon-dia":2853382, "ca-ngu-com":354628, "goi-cuon":845676, "xoi-man":2208517, "mi-quang-to":1191945, "tom-bap":1329684,
+  "dui-ga-mat-ong-af":823614, "bia":1679022, "trung-ga":3255115, "muc":1261432, "muc-hap-gung":1261432,
+  "banh-trang":3506194, "dua-hau":846357, "ca-basa":4028046,
+};
+function nuCleanImgIndex(idx){
+  const out = {};
+  if(!idx || typeof idx !== "object") return out;
+  Object.keys(idx).forEach(id=>{
+    const e = idx[id];
+    if(!e || typeof e.file !== "string" || !/^[a-z0-9-]+\.(webp|png|jpe?g)$/i.test(e.file)) return;      // chỉ nhận tên file an toàn
+    if(FOOD_IMG_BAD[id] != null && Number(e.px) === FOOD_IMG_BAD[id]) return;
+    out[id] = e;
+  });
+  return out;
+}
 (async ()=>{
-  try{ const r = await fetch(FOOD_IMG_BASE + "index.json"); if(r.ok){ FOOD_IMG = await r.json(); if(typeof renderNutritionScreen==="function" && $("#screen-nutrition.active")) renderNutritionScreen(); } }catch(e){}
+  try{ const r = await fetch(FOOD_IMG_BASE + "index.json"); if(r.ok){ FOOD_IMG = nuCleanImgIndex(await r.json()); if(typeof renderNutritionScreen==="function" && $("#screen-nutrition.active")) renderNutritionScreen(); } }catch(e){}
 })();
 function foodIdOf(idOrName){ if(FOODS.some(f=>f.id===idOrName)) return idOrName; const f = FOODS.find(f=>f.name===idOrName); return f ? f.id : ""; }
 function foodPic(idOrName, cls="fp"){
@@ -69,6 +90,121 @@ function recipeMacros(r){
 }
 
 let nuUI = { tag:"all", open:{} };
+
+/* =====================================================================
+   Vòng 2 (11/11/2026) — "ẨN SỐ CALO" cho người có tiền sử rối loạn ăn uống (RLĂU)
+   state.nutriPro.hideKcal = true/false khi người dùng tự chọn. Chưa chọn → BẬT nếu sàng lọc sức khoẻ khai "Có" tiền sử RLĂU.
+   Khi bật: màn Dinh dưỡng / thực đơn / thêm món / chi tiết món không hiện kcal, đồng hồ calo, "Còn … kcal", biểu đồ calo 7 ngày;
+   thay bằng "Đĩa ăn cân bằng" — khẩu phần theo bàn tay (lòng bàn tay đạm ≈ 25 g đạm, nắm tay khum tinh bột ≈ 30 g,
+   ngón cái chất béo ≈ 10 g, nắm tay rau/trái cây ≈ 80 g — WHO ≥ 5 phần/ngày) + bữa đã ghi. Không tô đỏ "vượt".
+   ===================================================================== */
+function nuHideKcal(){
+  try{
+    const s = state.nutriPro;
+    if(s && typeof s.hideKcal === "boolean") return s.hideKcal;
+    const h = state.health;
+    return !!(h && h.completedAt && h.edHistory === "yes");
+  }catch(e){ return false; }
+}
+function nuSetHideKcal(on){
+  if(!state.nutriPro || typeof state.nutriPro !== "object") state.nutriPro = {};
+  state.nutriPro.hideKcal = !!on;
+  nuUI.shownKcal = undefined;
+  saveState();
+  try{
+    const cur = (document.querySelector(".screen.active") || {}).id || "";
+    if(cur === "screen-nutrition") renderNutritionScreen();
+    else if(cur === "screen-home" && typeof renderHomeScreen === "function") renderHomeScreen();
+    else if(cur === "screen-profile" && typeof renderProfileScreen === "function") renderProfileScreen();   // integrator: thẻ năng lượng Hồ sơ (app.js fkHideKcal)
+  }catch(e){}
+  toast(on ? "Đã ẩn số calo — hiển thị khẩu phần & đĩa ăn cân bằng" : "Đã hiện lại số calo", on ? "visibility_off" : "visibility");
+}
+const NU_PORTION = { p:25, c:30, f:10, v:80 };
+const nuHalf = x => Math.round((Number(x) || 0)*2)/2;
+const nuWhyBtn = g => `<button type="button" class="nu-why" data-nu-why="protein" aria-label="Vì sao đạm ${escapeHtml(g)} g?"><span class="material-symbols-rounded">info</span></button>`;
+/* Thẻ "Đĩa ăn cân bằng" (thay đồng hồ calo khi ẩn số calo) */
+function nuPlateCardHTML(log, tot, p){
+  let T = null; try{ T = NutriPro.targets(p); }catch(e){}
+  T = T || { P: Number(p.protein) || 100, C: Number(p.carbs) || 250, F: Number(p.fat) || 60 };
+  let veg = null; try{ veg = NutriPro.ui.vegFruitGrams(log); }catch(e){}
+  const rows = [
+    { cls:"v", label:"Rau & trái cây", unit:"nắm tay", done: veg == null ? null : nuHalf(veg/NU_PORTION.v), tgt: 5 },
+    { cls:"p", label:"Đạm", unit:"lòng bàn tay", done: nuHalf(tot.protein/NU_PORTION.p), tgt: Math.max(2, Math.round(T.P/NU_PORTION.p)), why: T.P },
+    { cls:"c", label:"Tinh bột", unit:"nắm tay khum", done: nuHalf(tot.carbs/NU_PORTION.c), tgt: Math.max(2, Math.round(T.C/NU_PORTION.c)) },
+    { cls:"f", label:"Chất béo tốt", unit:"ngón cái", done: nuHalf(tot.fat/NU_PORTION.f), tgt: Math.max(2, Math.round(T.F/NU_PORTION.f)) },
+  ];
+  const fr = r => r.done == null ? 0 : Math.min(1, r.done / r.tgt);
+  const op = r => (0.24 + 0.76*fr(r)).toFixed(2);
+  const meals = MEAL_TYPES.map(mt=> ({ l: mt.label, on: ((log[mt.id] || []).length > 0) }));
+  return `
+    <div class="nu-gauge-card nu-plate" role="group" aria-label="Đĩa ăn cân bằng hôm nay">
+      <div class="nu-plate-top">
+        <svg viewBox="0 0 120 120" class="nu-plate-svg" aria-hidden="true">
+          <circle cx="60" cy="60" r="57" class="rim"/>
+          <path d="M60 60 L60 10 A50 50 0 0 0 60 110 Z" class="seg v" style="opacity:${op(rows[0])}"/>
+          <path d="M60 60 L60 10 A50 50 0 0 1 110 60 Z" class="seg p" style="opacity:${op(rows[1])}"/>
+          <path d="M60 60 L110 60 A50 50 0 0 1 60 110 Z" class="seg c" style="opacity:${op(rows[2])}"/>
+          <circle cx="106" cy="106" r="9" class="seg f" style="opacity:${op(rows[3])}"/>
+        </svg>
+        <div class="nu-plate-txt"><b>Đĩa ăn cân bằng</b><small>½ đĩa rau &amp; trái cây · ¼ đạm · ¼ tinh bột · thêm chút chất béo tốt. Ăn đều các bữa — không cần đếm calo.</small></div>
+      </div>
+      <div class="nu-plate-rows">${rows.map(r=>`
+        <div class="nu-pr ${r.cls}"><i aria-hidden="true"></i><span class="nu-pr-l"><b>${r.label}</b><small>${r.unit}</small></span>
+          <span class="nu-pr-v">${r.done == null ? "—" : `${escapeHtml(nuVN(r.done))} / ${escapeHtml(r.tgt)}`} phần</span>${r.why != null ? nuWhyBtn(r.why) : ""}
+          <span class="nu-bar"><i style="width:${Math.round(fr(r)*100)}%"></i></span></div>`).join("")}
+      </div>
+      <div class="nu-plate-meals" aria-label="Bữa đã ghi hôm nay">${meals.map(m=>`<span class="${m.on ? "on" : ""}">${m.on ? "✓ " : ""}${m.l}</span>`).join("")}</div>
+      <div class="nu-plate-foot"><span>Số calo đang được ẩn theo lựa chọn của bạn.</span><button type="button" class="hs-link nu-kcal-toggle" data-nu-kcal="show">Hiện số calo</button></div>
+    </div>`;
+}
+
+/* QU-03 (vòng 2): "Món healthy" (~100 thẻ ≈ 1.200 nút DOM) — vẽ 12 thẻ đầu, phần còn lại thêm dần lúc rảnh; bấm qua uỷ quyền 1 lần */
+const NU_RC_FIRST = 12, NU_RC_CHUNK = 24;
+let _nuRcSeq = 0;
+function nuIdle(fn){
+  try{ if(typeof requestIdleCallback === "function") return requestIdleCallback(()=> fn(), { timeout: 800 }); }catch(e){}
+  return setTimeout(fn, 40);
+}
+function nuRecipeList(hk){
+  if(hk && nuUI.tag === "giam-mo") nuUI.tag = "all";
+  return RECIPES.filter(r=> recipeMatchesTag(r, nuUI.tag));
+}
+function nuRecipeCardHTML(r, i, hk){
+  const m = recipeMacros(r);
+  return `
+        <div class="nu-recipe" data-recipe="${escapeHtml(r.id)}" style="--i:${Math.min(i, 12)}" role="button" tabindex="0" data-fk-key>
+          <div class="nu-recipe-top"><span class="time"><span class="material-symbols-rounded">schedule</span>${escapeHtml(r.min)} phút</span><span class="cz">${r.cuisine==="vn"?"Việt":"Âu"}</span></div>
+          <div class="nu-bowl">${foodPic(r.id)}</div>
+          <div class="nu-method">${(COOK_METHODS[r.method] || {}).label || ""}</div>
+          <div class="nu-recipe-name">${escapeHtml(r.name)}</div>
+          <div class="nu-recipe-foot">
+            <span class="lvl">${["Dễ","Vừa","Khó"][r.level-1] || ""}<i class="${r.level>=1?'on':''}"></i><i class="${r.level>=2?'on':''}"></i><i class="${r.level>=3?'on':''}"></i></span>
+            ${hk ? "" : `<b>${m.kcal.toLocaleString("vi-VN")} kcal</b>`}
+          </div>
+        </div>`;
+}
+function nuRecipesMore(list, from, hk){
+  const seq = ++_nuRcSeq;
+  const step = ()=>{
+    if(seq !== _nuRcSeq) return;
+    const box = document.getElementById("nu-recipes");
+    if(!box || typeof box.insertAdjacentHTML !== "function") return;
+    const end = Math.min(list.length, from + NU_RC_CHUNK);
+    box.insertAdjacentHTML("beforeend", list.slice(from, end).map((r, k)=> nuRecipeCardHTML(r, from + k, hk)).join(""));
+    from = end;
+    if(from < list.length) nuIdle(step);
+  };
+  if(from < list.length) nuIdle(step);
+}
+function nuRefreshRecipes(){
+  const box = document.getElementById("nu-recipes");
+  if(!box || !box.parentNode){ renderNutritionScreen(); return; }
+  const hk = nuHideKcal(), list = nuRecipeList(hk);
+  box.innerHTML = list.slice(0, NU_RC_FIRST).map((r, i)=> nuRecipeCardHTML(r, i, hk)).join("") || `<p class="empty-hint">Chưa có món phù hợp.</p>`;
+  box.scrollLeft = 0;
+  $$("#nu-content [data-tag]").forEach(b=>{ const on = b.dataset.tag === nuUI.tag; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+  nuRecipesMore(list, NU_RC_FIRST, hk);
+}
 
 /* ---- Khung màn hình (thay phần HTML tĩnh cũ) ---- */
 (function mountNutrition(){
@@ -100,12 +236,168 @@ function nuGaugeSVG(pct){
   return `<svg viewBox="0 0 300 160" class="nu-gauge-svg">${out}</svg>`;
 }
 
-function nuCountUp(el, target, dur=1200){
-  const t0 = performance.now();
-  const step = now=>{ const t = Math.min(1,(now-t0)/dur), v = 1-Math.pow(1-t,3); el.textContent = Math.round(target*v).toLocaleString("vi-VN"); if(t<1) requestAnimationFrame(step); };
-  requestAnimationFrame(step);
-  setTimeout(()=> el.textContent = Math.round(target).toLocaleString("vi-VN"), dur+200);
+/* QN-20: số kiểu Việt (0,25 thay vì 0.25) */
+function nuVN(n, d){ const x = Number(n) || 0; return x.toLocaleString("vi-VN", { maximumFractionDigits: d == null ? 1 : d }); }
+/* QN-06: nước lưu theo LÍT với 3 chữ số (= mililit) — không làm tròn 0,1 L sau mỗi lần cộng; chỉ làm tròn khi hiển thị */
+function nuMl(L){ return Math.round((Number(L) || 0) * 1000) / 1000; }
+/* QN-07: mục tiêu nước dùng chung với app.js (waterTargetL: 35 ml × cân nặng điều chỉnh, kẹp 1,5–3,7 L, + thai kỳ T2–T3 / cho bú;
+   đang lọc máu → null = không đặt chỉ tiêu). Dự phòng khi app.js cũ chưa có hàm này. */
+function nuWaterGoal(p){
+  p = p || state.profile || {};
+  if(typeof waterTargetL === "function"){ try{ return waterTargetL(p); }catch(e){} }
+  let f = null; try{ f = typeof FKHealth !== "undefined" && FKHealth.current ? FKHealth.current() : null; }catch(e){}
+  if(f && f.screened && f.fluidLimit) return null;
+  const ov = p.waterTargetOverride == null ? NaN : Number(p.waterTargetOverride);
+  if(Number.isFinite(ov) && ov > 0) return fmt1(Math.min(6, Math.max(0.5, ov)));
+  const h = (Number(p.height) || 0)/100, w = Number(p.weight) || 65, cap = h ? 25*h*h : w;
+  const ref = w > cap ? cap + 0.25*(w - cap) : w;
+  return fmt1(Math.min(3.7, Math.max(1.5, ref * 0.035)) + (f && f.screened ? (f.waterExtra || 0) : 0));
 }
+
+/* QN-21: đồng hồ calo chỉ "đếm" khi số calo ĐỔI (từ số đang hiện → số mới), không đếm lại từ 0 sau mỗi chạm */
+function nuCountUp(el, target, dur=900){
+  if(!el) return;
+  target = Math.round(Number(target) || 0);
+  const from = Number.isFinite(nuUI.shownKcal) ? nuUI.shownKcal : 0;
+  nuUI.shownKcal = target;
+  const reduce = (()=>{ try{ return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } })();
+  if(from === target || reduce || typeof requestAnimationFrame !== "function"){ el.textContent = target.toLocaleString("vi-VN"); return; }
+  const t0 = performance.now();
+  const step = now=>{ const t = Math.min(1,(now-t0)/dur), v = 1-Math.pow(1-t,3); el.textContent = Math.round(from + (target-from)*v).toLocaleString("vi-VN"); if(t<1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+  setTimeout(()=>{ if(nuUI.shownKcal === target) el.textContent = target.toLocaleString("vi-VN"); }, dur+200);
+}
+
+/* ---- Thẻ 1 bữa ăn (QN-21: vẽ lại riêng thẻ khi mở/đóng chi tiết) ---- */
+function nuMealCardHTML(mt, log, goal){
+  const items = log[mt.id] || [];
+  const mk = items.reduce((s,i)=>s+(Number(i.kcal)||0),0);
+  const mp = items.reduce((s,i)=>s+(Number(i.protein)||0),0), mc = items.reduce((s,i)=>s+(Number(i.carbs)||0),0), mf = items.reduce((s,i)=>s+(Number(i.fat)||0),0);
+  const time = state.reminders.meal[mt.id].time;
+  const open = !!nuUI.open[mt.id];
+  const thumbs = items.slice(0,3).map(it=> it.recipe ? foodPic(it.recipe) : foodPic(it.name));
+  const hk = nuHideKcal();                                   // vòng 2: ẩn số calo → số món + khẩu phần thay cho kcal / gam macro
+  const por = (g, per)=> `${escapeHtml(nuVN(nuHalf(g/per)))} phần`;
+  return `
+      <div class="nu-meal" data-meal="${escapeHtml(mt.id)}" style="--tint:${MEAL_TINT[mt.id]}">
+        <div class="nu-meal-head" data-toggle-meal="${escapeHtml(mt.id)}">
+          <div class="nu-thumb">${thumbs.length ? thumbs.map((e,i)=>`<span style="--k:${i}">${e}</span>`).join("") : `<span class="solo">${MEAL_EMOJI[mt.id]}</span>`}</div>
+          <div class="nu-meal-name"><b>${mt.label}</b><small data-edit-time="meal:${escapeHtml(mt.id)}">${escapeHtml(time)} · đổi giờ</small></div>
+          <div class="nu-meal-kcal">${hk ? `<b>${items.length ? `${items.length} món` : "—"}</b><small>${items.length ? "đã ghi" : "chưa ghi"}</small>` : `<b>${Math.round(mk).toLocaleString("vi-VN")} kcal</b><small>${Math.round(mk/goal*100)}% mục tiêu</small>`}</div>
+        </div>
+        <div class="nu-meal-macros">
+          <div><small>Đạm</small><b>${hk ? por(mp, NU_PORTION.p) : Math.round(mp)+"g"}</b></div>
+          <div><small>Tinh bột</small><b>${hk ? por(mc, NU_PORTION.c) : Math.round(mc)+"g"}</b></div>
+          <div><small>Béo</small><b>${hk ? por(mf, NU_PORTION.f) : Math.round(mf)+"g"}</b></div>
+          <button class="nu-mini" data-add-meal="${escapeHtml(mt.id)}" aria-label="Thêm món vào ${mt.label.toLowerCase()}"><span class="material-symbols-rounded">add</span></button>
+          ${items.length ? `<button class="nu-mini ghost" data-toggle-meal="${escapeHtml(mt.id)}" aria-expanded="${open}" aria-label="${open ? "Ẩn" : "Xem"} chi tiết ${mt.label.toLowerCase()}"><span class="material-symbols-rounded" style="transform:rotate(${open?-90:90}deg)">chevron_right</span></button>` : ""}
+        </div>
+        ${open && items.length ? `<div class="nu-items">${items.map((it,i)=>`
+          <div class="nu-item"><span class="e">${foodPic(it.name)}</span><div class="t"><b>${escapeHtml(it.name)}</b><small>${escapeHtml(nuVN(it.grams,0))} g${hk ? "" : ` · đạm ${escapeHtml(nuVN(it.protein))} · tinh bột ${escapeHtml(nuVN(it.carbs))} · béo ${escapeHtml(nuVN(it.fat))}`}</small></div>${hk ? "" : `<b class="k">${escapeHtml(Math.round(Number(it.kcal)||0))}</b>`}
+          <button class="nu-del" data-del-food="${escapeHtml(mt.id)}:${i}" aria-label="Xoá ${escapeHtml(it.name)}"><span class="material-symbols-rounded">close</span></button></div>`).join("")}</div>` : ""}
+        ${!items.length ? `<p class="nu-empty">Chưa có món — chạm <b>+</b> để thêm, hoặc chọn từ thực đơn gợi ý bên dưới.</p>` : ""}
+      </div>`;
+}
+function nuBindMealCard(card){
+  $$("[data-add-meal]", card).forEach(b=> b.addEventListener("click", e=>{ e.stopPropagation(); openAddFood(b.dataset.addMeal); }));
+  $$("[data-toggle-meal]", card).forEach(b=> b.addEventListener("click", e=>{
+    if(e.target.closest("[data-edit-time]") || e.target.closest("[data-add-meal]")) return;
+    e.stopPropagation();
+    const id = b.dataset.toggleMeal; nuUI.open[id] = !nuUI.open[id]; nuRefreshMeal(id);
+  }));
+  $$("[data-edit-time]", card).forEach(t=> t.addEventListener("click", e=>{ e.stopPropagation(); openEditReminderTime(...t.dataset.editTime.split(":")); }));
+  $$("[data-del-food]", card).forEach(b=> b.addEventListener("click", e=>{
+    e.stopPropagation();
+    const [mealId, i] = b.dataset.delFood.split(":");
+    nuDeleteFood(mealId, Number(i));
+  }));
+}
+/* Thay 1 nút cũ trong #nu-content bằng HTML mới (không vẽ lại cả màn ~2.000 nút). Không làm được (DOM giả / chưa vẽ) → vẽ lại cả màn. */
+function nuSwapBlock(old, html, bind){
+  if(!old || typeof old.replaceWith !== "function" || !old.parentNode){ renderNutritionScreen(); return null; }
+  const tmp = document.createElement("div"); tmp.innerHTML = html;
+  const fresh = tmp.firstElementChild;
+  if(!fresh){ renderNutritionScreen(); return null; }
+  old.replaceWith(fresh); bind(fresh);
+  return fresh;
+}
+function nuRefreshMeal(id){
+  const mt = MEAL_TYPES.find(m=> m.id === id); if(!mt) return;
+  const old = document.querySelector(`#nu-content .nu-meal[data-meal="${id}"]`);
+  nuSwapBlock(old, nuMealCardHTML(mt, getDayFoodLog(), state.profile.goalKcal || 2000), nuBindMealCard);
+}
+
+/* QN-14: xoá 1 món → hiện thanh "Hoàn tác" 5 giây (trước đây xoá 1 chạm, không lấy lại được) */
+let _nuUndo = null;
+function nuUndoBar(msg, onUndo, ms){
+  ms = ms || 5000;
+  try{
+    if(_nuUndo){ clearTimeout(_nuUndo.t); if(_nuUndo.el && _nuUndo.el.remove) _nuUndo.el.remove(); _nuUndo = null; }
+    const el = document.createElement("div");
+    el.className = "nu-undo"; el.setAttribute("role", "status"); el.setAttribute("aria-live", "polite");
+    el.innerHTML = `<span class="material-symbols-rounded">delete</span><span class="nu-undo-t">${escapeHtml(msg)}</span><button type="button" class="nu-undo-b">Hoàn tác</button>`;
+    document.body.appendChild(el);
+    const close = ()=>{ if(!_nuUndo || _nuUndo.el !== el) return; clearTimeout(_nuUndo.t); _nuUndo = null; el.classList.remove("show"); setTimeout(()=>{ if(el.remove) el.remove(); }, 260); };
+    const btn = el.querySelector ? el.querySelector(".nu-undo-b") : null;
+    if(btn) btn.addEventListener("click", ()=>{ close(); onUndo(); });
+    _nuUndo = { el, t: setTimeout(close, ms), undo: ()=>{ close(); onUndo(); } };
+    if(typeof requestAnimationFrame === "function") requestAnimationFrame(()=> el.classList.add("show")); else el.classList.add("show");
+  }catch(e){ toast(msg, "delete"); }
+}
+function nuDeleteFood(mealId, i){
+  const day = todayStr();
+  const L = getDayFoodLog(day)[mealId];
+  if(!L || !L[i]) return;
+  const [removed] = L.splice(i, 1);
+  saveState(); renderNutritionScreen();
+  nuUndoBar(`Đã xoá ${removed.name}`, ()=>{
+    const LL = getDayFoodLog(day)[mealId];
+    LL.splice(Math.min(i, LL.length), 0, removed);
+    nuUI.open[mealId] = true; saveState(); renderNutritionScreen();
+    toast(`Đã khôi phục ${removed.name}`, "undo");
+  });
+}
+
+/* ---- Khối nước uống (QN-06/07/20/21) ---- */
+function nuWaterHTML(){
+  const p = state.profile;
+  const water = Number(state.waterLog[todayStr()]) || 0;
+  const goal = nuWaterGoal(p);
+  const btns = `<div class="nu-water-btns"><button data-w="0.25">+250 ml</button><button data-w="0.5">+500 ml</button><button data-w="reset">Đặt lại</button></div>`;
+  const edit = `<button class="icon-btn nu-water-edit" id="nu-water-edit" aria-label="Đặt mục tiêu nước uống"><span class="material-symbols-rounded">tune</span></button>`;
+  if(goal == null) return `
+    <div class="nu-water" id="nu-water">
+      <div class="nu-water-head"><div><b>Nước uống</b><small>${escapeHtml(nuVN(water, 2))} L hôm nay</small></div>${edit}</div>
+      <p class="nu-water-note">Bạn đang lọc máu nên app <b>không đặt mục tiêu nước</b> — lượng dịch mỗi ngày theo chỉ định của bác sĩ thận (tính cả canh, sữa, trái cây mọng nước). Vẫn có thể ghi lại để đối chiếu.</p>
+      ${btns}
+    </div>`;
+  const cups = 8, cupSize = goal/cups, cupsDone = Math.min(cups, Math.round(water/cupSize + 1e-9));
+  return `
+    <div class="nu-water" id="nu-water">
+      <div class="nu-water-head">
+        <div><b>Nước uống</b><small>${escapeHtml(nuVN(water, 2))} / ${escapeHtml(nuVN(goal, 1))} L</small></div>${edit}
+      </div>
+      <div class="nu-cups">${Array.from({length:cups},(_,i)=>`<button class="cup ${i<cupsDone?'on':''}" data-cup="${i}" aria-pressed="${i<cupsDone}" aria-label="Ly ${i+1} (${Math.round(cupSize*1000)} ml)"><span class="material-symbols-rounded">water_drop</span></button>`).join("")}</div>
+      ${btns}
+    </div>`;
+}
+function nuBindWater(box){
+  const ed = $$("#nu-water-edit", box)[0] || $("#nu-water-edit");
+  if(ed) ed.addEventListener("click", openEditWaterTarget);
+  $$("[data-cup]", box).forEach(b=> b.addEventListener("click", ()=>{
+    const k = todayStr(), goal = nuWaterGoal(state.profile); if(!goal) return;
+    const cupSize = goal/8, i = Number(b.dataset.cup);
+    const done = Math.min(8, Math.round((Number(state.waterLog[k])||0)/cupSize + 1e-9));
+    state.waterLog[k] = nuMl((i < done && i === done-1 ? i : i+1) * cupSize);
+    saveState(); nuRefreshWater();
+  }));
+  $$("[data-w]", box).forEach(b=> b.addEventListener("click", ()=>{
+    const k = todayStr();
+    state.waterLog[k] = b.dataset.w==="reset" ? 0 : nuMl((Number(state.waterLog[k])||0) + Number(b.dataset.w));
+    saveState(); nuRefreshWater();
+  }));
+}
+function nuRefreshWater(){ nuSwapBlock(document.getElementById("nu-water"), nuWaterHTML(), nuBindWater); }
 
 renderNutritionScreen = function(){
   ensureReminderDefaults();
@@ -113,137 +405,79 @@ renderNutritionScreen = function(){
   const p = state.profile;
   const log = getDayFoodLog();
   let kcal=0, protein=0, carbs=0, fat=0;
-  Object.values(log).forEach(list=> list.forEach(it=>{ kcal+=it.kcal; protein+=it.protein; carbs+=it.carbs; fat+=it.fat; }));
+  Object.values(log).forEach(list=> list.forEach(it=>{ kcal+=Number(it.kcal)||0; protein+=Number(it.protein)||0; carbs+=Number(it.carbs)||0; fat+=Number(it.fat)||0; }));
   const goal = p.goalKcal || 2000, pct = kcal/goal;
   const left = Math.round(goal - kcal);
   const now = new Date();
-  const water = state.waterLog[todayStr()] || 0;
-  const waterGoal = p.waterTargetOverride != null ? p.waterTargetOverride : fmt1(p.weight * 0.035);
-  const cups = 8, cupSize = waterGoal/cups, cupsDone = Math.min(cups, Math.round(water/cupSize));
-  const goalDef = GOALS.find(g=>g.id===p.goal);
+  const goalLabel = typeof goalDisplay === "function" ? goalDisplay(p).label : ((GOALS.find(g=>g.id===p.goal)||{}).label || "");   // QN-02
 
   // 7 ngày gần nhất
   const days = Array.from({length:7},(_,i)=>{ const d=new Date(); d.setDate(d.getDate()-(6-i)); const k=todayStr(d);
-    const L = state.foodLog[k]; let s=0; if(L) Object.values(L).forEach(l=>l.forEach(it=>s+=it.kcal));
+    const L = state.foodLog[k]; let s=0; if(L) Object.values(L).forEach(l=>l.forEach(it=>s+=Number(it.kcal)||0));
     return { k, s, lab: i===6 ? "Nay" : WD_SHORT[d.getDay()] }; });
   const maxDay = Math.max(goal, ...days.map(d=>d.s));
 
-  const macro = (label, val, tgt, color)=>`
+  const macro = (label, val, tgt, color, extra)=>`
     <div class="nu-macro">
-      <div class="nu-macro-top"><span>${label}</span><b>${Math.round(val)}<small>/${tgt}g</small></b></div>
+      <div class="nu-macro-top"><span>${label}${extra||""}</span><b>${Math.round(val)}<small>/${escapeHtml(tgt)}g</small></b></div>
       <div class="nu-bar"><i style="width:${tgt?Math.min(100,val/tgt*100):0}%;background:${color}"></i></div>
     </div>`;
 
-  const recipes = RECIPES.filter(r=> recipeMatchesTag(r, nuUI.tag));
+  const hk = nuHideKcal();                                           // vòng 2: "Ẩn số calo"
+  const recipes = nuRecipeList(hk);
+  const shown = Number.isFinite(nuUI.shownKcal) ? nuUI.shownKcal : 0;
+  const tags = hk ? RECIPE_TAGS.filter(t=> t.id !== "giam-mo") : RECIPE_TAGS;     // không đẩy khung "giảm mỡ" khi đang ẩn số calo
 
   el.innerHTML = `
-    <div class="nu-date">${now.getDay()===0?"Chủ nhật":"Thứ "+(now.getDay()+1)}, ${pad2(now.getDate())}/${pad2(now.getMonth()+1)}${goalDef?` · Mục tiêu: ${goalDef.label}`:""}</div>
+    <div class="nu-date">${now.getDay()===0?"Chủ nhật":"Thứ "+(now.getDay()+1)}, ${pad2(now.getDate())}/${pad2(now.getMonth()+1)}${goalLabel?` · Mục tiêu: ${escapeHtml(goalLabel)}`:""}</div>
 
+    ${hk ? nuPlateCardHTML(log, { protein, carbs, fat }, p) : `
     <div class="nu-gauge-card">
+      <button type="button" class="nu-kcal-toggle nu-kcal-eye" data-nu-kcal="hide" aria-label="Ẩn số calo (hiện khẩu phần thay thế)"><span class="material-symbols-rounded">visibility_off</span></button>
       <div class="nu-gauge">
         ${nuGaugeSVG(pct)}
         <div class="nu-gauge-center">
           <span class="material-symbols-rounded">bolt</span>
-          <div class="nu-kcal"><b id="nu-kcal-num">0</b> kcal</div>
+          <div class="nu-kcal"><b id="nu-kcal-num">${Math.round(shown).toLocaleString("vi-VN")}</b> kcal</div>
           <div class="nu-goal">Mục tiêu ${goal.toLocaleString("vi-VN")} kcal</div>
         </div>
       </div>
       <div class="nu-left ${left<0?'over':''}">${left>=0 ? `Còn <b>${left.toLocaleString("vi-VN")}</b> kcal cho hôm nay` : `Đã vượt <b>${(-left).toLocaleString("vi-VN")}</b> kcal`}</div>
       <div class="nu-macros">
-        ${macro("Đạm", protein, p.protein, "#FF7A45")}
+        ${macro("Đạm", protein, p.protein, "#FF7A45", nuWhyBtn(p.protein))}
         ${macro("Tinh bột", carbs, p.carbs, "#5EE6C7")}
         ${macro("Chất béo", fat, p.fat, "#9AF1DD")}
       </div>
       <div class="nu-week">
         ${days.map(d=>`<div class="nu-day ${d.k===todayStr()?'today':''}"><div class="col"><i style="height:${Math.max(4, d.s/maxDay*100)}%" class="${d.s>goal?'over':''}"></i><em style="bottom:${goal/maxDay*100}%"></em></div><small>${d.lab}</small></div>`).join("")}
       </div>
-    </div>
+    </div>`}
 
     <button class="nu-add" id="nu-add"><span class="material-symbols-rounded">add</span><span>Thêm món ăn</span></button>
 
-    ${MEAL_TYPES.map(mt=>{
-      const items = log[mt.id];
-      const mk = items.reduce((s,i)=>s+i.kcal,0);
-      const mp = items.reduce((s,i)=>s+i.protein,0), mc = items.reduce((s,i)=>s+i.carbs,0), mf = items.reduce((s,i)=>s+i.fat,0);
-      const time = state.reminders.meal[mt.id].time;
-      const open = !!nuUI.open[mt.id];
-      const thumbs = items.slice(0,3).map(it=> it.recipe ? foodPic(it.recipe) : foodPic(it.name));
-      return `
-      <div class="nu-meal" style="--tint:${MEAL_TINT[mt.id]}">
-        <div class="nu-meal-head" data-toggle-meal="${mt.id}">
-          <div class="nu-thumb">${thumbs.length ? thumbs.map((e,i)=>`<span style="--k:${i}">${e}</span>`).join("") : `<span class="solo">${MEAL_EMOJI[mt.id]}</span>`}</div>
-          <div class="nu-meal-name"><b>${mt.label}</b><small data-edit-time="meal:${mt.id}">${time} · đổi giờ</small></div>
-          <div class="nu-meal-kcal"><b>${Math.round(mk)} kcal</b><small>${Math.round(mk/goal*100)}% mục tiêu</small></div>
-        </div>
-        <div class="nu-meal-macros">
-          <div><small>Đạm</small><b>${Math.round(mp)}g</b></div>
-          <div><small>Tinh bột</small><b>${Math.round(mc)}g</b></div>
-          <div><small>Béo</small><b>${Math.round(mf)}g</b></div>
-          <button class="nu-mini" data-add-meal="${mt.id}" aria-label="Thêm"><span class="material-symbols-rounded">add</span></button>
-          ${items.length ? `<button class="nu-mini ghost" data-toggle-meal="${mt.id}" aria-label="Chi tiết"><span class="material-symbols-rounded" style="transform:rotate(${open?-90:90}deg)">chevron_right</span></button>` : ""}
-        </div>
-        ${open && items.length ? `<div class="nu-items">${items.map((it,i)=>`
-          <div class="nu-item"><span class="e">${foodPic(it.name)}</span><div class="t"><b>${escapeHtml(it.name)}</b><small>${it.grams}g · Đ${it.protein} · TB${it.carbs} · B${it.fat}</small></div><b class="k">${it.kcal}</b>
-          <button class="nu-del" data-del-food="${mt.id}:${i}" aria-label="Xoá"><span class="material-symbols-rounded">close</span></button></div>`).join("")}</div>` : ""}
-        ${!items.length ? `<p class="nu-empty">Chưa có món — chạm <b>+</b> để thêm, hoặc chọn từ thực đơn gợi ý bên dưới.</p>` : ""}
-      </div>`;
-    }).join("")}
+    ${MEAL_TYPES.map(mt=> nuMealCardHTML(mt, log, goal)).join("")}
 
-    <div class="nu-water">
-      <div class="nu-water-head">
-        <div><b>Nước uống</b><small>${fmt1(water)} / ${waterGoal} L</small></div>
-        <button class="icon-btn" id="nu-water-edit" style="width:32px;height:32px;"><span class="material-symbols-rounded" style="font-size:16px;">tune</span></button>
-      </div>
-      <div class="nu-cups">${Array.from({length:cups},(_,i)=>`<button class="cup ${i<cupsDone?'on':''}" data-cup="${i}" aria-label="Ly ${i+1}"><span class="material-symbols-rounded">water_drop</span></button>`).join("")}</div>
-      <div class="nu-water-btns"><button data-w="0.25">+250ml</button><button data-w="0.5">+500ml</button><button data-w="reset">Đặt lại</button></div>
-    </div>
+    ${nuWaterHTML()}
 
-    ${nuPlanCardHTML()}
+    ${typeof nuPlanSlotHTML === "function" ? nuPlanSlotHTML() : nuPlanCardHTML()}
 
-    <div class="section-title" style="margin-top:6px;"><h3>Món healthy</h3><a id="nu-see-all">Xem tất cả</a></div>
-    <div class="nu-tags">${RECIPE_TAGS.map(t=>`<button class="nu-tag ${nuUI.tag===t.id?'on':''}" data-tag="${t.id}"><span>${t.emoji}</span><small>${t.label}</small></button>`).join("")}</div>
-    <div class="nu-recipes">
-      ${recipes.map((r,i)=>{ const m = recipeMacros(r); return `
-        <div class="nu-recipe" data-recipe="${r.id}" style="--i:${i}">
-          <div class="nu-recipe-top"><span class="time"><span class="material-symbols-rounded">schedule</span>${r.min} phút</span><span class="cz">${r.cuisine==="vn"?"Việt":"Âu"}</span></div>
-          <div class="nu-bowl">${foodPic(r.id)}</div>
-          <div class="nu-method">${COOK_METHODS[r.method].label}</div>
-          <div class="nu-recipe-name">${escapeHtml(r.name)}</div>
-          <div class="nu-recipe-foot">
-            <span class="lvl">${["Dễ","Vừa","Khó"][r.level-1]}<i class="${r.level>=1?'on':''}"></i><i class="${r.level>=2?'on':''}"></i><i class="${r.level>=3?'on':''}"></i></span>
-            <b>${m.kcal} kcal</b>
-          </div>
-        </div>`; }).join("")}
-    </div>
-    <p class="small-note" style="text-align:center;margin-top:4px;">Calo tính theo bảng USDA FoodData Central — chỉ mang tính ước lượng.</p>
+    <div class="section-title" style="margin-top:6px;"><h3>Món healthy</h3><a id="nu-see-all" role="button" tabindex="0">Xem tất cả</a></div>
+    <div class="nu-tags">${tags.map(t=>`<button class="nu-tag ${nuUI.tag===t.id?'on':''}" data-tag="${t.id}" aria-pressed="${nuUI.tag===t.id}"><span>${t.emoji}</span><small>${t.label}</small></button>`).join("")}</div>
+    <div class="nu-recipes" id="nu-recipes">${recipes.slice(0, NU_RC_FIRST).map((r,i)=> nuRecipeCardHTML(r, i, hk)).join("")}</div>
+    <p class="small-note" style="text-align:center;margin-top:4px;">${hk ? "Khẩu phần theo bàn tay chỉ là ước lượng — lắng nghe cảm giác đói/no của cơ thể." : "Calo tính theo bảng USDA FoodData Central &amp; Bảng thành phần thực phẩm Việt Nam — chỉ mang tính ước lượng."}</p>
   `;
 
-  nuCountUp($("#nu-kcal-num"), kcal);
+  if(!hk) nuCountUp($("#nu-kcal-num"), kcal);
   $("#nu-add").addEventListener("click", openQuickAddMeal);
-  $$("[data-add-meal]", el).forEach(b=> b.addEventListener("click", e=>{ e.stopPropagation(); openAddFood(b.dataset.addMeal); }));
-  $$("[data-toggle-meal]", el).forEach(b=> b.addEventListener("click", e=>{
-    if(e.target.closest("[data-edit-time]") || e.target.closest("[data-add-meal]")) return;
-    const id = b.dataset.toggleMeal; nuUI.open[id] = !nuUI.open[id]; renderNutritionScreen();
-  }));
-  $$("[data-edit-time]", el).forEach(t=> t.addEventListener("click", e=>{ e.stopPropagation(); openEditReminderTime(...t.dataset.editTime.split(":")); }));
-  $$("[data-del-food]", el).forEach(b=> b.addEventListener("click", ()=>{
-    const [mealId, i] = b.dataset.delFood.split(":");
-    getDayFoodLog()[mealId].splice(Number(i),1); saveState(); renderNutritionScreen();
-  }));
-  $("#nu-water-edit").addEventListener("click", openEditWaterTarget);
-  $$("[data-cup]", el).forEach(b=> b.addEventListener("click", ()=>{
-    const i = Number(b.dataset.cup);
-    state.waterLog[todayStr()] = fmt1((i < cupsDone && i === cupsDone-1 ? i : i+1) * cupSize);
-    saveState(); renderNutritionScreen();
-  }));
-  $$("[data-w]", el).forEach(b=> b.addEventListener("click", ()=>{
-    const k = todayStr();
-    state.waterLog[k] = b.dataset.w==="reset" ? 0 : fmt1((state.waterLog[k]||0) + Number(b.dataset.w));
-    saveState(); renderNutritionScreen();
-  }));
-  $$("[data-tag]", el).forEach(b=> b.addEventListener("click", ()=>{ nuUI.tag = b.dataset.tag; renderNutritionScreen(); }));
-  $$("[data-recipe]", el).forEach(c=> c.addEventListener("click", ()=> openRecipe(c.dataset.recipe)));
-  $("#nu-see-all").addEventListener("click", ()=>{ nuUI.tag = "all"; renderNutritionScreen(); });
+  $$(".nu-meal", el).forEach(nuBindMealCard);
+  nuBindWater($$("#nu-water", el)[0] || el);
+  $$("[data-tag]", el).forEach(b=> b.addEventListener("click", ()=>{ nuUI.tag = b.dataset.tag; nuRefreshRecipes(); }));     // QU-03: chỉ vẽ lại dải món
+  const rbox = $$("#nu-recipes", el)[0] || $("#nu-recipes");
+  if(rbox) rbox.addEventListener("click", e=>{ const c = e.target && e.target.closest && e.target.closest("[data-recipe]"); if(c) openRecipe(c.dataset.recipe); });
+  nuRecipesMore(recipes, NU_RC_FIRST, hk);
+  $("#nu-see-all").addEventListener("click", ()=>{ nuUI.tag = "all"; nuRefreshRecipes(); });
+  $$(".nu-gauge-card [data-nu-why]", el).forEach(b=> b.addEventListener("click", e=>{ e.stopPropagation(); try{ NutriPro.ui.openProteinWhy(); }catch(_){} }));
+  $$("[data-nu-kcal]", el).forEach(b=> b.addEventListener("click", ()=> nuSetHideKcal(b.dataset.nuKcal === "hide")));
   bindPlanCard(el);
 };
 
@@ -309,7 +543,7 @@ function nuPlanCardHTML(){
   const a = bodyAnalysis(p);
   const goalDef = GOALS.find(g=>g.id===p.goal) || GOALS[1];
   const recDef = GOALS.find(g=>g.id===a.rec);
-  const mismatch = recDef && a.rec !== p.goal && a.cat !== "Bình thường";
+  const mismatch = recDef && a.rec !== p.goal && a.cat !== "Bình thường" && !(p.age && p.age < 18);   // BUG-04: không mời người < 18 tuổi đổi mục tiêu
   const di = nuUI.planDay != null ? nuUI.planDay : (new Date().getDay()+6)%7;
   const plan = buildDayPlan(p, di, { cuisine: nuUI.planCuisine||"all", veg: !!nuUI.planVeg });
   const total = Object.values(plan).reduce((s,r)=> s + recipeMacros(r).kcal, 0);
@@ -318,7 +552,7 @@ function nuPlanCardHTML(){
   return `
   <div class="nu-plan">
     <div class="nu-plan-head">
-      <div class="nu-bmi" style="--c:${a.color}"><b>${a.bmi || "—"}</b><small>BMI</small></div>
+      <div class="nu-bmi" style="--c:${a.color}"><b>${a.bmi && !a.hideBmi ? escapeHtml(nuVN(a.bmi)) : "—"}</b><small>BMI</small></div>
       <div class="nu-plan-txt"><b>${a.cat}${a.bmi?` · ${p.weight} kg, ${p.height} cm`:""}</b><small>${escapeHtml(a.advice)}</small></div>
     </div>
     ${mismatch ? `<button class="nu-plan-switch" data-switch-goal="${a.rec}"><span class="material-symbols-rounded">swap_horiz</span>Mục tiêu hiện tại là "${goalDef.label}". Chuyển sang "${recDef.label}"?</button>` : ""}
@@ -374,7 +608,7 @@ openAddFood = function(mealId){
     return results.map(f=>`
       <div class="food-result fr-pic" data-pick="${f.id}">
         ${foodPic(f.id, "fr-img")}
-        <div class="fr-t"><div class="name">${f.name}</div><div class="kcal">${f.portion ? `${f.unit} ≈ ${f.portion}g` : "/100g"} · Đ${f.protein} · TB${f.carbs} · B${f.fat} /100g</div></div>
+        <div class="fr-t"><div class="name">${escapeHtml(f.name)}</div><div class="kcal">${f.portion ? `${f.unit} ≈ ${f.portion}g` : "/100g"} · đạm ${escapeHtml(nuVN(f.protein))} · tinh bột ${escapeHtml(nuVN(f.carbs))} · béo ${escapeHtml(nuVN(f.fat))} /100 g</div></div>
         <b>${f.portion ? Math.round(f.kcal*f.portion/100) : f.kcal} kcal</b>
       </div>`).join("") || `<p class="empty-hint">Không tìm thấy món ăn phù hợp</p>`;
   };

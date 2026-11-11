@@ -1,0 +1,128 @@
+/* =========================================================================
+   TapEasy — LỚP THƯƠNG HIỆU (brand.css)
+   -------------------------------------------------------------------------
+   Nạp SAU themes.css + ui-kit.css (và sau CSS module), TRƯỚC themes-modules.css là tốt nhất:
+     <link rel="stylesheet" href="style.css">
+     <link rel="stylesheet" href="themes.css">
+     <link rel="stylesheet" href="ui-kit.css">
+     … css module …
+     <link rel="stylesheet" href="brand.css">
+     <link rel="stylesheet" href="themes-modules.css">
+   Việc của file:
+     1. Token thương hiệu --brand-* + --ink (than) có ở MỌI theme.
+     2. Theme "Mặc định" (navy) đổi mint cũ #5EE6C7 → teal TapEasy (giữ navy nền + coral CTA).
+        Theme Sáng dùng teal đậm đạt AA. Các theme Đại dương/Hoàng hôn/Rừng/Tím đêm GIỮ bảng màu riêng.
+     3. Lớp tiện ích logo: .brand-logo (chữ), .brand-mark (biểu tượng), .brand-lockup (xếp chồng),
+        .brand-name (tên thương hiệu trong câu chữ).
+   Màu đo từ logo gốc: teal #02BCB3 = rgb(2,188,179) · than #242D33 = rgb(36,45,51). Xem docs/BRAND.md.
+   ========================================================================= */
+
+/* ---------- 1. Token thương hiệu (giống nhau ở mọi theme) ---------- */
+:root{
+  --brand-teal:#02BCB3;        --brand-teal-rgb:2,188,179;      /* teal logo — mảng màu, biểu tượng, chữ "Easy" */
+  --brand-teal-bright:#33D6C9; --brand-teal-bright-rgb:51,214,201; /* chữ/dữ liệu trên nền tối: 9,8:1 navy · ≥4,6:1 trên kính */
+  --brand-teal-soft:#A3F0E8;   --brand-teal-soft-rgb:163,240,232; /* chữ nhạt trên nền tối, 13,7:1 */
+  --brand-teal-deep:#00756F;   --brand-teal-deep-rgb:0,117,111;   /* chữ teal trên nền sáng: 5,6:1 trắng · 4,9:1 #EDF2F5 */
+  --brand-teal-ink:#02625D;                                        /* teal rất đậm (chữ nhỏ trên nền sáng 7,2:1) */
+  --ink:#242D33;               --ink-rgb:36,45,51;               /* than: chữ "Tap", chữ trên nền sáng 14:1 */
+  --brand-ivory:#F5F7F3;       --brand-ivory-rgb:245,247,243;    /* "Tap" trên nền tối */
+  --brand-gradient:linear-gradient(135deg, #1CCFC1 0%, #02A69E 55%, #027A74 100%); /* nền icon / mảng thương hiệu */
+  --brand-font-display:'Poppins','Outfit','Inter Tight','Inter',-apple-system,'Segoe UI',Roboto,sans-serif; /* chỉ cho chữ "TapEasy" */
+  --brand-font-headline:'Inter Tight','Inter',-apple-system,'Segoe UI',Roboto,sans-serif; /* tiêu đề marketing có dấu (vòng sửa UX: bỏ Be Vietnam Pro — không còn nạp font này) */
+  /* màu dùng bởi lớp logo — tự đổi theo nền */
+  --brand-logo-tap:var(--brand-ivory);
+  --brand-logo-easy:var(--brand-teal);
+  --brand-mark-color:var(--brand-teal);
+  --brand-name-accent:var(--brand-teal-bright);
+  --brand-logo-wordmark:url("assets/brand/logo-wordmark-light.svg");
+  --brand-logo-lockup:url("assets/brand/logo-lockup-light.svg");
+}
+
+/* ---------- 2a. Theme Mặc định = màu thương hiệu TapEasy ----------
+   :root (trước khi themes.js chạy) và :root[data-theme="navy"] (độ ưu tiên = themes.css, thắng vì nạp sau). */
+:root,
+:root[data-theme="navy"]{
+  --mint:#33D6C9;   /* teal sáng — thay #5EE6C7 */
+  --mint-2:#A3F0E8; /* thay #9AF1DD */
+  --mint-3:#02BCB3; /* teal logo — thay #2FB99A */
+  --mint-rgb:51,214,201;
+  --success:var(--mint); --gold:var(--mint);
+  --on-mint:#061A24;                       /* navy trên teal sáng: 9,8:1 */
+  --fk-toast-accent:#029E97;               /* icon trong toast nền trắng: 3,3:1 (mint cũ chỉ 1,5:1) */
+}
+
+/* ---------- 2b. Theme Sáng: teal đậm đạt AA trên nền sáng ---------- */
+:root[data-theme="light"]{
+  --mint:#00756F; --mint-2:#02625D; --mint-3:#02958D;   /* trắng/#00756F = 5,6:1 · #EDF2F5 = 4,9:1 */
+  --mint-rgb:0,117,111;
+  --fk-toast-accent:#33D6C9;                             /* toast nền tối ở theme Sáng */
+  --fk-shell-bg:radial-gradient(90% 55% at 100% 0%, rgba(2,188,179,.26), transparent 60%),
+                radial-gradient(80% 45% at 0% 100%, rgba(255,122,69,.14), transparent 60%),
+                linear-gradient(180deg, #F5F9FA 0%, #E8EFF3 100%);
+  --brand-logo-tap:var(--ink);
+  --brand-name-accent:var(--brand-teal-deep);
+  --brand-logo-wordmark:url("assets/brand/logo-wordmark-dark.svg");
+  --brand-logo-lockup:url("assets/brand/logo-lockup-dark.svg");
+}
+/* "Đảo tối" trong theme Sáng (cùng bộ chọn với themes.css §4) → teal sáng + logo bản nền tối */
+html.fk-light :is(.hero, #screen-workout > .topbar.transparent, .mg-card, .wl, #auth.wl-mode, .auth-hero,
+  #screen-ptprofile, .vplayer, .clip-thumb, .vthumb, .vp-item, .ld-media, .fk-dark-island){
+  --mint:#33D6C9; --mint-2:#A3F0E8; --mint-3:#02BCB3; --mint-rgb:51,214,201; --success:#33D6C9; --gold:#33D6C9;
+  --brand-logo-tap:var(--brand-ivory);
+  --brand-name-accent:var(--brand-teal-bright);
+  --brand-logo-wordmark:url("assets/brand/logo-wordmark-light.svg");
+  --brand-logo-lockup:url("assets/brand/logo-lockup-light.svg");
+}
+/* Các theme tối khác (ocean, sunset, forest, midnight) chỉ nhận token --brand-* ở mục 1 — logo vẫn teal. */
+
+/* ---------- 3. Lớp tiện ích logo ----------
+   Chữ:        <img class="brand-logo" src="assets/brand/logo-wordmark-light.svg" alt="TapEasy">
+               hoặc <span class="brand-logo" role="img" aria-label="TapEasy"></span>  (tự đổi bản sáng/tối theo theme)
+   Biểu tượng: <span class="brand-mark" role="img" aria-label="TapEasy"></span>        (màu = --brand-mark-color)
+   Xếp chồng:  <span class="brand-lockup" role="img" aria-label="TapEasy"></span>      (màn chào)
+   Kích thước: mặc định 28 px (thanh trên) · --md 40 px · --lg 56 px · --xl 72 px · --hero clamp(56–72 px). */
+.brand-logo, .brand-mark, .brand-lockup{
+  display:inline-block; flex:none; vertical-align:middle;
+  height:28px; width:auto; max-width:100%;
+}
+.brand-logo:not(img){ aspect-ratio:770.2 / 180.6; background:var(--brand-logo-wordmark) left center / contain no-repeat; }
+.brand-mark:not(img){
+  aspect-ratio:200 / 134;
+  background-color:var(--brand-mark-color);
+  -webkit-mask:url("assets/brand/logo-mark.svg") center / contain no-repeat;
+          mask:url("assets/brand/logo-mark.svg") center / contain no-repeat;
+}
+.brand-lockup{ height:auto; width:min(64vw, 240px); }
+.brand-lockup:not(img){ aspect-ratio:770.2 / 335.3; background:var(--brand-logo-lockup) center / contain no-repeat; }
+/* phần tử không phải <img>: ẩn chữ bên trong (nếu có) nhưng vẫn đọc được bằng trình đọc màn hình qua aria-label */
+.brand-logo:not(img), .brand-mark:not(img), .brand-lockup:not(img){ color:transparent; font-size:0; line-height:0; overflow:hidden; }
+
+.brand-logo--md, .brand-mark--md{ height:40px; }
+.brand-logo--lg, .brand-mark--lg{ height:56px; }
+.brand-logo--xl, .brand-mark--xl{ height:72px; }
+.brand-logo--hero, .brand-mark--hero{ height:clamp(56px, 18vw, 72px); }
+.brand-lockup--lg{ width:min(72vw, 300px); }
+
+/* Ép bản màu khi cần, bất kể theme */
+.brand-logo--on-dark:not(img){ background-image:url("assets/brand/logo-wordmark-light.svg"); }
+.brand-logo--on-light:not(img){ background-image:url("assets/brand/logo-wordmark-dark.svg"); }
+.brand-lockup--on-dark:not(img){ background-image:url("assets/brand/logo-lockup-light.svg"); }
+.brand-lockup--on-light:not(img){ background-image:url("assets/brand/logo-lockup-dark.svg"); }
+.brand-mark--white{ --brand-mark-color:#fff; }
+.brand-mark--ink{ --brand-mark-color:var(--ink); }
+
+/* Logo đặt trong .topbar .logo: căn giữa theo chiều dọc với nút 44 px */
+.topbar .logo .brand-logo, .topbar .logo .brand-mark{ display:block; }
+.topbar .logo:has(> .brand-logo:only-child){ display:flex; align-items:center; min-height:44px; }
+
+/* Tên thương hiệu trong câu chữ: <b class="brand-name">Tap<span>Easy</span></b> */
+.brand-name{ font-family:var(--brand-font-display); font-weight:700; letter-spacing:-.01em; white-space:nowrap; }
+.brand-name > span{ color:var(--brand-name-accent); }
+
+/* Mảng thương hiệu (badge, ô icon) */
+.brand-surface{ background:var(--brand-gradient); color:#fff; }
+
+@media (prefers-reduced-motion:no-preference){
+  .brand-mark--pulse{ animation:brand-pulse 2.4s cubic-bezier(.22,.61,.36,1) infinite; }
+  @keyframes brand-pulse{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-2px); } }
+}

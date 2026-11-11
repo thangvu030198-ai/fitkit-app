@@ -1,5 +1,15 @@
-// FIT KIT — Firestore Security Rules
-// Dán toàn bộ nội dung này vào: Firebase Console → Firestore Database → Rules → Publish
+// TapEasy — Firestore Security Rules (vòng tích hợp 3 · 11/2026)
+// = rules vòng 2 + PHÂN QUYỀN QUẢN TRỊ (RBAC, docs/INTEGRATION-admin.md §4) + TÌM PT (docs/INTEGRATION-findpt.md §3)
+//   + SỰ KIỆN BẮT BUỘC ẢNH/CLIP & KHOẢNH KHẮC (docs/INTEGRATION-events-shop.md §10.6) + KHO KIẾN THỨC (kb/{id}).
+// Dán toàn bộ nội dung này vào: Firebase Console → Firestore Database → Rules → Publish (hoặc firebase deploy --only firestore:rules)
+// Nguyên tắc: KHÔNG mở lỏng luật cũ — vẫn cấm list users (BUG-03), ghi chú ràng authorUid, học viên chỉ ghi trường của mình,
+//   nhật ký kiểm toán admin_audit CHỈ-THÊM (update/delete: false), quyền quản trị = hasPerm('nhóm.hành_động') (claims + roles/{uid}).
+// VÒNG SỬA BẢO MẬT (11/2026 · docs/qa/FIX-security.md) — "máy chủ quyết", client chỉ ghi phần của mình:
+//   · Liên kết PT ↔ học viên CHỈ qua Cloud Function joinByCode (học viên tự nhập mã / chấp nhận lời mời) — QS-02, QS-14
+//   · Đơn hàng, điểm, tiến độ thi đua, check-in, voucher → Cloud Functions (functions/commerce.js) — QS-08, QS-09, QC-01…08
+//   · Phiên quản trị ≤ 12 giờ (auth_time) + tài khoản nhận tiền chỉ qua setPaymentInfo (≤ 5 phút) — QS-05
+//   · Khoá tài khoản / thu hồi quyền lẻ có hiệu lực ngay (bans/, roles.px, roles.suspended) — QS-13 · audit chỉ Functions ghi — QS-15
+//   · Chặn người dùng (blocks/{uid}/list/{other}) — App Store 1.2
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -9,18 +19,220 @@ service cloud.firestore {
     function onlyKeys(keys) {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
     }
+    // Email trong token (chữ thường) — dùng cho lời mời PT gửi theo email. QS-14: CHỈ email ĐÃ XÁC MINH
+    // (tài khoản tự tạo trùng email nạn nhân nhưng chưa xác minh không đọc / nhận được lời mời).
+    function myEmail() { return signedIn() && request.auth.token.get('email_verified', false) == true && request.auth.token.get('email', null) is string ? request.auth.token.email.lower() : ''; }
+    // Tuổi lần xác thực gần nhất (giây) — QS-05: phiên quản trị/step-up kiểm ở MÁY CHỦ, không chỉ client
+    function authAge() { return request.time.toMillis() / 1000 - request.auth.token.get('auth_time', 0); }
+    // QS-13: người dùng bị khoá (bans/{uid} chưa gỡ, chưa hết hạn) không ghi nội dung dù ID token còn hạn (≤ 1 giờ)
+    function banPath() { return /databases/$(database)/documents/bans/$(request.auth.uid); }
+    function notBanned() {
+      return !exists(banPath()) || get(banPath()).data.get('liftedAt', null) != null
+        || (get(banPath()).data.get('until', 0) is timestamp && get(banPath()).data.until < request.time);
+    }
+    // Chặn người dùng (App Store 1.2): a đã chặn b?
+    function blockedBy(a, b) { return exists(/databases/$(database)/documents/blocks/$(a)/list/$(b)); }
+    /* ---------- RBAC: custom claims { role, px } do Cloud Function setRole cấp (functions/admin.js) ----------
+       rolePerms() SINH TỪ rbac.js — tests/suites/30-rbac.test.js so khớp từng quyền. */
+    function rolePerms() {
+      return {
+        'owner': ['panel.access', 'analytics.view', 'data.export', 'users.view', 'users.pii', 'users.note',
+          'users.ban', 'users.delete', 'roles.view', 'roles.assign', 'owner.transfer', 'pt.view',
+          'pt.verify', 'listings.moderate', 'reports.view', 'reports.resolve', 'reviews.moderate', 'community.moderate',
+          'community.feature', 'kb.edit', 'kb.publish', 'events.manage', 'events.checkin', 'challenges.manage',
+          'gifts.manage', 'shop.products', 'orders.view', 'shop.orders', 'shop.refund', 'vouchers.manage',
+          'support.tickets', 'broadcast.send', 'settings.view', 'settings.edit', 'settings.payment', 'audit.view'],
+        'super_admin': ['panel.access', 'analytics.view', 'data.export', 'users.view', 'users.pii', 'users.note',
+          'users.ban', 'users.delete', 'roles.view', 'roles.assign', 'pt.view', 'pt.verify',
+          'listings.moderate', 'reports.view', 'reports.resolve', 'reviews.moderate', 'community.moderate', 'community.feature',
+          'kb.edit', 'kb.publish', 'events.manage', 'events.checkin', 'challenges.manage', 'gifts.manage',
+          'shop.products', 'orders.view', 'shop.orders', 'shop.refund', 'vouchers.manage', 'support.tickets',
+          'broadcast.send', 'settings.view', 'settings.edit', 'audit.view'],
+        'admin': ['panel.access', 'analytics.view', 'data.export', 'users.view', 'users.pii', 'users.note',
+          'users.ban', 'roles.view', 'pt.view', 'pt.verify', 'listings.moderate', 'reports.view',
+          'reports.resolve', 'reviews.moderate', 'community.moderate', 'community.feature', 'kb.edit', 'kb.publish',
+          'events.manage', 'events.checkin', 'challenges.manage', 'gifts.manage', 'shop.products', 'orders.view',
+          'shop.orders', 'shop.refund', 'vouchers.manage', 'support.tickets', 'broadcast.send', 'settings.view',
+          'settings.edit', 'audit.view'],
+        'content_manager': ['panel.access', 'analytics.view', 'users.view', 'reports.view', 'reports.resolve', 'community.moderate',
+          'community.feature', 'kb.edit', 'kb.publish'],
+        'event_manager': ['panel.access', 'analytics.view', 'data.export', 'users.view', 'events.manage', 'events.checkin',
+          'challenges.manage', 'gifts.manage'],
+        'shop_manager': ['panel.access', 'analytics.view', 'data.export', 'users.view', 'gifts.manage', 'shop.products',
+          'orders.view', 'shop.orders', 'shop.refund', 'vouchers.manage', 'settings.view'],
+        'pt_manager': ['panel.access', 'users.view', 'pt.view', 'pt.verify', 'listings.moderate', 'reports.view',
+          'reviews.moderate'],
+        'moderator': ['panel.access', 'users.view', 'reports.view', 'reports.resolve', 'reviews.moderate', 'community.moderate'],
+        'support': ['panel.access', 'users.view', 'users.pii', 'users.note', 'orders.view', 'support.tickets'],
+        'analyst': ['panel.access', 'analytics.view', 'data.export', 'users.view', 'pt.view', 'orders.view']
+      };
+    }
+    function sensitivePerms() { return ['roles.assign', 'owner.transfer', 'settings.payment', 'users.delete']; }
+    function tokenRole() { return signedIn() ? request.auth.token.get('role', '') : ''; }
+    function tokenPx() { return signedIn() ? request.auth.token.get('px', []) : []; }
+    function roleDocPath() { return /databases/$(database)/documents/roles/$(request.auth.uid); }
+    // Claims phải khớp roles/{uid} hiện tại → hạ / thu hồi vai trò có hiệu lực NGAY (không chờ ID token hết hạn).
+    // QS-13: so cả quyền lẻ px (thu hồi "+audit.view" có hiệu lực ngay) và cờ suspended (banUser treo vai trò).
+    function staffFresh() {
+      return exists(roleDocPath()) && get(roleDocPath()).data.role == tokenRole()
+        && get(roleDocPath()).data.get('px', []) == tokenPx() && get(roleDocPath()).data.get('suspended', false) == false
+        && notBanned();
+    }
+    // QS-05: quyền quản trị chỉ có hiệu lực khi lần xác thực gần nhất ≤ 12 giờ (= TAPEASY_ADMIN_CONFIG.maxHours; bảng quản trị
+    //   luôn xác thực lại khi mở) → token của máy nhân sự bị chiếm sau nhiều ngày không còn dùng được cho thao tác quản trị.
+    function hasPerm(p) {
+      return signedIn() && tokenRole() in rolePerms()
+        && (tokenRole() == 'owner'
+            || (!(('-' + p) in tokenPx())
+                && (p in rolePerms()[tokenRole()] || (('+' + p) in tokenPx() && !(p in sensitivePerms())))))
+        && staffFresh() && authAge() < 43200;
+    }
+    function isStaff() { return hasPerm('panel.access'); }
 
-    // Hồ sơ người dùng: ai đăng nhập cũng xem được tên; chỉ chủ tài khoản được sửa/xoá
-    match /users/{uid} {
+    /* ================= QUẢN TRỊ & PHÂN QUYỀN (rbac.js · cloud-admin.js · functions/admin.js) ================= */
+    match /roles/{uid} {
+      allow get: if signedIn() && (me() == uid || hasPerm('roles.view'));
+      allow list: if hasPerm('roles.view');
+      allow write: if false;                                  // chỉ Cloud Functions: bootstrapOwner / setRole / transferOwnership
+    }
+    match /roles_meta/{doc} { allow read: if isStaff(); allow write: if false; }
+    match /bans/{uid} {
+      allow get: if signedIn() && (me() == uid || hasPerm('users.view'));
+      allow list: if hasPerm('users.view');
+      allow write: if false;                                  // banUser / unbanUser (Auth disabled + thu hồi token)
+    }
+    match /admin_rate/{id} { allow read, write: if false; }
+    match /admin_audit/{id} {
+      allow read: if hasPerm('audit.view');
+      // QS-15: CHỈ Cloud Functions ghi (logAdminAction kiểm vai trò từ roles/{uid} + danh sách hành động theo quyền;
+      //   hành động nhạy cảm — role.*, owner.*, user.ban, user.pii_*, settings.payment, broadcast.send — do chính callable đó ghi)
+      allow create: if false;
+      allow update, delete: if false;                         // CHỈ THÊM — chainAudit (Admin SDK) gán seq / prev / hash
+    }
+    match /admin_audit_meta/{doc} { allow read: if hasPerm('audit.view'); allow write: if false; }
+
+    match /settings/public {
+      allow read: if signedIn();                              // phí ship, hotline, tài khoản nhận tiền (người mua đã đăng nhập)
+      // QS-05: tài khoản nhận tiền (bank) CHỈ đổi qua callable setPaymentInfo (Owner, xác thực lại ≤ 5 phút, ghi audit)
+      allow create: if hasPerm('settings.edit') && !('bank' in request.resource.data);
+      allow update: if hasPerm('settings.edit')
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['bank']);
+      allow delete: if false;
+    }
+    match /settings/{doc} {                                   // cài đặt nội bộ khác (không công khai)
+      allow read: if hasPerm('settings.view');
+      allow write: if doc != 'public' && hasPerm('settings.edit');
+    }
+    match /broadcasts/{id} {
       allow read: if signedIn();
-      allow create, update, delete: if signedIn() && me() == uid;
+      allow create, delete: if false;                         // sendBroadcast (giới hạn 5 / 24 giờ, FCM)
+      allow update: if hasPerm('broadcast.send') && onlyKeys(['retracted', 'retractedBy', 'retractedAt'])
+        && request.resource.data.retracted == true && request.resource.data.retractedBy == me();
+    }
+    match /pt_verifications/{uid} {
+      allow get: if signedIn() && (me() == uid || hasPerm('pt.view'));
+      allow list: if hasPerm('pt.view');
+      allow create: if signedIn() && me() == uid && request.resource.data.uid == uid && request.resource.data.status == 'pending'
+        && request.resource.data.certName is string && request.resource.data.certName.size() <= 120;
+      allow update: if (signedIn() && me() == uid && resource.data.status != 'verified'
+            && request.resource.data.status == 'pending' && request.resource.data.uid == uid
+            && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reviewNote', 'reviewedBy', 'reviewedAt']))
+        || (hasPerm('pt.verify') && request.resource.data.status in ['verified', 'rejected']
+            && onlyKeys(['status', 'reviewNote', 'reviewedBy', 'reviewedAt']) && request.resource.data.reviewedBy == me());
+      allow delete: if hasPerm('pt.verify');
+    }
+    match /support_tickets/{id} {
+      allow create: if signedIn() && request.resource.data.uid == me() && request.resource.data.status == 'open'
+        && request.resource.data.text is string && request.resource.data.text.size() <= 2000
+        && request.resource.data.replies.size() == 0;
+      allow read: if signedIn() && (resource.data.uid == me() || hasPerm('support.tickets'));
+      allow update: if hasPerm('support.tickets') && onlyKeys(['status', 'replies', 'updatedAt', 'assignee'])
+        && request.resource.data.replies.size() >= resource.data.replies.size();
+      allow delete: if false;
+    }
+    match /user_notes/{uid}/notes/{nid} {
+      allow read: if hasPerm('users.note') || hasPerm('support.tickets');
+      allow create: if hasPerm('users.note') && request.resource.data.by == me() && request.resource.data.ts == request.time
+        && request.resource.data.text is string && request.resource.data.text.size() <= 1000;
+      allow update, delete: if false;                         // ghi chú nội bộ chỉ-thêm
+    }
+    match /reports/{id} {
+      allow create: if signedIn() && notBanned() && request.resource.data.by == me() && request.resource.data.status == 'open'
+        && request.resource.data.type in ['routine', 'review', 'pt', 'listing', 'user', 'comment', 'kb', 'post']
+        && request.resource.data.reason is string && request.resource.data.reason.size() <= 300;
+      allow read: if hasPerm('reports.view');
+      allow update: if hasPerm('reports.resolve') && onlyKeys(['status', 'resolution', 'resolvedBy', 'resolvedAt'])
+        && request.resource.data.resolvedBy == me();
+      allow delete: if false;
+    }
+    match /vouchers/{code} {
+      allow get: if signedIn();                               // người mua tra đúng 1 mã
+      allow list: if hasPerm('vouchers.manage');
+      // QS-08/QC-03: lượt dùng (used/usedBy) và voucher cá nhân (owner — đổi bằng điểm) CHỈ Cloud Functions ghi
+      //   (createOrder tăng used trong transaction; redeemPoints tạo voucher 1 lần cho đúng người)
+      allow create: if hasPerm('vouchers.manage') && request.resource.data.get('used', 0) == 0
+        && !request.resource.data.keys().hasAny(['owner', 'usedBy']);
+      allow update: if hasPerm('vouchers.manage')
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['used', 'owner', 'usedBy']);
+      allow delete: if false;                                 // thu hồi = revoked:true (giữ lịch sử)
+    }
+    match /voucherUses/{id} { allow read, write: if false; }  // createOrder: 1 người / 1 mã toàn hệ thống
+    match /voucherHolds/{id} { allow read, write: if false; } // vòng 2: claimVoucher giữ chỗ 30 phút (FIX-commerce §2 #4c)
+    match /voucherGrants/{id} { allow read, write: if false; } // vòng 2: 1 voucher hoàn thành / người / thử thách (claimChallengeVoucher)
+    // TapEasy Points (QC-02): sổ điểm trên MÁY CHỦ — chỉ Functions ghi (check-in, review, chốt thử thách, đổi voucher)
+    match /points/{uid} {
+      allow get: if signedIn() && (me() == uid || hasPerm('users.view'));
+      allow list, write: if false;
+      match /tx/{tid} { allow read: if signedIn() && (me() == uid || hasPerm('users.view')); allow write: if false; }
+    }
+    match /kb/{id} {                                          // Kho kiến thức (kb.js)
+      allow read: if resource.data.status == 'published' || hasPerm('kb.edit') || hasPerm('kb.publish');
+      allow create: if hasPerm('kb.edit') && (request.resource.data.status in ['draft', 'review'] || hasPerm('kb.publish'));
+      allow update: if hasPerm('kb.edit')
+        && (request.resource.data.status == resource.data.status
+            || (request.resource.data.status in ['draft', 'review'] && resource.data.status in ['draft', 'review'])
+            || hasPerm('kb.publish'));
+      allow delete: if hasPerm('kb.publish');
     }
 
-    // Mã mời 6 ký tự: học viên chỉ được "get" đúng 1 mã (không liệt kê được toàn bộ)
+    // Hồ sơ người dùng (BUG-03): KHÔNG cho liệt kê (list) toàn bộ users.
+    // Chỉ "get" đúng 1 hồ sơ: của chính mình, hoặc hồ sơ PT (trang giới thiệu PT công khai cho học viên).
+    // Email KHÔNG còn lưu trong hồ sơ (cloud.js chỉ đọc email từ Firebase Auth) — hồ sơ cũ được xoá trường email khi đăng nhập.
+    match /users/{uid} {
+      allow get: if signedIn() && (me() == uid || resource.data.isPT == true);
+      allow list: if false;
+      // Trường do quản trị ghi (xác minh PT, niêm yết, vai trò) — người dùng không tự đặt; staff có quyền ghi đúng các trường đó.
+      // QS-17 / QP-10: SĐT KHÔNG nằm trong hồ sơ công khai — lưu ở users/{uid}/private/contact (chỉ chủ + học viên đã kết nối đọc)
+      allow create: if signedIn() && me() == uid
+        && !request.resource.data.keys().hasAny(['ptVerified', 'ptVerifiedAt', 'ptVerifiedBy', 'listingHidden', 'listingNote', 'listingBy', 'listingAt', 'role', 'phone']);
+      allow update: if (signedIn() && me() == uid
+            && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['ptVerified', 'ptVerifiedAt', 'ptVerifiedBy', 'listingHidden', 'listingNote', 'listingBy', 'listingAt', 'role'])
+            && !('phone' in request.resource.data))
+        || (hasPerm('pt.verify') && onlyKeys(['ptVerified', 'ptVerifiedAt', 'ptVerifiedBy']))
+        || (hasPerm('listings.moderate') && onlyKeys(['listingHidden', 'listingNote', 'listingBy', 'listingAt']));
+      allow delete: if signedIn() && me() == uid;
+    }
+    // Liên hệ riêng (SĐT/Zalo) — chủ tài khoản, hoặc học viên ĐANG kết nối với PT này (ptLinks do Function syncPtLinks ghi)
+    match /users/{uid}/private/{doc} {
+      allow get: if signedIn() && (me() == uid || (doc == 'contact' && exists(/databases/$(database)/documents/ptLinks/$(uid + '_' + me()))));
+      allow list: if false;
+      allow create, update: if signedIn() && me() == uid && doc == 'contact'
+        && request.resource.data.keys().hasOnly(['phone', 'updatedAt'])
+        && request.resource.data.get('phone', '') is string && request.resource.data.get('phone', '').size() <= 20;
+      allow delete: if signedIn() && me() == uid;
+    }
+    match /ptLinks/{id} { allow read, write: if false; }      // {ptId}_{studentUid} — Cloud Function syncPtLinks
+    // Quyền viết đánh giá PT (QS-07, QP-02, QP-12): Function cấp khi có buổi PT xác nhận / buổi thử hoàn thành; giữ 12 tháng kể cả khi rời PT
+    match /reviewRights/{id} { allow get: if signedIn() && resource.data.uid == me(); allow list, write: if false; }
+
+    // Mã mời (8 ký tự từ 11/2026; mã 6 ký tự cũ vẫn dùng được): xem trước bằng "get" đúng 1 mã (không liệt kê được).
+    // QS-14: biết mã KHÔNG đủ để vào form — liên kết chỉ qua Cloud Function joinByCode (giới hạn tần suất, ghi nhận lần thử)
     match /joinCodes/{code} {
       allow get: if signedIn();
       allow list: if false;
-      allow create: if signedIn() && request.resource.data.ptId == me();
+      allow create: if signedIn() && request.resource.data.ptId == me()
+        && code.matches('^[A-Z2-9]{6,10}$')
+        && getAfter(/databases/$(database)/documents/clients/$(request.resource.data.clientId)).data.ptId == me();
       allow delete: if signedIn() && resource.data.ptId == me();
     }
 
@@ -28,30 +240,459 @@ service cloud.firestore {
     match /clients/{cid} {
       function isPT() { return resource.data.ptId == me(); }
       function isStudent() { return resource.data.studentUid == me(); }
+      function sameStudent() { return request.resource.data.get('studentUid', null) == resource.data.get('studentUid', null); }
 
       allow read: if signedIn() && (isPT() || isStudent());
-      allow create: if signedIn() && request.resource.data.ptId == me();
+      // QS-02: PT KHÔNG tự điền học viên (gắn người lạ không cần đồng ý / tài khoản phụ viết đánh giá) và không chèn trường "id"
+      allow create: if signedIn() && notBanned() && request.resource.data.ptId == me()
+        && request.resource.data.get('studentUid', null) == null
+        && !request.resource.data.keys().hasAny(['id', 'studentName', 'studentEmail', 'joinedAt', 'linkedVia']);
       allow delete: if signedIn() && isPT();
       allow update: if signedIn() && (
-        // PT sửa mọi thứ trừ chủ sở hữu
-        (isPT() && request.resource.data.ptId == me())
-        // Học viên nhập mã: chỉ khi form chưa có ai, chỉ ghi 3 trường của mình
-        || (resource.data.studentUid == null
-            && request.resource.data.studentUid == me()
-            && onlyKeys(['studentUid', 'studentName', 'studentEmail', 'updatedAt']))
-        // Học viên rời PT
+        // PT sửa mọi thứ trừ chủ sở hữu; KHÔNG gắn/đổi học viên (chỉ được gỡ = null) và không sửa dấu liên kết do máy chủ ghi
+        (isPT() && request.resource.data.ptId == me()
+            && (sameStudent() || request.resource.data.get('studentUid', null) == null)
+            && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['joinedAt', 'linkedVia']))
+        // (đã bỏ) học viên tự ghi studentUid khi form trống — chiếm form không cần mã (QS-14 H1). Liên kết = Function joinByCode.
+        // Học viên rời PT (QP-11: được tắt chia sẻ nhật ký và xoá sức khoẻ / số đo / ảnh của mình khi rời)
         || (isStudent()
-            && request.resource.data.studentUid == null
-            && onlyKeys(['studentUid', 'studentName', 'studentEmail', 'updatedAt']))
+            && request.resource.data.get('studentUid', null) == null
+            && onlyKeys(['studentUid', 'studentName', 'studentEmail', 'updatedAt', 'joinedAt', 'linkedVia', 'trainingSync', 'health', 'measurements', 'photos']))
+        // PT Pro + Social: học viên tự cập nhật hồ sơ sức khoẻ / số đo / ảnh tiến trình, chat (đã đọc / bộ đếm)
+        // và nhật ký đồng bộ (trainingSync) — không đụng gói, thanh toán, chủ sở hữu.
+        // QP-05: "BS đã cho phép" (health.parq.clearance) là trường của PT — học viên chỉ được giữ nguyên hoặc xoá (làm lại PAR-Q)
+        || (isStudent()
+            && request.resource.data.studentUid == me()
+            && onlyKeys(['health', 'measurements', 'photos', 'chat', 'trainingSync', 'updatedAt'])
+            && (request.resource.data.get(['health', 'parq', 'clearance'], null) == null
+                || request.resource.data.get(['health', 'parq', 'clearance'], null) == resource.data.get(['health', 'parq', 'clearance'], null)))
       );
 
-      // Buổi tập + ghi chú: cả PT và học viên của form đều đọc/ghi; chỉ PT được xoá
+      // Buổi tập + ghi chú: PT và học viên của form đều đọc được.
+      // - sessions (QP-01, QS-04, QS-12): CHỈ PT tạo / sửa mọi trường / xoá. Học viên chỉ ghi phần của mình
+      //   (phản hồi, đã xem, kết quả, nhật ký) và chỉ chuyển "đã lên lịch → đã tập" do chính mình hoàn thành;
+      //   không huỷ / vắng, không tạo buổi, không sửa "PT dặn", ngày giờ, gói.
+      // - notes (BUG-03): người ghi phải là chính mình (authorUid == me()), chỉ PT được ghi vai "pt",
+      //   kind thuộc danh sách hợp lệ; chỉ tác giả được sửa; PT hoặc tác giả được xoá.
       match /{sub}/{docId} {
         function parent() { return get(/databases/$(database)/documents/clients/$(cid)).data; }
         function member() { return parent().ptId == me() || parent().studentUid == me(); }
-        allow read, create, update: if signedIn() && (sub == 'sessions' || sub == 'notes') && member();
-        allow delete: if signedIn() && parent().ptId == me();
+        function isPTof() { return parent().ptId == me(); }
+        function validNote(d) {
+          return d.authorUid == me()
+            && d.authorRole in ['pt', 'student'] && (d.authorRole == 'student' || isPTof())
+            && d.kind in ['note', 'reminder', 'feedback']
+            && d.text is string && d.text.size() <= 4000;
+        }
+        // statusLog (QP-01, chuyển giao fixer PT): học viên chỉ NỐI THÊM 1 dòng của chính mình (by 'student', uid = mình); ≤ 20 dòng (bỏ dòng cũ nhất)
+        // vòng 2 (FIX-pt §3): dòng nối thêm phải đúng lần chuyển "đã lên lịch → đã tập" của CHÍNH lần ghi này (from scheduled/null, to done, at là số)
+        function logAppended(o, d) {
+          let ol = o.get('statusLog', []); let nl = d.get('statusLog', []);
+          return nl is list && nl.size() >= 1 && nl.size() <= 20
+            && nl[nl.size() - 1].get('by', '') == 'student' && nl[nl.size() - 1].get('uid', '') == me()
+            && nl[nl.size() - 1].get('to', '') == 'done'
+            && (nl[nl.size() - 1].get('from', null) == 'scheduled' || nl[nl.size() - 1].get('from', null) == null)
+            && nl[nl.size() - 1].get('at', '') is number
+            && ((nl.size() == ol.size() + 1 && nl.hasAll(ol)) || (ol.size() >= 20 && nl.size() == 20 && nl.hasAll(ol.removeAll([ol[0]]))));
+        }
+        function studentSessionEdit() {
+          let o = resource.data; let d = request.resource.data;
+          return parent().studentUid == me() && notBanned()
+            && d.diff(o).affectedKeys().hasOnly(['status', 'completedAt', 'completedBy', 'feedback', 'feedbackAt', 'seenByStudent', 'studentLog', 'proxyApplied', 'exercises', 'updatedAt', 'statusLog', 'pendingConfirm'])
+            && (!d.diff(o).affectedKeys().hasAny(['statusLog'])
+                || (logAppended(o, d) && o.get('status', 'scheduled') == 'scheduled' && d.get('status', '') == 'done'))
+            && (!d.diff(o).affectedKeys().hasAny(['pendingConfirm']) || d.pendingConfirm is bool)
+            && (d.get('status', '') == o.get('status', '')
+                || (o.get('status', 'scheduled') == 'scheduled' && d.get('status', '') == 'done' && d.get('completedBy', '') == 'student'))
+            && (!d.diff(o).affectedKeys().hasAny(['completedBy']) || d.get('completedBy', '') == 'student')
+            && (!d.diff(o).affectedKeys().hasAny(['exercises']) || d.exercises is list)
+            && (!d.diff(o).affectedKeys().hasAny(['feedback']) || (d.feedback is string && d.feedback.size() <= 2000));
+        }
+        allow read: if signedIn() && (sub == 'sessions' || sub == 'notes') && member();
+        allow create: if signedIn() && sub == 'sessions' && isPTof();
+        allow update: if signedIn() && sub == 'sessions' && (isPTof() || studentSessionEdit());
+        allow create: if signedIn() && sub == 'notes' && member() && validNote(request.resource.data);
+        allow update: if signedIn() && sub == 'notes' && member()
+                      && resource.data.authorUid == me() && validNote(request.resource.data);
+        allow delete: if signedIn() && (isPTof() || (sub == 'notes' && resource.data.authorUid == me()));
       }
+
+      // Chat 1-1 PT ↔ học viên (PT Connect). Người gửi = chính mình, vai khớp với form, không sửa tin.
+      // QS-12: client chỉ gửi 'text' / 'image' (dòng "hệ thống" / "nhật ký" do Cloud Functions ghi), đúng bộ trường,
+      //   người nhận đã CHẶN mình thì không gửi được (App Store 1.2).
+      match /messages/{mid} {
+        function pc() { return get(/databases/$(database)/documents/clients/$(cid)).data; }
+        function peer() { return request.resource.data.role == 'pt' ? pc().studentUid : pc().ptId; }
+        allow read: if signedIn() && (pc().ptId == me() || pc().studentUid == me());
+        allow create: if signedIn() && notBanned()
+          && request.resource.data.from == me()
+          && ((request.resource.data.role == 'pt' && pc().ptId == me())
+              || (request.resource.data.role == 'student' && pc().studentUid == me()))
+          && request.resource.data.kind in ['text', 'image']
+          && request.resource.data.keys().hasOnly(['from', 'role', 'name', 'kind', 'text', 'img', 'meta', 'ts'])
+          && request.resource.data.get('name', '') is string && request.resource.data.get('name', '').size() <= 60
+          && !request.resource.data.get('name', '').lower().matches('.*(tapeasy|hỗ trợ|ho tro|hệ thống|he thong|quản trị|quan tri|admin|system|support).*')
+          && request.resource.data.text is string && request.resource.data.text.size() <= 2000
+          && (request.resource.data.get('img', null) == null
+              || (request.resource.data.img is string && request.resource.data.img.size() <= 140000))
+          && (peer() == null || !blockedBy(peer(), me()));
+        allow update: if false;
+        allow delete: if signedIn() && pc().ptId == me();
+      }
+    }
+
+    // Lời mời PT → học viên (email). Học viên chỉ đổi trạng thái của lời mời gửi đúng email ĐÃ XÁC MINH của mình (QS-14).
+    match /invites/{iid} {
+      allow create: if signedIn() && notBanned() && request.resource.data.ptId == me()
+        && request.resource.data.status == 'pending'
+        && request.resource.data.email is string && request.resource.data.email.size() >= 5
+        && request.resource.data.email == request.resource.data.email.lower()
+        && get(/databases/$(database)/documents/clients/$(request.resource.data.clientId)).data.ptId == me()
+        && get(/databases/$(database)/documents/clients/$(request.resource.data.clientId)).data.get('studentUid', null) == null;
+      allow read: if signedIn() && (resource.data.ptId == me() || (myEmail() != '' && resource.data.email == myEmail()));
+      allow update: if signedIn() && (
+        (resource.data.ptId == me() && request.resource.data.ptId == me())
+        || (myEmail() != '' && resource.data.email == myEmail() && resource.data.status == 'pending'
+            && request.resource.data.status in ['accepted', 'declined']
+            && request.resource.data.studentUid == me()
+            && onlyKeys(['status', 'respondedAt', 'studentUid', 'studentName'])));
+      allow delete: if signedIn() && resource.data.ptId == me();
+    }
+
+    // Routine cộng đồng: ai cũng đọc được (bảng tin công khai); bộ đếm chỉ đổi ±1 kèm tài liệu đánh dấu của chính người đó
+    match /routines/{rid} {
+      function dlt(k) { return request.resource.data.get(k, 0) - resource.data.get(k, 0); }
+      function mark(kind) { return /databases/$(database)/documents/routines/$(rid)/$(kind)/$(me()); }
+      function validR() {
+        let r = request.resource.data;
+        return r.title is string && r.title.size() >= 4 && r.title.size() <= 80
+          && r.get('desc', '').size() <= 1000 && r.days is map && r.authorUid == me();
+      }
+      allow read: if true;
+      allow create: if signedIn() && notBanned() && validR()
+        && request.resource.data.likes == 0 && request.resource.data.saves == 0
+        && request.resource.data.copies == 0 && request.resource.data.reports == 0
+        && request.resource.data.hidden == false
+        && !request.resource.data.keys().hasAny(['approved', 'featured', 'moderatedBy', 'moderatedAt', 'modNote']);
+      allow delete: if signedIn() && (resource.data.authorUid == me() || hasPerm('community.moderate'));
+      allow update: if signedIn() && (
+        (resource.data.authorUid == me() && validR()
+          && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['likes', 'saves', 'copies', 'reports', 'hidden', 'approved', 'authorUid', 'featured', 'featuredBy', 'featuredAt', 'moderatedBy', 'moderatedAt', 'modNote']))
+        || (onlyKeys(['likes']) && ((dlt('likes') == 1 && !exists(mark('likes')) && existsAfter(mark('likes')))
+                                 || (dlt('likes') == -1 && exists(mark('likes')) && !existsAfter(mark('likes')))))
+        || (onlyKeys(['saves']) && ((dlt('saves') == 1 && !exists(mark('saves')) && existsAfter(mark('saves')))
+                                 || (dlt('saves') == -1 && exists(mark('saves')) && !existsAfter(mark('saves')))))
+        || (onlyKeys(['copies']) && dlt('copies') == 1 && !exists(mark('copies')) && existsAfter(mark('copies')))
+        // báo cáo: +1 kèm dấu của chính người đó; KHÔNG tự báo cáo bài mình (QC-14). Function routineReportHeal tính lại
+        //   "ẩn" theo báo cáo từ tài khoản ≥ 7 ngày tuổi (chống 3 tài khoản phụ ẩn bài đối thủ — QS-19)
+        || (onlyKeys(['reports', 'hidden']) && dlt('reports') == 1 && !exists(mark('reports')) && existsAfter(mark('reports'))
+            && resource.data.authorUid != me()
+            && request.resource.data.hidden == (request.resource.data.reports >= 3))
+        // kiểm duyệt viên khôi phục / ẩn: chỉ các trường kiểm duyệt · quản lý nội dung ghim bài
+        || (hasPerm('community.moderate') && onlyKeys(['approved', 'hidden', 'reports', 'updatedAt', 'moderatedBy', 'moderatedAt', 'modNote']))
+        || (hasPerm('community.feature') && onlyKeys(['featured', 'featuredBy', 'featuredAt']))
+      );
+      match /likes/{uid}   { allow read: if signedIn(); allow create, delete: if signedIn() && uid == me(); }
+      match /saves/{uid}   { allow read, create, delete: if signedIn() && uid == me(); }
+      match /copies/{uid}  { allow read, create: if signedIn() && uid == me(); }
+      match /reports/{uid} { allow read: if signedIn() && (uid == me() || hasPerm('reports.view'));
+        allow create: if signedIn() && uid == me() && request.resource.data.reason is string && request.resource.data.reason.size() <= 200
+          && request.resource.data.get('uid', me()) == me(); }
+    }
+
+    match /userSocial/{uid} { allow read, write: if signedIn() && uid == me(); }
+
+    // Chặn người dùng (App Store Guideline 1.2 · cloud.js blockUser/unblockUser): chỉ chủ danh sách đọc / ghi.
+    // Tin nhắn PT ↔ học viên, yêu cầu Tìm PT, bình luận Khoảnh khắc kiểm "người nhận đã chặn mình" (blockedBy).
+    match /blocks/{uid}/list/{other} {
+      allow read: if signedIn() && me() == uid;
+      allow create: if signedIn() && me() == uid && other != uid
+        && request.resource.data.keys().hasOnly(['uid', 'by', 'at', 'reason', 'name'])
+        && request.resource.data.uid == other && request.resource.data.by == uid
+        && request.resource.data.get('reason', '') is string && request.resource.data.get('reason', '').size() <= 200
+        && request.resource.data.get('name', '') is string && request.resource.data.get('name', '').size() <= 80;
+      allow update: if false;
+      allow delete: if signedIn() && me() == uid;
+    }
+
+    // ---------------- Sự kiện · Thi đua · Gian hàng · Quà (cloud-events.js) ----------------
+    // admins/{uid} (cơ chế cũ) — KHÔNG còn dùng để cấp quyền: quyền thật nằm ở roles/{uid} + custom claims (functions/admin.js).
+    match /admins/{uid} { allow get: if signedIn() && me() == uid; allow list, write: if false; }
+
+    // Sự kiện / thử thách: BẮT BUỘC ≥ 1 ảnh hoặc video (≤ 12) + tên ≥ 4 + mô tả ≥ 80 ký tự (events-media.js · INTEGRATION-events-shop §10)
+    function okContent() {
+      return request.resource.data.get('media', []) is list
+        && request.resource.data.get('media', []).size() >= 1 && request.resource.data.get('media', []).size() <= 12
+        && request.resource.data.get('desc', '') is string && request.resource.data.get('desc', '').size() >= 80
+        && request.resource.data.get('title', '') is string && request.resource.data.get('title', '').size() >= 4
+        // QS-11: ngày bắt đầu / kết thúc đúng định dạng (nội dung nhân sự cũng là dữ liệu không tin cậy — chặn chuỗi HTML vào thuộc tính min/max)
+        && okDate(request.resource.data.get('start', '')) && okDate(request.resource.data.get('end', ''))
+        // bộ đếm do máy chủ giữ (regCountAgg) — kể cả nhân sự không tự sửa (QC-19)
+        && !request.resource.data.diff(resource == null ? {} : resource.data).affectedKeys().hasAny(['regCount', 'reviewCount', 'momentCount', 'rating']);
+    }
+    function okDate(v) { return v == null || v == '' || (v is string && v.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2})?)?$')); }
+
+    match /challenges/{id} {
+      allow read: if signedIn();
+      allow create, update: if hasPerm('challenges.manage') && okContent();
+      allow delete: if hasPerm('challenges.manage');
+      match /entries/{uid} {
+        allow read: if signedIn();      // bảng xếp hạng
+        // QS-09 / QC-01 / QC-04 / QC-05: client chỉ THAM GIA (bản ghi điểm 0, tên ≤ 40, mốc cân) và đổi tên hiển thị.
+        //   Tiến độ (value / weekValue / done / days) CHỈ Cloud Function recordChallengeProgress ghi: chỉ khi thử thách đang mở,
+        //   trần theo ngày (buổi 2/ngày, km 60/ngày, ngày-đạt 1/ngày, giảm cân ≤ 1 %/tuần), không tính ngày tương lai / ngoài kỳ.
+        //   QS-01: tên chỉ là chữ ngắn — không nhận trường lạ.
+        allow create: if signedIn() && notBanned() && me() == uid && request.resource.data.uid == uid
+          && request.resource.data.keys().hasOnly(['uid', 'name', 'value', 'weekValue', 'week', 'done', 'joinedAt', 'updatedAt', 'baseline', 'baselineTs', 'baselineDate'])
+          && request.resource.data.get('value', 0) == 0 && request.resource.data.get('weekValue', 0) == 0
+          && request.resource.data.get('done', false) == false
+          && request.resource.data.get('name', '') is string && request.resource.data.get('name', '').size() <= 40;
+        allow update: if signedIn() && me() == uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'updatedAt'])
+          && request.resource.data.get('name', '') is string && request.resource.data.get('name', '').size() <= 40;
+        allow delete: if signedIn() && (me() == uid || hasPerm('challenges.manage'));
+      }
+    }
+    // collectionGroup("entries").where("uid","==",me) — chỉ đọc bản ghi của chính mình
+    match /{path=**}/entries/{uid} { allow read: if signedIn() && (resource.data.uid == me() || hasPerm('challenges.manage')); }
+
+    match /events/{id} {
+      function freeEvent() { let f = get(/databases/$(database)/documents/events/$(id)).data.get('fee', 0); return f == null || f == 0 || f == ''; }
+      // Đăng ký mới (hoặc đăng ký lại sau khi huỷ): đúng chủ, trạng thái 'registered', chỉ sự kiện miễn phí mới tự đặt paid:true
+      function validNewReg(uid) {
+        let r = request.resource.data;
+        return signedIn() && me() == uid && r.uid == uid && r.status == 'registered'
+          && !('checkinCode' in r) && !('checkedInAt' in r)
+          && (r.get('paid', false) == false || freeEvent());
+      }
+      // QC-19: còn chỗ (regCount do Function regCountAgg đếm — client không ghi được bộ đếm)
+      function hasRoom() {
+        let ev = get(/databases/$(database)/documents/events/$(id)).data;
+        return !(ev.get('capacity', 0) is int) || ev.get('capacity', 0) <= 0 || ev.get('regCount', 0) < ev.get('capacity', 0);
+      }
+      allow read: if signedIn();
+      allow create, update: if hasPerm('events.manage') && okContent();
+      allow delete: if hasPerm('events.manage');
+      match /private/{doc} { allow read: if hasPerm('events.manage') || hasPerm('events.checkin'); allow write: if hasPerm('events.manage'); }
+      match /regs/{uid} {
+        allow read: if signedIn() && (me() == uid || hasPerm('events.checkin') || hasPerm('events.manage'));
+        allow create: if validNewReg(uid) && notBanned() && hasRoom();
+        allow update: if hasPerm('events.checkin')
+          || (resource.data.status == 'cancelled' && validNewReg(uid) && hasRoom())
+          || (signedIn() && me() == uid && request.resource.data.status == 'cancelled'
+              && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt']));
+          // (đã bỏ) học viên tự đổi 'checked_in' bằng mã chung: QC-08 — check-in CHỈ qua Cloud Function checkInEvent
+          //   (khung giờ [bắt đầu − 2 giờ, kết thúc + 3 giờ], mã so bằng băm / mã xoay vòng 60 giây, cộng điểm trên máy chủ)
+        allow delete: if hasPerm('events.manage');
+      }
+      // Review sau sự kiện (người đã check-in, rid = uid) + bài đăng sau sự kiện của BTC (rid = "recap_…") — bảng tin "Khoảnh khắc".
+      // Bắt buộc ≥ 1 ảnh/clip + nội dung ≥ 20 ký tự; bộ đếm thích / báo cáo chỉ đổi ±1 kèm tài liệu đánh dấu của chính người đó.
+      match /reviews/{rid} {
+        function isRecap() { return rid.matches('recap_.*'); }
+        function okMedia() { return request.resource.data.media is list && request.resource.data.media.size() >= 1 && request.resource.data.media.size() <= 12; }
+        function okText() { return request.resource.data.text is string && request.resource.data.text.size() >= 20 && request.resource.data.text.size() <= 2000; }
+        // vòng 2: + reportWeight / autoHidden / autoModAt — do Function momentReportHeal ghi (trọng số theo tuổi tài khoản)
+        function guarded() { return ['likeCount', 'commentCount', 'reportCount', 'reported', 'hidden', 'modOk', 'moderatedBy', 'moderatedAt',
+                                     'reportWeight', 'autoHidden', 'autoModAt']; }
+        function delta(k) { return request.resource.data.get(k, 0) - resource.data.get(k, 0); }
+        function only(keys) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys); }
+        function likeDoc() { return /databases/$(database)/documents/events/$(id)/reviews/$(rid)/mlikes/$(request.auth.uid); }
+        function reportDoc() { return /databases/$(database)/documents/events/$(id)/reviews/$(rid)/mreports/$(request.auth.uid); }
+        function isMod() { return hasPerm('community.moderate') || hasPerm('reviews.moderate'); }
+        allow read: if signedIn();
+        function commentDoc(c) { return /databases/$(database)/documents/events/$(id)/reviews/$(rid)/mcomments/$(c); }
+        allow create: if (!isRecap() && signedIn() && notBanned() && me() == rid && request.resource.data.uid == rid && request.resource.data.kind == 'review'
+              && request.resource.data.stars in [1, 2, 3, 4, 5] && okText() && okMedia() && !request.resource.data.keys().hasAny(guarded())
+              && get(/databases/$(database)/documents/events/$(id)/regs/$(rid)).data.status == 'checked_in')
+          || (isRecap() && hasPerm('events.manage') && request.resource.data.kind == 'recap' && okText() && okMedia()
+              && !request.resource.data.keys().hasAny(guarded()));
+        allow update: if (!isRecap() && signedIn() && me() == rid && request.resource.data.stars in [1, 2, 3, 4, 5] && okText() && okMedia()
+              && !request.resource.data.diff(resource.data).affectedKeys().hasAny(guarded()))
+          || (isRecap() && hasPerm('events.manage') && okText() && okMedia() && !request.resource.data.diff(resource.data).affectedKeys().hasAny(guarded()))
+          || (signedIn() && only(['likeCount']) && ((delta('likeCount') == 1 && !exists(likeDoc()) && existsAfter(likeDoc()))
+                                                 || (delta('likeCount') == -1 && exists(likeDoc()) && !existsAfter(likeDoc()))))
+          // QS-19: commentCount ±1 PHẢI kèm đúng 1 bình luận được tạo / xoá trong cùng batch (lastComment = id bình luận);
+          //   Function commentCountHeal đếm lại khi lệch (dữ liệu cũ / ghi lẻ)
+          || (signedIn() && only(['commentCount', 'lastComment']) && request.resource.data.get('lastComment', '') is string
+              && ((delta('commentCount') == 1 && !exists(commentDoc(request.resource.data.get('lastComment', '')))
+                   && existsAfter(commentDoc(request.resource.data.get('lastComment', ''))))
+                  || (delta('commentCount') == -1 && exists(commentDoc(request.resource.data.get('lastComment', '')))
+                   && !existsAfter(commentDoc(request.resource.data.get('lastComment', ''))))))
+          || (signedIn() && only(['reportCount', 'reported']) && delta('reportCount') == 1 && !exists(reportDoc()) && existsAfter(reportDoc()))
+          || (isMod() && only(['hidden', 'modOk', 'moderatedBy', 'moderatedAt']));       // kiểm duyệt: ẩn / giữ
+        allow delete: if (signedIn() && me() == resource.data.uid) || isMod() || (isRecap() && hasPerm('events.manage'));
+        match /mlikes/{uid}    { allow read: if signedIn(); allow create: if signedIn() && me() == uid && request.resource.data.uid == uid; allow delete: if signedIn() && me() == uid; }
+        match /mcomments/{cid} { allow read: if signedIn();
+          allow create: if signedIn() && notBanned() && request.resource.data.uid == me() && request.resource.data.text is string
+            && !blockedBy(get(/databases/$(database)/documents/events/$(id)/reviews/$(rid)).data.get('uid', ''), me())
+            && request.resource.data.text.size() >= 1 && request.resource.data.text.size() <= 300;
+          allow delete: if signedIn() && (resource.data.uid == me() || hasPerm('community.moderate') || hasPerm('reviews.moderate')); }
+        // vòng 2 (FIX-commerce §2 #4a): client CHỈ ghi { uid, reason, ts } — KHÔNG tự ghi trọng số (w / sw); không tự báo cáo bài mình.
+        //   momentReportHeal (Functions) tính trọng số (tài khoản ≥ 3 ngày tuổi = 1), ghi reportCount / reportWeight / tự ẩn khi ≥ 3.
+        match /mreports/{uid}  { allow create: if signedIn() && me() == uid && request.resource.data.uid == uid
+            && request.resource.data.keys().hasOnly(['uid', 'reason', 'ts'])
+            && request.resource.data.get('reason', '') is string && request.resource.data.get('reason', '').size() <= 200
+            && get(/databases/$(database)/documents/events/$(id)/reviews/$(rid)).data.get('uid', '') != me();
+          allow read: if hasPerm('community.moderate') || hasPerm('reviews.moderate'); }
+      }
+    }
+    // collectionGroup("regs").where("uid","==",me)
+    match /{path=**}/regs/{uid} { allow read: if signedIn() && (resource.data.uid == me() || hasPerm('events.checkin')); }
+
+    // collectionGroup("reviews"): bảng tin Khoảnh khắc + hàng đợi kiểm duyệt đánh giá PT — chỉ người đã đăng nhập.
+    // (Gộp 2 đề xuất: events §10.6 "signedIn()" và findpt §3 "true" → giữ bản CHẶT hơn. Đánh giá PT vẫn đọc công khai
+    //  qua đường dẫn trực tiếp ptListings/{lid}/reviews — xem khối TÌM PT.)
+    match /{path=**}/reviews/{rid} { allow read: if signedIn(); }
+    match /{path=**}/mlikes/{uid}  { allow read: if signedIn() && resource.data.uid == me(); }
+
+    match /products/{id} { allow read: if true; allow write: if hasPerm('shop.products'); }
+
+    // Đơn hàng (QS-08, QC-03, QC-06): CHỈ tạo qua Cloud Function createOrder — giá lấy từ products, phí ship từ settings/public,
+    //   tồn kho trừ trong transaction, voucher kiểm hạn + 1 lượt/người + tăng used; client không tự đặt total/paid/history.
+    match /orders/{id} {
+      allow read: if signedIn() && (resource.data.uid == me() || hasPerm('shop.orders') || hasPerm('orders.view'));
+      allow create: if false;
+      // shop.orders: chỉ trạng thái / lịch sử / ghi chú; huỷ đơn đã xác nhận (= hoàn tiền) cần thêm shop.refund.
+      // QC-07: đơn ĐÃ HUỶ là trạng thái cuối (mở lại → kho hoàn 2 lần); hoàn kho khi huỷ do Function orderStockSync làm 1 lần.
+      allow update: if (hasPerm('shop.orders') && onlyKeys(['status', 'history', 'updatedAt', 'note', 'tracking'])
+            && resource.data.status != 'cancelled'
+            && !(request.resource.data.status == 'cancelled' && resource.data.status in ['confirmed', 'shipping', 'delivered'] && !hasPerm('shop.refund')))
+        || (signedIn() && resource.data.uid == me() && resource.data.status in ['pending', 'awaiting_payment']
+            && request.resource.data.status == 'cancelled'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'history', 'updatedAt']));
+      allow delete: if false;
+    }
+
+    match /gifts/{id} {
+      allow read: if signedIn() && (resource.data.uid == me() || hasPerm('gifts.manage'));
+      allow create, delete: if hasPerm('gifts.manage');
+      allow update: if hasPerm('gifts.manage')
+        || (signedIn() && resource.data.uid == me() && resource.data.status == 'new' && request.resource.data.status == 'confirmed'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'address', 'size', 'confirmedAt', 'updatedAt']));
+    }
+  
+    /* ================= TÌM PT (cloud-pt-directory.js · findpt.js) — docs/INTEGRATION-findpt.md §3 ================= */
+    match /ptListings/{lid} {
+      function isOwner() { return signedIn() && me() == lid; }               // 1 niêm yết / PT, id = uid
+      function lockedKeys() { return ['verified', 'verifiedAt', 'verifiedBy', 'verifyNote',
+                                      'hidden', 'hiddenReason', 'hiddenBy', 'hiddenAt',
+                                      'ratingAvg', 'ratingCount', 'ratingDist', 'criteriaAvg', 'reviewHidden',
+                                      'respRate', 'respMins', 'respN', 'statsVerified']; }   // statsVerified: Function ptStatsAgg (QP-08)
+      function validListing(d) {
+        return d.uid == lid && d.name is string && d.name.size() >= 2 && d.name.size() <= 60
+          && d.status in ['public', 'draft'] && d.bio is string && d.bio.size() <= 800
+          && (d.status == 'draft' || (
+               d.gender in ['male', 'female'] && d.specs is list && d.specs.size() >= 1 && d.specs.size() <= 6
+            && d.prices is map && d.prices.single is int && d.prices.single >= 50000 && d.prices.single <= 5000000
+            && d.album is list && d.album.size() >= 3 && d.album.size() <= 9
+            && d.places is list && d.places.size() >= 1 && d.places.size() <= 6
+            && d.cancel in ['flex', 'moderate', 'strict']));
+      }
+      // Ai cũng xem được niêm yết công khai (kể cả chưa đăng nhập) — truy vấn phải có where status=='public' & hidden==false
+      allow get, list: if (resource.data.status == 'public' && resource.data.hidden == false)
+                       || isOwner() || hasPerm('listings.moderate') || hasPerm('pt.verify');
+      allow create: if isOwner() && validListing(request.resource.data)
+                    && request.resource.data.hidden == false && request.resource.data.verified == false
+                    && !request.resource.data.keys().hasAny(lockedKeys().removeAll(['hidden', 'verified']));
+      allow update: if (isOwner() && validListing(request.resource.data)
+                        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(lockedKeys()))
+                    || (hasPerm('pt.verify') && onlyKeys(['verified', 'verifiedAt', 'verifiedBy', 'verifyNote']))
+                    || (hasPerm('listings.moderate') && onlyKeys(['hidden', 'hiddenReason', 'hiddenBy', 'hiddenAt']));
+      allow delete: if isOwner();
+
+      // Đánh giá: id = uid người viết (1 đánh giá / người / PT). CÔNG KHAI. PT không xoá / không ẩn được.
+      match /reviews/{ruid} {
+        // QS-07 / QP-02 / QP-12: "đã tập cùng" do MÁY CHỦ xác nhận — reviewRights/{lid}_{uid} (Function grantReviewRights:
+        //   ≥ 2 buổi PT xác nhận và ≥ 7 ngày từ khi học viên TỰ nhập mã, hoặc buổi thử "done" sau ≥ 24 giờ; giữ 12 tháng kể cả khi rời PT).
+        //   PT không còn tạo được form gắn sẵn tài khoản phụ (QS-02) nên không tự "nuôi" đánh giá 5★.
+        function trained(d) {
+          let rr = /databases/$(database)/documents/reviewRights/$(lid + '_' + me());
+          return d.basis.type in ['client', 'trial'] && exists(rr) && get(rr).data.uid == me()
+            && get(rr).data.get('until', request.time) >= request.time;
+        }
+        function validReview(d) {
+          return d.uid == me() && d.stars is int && d.stars >= 1 && d.stars <= 5
+            && d.criteria.keys().hasOnly(['expertise', 'punctual', 'attitude', 'results'])
+            && d.criteria.expertise >= 1 && d.criteria.expertise <= 5 && d.criteria.punctual >= 1 && d.criteria.punctual <= 5
+            && d.criteria.attitude >= 1 && d.criteria.attitude <= 5 && d.criteria.results >= 1 && d.criteria.results <= 5
+            && d.text is string && d.text.size() >= 20 && d.text.size() <= 1500
+            && d.photos is list && d.photos.size() <= 3;
+        }
+        function modKeys() { return ['hidden', 'hiddenReason', 'modBy', 'modAt', 'flagged', 'modNote']; }
+        allow read: if true;
+        allow create: if signedIn() && notBanned() && ruid == me() && me() != lid && validReview(request.resource.data) && trained(request.resource.data)
+                      && request.resource.data.reply == null && request.resource.data.hidden == false
+                      && request.resource.data.reports == 0 && request.resource.data.flagged == false;
+        // vòng 2 (FIX-pt §3): người viết sửa → editedAt (số); sau khi PT đã trả lời thì BẮT BUỘC editedAfterReply = true
+        //   (hiện "đã sửa sau phản hồi của PT"), cờ này không gỡ được và không đặt được khi chưa có trả lời.
+        function editFlagsOk() {
+          let n = request.resource.data; let o = resource.data;
+          return (!n.diff(o).affectedKeys().hasAny(['editedAt']) || n.editedAt is number)
+            && (o.get('reply', null) == null || n.get('editedAfterReply', false) == true)
+            && (n.get('editedAfterReply', false) == o.get('editedAfterReply', false)
+                || (n.get('editedAfterReply', false) == true && o.get('reply', null) != null));
+        }
+        allow update: if (signedIn() && ruid == me() && resource.data.hidden == false && validReview(request.resource.data)
+                          && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reply', 'reports', 'createdAt', 'basis'].concat(modKeys()))
+                          && editFlagsOk())
+                      || (signedIn() && me() == lid && onlyKeys(['reply'])                              // PT chỉ trả lời
+                          && request.resource.data.reply.by == me() && request.resource.data.reply.text is string
+                          && request.resource.data.reply.text.size() <= 1000)
+                      || (hasPerm('reviews.moderate') && onlyKeys(modKeys()))
+                      || (signedIn() && onlyKeys(['reports', 'flagged'])                                  // +1 báo cáo kèm dấu của chính người đó
+                          && request.resource.data.reports == resource.data.get('reports', 0) + 1 && request.resource.data.flagged == true
+                          && !exists(/databases/$(database)/documents/ptListings/$(lid)/reviews/$(ruid)/reports/$(me()))
+                          && existsAfter(/databases/$(database)/documents/ptListings/$(lid)/reviews/$(ruid)/reports/$(me())));
+        allow delete: if signedIn() && ruid == me();                                                      // CHỈ người viết
+        match /reports/{rid} {
+          allow create: if signedIn() && rid == me() && request.resource.data.reason is string && request.resource.data.reason.size() <= 300
+            && request.resource.data.get('uid', me()) == me();
+          allow read: if signedIn() && (rid == me() || hasPerm('reviews.moderate'));
+          allow update, delete: if false;
+        }
+      }
+
+      // Yêu cầu buổi thử / kết nối / câu hỏi: chỉ người gửi và PT đọc
+      match /requests/{qid} {
+        // QS-12 (E6): hội thoại CHỈ NỐI THÊM 1 tin của chính mình, đúng vai (không ghi đè / chèn câu trả lời giả của PT);
+        //   khi đủ 30 tin được bỏ tin cũ nhất (slice(-30)).
+        function msgsSame() { return request.resource.data.get('msgs', []) == resource.data.get('msgs', []); }
+        function appended(role) {
+          let o = resource.data.get('msgs', []); let n = request.resource.data.get('msgs', []);
+          return n.size() > 0 && n[n.size() - 1].get('from', '') == me() && n[n.size() - 1].get('role', '') == role
+            && ((n.size() == o.size() + 1 && n.hasAll(o))
+                || (o.size() >= 30 && n.size() == o.size() && n.hasAll(o.removeAll([o[0]]))));
+        }
+        allow create: if signedIn() && notBanned() && me() != lid && request.resource.data.uid == me()
+                      && request.resource.data.status == 'pending' && request.resource.data.respondedAt == 0
+                      && request.resource.data.kind in ['trial', 'connect', 'question']
+                      && request.resource.data.msgs is list && request.resource.data.msgs.size() <= 1
+                      && !blockedBy(lid, me());
+        allow read: if signedIn() && (resource.data.uid == me() || me() == lid);
+        allow update: if signedIn() && request.resource.data.msgs.size() <= 30 && (
+              (me() == lid && onlyKeys(['status', 'respondedAt', 'msgs', 'updatedAt', 'clientId'])
+                 && request.resource.data.status in ['pending', 'accepted', 'declined', 'done']
+                 && (msgsSame() || appended('pt')))
+           || (resource.data.uid == me() && notBanned() && onlyKeys(['msgs', 'status', 'updatedAt'])
+                 && request.resource.data.status in [resource.data.status, 'cancelled']
+                 && (msgsSame() || appended('student'))
+                 && (msgsSame() || !blockedBy(lid, me()))));
+        allow delete: if false;
+      }
+    }
+    // "Yêu cầu của tôi" (collectionGroup requests where uid == me)
+    match /{path=**}/requests/{qid} { allow read: if signedIn() && resource.data.uid == me(); }
+
+    // Nhận xét PT → học viên: RIÊNG TƯ (chỉ PT và học viên của form)
+    match /clients/{cid}/feedback/{fid} {
+      function fpc() { return get(/databases/$(database)/documents/clients/$(cid)).data; }
+      allow read: if signedIn() && (fpc().ptId == me() || fpc().studentUid == me());
+      allow create: if signedIn() && fid == 'pt' && fpc().ptId == me() && request.resource.data.by == me()
+                    && request.resource.data.text is string && request.resource.data.text.size() <= 1000;
+      allow update: if signedIn() && fid == 'pt' && (
+            (fpc().ptId == me() && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reply', 'shareable']))
+         || (fpc().studentUid == me() && onlyKeys(['reply', 'shareable'])));
+      allow delete: if signedIn() && fpc().ptId == me();
     }
   }
 }

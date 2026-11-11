@@ -1,0 +1,4 @@
+# Cloud Functions (xem docs/INTEGRATION-health-safety.md mục C3)
+functions/node_modules/
+functions/.env
+*.p8

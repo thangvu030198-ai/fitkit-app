@@ -1,5 +1,5 @@
 /* =========================================================================
-   FIT KIT — Thư viện 800+ bài tập (free-exercise-db, giấy phép Unlicense /
+   TapEasy — Thư viện 800+ bài tập (free-exercise-db, giấy phép Unlicense /
    Public Domain — dùng thương mại thoải mái).
    Nguồn: https://github.com/yuhonas/free-exercise-db
 
@@ -50,6 +50,20 @@ function exdbLoad(){
   })();
   return _exdbLoading;
 }
+/* ---- Nạp lười bản Việt hoá exdb-vi*.js (hợp đồng fkLazy — docs/qa/HANDOFF-ROUND-BRIEF.md) ----
+   Có window.fkLazy → chờ fkLazy.load('exdbvi') (ux: nạp tuần tự, nhớ đã nạp, resolve ngay khi dữ liệu có sẵn, lỗi mạng → reject).
+   Chưa có fkLazy (thẻ <script> exdb-vi*.js còn trong index.html, bản cũ, môi trường test) → xong ngay.
+   Nhớ promise đang chạy; bị reject thì xoá để lần sau "Thử lại" nạp lại. Kết quả: true = đã chờ fkLazy, false = không cần chờ. */
+let _exdbViP = null;
+function exdbViReady(){
+  const W = typeof window !== "undefined" ? window : globalThis;
+  const L = W.fkLazy;
+  if(!L || typeof L.load !== "function") return Promise.resolve(false);
+  if(!_exdbViP){
+    _exdbViP = Promise.resolve().then(()=> L.load("exdbvi")).then(()=> true, e=>{ _exdbViP = null; throw e || new Error("Không tải được bản tiếng Việt"); });
+  }
+  return _exdbViP;
+}
 function exdbImg(ex, i=0){ return ex.images && ex.images[i] ? EXDB_IMG_BASE + ex.images[i] : ""; }
 function exdbMuscleVi(ex){ return (ex.primaryMuscles||[]).map(m=>EXDB_MUSCLE_VI[m]||m).join(", ") || "Toàn thân"; }
 function exdbMatches(ex, filter){
@@ -78,6 +92,19 @@ function exdbToItem(ex){
 /* Sheet chọn bài: onPick(item) nhận object từ exdbToItem.
    Nếu truyền opts.multi = true → chọn nhiều, onPick nhận mảng. */
 function openExDbPicker(onPick, opts={}){
+  /* fkLazy: nếu cả lớp Việt hoá (exdb-vi.js) cũng nạp lười và chưa có → nạp rồi gọi lại openExDbPicker toàn cục
+     (khi đó đã được exdb-vi.js bọc: tên Việt + tìm không dấu). Lỗi nạp → dùng bảng gốc (tên tiếng Anh) bên dưới. */
+  const W = typeof window !== "undefined" ? window : globalThis;
+  if(!opts._viTried && !W.exdbVi && W.fkLazy && typeof W.fkLazy.load === "function"){
+    const again = ()=>{   // đã đóng sheet / mở sheet khác trong lúc chờ → thôi
+      const w = document.getElementById("exdb-vi-wait"), bd = document.getElementById("sheet-backdrop");
+      if(w && (!bd || !bd.classList || bd.classList.contains("open"))) openExDbPicker(onPick, Object.assign({}, opts, { _viTried:true }));
+    };
+    openSheet(`<div class="sheet-header"><h3>Thư viện 800+ bài tập</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
+      <p class="empty-hint" id="exdb-vi-wait" role="status">Đang tải thư viện bài tập…</p>`);
+    exdbViReady().then(again, e=>{ console.warn("[exdb] exdbvi", e); again(); });
+    return;
+  }
   let filter = opts._filter || "all", q = opts._q || "", picked = opts._picked || [];
   openSheet(`
     <div class="sheet-header"><h3>Thư viện 800+ bài tập</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
@@ -96,10 +123,11 @@ function openExDbPicker(onPick, opts={}){
     const rows = all.filter(ex=> exdbMatches(ex, filter) && (!ql || ex.name.toLowerCase().includes(ql))).slice(0, 80);
     $("#exdb-list").innerHTML = rows.map(ex=>{
       const sel = picked.some(p=>p.exDbId===ex.id);
-      return `<div class="list-item" data-exdb="${ex.id}" style="cursor:pointer;${sel?'border-color:var(--primary);':''}">
-        <img class="thumb" src="${exdbImg(ex)}" loading="lazy" style="object-fit:cover;background:#fff;" onerror="this.style.visibility='hidden'">
-        <div class="info"><div class="name">${escapeHtml(ex.name)}</div><div class="meta">${exdbMuscleVi(ex)} · ${EXDB_EQUIP_VI[ex.equipment]||ex.equipment||"—"} · ${EXDB_LEVEL_VI[ex.level]||""}</div></div>
-        <span class="material-symbols-rounded" data-exdb-info="${ex.id}" style="color:var(--text-dim);padding:6px;">info</span>
+      // dữ liệu exdb tải từ mạng → escape mọi trường (kể cả id/URL); ảnh lazy + async (QU-10)
+      return `<div class="list-item" data-exdb="${escapeHtml(ex.id)}" style="cursor:pointer;${sel?'border-color:var(--primary);':''}">
+        <img class="thumb" src="${escapeHtml(exdbImg(ex))}" loading="lazy" decoding="async" width="56" height="56" alt="" style="object-fit:cover;background:#fff;" onerror="this.style.visibility='hidden'">
+        <div class="info"><div class="name">${escapeHtml(ex.name)}</div><div class="meta">${escapeHtml(exdbMuscleVi(ex))} · ${escapeHtml(EXDB_EQUIP_VI[ex.equipment]||ex.equipment||"—")} · ${escapeHtml(EXDB_LEVEL_VI[ex.level]||"")}</div></div>
+        <span class="material-symbols-rounded" data-exdb-info="${escapeHtml(ex.id)}" role="button" aria-label="Xem hướng dẫn ${escapeHtml(ex.name)}" style="color:var(--text-dim);padding:6px;">info</span>
         <span class="material-symbols-rounded" style="color:${sel?'var(--primary)':'var(--text-dim)'};">${sel?'check_circle':'add_circle'}</span>
       </div>`;
     }).join("") || `<p class="empty-hint">Không tìm thấy bài phù hợp.</p>`;
@@ -136,12 +164,12 @@ function openExDbPicker(onPick, opts={}){
 function openExDbDetail(ex, onBack){
   let frame = 0;
   openSheet(`
-    <div class="sheet-header"><h3 style="font-size:18px;">${escapeHtml(ex.name)}</h3><button class="icon-btn" id="exdb-back"><span class="material-symbols-rounded">arrow_back</span></button></div>
-    <img id="exdb-anim" src="${exdbImg(ex,0)}" style="width:100%;max-height:34vh;object-fit:contain;background:#fff;border-radius:14px;">
+    <div class="sheet-header"><h3 style="font-size:18px;">${escapeHtml(ex.name)}</h3><button class="icon-btn" id="exdb-back" aria-label="Quay lại"><span class="material-symbols-rounded">arrow_back</span></button></div>
+    <img id="exdb-anim" src="${escapeHtml(exdbImg(ex,0))}" alt="${escapeHtml(ex.name)} — ảnh kỹ thuật" decoding="async" style="width:100%;max-height:34vh;object-fit:contain;background:#fff;border-radius:14px;">
     <div class="chip-row" style="margin:10px 0;">
-      <span class="pill">${exdbMuscleVi(ex)}</span>
-      <span class="pill">${EXDB_EQUIP_VI[ex.equipment]||ex.equipment||"—"}</span>
-      <span class="pill">${EXDB_LEVEL_VI[ex.level]||ex.level||""}</span>
+      <span class="pill">${escapeHtml(exdbMuscleVi(ex))}</span>
+      <span class="pill">${escapeHtml(EXDB_EQUIP_VI[ex.equipment]||ex.equipment||"—")}</span>
+      <span class="pill">${escapeHtml(EXDB_LEVEL_VI[ex.level]||ex.level||"")}</span>
     </div>
     <div class="card-title" style="font-size:13px;">Hướng dẫn (tiếng Anh)</div>
     <ol style="padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--text-muted);">

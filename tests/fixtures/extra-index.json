@@ -1,0 +1,624 @@
+[
+ {
+  "key": "stepup",
+  "name": "Dumbbell Step-up",
+  "alias": [
+   "Bước bục"
+  ],
+  "file": "stepup.mp4",
+  "thumb": "stepup.jpg",
+  "duration": 11,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-woman-doing-weighted-box-step-ups-8402107/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "hangingleg",
+  "name": "Hanging Leg Raise",
+  "alias": [
+   "Nâng chân treo xà"
+  ],
+  "file": "hangingleg.mp4",
+  "thumb": "hangingleg.jpg",
+  "duration": 11,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-man-lifting-his-legs-while-hanging-on-a-steel-bar-4804761/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "inclinepushup",
+  "name": "Incline Push-up",
+  "alias": [
+   "Chống đẩy nghiêng"
+  ],
+  "file": "inclinepushup.mp4",
+  "thumb": "inclinepushup.jpg",
+  "duration": 12,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-woman-doing-push-ups-on-the-wooden-bench-8402109/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "pushup",
+  "name": "Push-up",
+  "alias": [
+   "Chống đẩy (Push-up)"
+  ],
+  "file": "pushup.mp4",
+  "thumb": "pushup.jpg",
+  "duration": 20,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-man-doing-push-ups-4367576/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "plank",
+  "name": "Plank",
+  "alias": [],
+  "file": "plank.mp4",
+  "thumb": "plank.jpg",
+  "duration": 20,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-woman-doing-plank-exercise-on-a-yoga-mat-7801720/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "sideplank",
+  "name": "Side Plank",
+  "alias": [
+   "Plank nghiêng"
+  ],
+  "file": "sideplank.mp4",
+  "thumb": "sideplank.jpg",
+  "duration": 9,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-man-doing-a-side-plank-6023266/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "glutebridge",
+  "name": "Glute Bridge",
+  "alias": [
+   "Cầu mông"
+  ],
+  "file": "glutebridge.mp4",
+  "thumb": "glutebridge.jpg",
+  "duration": 7,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/woman-doing-glute-bridge-exercise-6525487/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "mountainclimber",
+  "name": "Mountain Climber",
+  "alias": [
+   "Leo núi (Mountain"
+  ],
+  "file": "mountainclimber.mp4",
+  "thumb": "mountainclimber.jpg",
+  "duration": 2,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/woman-doing-mountain-climbers-exercise-6525467/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "crunch",
+  "name": "Crunch",
+  "alias": [
+   "Gập bụng"
+  ],
+  "file": "crunch.mp4",
+  "thumb": "crunch.jpg",
+  "duration": 20,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-woman-doing-crunches-8472284/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "bwsquat",
+  "name": "Bodyweight Squat",
+  "alias": [
+   "Squat tay không"
+  ],
+  "file": "bwsquat.mp4",
+  "thumb": "bwsquat.jpg",
+  "duration": 13,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/video-of-woman-doing-squats-4267356/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "inclinewalk",
+  "name": "Incline Treadmill Walk",
+  "alias": [
+   "Đi bộ dốc",
+   "Đi bộ nhanh",
+   "Đi bộ ngắt quãng"
+  ],
+  "file": "inclinewalk.mp4",
+  "thumb": "inclinewalk.jpg",
+  "duration": 7,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-person-walking-on-a-treadmill-in-a-gym-27861377/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "zone2",
+  "name": "Zone 2 Cardio",
+  "alias": [
+   "Cardio Zone 2"
+  ],
+  "file": "zone2.mp4",
+  "thumb": "zone2.jpg",
+  "duration": 10,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-person-riding-a-stationary-bike-7934714/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "rowing",
+  "name": "Rowing Machine",
+  "alias": [
+   "Máy chèo thuyền"
+  ],
+  "file": "rowing.mp4",
+  "thumb": "rowing.jpg",
+  "duration": 20,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-man-using-a-rowing-machine-6389558/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "jumprope",
+  "name": "Jump Rope",
+  "alias": [
+   "Nhảy dây"
+  ],
+  "file": "jumprope.mp4",
+  "thumb": "jumprope.jpg",
+  "duration": 7,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/two-men-using-jump-ropes-in-exercising-4761426/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "running",
+  "name": "Treadmill Running",
+  "alias": [
+   "Chạy bộ"
+  ],
+  "file": "running.mp4",
+  "thumb": "running.jpg",
+  "duration": 10,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-man-on-a-treadmill-6454274/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "stretch",
+  "name": "Full Body Stretch",
+  "alias": [
+   "Giãn cơ"
+  ],
+  "file": "stretch.mp4",
+  "thumb": "stretch.jpg",
+  "duration": 20,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/person-stretching-legs-5310935/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "hacksquat",
+  "name": "Hack Squat",
+  "alias": [
+   "Squat máy Hack"
+  ],
+  "file": "hacksquat.mp4",
+  "thumb": "hacksquat.jpg",
+  "duration": 20,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/man-performing-squats-in-gym-with-weight-machine-37997498/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "abduction",
+  "name": "Hip Abduction",
+  "alias": [
+   "Mở hông"
+  ],
+  "file": "abduction.mp4",
+  "thumb": "abduction.jpg",
+  "duration": 15,
+  "provider": "Pexels",
+  "author": "Pexels",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "source": "https://www.pexels.com/video/a-woman-doing-a-lateral-leg-raise-exercise-6967418/",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "burpee",
+  "name": "Burpee",
+  "alias": [],
+  "file": "burpee.mp4",
+  "thumb": "burpee.jpg",
+  "duration": 14,
+  "provider": "Wikimedia Commons",
+  "author": "Taco fleur",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:CrossFit_Burpee.webm",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "farmercarry",
+  "name": "Farmer's Carry",
+  "alias": [
+   "Xách tạ đi bộ"
+  ],
+  "file": "farmercarry.mp4",
+  "thumb": "farmercarry.jpg",
+  "duration": 20,
+  "provider": "Wikimedia Commons",
+  "author": "Taco fleur",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Kettlebell_Farmer_Walks.webm",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "bentoverrow",
+  "name": "Bent-over Row",
+  "alias": [
+   "Kéo tạ gập người"
+  ],
+  "file": "bentoverrow.mp4",
+  "thumb": "bentoverrow.jpg",
+  "duration": 5,
+  "provider": "Wikimedia Commons",
+  "author": "FitnessScape",
+  "license": "CC BY 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Bent-over_row_-_exercise_demonstration_video.webm",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "lunges",
+  "name": "Forward Lunge",
+  "alias": [
+   "Lunge (Bước chùng chân)"
+  ],
+  "file": "lunges.mp4",
+  "thumb": "lunges.jpg",
+  "duration": 20,
+  "provider": "Wikimedia Commons",
+  "author": "Army Combat Fitness Test",
+  "license": "Public domain",
+  "licenseUrl": "",
+  "source": "https://commons.wikimedia.org/wiki/File:Strength_Training_Circuit-_Forward_Lunge.webm",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-sledpush-1",
+  "name": "Sled Push",
+  "alias": [
+   "Đẩy xe trượt"
+  ],
+  "file": "ai-sledpush-1.mp4",
+  "thumb": "ai-sledpush-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-sledpush-2",
+  "name": "Sled Push",
+  "alias": [
+   "Đẩy xe trượt"
+  ],
+  "file": "ai-sledpush-2.mp4",
+  "thumb": "ai-sledpush-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-wallball-1",
+  "name": "Wall Ball",
+  "alias": [
+   "Ném bóng tường"
+  ],
+  "file": "ai-wallball-1.mp4",
+  "thumb": "ai-wallball-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-wallball-2",
+  "name": "Wall Ball",
+  "alias": [
+   "Ném bóng tường"
+  ],
+  "file": "ai-wallball-2.mp4",
+  "thumb": "ai-wallball-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-russiantwist-1",
+  "name": "Russian Twist",
+  "alias": [
+   "russian twist"
+  ],
+  "file": "ai-russiantwist-1.mp4",
+  "thumb": "ai-russiantwist-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-russiantwist-2",
+  "name": "Russian Twist",
+  "alias": [
+   "russian twist"
+  ],
+  "file": "ai-russiantwist-2.mp4",
+  "thumb": "ai-russiantwist-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-deadbug-1",
+  "name": "Dead Bug",
+  "alias": [
+   "Bọ chết"
+  ],
+  "file": "ai-deadbug-1.mp4",
+  "thumb": "ai-deadbug-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-deadbug-2",
+  "name": "Dead Bug",
+  "alias": [
+   "Bọ chết"
+  ],
+  "file": "ai-deadbug-2.mp4",
+  "thumb": "ai-deadbug-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-pullover-1",
+  "name": "Dumbbell Pullover",
+  "alias": [
+   "Pullover tạ đơn"
+  ],
+  "file": "ai-pullover-1.mp4",
+  "thumb": "ai-pullover-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-pullover-2",
+  "name": "Dumbbell Pullover",
+  "alias": [
+   "Pullover tạ đơn"
+  ],
+  "file": "ai-pullover-2.mp4",
+  "thumb": "ai-pullover-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-csrow-1",
+  "name": "Chest Supported Row",
+  "alias": [
+   "Kéo tạ tì ngực"
+  ],
+  "file": "ai-csrow-1.mp4",
+  "thumb": "ai-csrow-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-csrow-2",
+  "name": "Chest Supported Row",
+  "alias": [
+   "Kéo tạ tì ngực"
+  ],
+  "file": "ai-csrow-2.mp4",
+  "thumb": "ai-csrow-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-bentoverrow-1",
+  "name": "Barbell Bent-over Row",
+  "alias": [
+   "Kéo tạ gập người"
+  ],
+  "file": "ai-bentoverrow-1.mp4",
+  "thumb": "ai-bentoverrow-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-bentoverrow-2",
+  "name": "Barbell Bent-over Row",
+  "alias": [
+   "Kéo tạ gập người"
+  ],
+  "file": "ai-bentoverrow-2.mp4",
+  "thumb": "ai-bentoverrow-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-overheadpress-1",
+  "name": "Barbell Overhead Press",
+  "alias": [
+   "Đẩy vai (Overhead Press)"
+  ],
+  "file": "ai-overheadpress-1.mp4",
+  "thumb": "ai-overheadpress-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-overheadpress-2",
+  "name": "Barbell Overhead Press",
+  "alias": [
+   "Đẩy vai (Overhead Press)"
+  ],
+  "file": "ai-overheadpress-2.mp4",
+  "thumb": "ai-overheadpress-2.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ },
+ {
+  "key": "ai-bulgarian-1",
+  "name": "Bulgarian Split Squat",
+  "alias": [
+   "Squat tách chân Bulgaria"
+  ],
+  "file": "ai-bulgarian-1.mp4",
+  "thumb": "ai-bulgarian-1.jpg",
+  "duration": 20,
+  "provider": "FIT KIT",
+  "author": "Video minh hoạ AI",
+  "license": "Nội dung FIT KIT (tạo bằng AI)",
+  "licenseUrl": "",
+  "source": "",
+  "modified": "Cắt ≤20 giây, nén 540p H.264, bỏ tiếng"
+ }
+]

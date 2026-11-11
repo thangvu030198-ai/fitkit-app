@@ -1,5 +1,5 @@
 /* =========================================================================
-   FIT KIT — Cơ sở dữ liệu khoa học
+   TapEasy — Cơ sở dữ liệu khoa học
    Nguồn tham khảo:
    - Công thức năng lượng: Mifflin-St Jeor Equation (1990), được ACSM/Hiệp hội
      Dinh dưỡng Hoa Kỳ khuyến nghị là công thức ước tính BMR chính xác nhất
@@ -47,9 +47,10 @@ const ACTIVITY_LEVELS = [
 
 /* ---------- Mục tiêu ---------- */
 const GOALS = [
-  { id: "lose", label: "Giảm mỡ", desc: "Thâm hụt ~18% TDEE (~0,5 kg/tuần)", kcalAdjust: -0.18, program: "giam-mo" },
-  { id: "maintain", label: "Duy trì vóc dáng", desc: "Giữ nguyên mức năng lượng TDEE", kcalAdjust: 0, program: "tang-co" },
-  { id: "gain", label: "Tăng cơ", desc: "Thặng dư ~12% TDEE để tăng cơ nạc", kcalAdjust: 0.12, program: "tang-co" },
+  /* QN-UX: bỏ thuật ngữ "TDEE" trong mô tả hiển thị cho người dùng phổ thông */
+  { id: "lose", label: "Giảm mỡ", desc: "Ăn ít hơn mức cơ thể tiêu hao ~18% (giảm ~0,5 kg/tuần)", kcalAdjust: -0.18, program: "giam-mo" },
+  { id: "maintain", label: "Duy trì vóc dáng", desc: "Ăn bằng mức cơ thể tiêu hao mỗi ngày", kcalAdjust: 0, program: "tang-co" },
+  { id: "gain", label: "Tăng cơ", desc: "Ăn dư ~12% so với mức tiêu hao để tăng cơ nạc", kcalAdjust: 0.12, program: "tang-co" },
 ];
 
 /* ---------- Cơ sở dữ liệu bài tập ---------- */
@@ -163,14 +164,18 @@ const FOODS = [
   { id: "uc-vit", name: "Ức vịt", kcal: 201, protein: 23, carbs: 0, fat: 11.2 },
   { id: "thit-bo-nac", name: "Thịt bò nạc (chín)", kcal: 190, protein: 28, carbs: 0, fat: 8 },
   { id: "thit-heo-nac", name: "Thịt heo nạc", kcal: 143, protein: 21, carbs: 0, fat: 6 },
-  { id: "thit-heo-ba-chi", name: "Thịt heo ba chỉ", kcal: 518, protein: 9.3, carbs: 0, fat: 53 },
+  /* QN-11: Bảng thành phần thực phẩm Việt Nam (Viện Dinh dưỡng, 2007) — "Thịt lợn ba chỉ": 260 kcal, đạm 16,5, béo 21,5.
+     (518 kcal cũ là "pork belly, raw" của USDA — gần như toàn mỡ, không đại diện ba chỉ nạc xen mỡ ở VN) */
+  { id: "thit-heo-ba-chi", name: "Thịt heo ba chỉ", kcal: 260, protein: 16.5, carbs: 0, fat: 21.5 },
   { id: "ca-hoi", name: "Cá hồi", kcal: 208, protein: 20, carbs: 0, fat: 13 },
   { id: "ca-basa", name: "Cá basa / Cá tra", kcal: 90, protein: 17, carbs: 0, fat: 2 },
   { id: "ca-ngu", name: "Cá ngừ (đóng hộp, ráo nước)", kcal: 116, protein: 26, carbs: 0, fat: 1 },
   { id: "tom-luoc", name: "Tôm (luộc)", kcal: 99, protein: 24, carbs: 0.2, fat: 0.3 },
   { id: "trung-ga", name: "Trứng gà (luộc)", kcal: 155, protein: 13, carbs: 1.1, fat: 11 },
-  { id: "sua-tuoi-khong-duong", name: "Sữa tươi không đường", kcal: 42, protein: 3.4, carbs: 5, fat: 1 },
-  { id: "sua-tuoi-co-duong", name: "Sữa tươi có đường", kcal: 61, protein: 3, carbs: 9.7, fat: 1 },
+  /* QN-11: sữa tươi tiệt trùng phổ biến ở VN là sữa NGUYÊN KEM (~3,3 % béo). USDA FDC 171265 "Milk, whole, 3.25 %":
+     61 kcal · đạm 3,2 · carb 4,8 · béo 3,3 (42 kcal cũ là sữa 1 % béo). Có đường: + ~4,5 g đường/100 ml (nhãn VN 75–80 kcal). */
+  { id: "sua-tuoi-khong-duong", name: "Sữa tươi không đường", kcal: 61, protein: 3.2, carbs: 4.8, fat: 3.3 },
+  { id: "sua-tuoi-co-duong", name: "Sữa tươi có đường", kcal: 77, protein: 3, carbs: 9, fat: 3.3 },
   { id: "sua-chua-khong-duong", name: "Sữa chua không đường", kcal: 62, protein: 3.8, carbs: 5, fat: 3 },
   { id: "sua-chua-hy-lap", name: "Sữa chua Hy Lạp", kcal: 97, protein: 9, carbs: 3.6, fat: 5 },
   { id: "pho-mai", name: "Phô mai (Cheddar)", kcal: 403, protein: 25, carbs: 1.3, fat: 33 },
@@ -196,7 +201,8 @@ const FOODS = [
   { id: "mat-ong", name: "Mật ong", kcal: 304, protein: 0.3, carbs: 82, fat: 0 },
   { id: "sua-dau-nanh", name: "Sữa đậu nành không đường", kcal: 33, protein: 3.3, carbs: 1.8, fat: 1.8 },
   { id: "mi-goi", name: "Mì gói (khô, chưa nêm)", kcal: 436, protein: 9, carbs: 60, fat: 17 },
-  { id: "khoai-mon", name: "Khoai môn (luộc)", kcal: 112, protein: 1.5, carbs: 26, fat: 0.2 },
+  /* QN-11: USDA FDC 168495 "Taro, cooked, without salt": 142 kcal · đạm 0,5 · carb 34,6 · béo 0,1 · xơ 5,1 (112 cũ là khoai môn SỐNG) */
+  { id: "khoai-mon", name: "Khoai môn (luộc)", kcal: 142, protein: 0.5, carbs: 34.6, fat: 0.1 },
   { id: "nuoc-cam", name: "Nước cam ép", kcal: 45, protein: 0.7, carbs: 10.4, fat: 0.2 },
   { id: "banh-quy", name: "Bánh quy", kcal: 480, protein: 6, carbs: 65, fat: 22 },
   { id: "chocolate-den", name: "Chocolate đen (70%)", kcal: 598, protein: 7.8, carbs: 45.9, fat: 42.6 },

@@ -1,4 +1,4 @@
-# Hướng dẫn: Build file .ipa miễn phí cho FIT KIT (không cần Mac) rồi cài lên iPhone qua AltStore
+# Hướng dẫn: Build file .ipa miễn phí cho TapEasy (không cần Mac) rồi cài lên iPhone qua AltStore
 
 Tài liệu này dành cho máy tính **Windows**. Toàn bộ quy trình hoàn toàn miễn phí, không cần tài khoản Apple Developer (99 USD/năm).
 
@@ -61,13 +61,13 @@ Cài **iTunes** từ trang chủ Apple (không phải bản Microsoft Store) HO�
 
 ---
 
-## Phần 3 — Cài FitKit qua AltStore
+## Phần 3 — Cài TapEasy qua AltStore
 
 1. Chuyển file `FitKit-unsigned.ipa` vào iPhone — cách dễ nhất: gửi qua Zalo/Google Drive/AirDrop rồi tải về mục **Files** (Tệp) trên iPhone.
 2. Trong app **Files**, bấm giữ vào file `.ipa` → **Share** (Chia sẻ) → chọn **AltStore**.
 3. AltStore sẽ tự ký lại bằng Apple ID của bạn rồi cài đặt — chờ thanh tiến trình chạy xong.
-4. Vào lại **Cài đặt → Cài đặt chung → VPN & Quản lý thiết bị**, bấm Trust cho app FitKit (tương tự bước 2.4, lần này là cho chính app FitKit).
-5. Mở app **FIT KIT** từ màn hình chính — dùng như app thật, có icon riêng, không qua trình duyệt.
+4. Vào lại **Cài đặt → Cài đặt chung → VPN & Quản lý thiết bị**, bấm Trust cho app TapEasy (tương tự bước 2.4, lần này là cho chính app TapEasy).
+5. Mở app **TapEasy** từ màn hình chính — dùng như app thật, có icon riêng, không qua trình duyệt.
 
 ---
 
@@ -77,6 +77,6 @@ Apple ID miễn phí chỉ ký ứng dụng sống được **7 ngày**. Sau 7 n
 
 ---
 
-## Khi có bản code FitKit mới
+## Khi có bản code TapEasy mới
 
 Lặp lại từ Bước 1.3 (đẩy code mới lên GitHub) → Bước 1.4 (chạy lại Actions) → Bước 1.5 (tải .ipa mới) → Bước 3 (cài đè qua AltStore).

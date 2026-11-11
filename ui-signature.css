@@ -1,0 +1,245 @@
+/* =========================================================================
+   TapEasy — THÀNH PHẦN CHỮ KÝ (ui-signature.css) · đi kèm ui-signature.js
+   Chỉ dùng token (--text, --fk-ov-rgb, --mint, --coral, --glass…) → chạy với mọi theme và gói.
+   Nạp SAU theme-packs.css (cuối cùng). Mục: A trượt xác nhận · B stepper · C hồ sơ · D gauge · E thẻ chọn · F typewriter · G theo gói
+   ========================================================================= */
+.sig-sr{ position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+.sig-mono{ font-family:var(--font-mono, ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace); font-size:12px; font-weight:500;
+  text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); line-height:1.3; }
+.sig-mono::before{ content:":: "; opacity:.55; }
+.sig-dim{ color:var(--text-muted); }   /* --text-dim của theme Mặc định chỉ 3,6:1 → dùng muted cho chữ 12 px */
+
+/* =========================================================================
+   A. TRƯỢT ĐỂ XÁC NHẬN — thumb 44 px, chốt ở 85 %
+   ========================================================================= */
+.sig-slide-orig{ display:none !important; }
+.sig-slide{
+  --sig-track-bg:rgba(var(--fk-ov-rgb), calc(.10 * var(--fk-ov-k)));
+  --sig-track-line:rgba(var(--fk-ov-rgb), calc(.20 * var(--fk-line-k)));
+  --sig-fill:rgba(var(--coral-rgb), .24);
+  --sig-thumb-bg:var(--coral); --sig-thumb-ink:var(--on-coral);
+  --sig-ink:var(--text);
+  position:relative; margin-top:12px; user-select:none; -webkit-user-select:none;
+}
+.sig-slide.is-danger{ --sig-fill:color-mix(in srgb, var(--coral-hot) 26%, transparent); --sig-thumb-bg:var(--coral-hot); --sig-thumb-ink:#fff; }
+.sig-slide-track{ position:relative; height:54px; border-radius:999px; background:var(--sig-track-bg); border:1px solid var(--sig-track-line);
+  overflow:hidden; -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
+html.lowfx .sig-slide-track{ -webkit-backdrop-filter:none; backdrop-filter:none; }
+.sig-slide-fill{ position:absolute; left:0; top:0; bottom:0; width:52px; border-radius:inherit; background:var(--sig-fill); pointer-events:none; }
+.sig-slide-label{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:0 16px 0 58px; pointer-events:none;
+  font-size:15px; font-weight:600; color:var(--sig-ink); opacity:calc(1 - var(--sig-p, 0) * 1.6); }
+.sig-slide-label .t{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sig-slide-thumb{ position:absolute; left:4px; top:50%; width:44px; height:44px; margin-top:-22px; border-radius:50%; border:0; padding:0; z-index:3;
+  display:flex; align-items:center; justify-content:center; background:var(--sig-thumb-bg); color:var(--sig-thumb-ink);
+  box-shadow:0 4px 14px rgba(0,0,0,.28); cursor:grab; touch-action:none; -webkit-tap-highlight-color:transparent; }
+.sig-slide-thumb:active{ cursor:grabbing; }
+.sig-slide-thumb .material-symbols-rounded{ font-size:22px; color:inherit; }
+.sig-slide-thumb:focus-visible{ outline:2px solid var(--fk-ink); outline-offset:3px; }
+.sig-slide.is-anim .sig-slide-thumb{ transition:transform .38s cubic-bezier(.22,1,.36,1); }
+.sig-slide.is-anim .sig-slide-fill{ transition:width .38s cubic-bezier(.22,1,.36,1); }
+.sig-slide[data-state="done"] .sig-slide-label, .sig-slide[data-state="busy"] .sig-slide-label{ opacity:1; padding:0 60px 0 16px; }
+.sig-slide[data-state="busy"] .sig-slide-thumb{ opacity:.85; }
+.sig-slide.is-disabled{ opacity:.5; }
+.sig-slide.is-disabled .sig-slide-thumb{ cursor:not-allowed; }
+@media (prefers-reduced-motion: no-preference){
+  .sig-slide[data-state="idle"]:not(.is-disabled) .sig-slide-label .t{
+    background:linear-gradient(90deg, currentColor 0%, currentColor 38%, color-mix(in srgb, currentColor 35%, transparent) 50%, currentColor 62%, currentColor 100%);
+    background-size:240% 100%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    animation:sigShine 2.6s linear infinite; }
+  @keyframes sigShine{ from{ background-position:120% 0; } to{ background-position:-120% 0; } }
+  .sig-slide.is-nudge .sig-slide-thumb{ animation:sigNudge .55s cubic-bezier(.22,1,.36,1); }
+  @keyframes sigNudge{ 0%,100%{ translate:0 0; } 35%{ translate:18px 0; } 65%{ translate:-3px 0; } }
+}
+
+/* =========================================================================
+   B. STEPPER ONBOARDING — chặng đang làm: nền "mực" chữ nền (Aurora: trắng/đen), số trong vòng tròn
+   ========================================================================= */
+.onboard-progress.sig-has-stepper{ display:none !important; }
+.sig-stepper{ list-style:none; margin:0 0 14px; padding:0; display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:6px; }
+.sig-step{ display:flex; align-items:center; gap:8px; min-height:44px; padding:6px 8px 6px 6px; border-radius:12px; min-width:0;
+  background:var(--sig-step-off-bg, rgba(var(--fk-ov-rgb), calc(.10 * var(--fk-ov-k)))); color:var(--text-muted);
+  font-size:13px; font-weight:500; transition:background .35s, color .35s; }
+.sig-step .n{ flex:none; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:600; background:rgba(var(--fk-ov-rgb), calc(.14 * var(--fk-ov-k))); color:var(--text); }
+.sig-step .n .material-symbols-rounded{ font-size:16px; color:inherit; }
+.sig-step .l{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sig-step.on{ background:var(--sig-step-on-bg, var(--fk-ink)); color:var(--sig-step-on-ink, var(--bg)); font-weight:600; }
+.sig-step.on .n{ background:var(--sig-step-on-ink, var(--bg)); color:var(--sig-step-on-bg, var(--fk-ink)); }
+.sig-step.done{ color:var(--text); }
+.sig-step.done .n{ background:var(--mint); color:var(--on-mint); }
+.sig-step-bar{ grid-column:1 / -1; height:3px; border-radius:2px; overflow:hidden; background:rgba(var(--fk-ov-rgb), calc(.14 * var(--fk-ov-k))); }
+.sig-step-bar i{ display:block; height:100%; border-radius:2px; background:var(--mint); transition:width .5s cubic-bezier(.22,1,.36,1); }
+@keyframes sigRise{ from{ opacity:0; transform:translate3d(0,10px,0); } to{ opacity:1; transform:none; } }
+@media (prefers-reduced-motion: no-preference){
+  .onboard-step.sig-reveal > *{ animation:sigRise .55s var(--tp-ease, cubic-bezier(.22,1,.36,1)) both; }
+  .onboard-step.sig-reveal > *:nth-child(2){ animation-delay:.15s; }
+  .onboard-step.sig-reveal > *:nth-child(3){ animation-delay:.30s; }
+  .onboard-step.sig-reveal > *:nth-child(4){ animation-delay:.45s; }
+  .onboard-step.sig-reveal > *:nth-child(n+5){ animation-delay:.60s; }
+  .sig-step.on .n{ animation:sigPop .45s cubic-bezier(.22,1,.36,1); }
+  @keyframes sigPop{ from{ transform:scale(.6); } to{ transform:none; } }
+}
+
+/* =========================================================================
+   C. HỒ SƠ — hero mờ dần vào nền + thẻ thống kê có minh hoạ
+   ========================================================================= */
+.sig-pf-hero{ position:relative; isolation:isolate; padding:6px 0 16px; }
+.sig-pf-hero::before{ content:""; position:absolute; z-index:-1; left:-16px; right:-16px; top:-26px; bottom:-34px; pointer-events:none;
+  background:
+    radial-gradient(70% 58% at 50% 22%, var(--sig-hero-1, rgba(var(--coral-rgb), .24)), transparent 72%),
+    radial-gradient(55% 45% at 88% 0%, var(--sig-hero-2, rgba(var(--mint-rgb), .16)), transparent 70%),
+    linear-gradient(180deg, rgba(var(--fk-ov-rgb), calc(.06 * var(--fk-ov-k))), transparent 80%);
+  -webkit-mask-image:linear-gradient(180deg, #000 40%, transparent 100%); mask-image:linear-gradient(180deg, #000 40%, transparent 100%); }
+.sig-pf-vert{ display:none; }
+@media (prefers-reduced-motion: no-preference){
+  #screen-profile.enter .sig-pf-hero::before{ animation:sigHeroIn 1.2s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes sigHeroIn{ from{ opacity:0; transform:scale(1.06); } to{ opacity:1; transform:none; } }
+}
+.sig-stats{ gap:8px; }
+.sig-stat{ position:relative; overflow:hidden; min-height:116px; display:flex; flex-direction:column; justify-content:flex-end; align-items:flex-start;
+  text-align:left; padding:12px !important; }
+.sig-stat .num, .sig-stat .cap{ position:relative; z-index:1; }
+.sig-stat .num{ font-size:24px; line-height:1.05; }
+.sig-stat .cap{ font-size:12px; margin-top:2px; }
+.sig-ill-wrap{ position:absolute; left:8px; right:8px; top:8px; height:46px; display:block; color:var(--text-dim); pointer-events:none; }
+.sig-ill{ display:block; width:68px; height:42px; overflow:visible; }
+.sig-stat[data-ill="weight"] .sig-ill .acc{ stroke:var(--mint); }
+.sig-stat[data-ill="bmi"] .sig-ill .acc{ stroke:var(--mint); }
+.sig-stat[data-ill="streak"] .sig-ill .acc{ stroke:var(--coral); }
+.sig-stat[data-ill="streak"] .sig-ill .acc-f{ fill:var(--coral); }
+.sig-stat::after{ content:""; position:absolute; right:-30px; top:-30px; width:96px; height:96px; border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle, rgba(var(--mint-rgb), .16), transparent 70%); }
+.sig-stat[data-ill="streak"]::after{ background:radial-gradient(circle, rgba(var(--coral-rgb), .18), transparent 70%); }
+
+/* =========================================================================
+   D. TRANG CHỦ — thẻ năng lượng: gauge nửa vòng + nhãn mono
+   ========================================================================= */
+.metric-grid.sig-gauged{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+.metric-grid.sig-gauged > div.metric:first-of-type{ display:none; }
+.sig-gauge-card{ grid-column:1 / -1; position:relative; overflow:hidden; padding:14px 16px 14px; border-radius:var(--tp-r-card, 24px); cursor:pointer;
+  background:var(--glass); border:1px solid rgba(var(--fk-ov-rgb), calc(.14 * var(--fk-line-k)));
+  -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur); color:var(--text); text-align:left; }
+.sig-gauge-card:focus-visible{ outline:2px solid var(--fk-ink); outline-offset:2px; }
+html.fk-light .sig-gauge-card{ box-shadow:var(--shadow-card); }
+html.lowfx .sig-gauge-card{ -webkit-backdrop-filter:none; backdrop-filter:none; background:var(--glass-solid); }
+.sig-gauge-head{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+.sig-gauge-head .sig-dim::before{ content:none; }
+.sig-gauge{ position:relative; max-width:296px; margin:8px auto 0; }
+.sig-gauge svg{ display:block; width:100%; height:auto; overflow:visible; }
+.sig-gauge .bg{ fill:none; stroke:rgba(var(--fk-ov-rgb), calc(.16 * var(--fk-ov-k))); stroke-width:14; stroke-linecap:round; }
+.sig-gauge .fg{ fill:none; stroke-width:14; stroke-linecap:round; }
+.sig-gauge .s1{ stop-color:var(--tp-gauge-a, var(--coral-2)); }
+.sig-gauge .s2{ stop-color:var(--tp-gauge-b, var(--coral)); }
+.sig-gauge .tk line{ stroke:rgba(var(--fk-ink-rgb), .38); stroke-width:1.4; stroke-linecap:round; }
+.sig-gauge .dot{ fill:var(--bg, var(--navy)); stroke:var(--tp-gauge-b, var(--coral)); stroke-width:3.5; }
+.sig-gauge.is-over .fg{ stroke:var(--coral-hot); }
+.sig-gauge.is-over .dot{ stroke:var(--coral-hot); }
+.sig-gauge-c{ position:absolute; left:0; right:0; bottom:0; display:flex; flex-direction:column; align-items:center; text-align:center; }
+.sig-gauge-c b{ font-family:var(--font-head); font-size:38px; font-weight:var(--tp-head-w, 600); letter-spacing:-.04em; line-height:1;
+  color:var(--text); font-variant-numeric:tabular-nums; }
+.sig-gauge-c small{ font-size:12px; color:var(--text-muted); margin-top:3px; }
+.sig-gauge-c em{ font-style:normal; margin-top:4px; color:var(--mint-2); }
+.sig-gauge-c em.is-over{ color:var(--text); }
+.sig-gauge-c em.is-over::before{ color:var(--coral-hot); opacity:1; }
+.sig-gauge-end{ position:absolute; top:100%; margin-top:2px; transform:translateX(-50%); color:var(--text-muted); }
+.sig-gauge-end::before{ content:none; }
+.sig-gauge-end.l{ left:10%; } .sig-gauge-end.r{ left:90%; }
+.sig-macros{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; margin-top:24px; }
+.sig-mac{ padding:8px 10px 9px; border-radius:12px; background:rgba(var(--fk-ov-rgb), calc(.07 * var(--fk-ov-k))); min-width:0; }
+.sig-mac .sig-mono{ display:block; letter-spacing:.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text); }
+.sig-mac .sig-mono::before{ content:none; }
+.sig-mac b{ display:block; margin-top:2px; font-family:var(--font-head); font-size:18px; font-weight:600; color:var(--text); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.sig-mac b small{ font-size:12px; font-weight:500; color:var(--text-muted); }
+.sig-mac i{ display:block; height:4px; margin-top:6px; border-radius:2px; overflow:hidden; background:rgba(var(--fk-ov-rgb), calc(.16 * var(--fk-ov-k))); }
+.sig-mac s{ display:block; height:100%; border-radius:2px; background:var(--mint); text-decoration:none; }
+.sig-mac.m-c s{ background:var(--coral-4, var(--coral)); }
+.sig-mac.m-f s{ background:var(--mint-2); }
+@keyframes sigArc{ from{ stroke-dasharray:0 100; } }
+@keyframes sigFade{ from{ opacity:0; } to{ opacity:1; } }
+@keyframes sigGrow{ from{ width:0; } }
+@media (prefers-reduced-motion: no-preference){
+  .sig-gauge-card.is-intro .fg{ animation:sigArc var(--sig-gauge-dur, 1.3s) var(--tp-ease, cubic-bezier(.16,1,.3,1)) .15s both; }
+  .sig-gauge-card.is-intro .dot{ animation:sigFade .4s ease calc(var(--sig-gauge-dur, 1.3s) - .1s) both; }
+  .sig-gauge-card.is-intro .sig-mac s{ animation:sigGrow calc(var(--sig-gauge-dur, 1.3s) * .8) var(--tp-ease, cubic-bezier(.16,1,.3,1)) .35s both; }
+  .sig-gauge-card.is-intro .tk line{ animation:sigFade .6s ease both; }
+}
+
+/* =========================================================================
+   E. THẺ CHỌN BO LỚN CÓ SỐ 01/02 (câu hỏi chọn 1 trong nhiều: onboarding, program builder)
+   Dùng cho module mới: <div class="sig-choices"><button class="sig-choice">…</button>…</div>
+   ========================================================================= */
+:is(.sig-choices, #goal-list, #activity-list, .pb-grid){ counter-reset:sigc; }
+:is(.sig-choice, #goal-list > .choice-card, #activity-list > .choice-card, .pb-grid > .pb-opt){
+  counter-increment:sigc; position:relative; border-radius:var(--sig-choice-r, 24px); min-height:var(--sig-choice-h, 80px);
+  padding:16px 54px 16px 18px; justify-content:center; transition:background .25s, border-color .25s, transform .15s; }
+.pb-grid:not(.one) > .pb-opt{ padding:14px 40px 14px 14px; justify-content:flex-start; }
+:is(.sig-choice, #goal-list > .choice-card, #activity-list > .choice-card, .pb-grid > .pb-opt)::after{
+  content:counter(sigc, decimal-leading-zero); position:absolute; right:16px; top:15px;
+  font:500 13px/1 var(--font-mono, ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace); letter-spacing:.04em; opacity:.75; }
+.pb-grid:not(.one) > .pb-opt::after{ right:12px; top:12px; }
+:is(.sig-choice, #goal-list > .choice-card, #activity-list > .choice-card, .pb-grid > .pb-opt):active{ transform:scale(.985); }
+:is(#goal-list, #activity-list) > .choice-card > span{ font-size:16px; font-weight:600; }
+:is(#goal-list, #activity-list) > .choice-card > small{ font-size:12px; line-height:1.4; }
+:is(.sig-choice.selected, .sig-choice[aria-pressed="true"], #goal-list > .choice-card.selected, #activity-list > .choice-card.selected, .pb-grid > .pb-opt.on)::after{ opacity:1; font-weight:700; }
+
+/* =========================================================================
+   F. TYPEWRITER + tiêu đề editorial (gói Sanctuary; con trỏ nháy)
+   ========================================================================= */
+.sig-tw-caret{ display:inline-block; width:2px; height:.86em; margin-left:3px; vertical-align:-.06em; background:currentColor; }
+@media (prefers-reduced-motion: no-preference){ .sig-tw-caret{ animation:sigBlink 1s steps(1) infinite; } @keyframes sigBlink{ 50%{ opacity:0; } } }
+
+/* =========================================================================
+   G. TINH CHỈNH THEO GÓI
+   ========================================================================= */
+/* Aurora: thanh trượt & stepper đen/trắng tuyệt đối */
+html[data-theme="aurora"] .sig-slide{ --sig-track-bg:#1A1A1A; --sig-track-line:rgba(255,255,255,.10); --sig-fill:rgba(255,255,255,.10); --sig-thumb-bg:#fff; --sig-thumb-ink:#000; }
+html[data-theme="aurora"] .sig-slide.is-danger{ --sig-thumb-bg:#FF5C5C; --sig-thumb-ink:#000; --sig-fill:rgba(255,92,92,.18); }
+html[data-theme="aurora"] .sig-step.done .n{ background:#fff; color:#000; }
+html[data-theme="aurora"] .sig-step-bar i{ background:#fff; }
+html[data-theme="aurora"] .sig-pf-hero{ --sig-hero-1:rgba(255,255,255,.07); --sig-hero-2:rgba(200,242,90,.10); }
+html[data-theme="aurora"] .sig-mac{ background:#111; }
+/* Espresso: rãnh trượt bằng kính lỏng (lớp tp-lg của theme-packs.css) */
+html[data-theme="espresso"] .sig-slide{ --sig-track-bg:rgba(255,255,255,.03); --sig-fill:rgba(255,140,78,.22); }
+html[data-theme="espresso"] .sig-slide-track{ box-shadow:inset 0 1px 0 rgba(255,244,232,.30), inset 0 -1px 0 rgba(255,244,232,.06), 0 8px 24px rgba(10,4,2,.30);
+  -webkit-backdrop-filter:blur(2px) saturate(1.3); backdrop-filter:blur(2px) saturate(1.3); }
+html.tp-refract[data-theme="espresso"] .sig-slide-track{ backdrop-filter:url(#tp-lg-refract) blur(1px) saturate(1.3); }
+html[data-theme="espresso"] .sig-slide-thumb{ background:linear-gradient(180deg, #FFA36C, #F27A3B); box-shadow:inset 0 1px 0 rgba(255,255,255,.45), 0 6px 16px rgba(240,122,58,.35); }
+html[data-theme="espresso"] .sig-pf-hero{ --sig-hero-1:rgba(214,120,60,.42); --sig-hero-2:rgba(242,188,133,.20); }
+html[data-theme="espresso"] .sig-pf-hero::before{ bottom:-60px; }
+/* Thu Alpine: panel #EAE6DE, thanh macro hổ phách/cam/tím, nhãn mono đậm hơn */
+html[data-theme="alpine"] :is(.sig-mac, .sig-step:not(.on)){ background:var(--tp-panel); }
+html[data-theme="alpine"] .sig-mac.m-p s{ background:var(--tp-violet); }
+html[data-theme="alpine"] .sig-mac.m-c s{ background:var(--tp-amber); }
+html[data-theme="alpine"] .sig-mac.m-f s{ background:var(--tp-orange); }
+html[data-theme="alpine"] .sig-gauge-c b{ font-weight:300; font-size:44px; letter-spacing:-.05em; }
+html[data-theme="alpine"] .sig-gauge-c em{ color:#8F4508; }
+html[data-theme="alpine"] .sig-gauge-c em.is-over{ color:#B42318; }
+html[data-theme="alpine"] .sig-gauge .dot{ fill:#F4F0E9; }
+html[data-theme="alpine"] .sig-slide{ --sig-track-bg:var(--tp-panel); --sig-track-line:rgba(46,45,42,.12); --sig-fill:rgba(246,183,51,.35); --sig-thumb-bg:#F6B733; --sig-thumb-ink:#2E2D2A; }
+html[data-theme="alpine"] .sig-pf-hero{ --sig-hero-1:rgba(251,208,106,.55); --sig-hero-2:rgba(124,108,242,.14); }
+html[data-theme="alpine"] .sig-stat .num{ font-weight:300; font-size:28px; }
+/* Sương Wellness: thumb trắng có quầng vàng, thẻ chọn cao 100 bo 32 */
+html[data-theme="wellness"] .sig-slide{ --sig-fill:rgba(255,255,255,.16); --sig-thumb-bg:#fff; --sig-thumb-ink:#26313C; }
+html[data-theme="wellness"] .sig-slide-thumb{ box-shadow:0 0 0 4px rgba(246,216,115,.22), 0 0 24px 4px rgba(246,216,115,.45); }
+html[data-theme="wellness"] .sig-slide.is-danger{ --sig-thumb-bg:#FFB4A6; --sig-thumb-ink:#3A1A14; }
+html[data-theme="wellness"] .sig-pf-hero{ --sig-hero-1:rgba(246,216,115,.20); --sig-hero-2:rgba(255,255,255,.14); }
+html[data-theme="wellness"] :is(#goal-list > .choice-card, #activity-list > .choice-card, .sig-choice)::after{ font-size:14px; }
+/* Sanctuary: chữ mảnh, thẻ kem, nhãn dọc trong hero hồ sơ */
+html[data-theme="sanctuary"] .sig-slide{ --sig-thumb-bg:#F1E5C6; --sig-thumb-ink:#1D191A; --sig-fill:rgba(241,229,198,.16); }
+html[data-theme="sanctuary"] .sheet .sig-slide{ --sig-track-bg:#EFE8DD; --sig-track-line:rgba(29,25,26,.14); --sig-thumb-bg:#1D191A; --sig-thumb-ink:#F5F0E8; --sig-fill:rgba(29,25,26,.08); }
+html[data-theme="sanctuary"] .sheet .sig-slide.is-danger{ --sig-thumb-bg:#B42318; --sig-thumb-ink:#fff; --sig-fill:rgba(180,35,24,.12); }
+html[data-theme="sanctuary"] .sig-gauge-c b, html[data-theme="sanctuary"] .sig-stat .num{ font-weight:300; }
+html[data-theme="sanctuary"] .sig-pf-hero{ --sig-hero-1:rgba(241,229,198,.16); --sig-hero-2:rgba(240,176,140,.14); }
+html[data-theme="sanctuary"] .sig-pf-vert{ display:block; position:absolute; left:0; top:4px; writing-mode:vertical-rl; transform:rotate(180deg);
+  font:500 12px/1 var(--font-ui); letter-spacing:.3em; text-transform:uppercase; color:var(--text-dim); }
+html[data-theme="sanctuary"] .sig-editorial{ font-weight:300; letter-spacing:-.05em; }
+
+/* Cửa hàng (.tsx) giữ bảng màu sáng riêng ở MỌI theme: nền sáng, góc vuông, mực đen (đặt cuối + độ ưu tiên cao để thắng mục G) */
+html[data-theme] .tsx .sig-slide, .tsx .sig-slide{ --sig-track-bg:#F5F4F1; --sig-track-line:#CFCFCB; --sig-fill:rgba(17,17,17,.10); --sig-thumb-bg:#111; --sig-thumb-ink:#fff; --sig-ink:#111; margin-top:8px; }
+html[data-theme] .tsx .sig-slide-track, .tsx .sig-slide-track{ border-radius:0; height:54px; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; }
+html[data-theme] .tsx .sig-slide-thumb, .tsx .sig-slide-thumb{ border-radius:0; box-shadow:none; background:var(--sig-thumb-bg); }
+html[data-theme] .tsx .sig-slide-label, .tsx .sig-slide-label{ font-size:12px; letter-spacing:.14em; text-transform:uppercase; font-weight:500; }
+
+@media (prefers-reduced-motion: reduce){
+  .sig-slide *, .sig-gauge-card *, .onboard-step.sig-reveal > *, .sig-tw-caret, .sig-pf-hero::before{ animation:none !important; transition:none !important; }
+}

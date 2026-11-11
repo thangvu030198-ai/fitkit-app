@@ -1,5 +1,5 @@
 /* =========================================================================
-   FIT KIT — Nguồn video minh hoạ (miễn phí, dùng thương mại được)
+   TapEasy — Nguồn video minh hoạ (miễn phí, dùng thương mại được)
    Theo tài liệu "Tổng hợp App Tập Luyện", mục 4B:
    - Pexels Videos  (Pexels License — không bắt buộc ghi nguồn, nhưng API yêu cầu
                      hiển thị chữ "Video từ Pexels" + tên tác giả — app đã làm sẵn)
@@ -14,9 +14,11 @@
    ========================================================================= */
 const MEDIA_CONFIG = {
   pexelsKey: "",
-  pixabayKey: "58526802-1bdd38af8d2196fe689410081",
-  // Video nền màn mở app: để "auto" = tự tìm 1 video tập luyện dọc trên Pexels/Pixabay.
-  // Hoặc dán thẳng link .mp4 của video bạn chọn (VD: video tự quay của bạn đã up lên đâu đó).
+  /* integrator (FIX-security vòng 2 #6, 12/11): khoá Pixabay cũ đã lộ công khai trong mã client → gỡ. CHỦ APP: thu hồi khoá cũ trên
+     pixabay.com, nếu muốn video tham khảo Pixabay cho bài chưa có video hướng dẫn thì điền khoá MỚI (giới hạn tên miền/ứng dụng) lúc build. */
+  pixabayKey: "",
+  // Video nền màn mở app (QU-04): "auto" = KHÔNG tìm video lúc chạy (không gọi API), chỉ dùng ảnh nền tĩnh.
+  // Muốn có video nền: dán thẳng link .mp4 cố định (CDN của app) lúc build.
   welcomeVideo: "auto",
   welcomeQuery: "gym workout training",
 };

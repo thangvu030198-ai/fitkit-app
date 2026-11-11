@@ -3,57 +3,158 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Chính sách bảo mật — FIT KIT</title>
+<title>Chính sách bảo mật — TapEasy</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+<!--
+  CHỦ APP CẦN ĐIỀN TRƯỚC KHI NỘP STORE (tìm chữ "ĐIỀN"):
+  1. [ĐIỀN EMAIL HỖ TRỢ]  → email hỗ trợ riêng của app (VD support@ten-mien-cua-ban.vn) — xuất hiện 2 chỗ
+  2. [ĐIỀN TÊN NHÀ PHÁT TRIỂN] → tên cá nhân / doanh nghiệp đứng tên tài khoản developer
+  Sau khi sửa ngày "Cập nhật lần cuối", giữ nguyên ngày hiệu lực của bản cũ trong mục 14.
+-->
 <style>
-  body{ font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width:760px; margin:0 auto; padding:32px 20px 60px; line-height:1.65; color:#1a1a1a; }
-  h1{ color:#ff3100; margin-bottom:4px; } h2{ margin-top:28px; font-size:19px; }
+  body{ font-family:-apple-system, "Segoe UI", Roboto, sans-serif; max-width:780px; margin:0 auto; padding:32px 20px 60px; line-height:1.65; color:#1a1a1a; }
+  h1{ color:#242D33; margin:14px 0 4px; } a{ color:#00756F; }
+  .brand-head{ display:block; height:34px; width:auto; } h2{ margin-top:30px; font-size:19px; } h3{ font-size:16px; margin:18px 0 6px; }
   .muted{ color:#666; font-size:14px; } li{ margin:4px 0; }
+  table{ border-collapse:collapse; width:100%; font-size:14px; margin:8px 0; }
+  th, td{ border:1px solid #ddd; padding:8px; text-align:left; vertical-align:top; } th{ background:#f6f6f6; }
+  .box{ background:#EAF8F6; border:1px solid #B3E6E0; border-radius:10px; padding:12px 14px; }
+  .ph{ background:#fff3b0; padding:0 4px; border-radius:4px; }
+  nav a{ display:inline-block; margin:2px 10px 2px 0; }
 </style>
 </head>
 <body>
-<h1>Chính sách bảo mật — FIT KIT</h1>
-<p class="muted">Cập nhật lần cuối: 10/11/2026 · Áp dụng cho ứng dụng FIT KIT trên iOS, Android và web.</p>
+<img class="brand-head" src="assets/brand/logo-wordmark-dark.svg" alt="TapEasy" width="145" height="34">
+<h1>Chính sách bảo mật — TapEasy</h1>
+<p class="muted">Ngày hiệu lực: <b>11/11/2026</b> · Cập nhật lần cuối: 11/11/2026 · Áp dụng cho ứng dụng TapEasy (tên trước đây: FIT KIT) trên iOS, Android và bản web.<br>
+Nhà phát triển: <span class="ph">[ĐIỀN TÊN NHÀ PHÁT TRIỂN]</span> (sau đây gọi là "chúng tôi").</p>
 
-<h2>1. Dữ liệu chỉ lưu trên thiết bị của bạn</h2>
-<p>Các dữ liệu sau được lưu trong bộ nhớ của ứng dụng trên điện thoại và <b>không gửi lên máy chủ FIT KIT</b>: thông tin cơ thể (tuổi, giới tính, chiều cao, cân nặng, tỉ lệ mỡ), giáo án và nhật ký tập, nhật ký ăn uống và nước, nhật ký giấc ngủ, cài đặt nhắc nhở, video tập luyện và ảnh tiến trình, chỉ số InBody.</p>
+<p class="box"><b>Tóm tắt:</b> phần lớn dữ liệu (chỉ số cơ thể, nhật ký tập &amp; ăn uống, ảnh tiến trình, sàng lọc sức khoẻ) <b>chỉ lưu trên điện thoại của bạn</b>. Khi bạn tạo tài khoản, máy chủ lưu tài khoản và dữ liệu của các tính năng trực tuyến bạn dùng: kết nối PT ↔ học viên (và những gì bạn chọn chia sẻ với PT), Cộng đồng, Tìm PT, Sự kiện &amp; thi đua, Cửa hàng, hỗ trợ — chi tiết ở mục 3. Nội dung bạn đăng công khai (routine, đánh giá, ảnh Khoảnh khắc, tên trên bảng xếp hạng) người dùng khác xem được. TapEasy <b>không có quảng cáo, không bán dữ liệu, không theo dõi bạn qua app/web khác</b>. Bạn có thể xoá tài khoản bất cứ lúc nào trong app hoặc tại <a href="delete-account.html">trang xoá tài khoản</a>.</p>
 
-<h2>2. Dữ liệu lưu trên máy chủ (chỉ khi bạn tạo tài khoản)</h2>
+<nav class="muted">Mục lục:
+  <a href="#local">1. Dữ liệu trên máy</a><a href="#health">2. Dữ liệu sức khoẻ</a><a href="#server">3. Dữ liệu trên máy chủ</a><a href="#login">4. Đăng nhập Google/Facebook/Apple</a>
+  <a href="#purpose">5. Mục đích</a><a href="#third">6. Bên thứ ba</a><a href="#content">7. Nhà cung cấp nội dung</a><a href="#perm">8. Quyền thiết bị</a>
+  <a href="#ugc">3b. Nội dung công khai, chặn &amp; báo cáo</a><a href="#staff">3c. Đội ngũ quản trị</a><a href="#keep">9. Lưu trữ &amp; bảo mật</a><a href="#rights">10. Quyền của bạn &amp; xoá dữ liệu</a><a href="#kids">11. Trẻ em</a><a href="#medical">12. Lưu ý y tế</a><a href="#contact">13. Liên hệ</a><a href="#change">14. Thay đổi</a>
+</nav>
+
+<h2 id="local">1. Dữ liệu chỉ lưu trên thiết bị của bạn</h2>
+<p>Các dữ liệu sau nằm trong bộ nhớ của ứng dụng trên điện thoại / trình duyệt và <b>không gửi lên máy chủ của TapEasy</b>:</p>
 <ul>
-  <li><b>Tài khoản:</b> email, tên hiển thị, mật khẩu (được mã hoá bởi Google Firebase Authentication, FIT KIT không đọc được mật khẩu).</li>
-  <li><b>Hồ sơ PT</b> (nếu bạn bật chế độ PT): tên thương hiệu, chuyên môn, khu vực, số liên hệ, giới thiệu.</li>
-  <li><b>Form PT ↔ học viên:</b> tên học viên, mục tiêu, ngày bắt đầu, số buổi trong gói, số điện thoại (nếu PT nhập), lịch buổi tập, bài tập được giao, trạng thái hoàn thành, ghi chú và phản hồi.</li>
+  <li>Hồ sơ cơ thể: tên hiển thị, giới tính, tuổi, chiều cao, cân nặng, tỉ lệ mỡ, mức vận động, mục tiêu; chỉ số InBody.</li>
+  <li>Giáo án, nhật ký tập (số kg × số lần từng hiệp, kỷ lục), nhật ký ăn uống, nước, giấc ngủ, cài đặt nhắc nhở.</li>
+  <li>Ảnh tiến trình, ảnh đại diện và video tập do bạn tải lên.</li>
+  <li>Câu trả lời sàng lọc sức khoẻ (xem mục 2).</li>
+  <li>API key AI do bạn tự nhập (nếu có).</li>
 </ul>
-<p>Dữ liệu được lưu tại Google Cloud Firestore. Mỗi form chỉ PT tạo ra form đó và học viên đã nhập đúng mã mời mới xem được.</p>
+<p>Nếu bạn tự bật <b>Đồng bộ Google Drive</b> (chỉ có ở bản web), một bản sao lưu các dữ liệu trên được tải lên <b>Google Drive của chính bạn</b> với quyền hạn chế <code>drive.file</code> — TapEasy chỉ đọc/ghi được đúng tệp sao lưu do app tạo, không xem được tệp khác trong Drive. Chúng tôi không có quyền truy cập Drive của bạn.</p>
 
-<h2>3. Mục đích sử dụng</h2>
-<p>Dữ liệu chỉ dùng để vận hành các tính năng của ứng dụng: hiển thị lịch, giao bài, nhắc nhở, ghi chú giữa PT và học viên. FIT KIT <b>không bán dữ liệu, không dùng dữ liệu cho quảng cáo</b> và không có quảng cáo trong ứng dụng.</p>
-
-<h2>4. Bên thứ ba</h2>
+<h2 id="health">2. Dữ liệu sức khoẻ</h2>
+<p>TapEasy có thể hỏi bạn một số thông tin sức khoẻ để điều chỉnh khuyến nghị cho an toàn (màn <b>Hồ sơ → Sức khoẻ &amp; an toàn</b>):</p>
 <ul>
-  <li><b>Google Firebase</b> (Authentication, Firestore): lưu tài khoản và dữ liệu PT ↔ học viên.</li>
-  <li><b>Phân tích ảnh bằng AI</b> (tuỳ chọn): chỉ hoạt động khi bạn tự nhập API key của OpenAI, Google Gemini hoặc xAI. Ảnh được gửi trực tiếp từ thiết bị của bạn tới nhà cung cấp bạn chọn, theo chính sách của nhà cung cấp đó.</li>
-  <li><b>Ảnh minh hoạ bài tập</b> được tải từ GitHub (free-exercise-db) và Pexels; các dịch vụ này có thể ghi nhận địa chỉ IP như mọi trang web thông thường.</li>
+  <li>Bảng câu hỏi sẵn sàng vận động dựa trên PAR-Q+ (bệnh tim/huyết áp, đau ngực, choáng ngất, bệnh mạn tính, thuốc đang dùng, vấn đề xương khớp, chỉ định giám sát y tế).</li>
+  <li>Tình trạng mang thai (tam cá nguyệt, biến chứng), sau sinh, cho con bú; tiểu đường; tim mạch &amp; huyết áp; bệnh thận; tiền sử rối loạn ăn uống; vùng chấn thương và ghi chú ngắn; tuổi dưới 18.</li>
+</ul>
+<p><b>Cách dùng:</b> chỉ để tính mục tiêu calo/đạm phù hợp (VD không đặt thâm hụt calo khi mang thai, cho con bú, dưới 18 tuổi hoặc có tiền sử rối loạn ăn uống), gắn cờ / ẩn bài tập không phù hợp và hiển thị lời khuyên "hỏi bác sĩ".</p>
+<p><b>Nơi lưu:</b> mặc định chỉ trên thiết bị của bạn (và trong bản sao lưu Google Drive cá nhân nếu bạn tự bật). <b>Ngoại lệ do bạn chọn:</b> nếu bạn đã kết nối với PT và chủ động chia sẻ hồ sơ sức khoẻ (PAR-Q), số đo hoặc ảnh tiến trình với PT, các dữ liệu đó được lưu trong form PT ↔ học viên trên máy chủ (mục 3) và <b>chỉ bạn cùng PT đó</b> xem được; bạn xoá được khi rời PT và chúng tự xoá khi bạn xoá tài khoản. Dữ liệu sức khoẻ không dùng cho quảng cáo hay nghiên cứu và không chia sẻ với bên thứ ba nào khác.</p>
+<p><b>Tự nguyện:</b> bạn có thể bỏ qua sàng lọc, không trả lời một số câu ("Không muốn trả lời"), sửa hoặc <b>xoá dữ liệu sức khoẻ</b> bất cứ lúc nào tại Hồ sơ → Sức khoẻ &amp; an toàn → Xoá dữ liệu sức khoẻ.</p>
+<p class="muted">TapEasy hiện không đọc/ghi dữ liệu Apple Health (HealthKit) hoặc Health Connect. Nếu tính năng này được thêm sau, chính sách sẽ được cập nhật và app sẽ xin quyền riêng trước khi truy cập.</p>
+
+<h2 id="server">3. Dữ liệu lưu trên máy chủ (chỉ khi bạn tạo tài khoản và dùng tính năng trực tuyến)</h2>
+<p>Bạn dùng được các tính năng tập luyện cá nhân mà không cần tài khoản. Khi có tài khoản, dữ liệu dưới đây được lưu tại Google Firebase (Authentication, Cloud Firestore, Cloud Storage, Cloud Functions — vùng Singapore), chỉ khi bạn dùng tính năng tương ứng:</p>
+<table>
+  <tr><th>Tính năng</th><th>Dữ liệu</th><th>Ai xem được</th></tr>
+  <tr><td>Tài khoản</td><td>Email, tên hiển thị, ảnh đại diện từ nhà cung cấp đăng nhập, cách đăng nhập, vai trò (học viên/PT). Mật khẩu do Firebase Authentication mã hoá một chiều — không ai đọc được.</td><td>Bạn; tên/ảnh: người dùng bạn tương tác. Email không nằm trong hồ sơ công khai.</td></tr>
+  <tr><td>PT ↔ học viên</td><td>Form do PT tạo (tên, mục tiêu, gói, SĐT nếu PT nhập, mã mời), lịch buổi tập, bài giao, kết quả, phản hồi, ghi chú, <b>tin nhắn &amp; ảnh trong chat</b>, lời mời theo email; phần học viên tự chia sẻ: PAR-Q, số đo, ảnh tiến trình, nhật ký tập đồng bộ. SĐT riêng của PT.</td><td>Chỉ PT tạo form và học viên đã <b>tự</b> kết nối bằng mã mời / chấp nhận lời mời gửi tới email đã xác minh. SĐT riêng của PT: chỉ học viên đang kết nối.</td></tr>
+  <tr><td>Cộng đồng</td><td>Routine bạn đăng (tên tác giả), lượt thích / lưu / sao chép, báo cáo bạn gửi.</td><td><b>Công khai</b> (routine, tên tác giả); báo cáo: đội ngũ kiểm duyệt.</td></tr>
+  <tr><td>Tìm PT</td><td>Niêm yết PT (tên, ảnh, album, giá, nơi dạy, chứng chỉ xác minh), đánh giá bạn viết (sao, nội dung, ảnh), yêu cầu buổi thử / câu hỏi và tin nhắn kèm.</td><td>Niêm yết &amp; đánh giá: <b>công khai</b>. Yêu cầu: bạn và PT nhận. Hồ sơ xác minh: đội ngũ xác minh PT.</td></tr>
+  <tr><td>Sự kiện &amp; thi đua</td><td>Đăng ký sự kiện (họ tên, <b>SĐT, người liên hệ khẩn cấp</b>, lựa chọn, ghi chú), check-in, review &amp; ảnh/clip "Khoảnh khắc", bình luận; điểm thi đua và tên trên <b>bảng xếp hạng</b>; TapEasy Points.</td><td>Đăng ký: bạn + ban tổ chức (nhân sự có quyền sự kiện). Review, ảnh Khoảnh khắc, bảng xếp hạng: <b>công khai</b> với người đã đăng nhập.</td></tr>
+  <tr><td>Cửa hàng &amp; quà</td><td>Đơn hàng (mặt hàng, số tiền, voucher, <b>tên, SĐT, địa chỉ giao hàng</b>, ghi chú), lịch sử trạng thái, quà tặng và địa chỉ nhận.</td><td>Bạn + nhân sự cửa hàng / hỗ trợ.</td></tr>
+  <tr><td>Hỗ trợ</td><td>Yêu cầu hỗ trợ và trả lời; ghi chú nội bộ của đội ngũ về yêu cầu của bạn.</td><td>Bạn (yêu cầu) + nhân sự hỗ trợ.</td></tr>
+  <tr><td>An toàn</td><td>Danh sách người bạn đã chặn; trạng thái khoá tài khoản (nếu vi phạm).</td><td>Chỉ bạn (danh sách chặn); đội ngũ quản trị (khoá).</td></tr>
+  <tr><td>Thông báo đẩy (nếu bật)</td><td>Mã thiết bị nhận thông báo (FCM token).</td><td>Chỉ hệ thống gửi thông báo.</td></tr>
+</table>
+
+<h3 id="ugc">3b. Nội dung công khai, chặn &amp; báo cáo</h3>
+<p>Routine, đánh giá PT, review &amp; ảnh/clip sự kiện, bình luận và tên hiển thị trên bảng xếp hạng là nội dung <b>công khai</b> trong app. Bạn có thể <b>chặn</b> một người dùng (họ không nhắn tin, gửi yêu cầu hay bình luận vào nội dung của bạn được nữa) và <b>báo cáo</b> nội dung vi phạm; đội ngũ kiểm duyệt xem xét báo cáo trong vòng 24 giờ và có thể ẩn nội dung hoặc khoá tài khoản vi phạm.</p>
+
+<h3 id="staff">3c. Đội ngũ quản trị xem được gì</h3>
+<p>Nhân sự TapEasy chỉ truy cập dữ liệu theo vai trò được Chủ sở hữu cấp (phân quyền tối thiểu): ví dụ hỗ trợ khách hàng xem email/SĐT để trả lời yêu cầu, nhân sự cửa hàng xem đơn hàng, ban tổ chức xem đăng ký sự kiện, kiểm duyệt viên xem nội dung bị báo cáo. Mỗi lần xem dữ liệu cá nhân hoặc thao tác quản trị đều được ghi vào <b>nhật ký kiểm toán chỉ-thêm</b> (không sửa, không xoá được). Đội ngũ <b>không</b> xem được dữ liệu chỉ lưu trên điện thoại của bạn.</p>
+
+<h2 id="login">4. Đăng nhập bằng Google, Facebook, Apple</h2>
+<ul>
+  <li><b>Google:</b> nhận tên, email và ảnh đại diện từ tài khoản Google của bạn.</li>
+  <li><b>Facebook:</b> nhận tên, email (nếu tài khoản có email và bạn cho phép) và ảnh đại diện công khai. TapEasy không đăng bài, không đọc danh sách bạn bè.</li>
+  <li><b>Apple (Đăng nhập với Apple):</b> nhận email (có thể là email ẩn danh dạng <i>@privaterelay.appleid.com</i> nếu bạn chọn "Ẩn email") và tên nếu bạn chia sẻ ở lần đăng nhập đầu tiên.</li>
+</ul>
+<p>Việc xác thực do Google Firebase Authentication và nhà cung cấp tương ứng xử lý; TapEasy không nhận mật khẩu Google/Facebook/Apple của bạn. Khi bạn <b>xoá tài khoản</b> đã đăng nhập bằng Apple, TapEasy gửi yêu cầu <b>thu hồi token</b> tới Apple (Sign in with Apple REST API) qua Google Cloud Functions để ngắt liên kết giữa Apple ID của bạn và TapEasy. Bạn cũng có thể tự gỡ tại Cài đặt iPhone → [tên bạn] → Đăng nhập bằng Apple. Với Google/Facebook, bạn có thể gỡ quyền của TapEasy trong trang quản lý tài khoản Google / cài đặt "Ứng dụng và trang web" của Facebook.</p>
+
+<h2 id="purpose">5. Mục đích sử dụng</h2>
+<p>Dữ liệu chỉ dùng để vận hành tính năng của ứng dụng: tính mục tiêu dinh dưỡng, hiển thị giáo án và lịch, giao bài, nhắc nhở, ghi chú và tin nhắn giữa PT và học viên, cộng đồng, Tìm PT, sự kiện &amp; thi đua, giao hàng đơn hàng, hỗ trợ, kiểm duyệt nội dung và an toàn tài khoản, xoá tài khoản. TapEasy <b>không có quảng cáo, không bán dữ liệu, không chia sẻ dữ liệu để quảng cáo</b>, không dùng công cụ phân tích hành vi hay theo dõi (tracking) người dùng.</p>
+
+<h2 id="third">6. Bên thứ ba xử lý dữ liệu</h2>
+<ul>
+  <li><b>Google Firebase</b> (Authentication, Cloud Firestore, Cloud Storage, Cloud Functions, Cloud Messaging, Secret Manager): lưu tài khoản và dữ liệu các tính năng ở mục 3, ảnh/clip sự kiện; Cloud Functions tính giá đơn hàng, điểm, check-in, dọn dữ liệu khi tài khoản bị xoá và thu hồi token Apple. <a href="https://firebase.google.com/support/privacy">Chính sách của Firebase</a>.</li>
+  <li><b>Google, Facebook (Meta), Apple</b>: xác thực khi bạn chọn đăng nhập bằng các tài khoản này.</li>
+  <li><b>Phân tích ảnh bằng AI (tuỳ chọn):</b> chỉ hoạt động khi bạn tự nhập API key của OpenAI, Google Gemini hoặc xAI. Khi bạn bấm phân tích, ảnh tiến trình và thông tin cơ bản (giới tính, tuổi, chiều cao, cân nặng, mục tiêu) được gửi trực tiếp từ thiết bị tới nhà cung cấp bạn chọn, theo chính sách của nhà cung cấp đó. TapEasy không nhận các dữ liệu này.</li>
+  <li><b>Google Drive</b> (tuỳ chọn, bản web): lưu bản sao lưu vào Drive của chính bạn (mục 1).</li>
 </ul>
 
-<h2>5. Quyền truy cập trên thiết bị</h2>
+<h2 id="content">7. Nhà cung cấp nội dung &amp; hạ tầng phân phối</h2>
+<p>Để hiển thị video, ảnh, phông chữ và thư viện bài tập, ứng dụng tải nội dung từ các dịch vụ dưới đây. Như mọi trang web, các dịch vụ này có thể ghi nhận <b>địa chỉ IP, loại thiết bị/trình duyệt và thời điểm truy cập</b>; TapEasy không gửi tên, email hay dữ liệu sức khoẻ của bạn cho họ.</p>
+<table>
+  <tr><th>Dịch vụ</th><th>Dùng để</th><th>Dữ liệu gửi đi</th></tr>
+  <tr><td>Pexels (pexels.com)</td><td>Ảnh &amp; video minh hoạ</td><td>Từ khoá tìm kiếm (tên bài tập tiếng Anh), IP</td></tr>
+  <tr><td>Pixabay (pixabay.com)</td><td>Video minh hoạ</td><td>Từ khoá tìm kiếm, IP</td></tr>
+  <tr><td>YMove (ymove.app)</td><td>Video hướng dẫn bài tập</td><td>IP khi phát video</td></tr>
+  <tr><td>wger (wger.de)</td><td>Video bài tập CC BY-SA (đã nén, phát từ kho của TapEasy)</td><td>IP khi phát video</td></tr>
+  <tr><td>Wikimedia Commons</td><td>Video bài tập bổ sung (CC BY / CC BY-SA / public domain)</td><td>IP khi phát video hoặc mở trang nguồn</td></tr>
+  <tr><td>GitHub Pages, GitHub (raw.githubusercontent.com), jsDelivr</td><td>Lưu trữ bản web, ảnh món ăn, video đã nén, thư viện 800+ bài tập (free-exercise-db)</td><td>IP khi tải nội dung</td></tr>
+  <tr><td>Google Fonts, Google gstatic, Cloudflare cdnjs</td><td>Phông chữ, thư viện Firebase, thư viện nén tệp sao lưu</td><td>IP khi tải</td></tr>
+</table>
+
+<h2 id="perm">8. Quyền truy cập trên thiết bị</h2>
 <ul>
   <li><b>Camera / Thư viện ảnh:</b> chụp ảnh tiến trình, chọn ảnh đại diện, tải video tập — chỉ khi bạn chủ động bấm.</li>
-  <li><b>Thông báo:</b> nhắc giờ tập, giờ ăn, giờ ngủ và buổi tập với PT.</li>
+  <li><b>Thông báo:</b> nhắc giờ tập, giờ ăn, giờ ngủ, giờ nghỉ giữa hiệp và buổi tập với PT. Thông báo được lên lịch ngay trên thiết bị, không qua máy chủ quảng cáo.</li>
 </ul>
 
-<h2>6. Xoá dữ liệu</h2>
+<h2 id="keep">9. Lưu trữ &amp; bảo mật</h2>
 <ul>
-  <li><b>Xoá tài khoản ngay trong app:</b> Hồ sơ → Tài khoản → Xoá tài khoản. Tài khoản, hồ sơ và mọi form do bạn tạo bị xoá vĩnh viễn khỏi máy chủ.</li>
-  <li><b>Xoá dữ liệu trên máy:</b> Hồ sơ → Đặt lại toàn bộ dữ liệu, hoặc gỡ ứng dụng.</li>
+  <li>Dữ liệu trên máy chủ được giữ đến khi bạn xoá tài khoản, xoá nội dung đó, hoặc PT xoá form học viên. Ngoại lệ: <b>đơn hàng</b> được giữ (ở dạng ẩn danh — xem mục 10) tối đa <b>10 năm</b> theo nghĩa vụ kế toán – thuế; nhật ký kiểm toán quản trị giữ tối đa 5 năm. Bản sao lưu kỹ thuật của nhà cung cấp hạ tầng (nếu có) tự xoá trong tối đa 30 ngày.</li>
+  <li>Mọi kết nối dùng HTTPS (mã hoá khi truyền). Quyền đọc/ghi được giới hạn bằng Firebase Security Rules và kiểm tra trên máy chủ: form PT ↔ học viên chỉ PT tạo ra và học viên đã <b>tự</b> kết nối (nhập mã mời hoặc chấp nhận lời mời gửi tới email đã xác minh) mới truy cập được; PT không tự gắn người khác vào form; giá đơn hàng, điểm và check-in do máy chủ tính; thao tác quản trị nhạy cảm yêu cầu xác thực lại.</li>
+  <li>Dữ liệu trên máy chỉ nằm trong bộ nhớ của app; ai cầm được điện thoại đã mở khoá của bạn có thể xem. Hãy khoá màn hình thiết bị.</li>
+  <li>Máy chủ Firebase có thể đặt ở ngoài Việt Nam (Singapore và các trung tâm dữ liệu của Google). Chúng tôi xử lý dữ liệu theo pháp luật Việt Nam về bảo vệ dữ liệu cá nhân (Nghị định 13/2023/NĐ-CP).</li>
 </ul>
 
-<h2>7. Trẻ em</h2>
-<p>FIT KIT không dành cho trẻ em dưới 13 tuổi và không cố ý thu thập dữ liệu của trẻ em dưới 13 tuổi.</p>
+<h2 id="rights">10. Quyền của bạn &amp; xoá dữ liệu</h2>
+<p>Bạn có quyền xem, sửa, xoá dữ liệu và rút lại đồng ý bất cứ lúc nào:</p>
+<ul>
+  <li><b>Xoá tài khoản ngay trong app:</b> Hồ sơ → Tài khoản → Xoá tài khoản; hoặc <b>không cần mở app</b> tại <a href="delete-account.html">delete-account.html</a>. Máy chủ xoá ngay và vĩnh viễn:
+    <ul>
+      <li>tài khoản, hồ sơ, SĐT liên hệ, ảnh đại diện; vai trò quản trị (nếu có); danh sách chặn; TapEasy Points và voucher cá nhân;</li>
+      <li>mọi form bạn tạo khi là PT (buổi tập, ghi chú, tin nhắn, mã mời, lời mời), niêm yết Tìm PT (album, đánh giá, yêu cầu), hồ sơ xác minh PT;</li>
+      <li>khi là học viên: liên kết với PT, PAR-Q, số đo, ảnh tiến trình, nhật ký đã chia sẻ, tin nhắn và ghi chú bạn viết;</li>
+      <li>routine, lượt thích/lưu, bình luận, báo cáo; đánh giá PT; review và ảnh/clip Khoảnh khắc; đăng ký sự kiện (kể cả SĐT, người liên hệ khẩn cấp); điểm thi đua &amp; bảng xếp hạng; yêu cầu hỗ trợ; yêu cầu gửi PT; lời mời gửi tới email của bạn.</li>
+    </ul>
+  </li>
+  <li><b>Được giữ lại ở dạng ẩn danh:</b> đơn hàng và quà đã gửi — giữ mã đơn, mặt hàng, số tiền, ngày mua cho kế toán; <b>xoá tên, SĐT, địa chỉ, ghi chú</b> và gỡ liên kết với tài khoản.</li>
+  <li>Tài khoản đăng nhập bằng Apple được thu hồi token như mục 4. <b>Chủ sở hữu ứng dụng</b> cần chuyển nhượng quyền Chủ sở hữu trước khi xoá tài khoản.</li>
+  <li><b>Xoá dữ liệu sức khoẻ:</b> Hồ sơ → Sức khoẻ &amp; an toàn → Xoá dữ liệu sức khoẻ; khi rời PT bạn có thể xoá phần đã chia sẻ.</li>
+  <li><b>Xoá dữ liệu trên máy:</b> Hồ sơ → Đặt lại toàn bộ dữ liệu, hoặc gỡ ứng dụng.</li>
+  <li><b>Yêu cầu qua email:</b> gửi tới <a href="mailto:[ĐIỀN EMAIL HỖ TRỢ]"><span class="ph">[ĐIỀN EMAIL HỖ TRỢ]</span></a> với tiêu đề "Xoá tài khoản" hoặc "Yêu cầu dữ liệu" từ email đã đăng ký. Chúng tôi phản hồi trong 7 ngày làm việc.</li>
+</ul>
 
-<h2>8. Lưu ý sức khoẻ</h2>
-<p>Các số liệu calo, BMR, TDEE, tỉ lệ mỡ chỉ mang tính ước lượng tham khảo, không thay thế chẩn đoán hay tư vấn của bác sĩ, chuyên gia dinh dưỡng.</p>
+<h2 id="kids">11. Trẻ em</h2>
+<p>TapEasy <b>không dành cho trẻ em dưới 13 tuổi</b> và không cố ý thu thập dữ liệu của trẻ dưới 13 tuổi; ứng dụng chỉ cho nhập tuổi từ 14 trở lên. Người dùng từ 13 đến dưới 18 tuổi nên dùng app với sự đồng ý và hướng dẫn của cha mẹ/người giám hộ; với nhóm tuổi này, app không đặt mục tiêu thâm hụt calo và nhắc tập có giám sát. Nếu bạn biết trẻ dưới 13 tuổi đã tạo tài khoản, hãy liên hệ để chúng tôi xoá.</p>
 
-<h2>9. Liên hệ</h2>
-<p>Mọi câu hỏi về quyền riêng tư: <a href="mailto:thangvu030198@gmail.com">thangvu030198@gmail.com</a></p>
+<h2 id="medical">12. Lưu ý y tế</h2>
+<p>TapEasy không phải thiết bị y tế và không chẩn đoán, điều trị bệnh. Các số liệu calo, BMR, TDEE, macro, tỉ lệ mỡ chỉ là ước lượng tham khảo; sàng lọc sức khoẻ không thay thế khám bác sĩ. Hãy hỏi bác sĩ trước khi bắt đầu chương trình tập hoặc chế độ ăn mới. Dừng tập và gọi cấp cứu 115 nếu đau ngực, khó thở bất thường hoặc choáng ngất.</p>
+
+<h2 id="contact">13. Liên hệ</h2>
+<p>Mọi câu hỏi về quyền riêng tư: <a href="mailto:[ĐIỀN EMAIL HỖ TRỢ]"><span class="ph">[ĐIỀN EMAIL HỖ TRỢ]</span></a> · Nhà phát triển: <span class="ph">[ĐIỀN TÊN NHÀ PHÁT TRIỂN]</span>.</p>
+
+<h2 id="change">14. Thay đổi chính sách</h2>
+<p>Khi chính sách thay đổi, chúng tôi cập nhật ngày ở đầu trang và thông báo trong app nếu thay đổi quan trọng. Phiên bản này có hiệu lực từ ngày 11/11/2026, thay thế phiên bản ngày 10/11/2026 (bổ sung mục 3 cho Cộng đồng, Tìm PT, Sự kiện, Cửa hàng, chat &amp; ảnh, nội dung công khai, đội ngũ quản trị; mục 9–10 về dữ liệu bị xoá / được giữ ẩn danh). Ứng dụng đổi tên từ FIT KIT thành TapEasy trong tháng 11/2026; việc đổi tên không làm thay đổi cách thu thập, sử dụng hay chia sẻ dữ liệu được mô tả ở trên.</p>
 </body>
 </html>

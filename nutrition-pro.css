@@ -1,0 +1,232 @@
+/* =========================================================================
+   FIT KIT — nutrition-pro.css · Dinh dưỡng Pro (nạp SAU style.css)
+   Tông liquid glass tối: Navy #061A24 · Mint #5EE6C7 · Coral #FF7A45
+   Vùng chạm ≥ 44 px · chữ ≥ 12 px · input 16 px
+   ========================================================================= */
+
+/* ---- Chất xơ trên thẻ macro ---- */
+.np-fiber{ display:block; width:100%; margin-top:12px; padding:10px 12px; min-height:44px; border-radius:14px; border:1px solid rgba(154,241,221,.22);
+  background:rgba(154,241,221,.07); color:#fff; text-align:left; font-family:inherit; cursor:pointer; }
+.np-fiber-top{ display:flex; align-items:baseline; gap:8px; font-size:12px; color:var(--text-muted); }
+.np-fiber-top b{ font-size:16px; color:#fff; } .np-fiber-top b small{ font-size:12px; color:var(--text-dim); font-weight:500; }
+.np-fiber-top em{ margin-left:auto; font-style:normal; font-size:12px; color:var(--mint-2,#9AF1DD); }
+.np-fiber .nu-bar{ margin-top:6px; }
+.np-fbv{ font-size:13px; color:var(--mint-2,#9AF1DD); white-space:nowrap; }
+.np-p{ font-size:13.5px; line-height:1.5; color:var(--text-muted); } .np-p b{ color:#fff; }
+
+/* ---- Thẻ thực đơn gợi ý ---- */
+.np-opts{ flex-wrap:wrap; }
+.np-opts button{ display:inline-flex; align-items:center; gap:6px; }
+.np-opts .np-shop-btn{ margin-left:auto; background:rgba(255,122,69,.16); border-color:rgba(255,122,69,.45); }
+.np-opts .material-symbols-rounded, .np-opts svg{ width:16px; height:16px; font-size:16px; }
+.np-note{ font-size:12.5px; line-height:1.45; color:var(--text-muted); margin:2px 0 10px; } .np-note b{ color:#fff; }
+.np-pm{ position:relative; padding-right:6px; }
+.np-pm .t b{ overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+.np-extra{ display:block; margin-top:3px; font-style:normal; font-size:12px; line-height:1.35; color:var(--coral-2,#FFB08A); }
+.np-pm{ gap:10px; }
+.np-pm .ph{ width:50px; height:50px; } .np-pm .ph .fp{ width:46px; height:46px; }
+.np-pm .k{ flex:none; min-width:46px; }
+.np-pm .k small{ display:block; font-size:12px; white-space:nowrap; }
+.np-swap{ flex:none; width:44px; height:44px; border-radius:14px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.08);
+  color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.np-swap:active{ transform:scale(.94); }
+.np-swap svg, .np-swap .material-symbols-rounded{ width:20px; height:20px; font-size:20px; }
+.np-sum{ display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:6px; margin-top:12px; }
+.np-sum-i{ padding:8px 6px; border-radius:12px; background:rgba(6,26,36,.45); border:1px solid rgba(255,255,255,.08); text-align:center; min-width:0; }
+.np-sum-i small{ display:block; font-size:12px; color:var(--text-muted); }
+.np-sum-i b{ display:block; font:600 14px/1.2 var(--font-head,"Inter Tight",sans-serif); color:#fff; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.np-sum-i b i{ display:block; font-style:normal; font-size:12px; font-weight:500; color:var(--text-dim); }
+.np-sum-i.ok{ border-color:rgba(94,230,199,.4); } .np-sum-i.ok b{ color:var(--mint-2,#9AF1DD); }
+.np-sum-i.off{ border-color:rgba(255,176,138,.45); } .np-sum-i.off b{ color:var(--coral-2,#FFB08A); }
+.np-reset{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-height:44px; margin-top:10px; border-radius:14px;
+  border:1px dashed rgba(255,255,255,.3); background:transparent; color:#fff; font-family:inherit; font-weight:600; font-size:13px; cursor:pointer; }
+.np-reset svg, .np-reset .material-symbols-rounded{ width:18px; height:18px; font-size:18px; }
+.np-plan .nu-plan-foot{ flex-wrap:wrap; }
+.np-plan .nu-plan-foot > span{ flex:1 1 160px; font-size:12px; line-height:1.4; }
+.np-plan .nu-plan-foot .btn{ min-height:44px; }
+@media (max-width:380px){
+  .np-sum{ grid-template-columns:repeat(3, minmax(0,1fr)); }
+  .np-opts .np-shop-btn{ margin-left:0; }
+}
+
+/* ---- Danh sách dạng hàng (thêm món, đổi món) ---- */
+.np-tabs{ display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:6px; scrollbar-width:none; }
+.np-tabs::-webkit-scrollbar{ display:none; }
+.np-tabs button{ flex:1 0 auto; display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:44px; padding:0 12px; border-radius:999px;
+  border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:#fff; font-family:inherit; font-weight:600; font-size:13px; line-height:1; cursor:pointer; }
+.np-tabs button.on{ background:var(--mint,#5EE6C7); color:var(--navy,#061A24); border-color:transparent; }
+.np-tabs svg, .np-tabs .material-symbols-rounded{ width:16px; height:16px; font-size:16px; }
+.np-af-list{ max-height:50vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.np-list{ display:flex; flex-direction:column; }
+.np-row{ display:flex; align-items:center; gap:10px; width:100%; min-height:60px; padding:8px 2px; border:none; border-bottom:1px solid rgba(255,255,255,.08);
+  background:transparent; color:#fff; text-align:left; font-family:inherit; cursor:pointer; }
+.np-row:last-child{ border-bottom:none; }
+.np-row:active{ background:rgba(255,255,255,.04); }
+.np-pic{ flex:none; display:flex; } .np-pic .fr-img{ width:46px; height:46px; }
+.np-pic.big .fr-img{ width:72px; height:72px; border-radius:18px; } .np-pic.big .fr-img.emo{ font-size:38px; }
+.np-rt{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.np-rt b{ font-size:14px; font-weight:600; line-height:1.3; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+.np-rt small{ font-size:12px; color:var(--text-muted); line-height:1.35; }
+.np-k{ flex:none; text-align:right; } .np-k b{ display:block; font:600 15px/1 var(--font-head,"Inter Tight",sans-serif); } .np-k small{ font-size:12px; color:var(--text-dim); }
+.np-ib{ flex:none; width:44px; height:44px; border-radius:50%; border:none; background:rgba(255,255,255,.08); color:#fff;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.np-ib svg, .np-ib .material-symbols-rounded{ width:18px; height:18px; font-size:18px; }
+.np-qadd{ background:var(--coral,#FF7A45); }
+.np-fav svg{ transition:transform .2s; }
+.np-fav.on{ color:var(--coral,#FF7A45); }
+.np-fav.on svg{ fill:currentColor; }
+.np-fav:active svg{ transform:scale(1.2); }
+.np-tag{ font-style:normal; font-size:12px; font-weight:600; color:var(--mint-2,#9AF1DD); background:rgba(94,230,199,.12); padding:1px 6px; border-radius:6px; margin-left:4px; }
+.np-sec{ display:flex; align-items:center; gap:6px; margin:14px 0 4px; font-size:12.5px; font-weight:700; letter-spacing:.3px; color:var(--mint-2,#9AF1DD); }
+.np-sec i{ font-style:normal; font-weight:600; font-size:12px; color:var(--text-dim); }
+.np-badge{ flex:none; font-size:12px; font-weight:700; color:var(--navy,#061A24); background:var(--mint,#5EE6C7); padding:4px 8px; border-radius:999px; }
+.np-cur{ display:flex; align-items:center; gap:10px; padding:10px; border-radius:16px; background:rgba(94,230,199,.1); border:1px solid rgba(94,230,199,.25); margin-bottom:8px; }
+.np-cur .np-rt small:first-child{ color:var(--mint-2,#9AF1DD); }
+
+/* ---- Chọn đơn vị & số lượng ---- */
+.np-q-title{ flex:1; margin:0 8px; font-size:17px; line-height:1.3; text-align:center; }
+.np-q-hero{ display:flex; align-items:center; gap:14px; margin:2px 0 8px; }
+.np-q-hero b{ display:block; font:700 40px/1 var(--font-head,"Inter Tight",sans-serif); color:var(--coral,#FF7A45); letter-spacing:-.03em; }
+.np-q-hero small{ font-size:13px; color:var(--text-muted); }
+.np-units{ display:flex; flex-wrap:wrap; gap:8px; }
+.np-units button{ display:flex; flex-direction:column; align-items:flex-start; justify-content:center; min-height:44px; padding:6px 12px; border-radius:14px;
+  border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:#fff; font-family:inherit; font-weight:600; font-size:13px; line-height:1.2; text-align:left; cursor:pointer; }
+.np-units button small{ font-weight:500; font-size:12px; color:var(--text-muted); }
+.np-units button.on{ background:var(--mint,#5EE6C7); color:var(--navy,#061A24); border-color:transparent; }
+.np-units button.on small{ color:rgba(6,26,36,.7); }
+.np-qty{ display:flex; align-items:center; gap:10px; margin:14px 0 10px; }
+.np-step{ flex:none; width:52px; height:52px; border-radius:16px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.08); color:#fff;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.np-step svg, .np-step .material-symbols-rounded{ width:22px; height:22px; font-size:22px; }
+.np-qty-in{ flex:1; min-width:0; display:flex; align-items:center; gap:8px; height:52px; padding:0 14px; border-radius:16px; border:1px solid rgba(255,255,255,.2); background:rgba(6,26,36,.5); }
+.np-qty-in input{ flex:1; min-width:0; width:100%; background:none; border:none; color:#fff; font-family:inherit; font-weight:700; font-size:22px; line-height:1; text-align:center; }
+.np-qty-in input:focus{ outline:none; }
+.np-qty-in span{ flex:none; max-width:45%; font-size:13px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.np-macros4{ display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:8px; }
+.np-macros4 > div{ padding:10px 6px; border-radius:14px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1); text-align:center; }
+.np-macros4 b{ display:block; font:600 17px/1.1 var(--font-head,"Inter Tight",sans-serif); }
+.np-macros4 small{ font-size:12px; color:var(--text-muted); }
+.np-macros4 > div:last-child b{ color:var(--mint-2,#9AF1DD); }
+.np-serv{ display:flex; align-items:center; gap:8px; margin-top:12px; font-size:13px; color:var(--text-muted); }
+.np-serv span{ margin-right:auto; }
+.np-serv button{ min-width:48px; min-height:44px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:#fff;
+  font-family:inherit; font-weight:700; font-size:14px; cursor:pointer; }
+.np-serv button.on{ background:#fff; color:var(--navy,#061A24); border-color:#fff; }
+.np-mini{ font-size:12px; font-weight:500; color:var(--text-dim); text-transform:none; letter-spacing:0; margin-left:4px; }
+
+/* ---- Danh sách đi chợ ---- */
+.np-people{ display:flex; align-items:center; gap:8px; margin:4px 0 6px; font-size:13px; color:var(--text-muted); }
+.np-people span{ margin-right:auto; }
+.np-people button{ width:44px; height:44px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:#fff;
+  font-family:inherit; font-weight:700; font-size:15px; cursor:pointer; }
+.np-people button.on{ background:var(--mint,#5EE6C7); color:var(--navy,#061A24); border-color:transparent; }
+.np-shop{ margin-top:4px; }
+.np-shop-row{ display:flex; align-items:center; gap:10px; width:100%; min-height:52px; padding:6px 2px; border:none; border-bottom:1px solid rgba(255,255,255,.08);
+  background:transparent; color:#fff; font-family:inherit; text-align:left; cursor:pointer; }
+.np-chk{ flex:none; width:26px; height:26px; border-radius:8px; border:1.5px solid rgba(255,255,255,.35); display:flex; align-items:center; justify-content:center; color:transparent; }
+.np-chk svg, .np-chk .material-symbols-rounded{ width:16px; height:16px; font-size:16px; }
+.np-q{ flex:none; text-align:right; max-width:46%; }
+.np-q b{ display:block; font-size:14px; font-weight:700; color:var(--mint-2,#9AF1DD); }
+.np-q small{ font-size:12px; color:var(--text-dim); }
+.np-shop-row.done .np-chk{ background:var(--mint,#5EE6C7); border-color:transparent; color:var(--navy,#061A24); }
+.np-shop-row.done .np-rt b, .np-shop-row.done .np-q b{ text-decoration:line-through; opacity:.5; }
+.np-shop-actions{ display:flex; flex-direction:column; gap:8px; margin-top:14px; position:sticky; bottom:-20px; padding:10px 0 4px;
+  background:linear-gradient(180deg, rgba(14,28,36,0), rgba(14,28,36,.95) 30%); }
+.np-shop-actions .btn svg, .np-shop-actions .btn .material-symbols-rounded{ width:18px; height:18px; font-size:18px; }
+
+/* =========================================================================
+   Vòng sửa QA dinh dưỡng (11/11/2026 — docs/qa/FIX-nutrition.md)
+   ========================================================================= */
+/* QN-18: 4 tab "Gần đây · Yêu thích · Tất cả · Tự tạo" chia đều chiều ngang, không bị cắt ở màn 390 px */
+.np-tabs{ overflow-x:visible; }
+.np-tabs button{ flex:1 1 0; min-width:0; padding:0 6px; gap:4px; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+@media (max-width:420px){ .np-tabs svg, .np-tabs .material-symbols-rounded{ display:none; } }
+
+/* QN-17: vùng chạm ≥ 44 px (giữ hình nhìn thấy nhỏ bằng padding + background-clip), chữ ≥ 12 px */
+.nu-del{ box-sizing:content-box; width:30px; height:30px; padding:7px; margin:-7px -7px -7px 0; background-clip:content-box; flex:none; }
+.nu-del .material-symbols-rounded, .nu-del svg{ font-size:15px; width:15px; height:15px; }
+.nu-water-head .nu-water-edit{ width:44px; height:44px; min-width:44px; margin:-6px -6px -6px 0; }
+.nu-water-head .nu-water-edit .material-symbols-rounded, .nu-water-head .nu-water-edit svg{ font-size:18px; width:18px; height:18px; }
+.nu-cups{ gap:2px; } .nu-cups .cup{ min-height:44px; }   /* 8 ly / 350 px → ~42 × 48 px */
+.nu-water-btns button{ min-height:44px; font-size:13px; }
+.nu-plan-opts button{ min-height:44px; }
+.nu-item .t small{ font-size:12px; line-height:1.35; }
+.nu-water-note{ margin:10px 0 12px; font-size:12.5px; line-height:1.45; color:var(--text-muted); } .nu-water-note b{ color:#fff; }
+
+/* QN-14: thanh "Đã xoá … · Hoàn tác" (5 giây) */
+.nu-undo{ position:fixed; left:50%; bottom:calc(var(--nav-h, 64px) + 16px + env(safe-area-inset-bottom, 0px)); z-index:90;
+  display:flex; align-items:center; gap:10px; max-width:min(92vw, 420px); padding:6px 6px 6px 14px; border-radius:14px;
+  background:#fff; color:#111; font-size:13px; font-weight:600; box-shadow:0 8px 24px rgba(0,0,0,.4);
+  opacity:0; transform:translate(-50%, 10px); transition:opacity .2s ease, transform .2s ease; }
+.nu-undo.show{ opacity:1; transform:translate(-50%, 0); }
+.nu-undo > .material-symbols-rounded, .nu-undo > svg{ flex:none; width:18px; height:18px; font-size:18px; color:var(--coral, #FF7A45); }
+.nu-undo-t{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.nu-undo-b{ flex:none; min-height:44px; min-width:44px; padding:0 14px; border:none; border-radius:10px; background:var(--navy, #061A24); color:#fff;
+  font:700 13px/1 inherit; font-family:inherit; cursor:pointer; }
+
+/* Ghi chú dưới thẻ BMI (QN-05 sàn calo, QN-01 trần đạm thận, QN-08 đạm ≥ 60 tuổi, QN-27 sát thiếu cân) + chú thích màu tổng thực đơn */
+.np-notes{ margin-top:10px; padding:10px 12px; border-radius:14px; background:rgba(255,176,138,.1); border:1px solid rgba(255,176,138,.3); }
+.np-notes p{ margin:0; font-size:12.5px; line-height:1.45; color:var(--text-muted); } .np-notes p + p{ margin-top:6px; } .np-notes b{ color:#fff; }
+.np-sum-legend{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:6px 0 0; font-size:12px; color:var(--text-dim); }
+.np-sum-legend i{ display:inline-block; width:10px; height:10px; border-radius:3px; border:1.5px solid rgba(94,230,199,.6); }
+.np-sum-legend i.off{ margin-left:8px; border-color:rgba(255,176,138,.7); }
+/* QN-03: cảnh báo thai phụ trong chi tiết món / chọn số lượng */
+.np-preg{ display:flex; gap:8px; align-items:flex-start; margin:8px 0 4px; padding:10px 12px; border-radius:14px; font-size:12.5px; line-height:1.45;
+  background:rgba(255,176,138,.12); border:1px solid rgba(255,176,138,.45); color:var(--coral-2, #FFB08A); }
+.np-preg.avoid{ background:rgba(255,122,69,.16); border-color:rgba(255,122,69,.6); }
+.np-preg b{ color:#fff; }
+.np-preg > .material-symbols-rounded, .np-preg > svg{ flex:none; width:18px; height:18px; font-size:18px; }
+/* QN-22: mốc vẽ lười danh sách "Tất cả" */
+.np-more{ height:1px; }
+
+/* =========================================================================
+   Vòng 2 (11/11/2026) — Ẩn số calo · Đĩa ăn cân bằng · (i) Vì sao đạm · khung chờ thực đơn (QU-03)
+   ========================================================================= */
+/* (i) cạnh số đạm: biểu tượng 16 px, vùng chạm 44 px (lề âm để không đẩy bố cục) */
+.nu-why{ display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; margin:-14px -12px -14px -8px; padding:0;
+  border:0; background:none; color:var(--mint-2, #9AF1DD); cursor:pointer; vertical-align:middle; }
+.nu-why svg, .nu-why .material-symbols-rounded{ width:16px; height:16px; font-size:16px; }
+.nu-macro-top > span{ display:inline-flex; align-items:center; }
+.np-goal-k{ display:inline-flex; align-items:center; flex-wrap:wrap; }
+/* nút con mắt "Ẩn số calo" trên đồng hồ calo */
+.nu-kcal-eye{ position:absolute; top:6px; right:6px; z-index:2; width:44px; height:44px; border:0; border-radius:14px;
+  background:rgba(255,255,255,.06); color:var(--text-muted); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.nu-kcal-eye svg, .nu-kcal-eye .material-symbols-rounded{ width:18px; height:18px; font-size:18px; }
+/* Đĩa ăn cân bằng (thay đồng hồ calo khi ẩn số calo) */
+.nu-plate-top{ display:flex; align-items:center; gap:14px; }
+.nu-plate-svg{ flex:none; width:104px; height:104px; }
+.nu-plate-svg .rim{ fill:rgba(255,255,255,.06); stroke:rgba(255,255,255,.2); stroke-width:2; }
+.nu-plate-svg .seg{ stroke:rgba(6,26,36,.55); stroke-width:1.5; transition:opacity .4s ease; }
+.nu-plate-svg .seg.v, .nu-pr.v > i, .nu-pr.v .nu-bar i{ fill:var(--mint, #5EE6C7); background:var(--mint, #5EE6C7); }
+.nu-plate-svg .seg.p, .nu-pr.p > i, .nu-pr.p .nu-bar i{ fill:var(--coral, #FF7A45); background:var(--coral, #FF7A45); }
+.nu-plate-svg .seg.c, .nu-pr.c > i, .nu-pr.c .nu-bar i{ fill:var(--coral-2, #FFB08A); background:var(--coral-2, #FFB08A); }
+.nu-plate-svg .seg.f, .nu-pr.f > i, .nu-pr.f .nu-bar i{ fill:var(--mint-2, #9AF1DD); background:var(--mint-2, #9AF1DD); }
+.nu-plate-txt b{ display:block; font:600 17px/1.25 var(--font-head, "Inter Tight", sans-serif); color:#fff; }
+.nu-plate-txt small{ display:block; margin-top:4px; font-size:12.5px; line-height:1.45; color:var(--text-muted); }
+.nu-plate-rows{ margin-top:12px; }
+.nu-pr{ display:grid; grid-template-columns:10px minmax(0,1fr) auto auto; align-items:center; column-gap:10px; row-gap:6px; padding:8px 0;
+  border-top:1px solid rgba(255,255,255,.08); }
+.nu-pr > i{ width:10px; height:10px; border-radius:3px; }
+.nu-pr-l b{ display:block; font-size:14px; color:#fff; } .nu-pr-l small{ display:block; font-size:12px; color:var(--text-dim); }
+.nu-pr-v{ font-size:13px; color:var(--text-muted); white-space:nowrap; }
+.nu-pr .nu-why{ margin:-12px -10px -12px -10px; }
+.nu-pr .nu-bar{ grid-column:1 / -1; }
+.nu-plate-meals{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.nu-plate-meals span{ font-size:12px; padding:5px 10px; border-radius:999px; background:rgba(255,255,255,.06); color:var(--text-dim); }
+.nu-plate-meals span.on{ background:rgba(94,230,199,.16); color:var(--mint-2, #9AF1DD); }
+.nu-plate-foot{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:6px; font-size:12px; color:var(--text-dim); }
+.nu-plate-foot .nu-kcal-toggle{ min-height:44px; white-space:nowrap; flex-shrink:0; }
+/* QU-03: khung chờ thẻ "Thực đơn gợi ý" trong lúc tính lúc rảnh */
+.np-wait-h{ display:flex; align-items:center; gap:10px; }
+.np-wait-h > svg, .np-wait-h > .material-symbols-rounded{ flex:none; width:22px; height:22px; font-size:22px; color:var(--mint, #5EE6C7); }
+.np-wait-h b{ display:block; font-size:16px; color:#fff; } .np-wait-h small{ display:block; font-size:12.5px; color:var(--text-muted); margin-top:2px; }
+.np-skel{ height:58px; margin-top:8px; border-radius:14px; background:linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.10), rgba(255,255,255,.04));
+  background-size:200% 100%; animation:npSkel 1.3s ease-in-out infinite; }
+@keyframes npSkel{ 0%{ background-position:100% 0; } 100%{ background-position:-100% 0; } }
+/* "Vì sao đạm X g?" */
+.np-why{ margin:4px 0 0; padding-left:20px; display:flex; flex-direction:column; gap:12px; }
+.np-why li{ font-size:13px; color:var(--text-muted); }
+.np-why li b{ display:block; font-size:14.5px; color:#fff; }
+.np-why li small{ display:block; margin-top:4px; font-size:12.5px; line-height:1.5; color:var(--text-muted); }
+
+@media (prefers-reduced-motion: reduce){ .np-fav svg{ transition:none; } .nu-undo{ transition:none; } .np-skel{ animation:none; } .nu-plate-svg .seg{ transition:none; } }

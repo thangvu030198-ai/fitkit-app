@@ -1,4 +1,6 @@
-# FIT KIT v2 — Hướng dẫn bật máy chủ & đưa app lên App Store / Google Play
+# TapEasy v2 — Hướng dẫn bật máy chủ & đưa app lên App Store / Google Play
+
+> App đổi tên từ **FIT KIT** thành **TapEasy** (11/2026). Chỉ đổi tên hiển thị, logo, icon: Bundle ID / package `vn.thangvu.fitkit`, tên repo `fitkit-app`, tên file build `FitKit-*.apk/.aab/.ipa` và alias khoá ký `fitkit` **giữ nguyên** (đổi các thứ này = app mới, mất người dùng cũ). Hướng dẫn thương hiệu: `docs/BRAND.md`.
 
 ## 0. Bản v2 có gì
 
@@ -106,18 +108,30 @@ Mỗi lần commit, 2 workflow tự chạy (xem tab **Actions**):
 
 ---
 
+## 3b. Icon & màn hình chờ (tự tạo khi build)
+
+Workflow Android/iOS chạy `npm run assets` (`@capacitor/assets`), đọc đúng các file sau trong `assets/` — **giữ nguyên tên**:
+
+| File | Kích thước | Dùng cho |
+|---|---|---|
+| `icon-only.png` | 1024 × 1024, không trong suốt | icon iOS + icon Android cũ |
+| `icon-foreground.png` + `icon-background.png` | 1024 × 1024 | icon thích ứng Android (biểu tượng trắng trong vùng an toàn 66/108 + nền gradient teal) |
+| `splash.png` / `splash-dark.png` | 2732 × 2732 | màn chờ chế độ sáng / tối (logo TapEasy giữa màn) |
+
+Icon store: `assets/icon-1024.png` (App Store 1024, không alpha) và `assets/icon-512.png` (Google Play 512). Muốn vẽ lại sau khi chỉnh logo: `python3 scripts/gen_icons.py` (chỉ cần Pillow + numpy).
+
 ## 4. App Store (phí 99 USD/năm)
 
 1. Đăng ký **Apple Developer Program** tại https://developer.apple.com/programs. Xét duyệt mất 1–2 ngày.
 2. https://developer.apple.com/account → **Identifiers → +** → App IDs → Bundle ID `vn.thangvu.fitkit`.
-3. https://appstoreconnect.apple.com → **My Apps → + New App** → chọn Bundle ID trên, tên `FIT KIT`. Nếu tên đã có người dùng, thử "FIT KIT – PT & Tập luyện".
+3. https://appstoreconnect.apple.com → **My Apps → + New App** → chọn Bundle ID trên, tên `TapEasy: Tập Gym, Calo & PT` (27/30 ký tự). Nếu tên đã có người dùng, thử "TapEasy – Giáo án Gym & PT" (xem `docs/STORE-LISTING.md` mục 1).
 4. **Users and Access → Integrations → App Store Connect API → +** → quyền **Admin** → tải file `AuthKey_XXXX.p8` (chỉ tải được 1 lần). Ghi lại **Key ID** và **Issuer ID**.
 5. Thêm secret vào GitHub: `APPSTORE_KEY_ID`, `APPSTORE_ISSUER_ID`, `APPSTORE_KEY_P8` (nội dung file .p8 chuyển base64 như bước Android), `APPLE_TEAM_ID` (Membership → Team ID).
 6. Tab **Actions → "iOS — bản nộp App Store (TestFlight)" → Run workflow**. Bản build sẽ lên TestFlight sau ~15–30 phút. *Workflow này chưa chạy thử được vì cần tài khoản thật. Nếu báo lỗi, gửi log cho mình chỉnh.*
 7. Trong App Store Connect: điền mô tả, ảnh chụp màn hình (iPhone 6.7" và 6.5"), Privacy Policy URL, **App Privacy** (mục 6). Ở mục **App Review Information → Sign-in required**, cung cấp 1 tài khoản demo (ví dụ một tài khoản PT có sẵn 1 học viên mẫu) để người duyệt đăng nhập được.
 8. **Submit for Review**, thường được duyệt trong 1–3 ngày.
 
-> Rủi ro bị từ chối: Apple có điều khoản 4.2 "chức năng tối thiểu" dành cho app chỉ bọc lại trang web. FIT KIT có thông báo native, chia sẻ, chạy offline và dữ liệu riêng nên khả năng qua được là khá. Nếu bị từ chối, đọc lý do rồi gửi cho mình để bổ sung.
+> Rủi ro bị từ chối: Apple có điều khoản 4.2 "chức năng tối thiểu" dành cho app chỉ bọc lại trang web. TapEasy có thông báo native, chia sẻ, chạy offline và dữ liệu riêng nên khả năng qua được là khá. Nếu bị từ chối, đọc lý do rồi gửi cho mình để bổ sung.
 
 ---
 

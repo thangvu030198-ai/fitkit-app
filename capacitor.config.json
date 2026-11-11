@@ -1,25 +1,35 @@
 {
   "appId": "vn.thangvu.fitkit",
-  "appName": "FIT KIT",
+  "appName": "TapEasy",
   "webDir": "www",
-  "backgroundColor": "#0a0a0a",
+  "backgroundColor": "#061A24",
   "ios": {
     "contentInset": "never",
     "scheme": "FitKit",
-    "backgroundColor": "#0a0a0a"
+    "backgroundColor": "#061A24"
   },
   "android": {
-    "backgroundColor": "#0a0a0a"
+    "backgroundColor": "#061A24",
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
   },
   "server": {
-    "androidScheme": "https"
+    "androidScheme": "https",
+    "cleartext": false
   },
   "plugins": {
     "LocalNotifications": {
-      "iconColor": "#FF3100"
+      "iconColor": "#02BCB3"
     },
     "CapacitorHttp": {
       "enabled": true
+    },
+    "FirebaseAuthentication": {
+      "skipNativeAuth": true,
+      "providers": [
+        "apple.com",
+        "google.com"
+      ]
     }
   }
 }
