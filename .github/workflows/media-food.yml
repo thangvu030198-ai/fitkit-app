@@ -18,7 +18,11 @@ jobs:
         with: { python-version: "3.11" }
       - name: Cài rembg
         run: pip install -q "rembg[cpu]" pillow
+      # Khoá Pixabay KHÔNG nằm trong mã (QN-13 / bảo mật): Settings → Secrets and variables → Actions → PIXABAY_KEY.
+      # Khoá cũ từng bị lộ trong mã → tạo khoá MỚI trên pixabay.com/api/docs rồi đặt secret; thiếu secret thì script dừng có thông báo.
       - name: Tải ảnh & tách nền
+        env:
+          PIXABAY_KEY: ${{ secrets.PIXABAY_KEY }}
         run: python scripts/fetch_food_images.py
       - name: Lưu vào repo
         run: |

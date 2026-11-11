@@ -1,0 +1,32 @@
+name: Kiểm thử tự động (Node thuần)
+
+# Chạy bộ test trong tests/ (không cần npm install) mỗi lần push.
+# Bộ test nạp toàn bộ script của index.html vào vm + DOM giả, kiểm tra tính toán,
+# buổi tập, giáo án, video, cloud demo và bảo mật cơ bản. Xem tests/REPORT.md.
+# Muốn CI xanh trong lúc chờ sửa các lỗi ĐÃ GHI NHẬN (test gắn mã BUG-xx):
+#   đổi lệnh thành  node tests/run.js --known-ok   (lỗi MỚI vẫn làm đỏ CI).
+on:
+  push: {}
+  pull_request: {}
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Chạy kiểm thử
+        run: node tests/run.js
+      - name: Lưu kết quả chi tiết (last-run.json)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fitkit-test-results
+          path: tests/last-run.json
+          if-no-files-found: ignore

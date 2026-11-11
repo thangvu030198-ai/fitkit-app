@@ -33,12 +33,34 @@ jobs:
       - name: Quyền camera/ảnh + khai báo mã hoá (bắt buộc khi nộp App Store)
         run: |
           P=ios/App/App/Info.plist
-          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'FIT KIT dùng camera để chụp ảnh tiến trình cơ thể khi bạn bấm chụp.'" $P || true
-          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'FIT KIT cần truy cập thư viện để bạn chọn ảnh đại diện, ảnh tiến trình và video tập.'" $P || true
-          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryAddUsageDescription string 'FIT KIT lưu ảnh tiến trình vào thư viện khi bạn yêu cầu.'" $P || true
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'TapEasy dùng camera để chụp ảnh tiến trình cơ thể khi bạn bấm chụp.'" $P || true
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'TapEasy cần truy cập thư viện để bạn chọn ảnh đại diện, ảnh tiến trình và video tập.'" $P || true
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryAddUsageDescription string 'TapEasy lưu ảnh tiến trình vào thư viện khi bạn yêu cầu.'" $P || true
           /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" $P || true
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $(node -p "require('./package.json').version")" $P || true
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ github.run_number }}" $P || true
+
+      # Đăng nhập Google/Apple native (@capacitor-firebase/authentication): cần GoogleService-Info.plist (secret IOS_GOOGLE_SERVICE_INFO_PLIST,
+      #   base64). Thiếu → gỡ plugin khỏi bản thử (plugin gọi FirebaseApp.configure() khi mở app — thiếu file là crash). Xem ios-appstore.yml.
+      - name: Firebase native (GoogleService-Info.plist)
+        env:
+          GSI_PLIST: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_PLIST }}
+        run: |
+          if [ -z "$GSI_PLIST" ]; then
+            echo "::warning::Thiếu secret IOS_GOOGLE_SERVICE_INFO_PLIST — bản thử KHÔNG có đăng nhập Google/Apple native (gỡ plugin để không crash)."
+            npm uninstall --no-save @capacitor-firebase/authentication
+            exit 0
+          fi
+          echo "$GSI_PLIST" | base64 -d > ios/App/App/GoogleService-Info.plist
+          gem list -i xcodeproj >/dev/null || sudo gem install xcodeproj --no-document
+          ruby -e 'require "xcodeproj"; p = Xcodeproj::Project.open("ios/App/App.xcodeproj"); t = p.targets.find { |x| x.name == "App" }; g = p.main_group.find_subpath("App", false); unless g.files.any? { |f| f.path == "GoogleService-Info.plist" }; t.add_resources([g.new_reference("GoogleService-Info.plist")]); end; p.save'
+          ruby -e 'f = "ios/App/Podfile"; s = File.read(f); l = "  pod %q(CapacitorFirebaseAuthentication/Google), :path => %q(../../node_modules/@capacitor-firebase/authentication)"; s.sub!(/^([ \t]*capacitor_pods[ \t]*)$/) { $1 + "\n" + l } unless s.include?("CapacitorFirebaseAuthentication/Google"); File.write(f, s)'
+          P=ios/App/App/Info.plist
+          REV=$(/usr/libexec/PlistBuddy -c "Print :REVERSED_CLIENT_ID" ios/App/App/GoogleService-Info.plist)
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes array" $P 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" $P
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" $P
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string $REV" $P
 
       - name: Đồng bộ web + plugin vào iOS
         run: npx cap sync ios

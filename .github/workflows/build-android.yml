@@ -22,16 +22,34 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - uses: actions/setup-java@v4
-        with: { distribution: temurin, java-version: 17 }
+        with: { distribution: temurin, java-version: 21 }     # AGP 8.x cho API 36 cần JDK 21 (fix-security / STORE-COMPLIANCE 2.1)
+
+      # QS-16: bản nộp store KHÔNG được chạy "chế độ demo" (bảng quản trị / tài khoản chỉ trên máy).
+      #   AAB phát hành (có khoá ký) → firebase-config.js phải có apiKey; APK thử thì chỉ cảnh báo.
+      - name: Kiểm tra cấu hình Firebase
+        run: |
+          if grep -Eq 'apiKey:[[:space:]]*""' firebase-config.js; then
+            if [ "$HAS_KEY" = "true" ]; then echo "::error::firebase-config.js trống — bản phát hành không được chạy chế độ demo. Điền cấu hình Firebase rồi build lại."; exit 1; fi
+            echo "::warning::firebase-config.js trống — APK thử chạy chế độ demo (không dùng để nộp store)."
+          fi
 
       - name: Gom file web vào www/ + tải thư viện bài tập
-        run: bash scripts/prepare-www.sh
+        # integrator (FIX-ux vòng 2): bản phát hành (có khoá ký) → STORE_BUILD=1 (prepare-www.sh dừng nếu firebase-config.js trống)
+        run: STORE_BUILD=$([ "$HAS_KEY" = "true" ] && echo 1 || echo 0) bash scripts/prepare-www.sh
 
       - name: Cài Capacitor + plugin
         run: npm install
 
       - name: Tạo project Android
         run: npx cap add android
+
+      # Google Play: từ 31/08/2026 app mới & bản cập nhật phải target Android 16 (API 36) — QA-security §5 [CHẶN]
+      - name: Target API 36 (compileSdk / targetSdk)
+        run: |
+          V=android/variables.gradle
+          sed -i -E 's/compileSdkVersion = [0-9]+/compileSdkVersion = 36/; s/targetSdkVersion = [0-9]+/targetSdkVersion = 36/' $V
+          grep -E "compileSdkVersion|targetSdkVersion|minSdkVersion" $V
+          grep -q "targetSdkVersion = 36" $V || { echo "::error::Không đặt được targetSdkVersion = 36"; exit 1; }
 
       - name: Icon & màn hình chờ
         run: npm run assets -- --android || echo "⚠️ Không tạo được icon, dùng icon mặc định"
@@ -45,6 +63,25 @@ jobs:
           sed -i "s/versionCode [0-9]*/versionCode ${{ github.run_number }}/" $G
           sed -i "s/versionName \"[^\"]*\"/versionName \"$V\"/" $G
           grep -n "version" $G
+
+      # Đăng nhập Google native (@capacitor-firebase/authentication — docs/STORE-COMPLIANCE.md §0.2a): secret ANDROID_GOOGLE_SERVICES_JSON
+      #   = base64 của google-services.json (Firebase → app Android vn.thangvu.fitkit, đã thêm SHA-1/SHA-256 của khoá ký + khoá Play App Signing).
+      #   Thiếu → gỡ plugin khỏi bản build (thiếu FirebaseApp là crash lúc mở app); nút Google/Apple báo "chưa cấu hình", email vẫn chạy.
+      #   Có → đặt file (app/build.gradle của Capacitor tự áp plugin com.google.gms.google-services) + bật provider Google của plugin.
+      - name: Firebase native (google-services.json + Google Sign-In)
+        env:
+          GS_JSON: ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -z "$GS_JSON" ]; then
+            echo "::warning::Thiếu secret ANDROID_GOOGLE_SERVICES_JSON — bản build KHÔNG có đăng nhập Google native (gỡ plugin để không crash)."
+            npm uninstall --no-save @capacitor-firebase/authentication
+            exit 0
+          fi
+          echo "$GS_JSON" | base64 -d > android/app/google-services.json
+          V=android/variables.gradle
+          grep -q "rgcfaIncludeGoogle" $V || sed -i 's/^ext {/ext {\n    rgcfaIncludeGoogle = true/' $V
+          grep -n "rgcfaIncludeGoogle = true" $V || { echo "::error::Không bật được rgcfaIncludeGoogle"; exit 1; }
+          grep -n "google-services" android/build.gradle android/app/build.gradle || echo "::warning::Không thấy plugin google-services trong Gradle — kiểm tra docs/STORE-COMPLIANCE.md §0.2a"
 
       - name: Đồng bộ web + plugin vào Android
         run: npx cap sync android

@@ -1,0 +1,42 @@
+name: Giải nén gói mã nguồn (deploy-bundle.zip)
+
+# Cách cập nhật nhanh nhiều file qua giao diện web GitHub:
+#   1. Tải file deploy-bundle.zip lên thư mục gốc của repo (Add file → Upload files).
+#   2. Workflow này giải nén đè vào repo (bỏ qua .github/ — workflow phải tải riêng),
+#      xoá file zip, commit và push → GitHub Pages tự cập nhật.
+on:
+  push:
+    paths: [ "deploy-bundle.zip" ]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy-bundle
+  cancel-in-progress: false
+
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Giải nén
+        run: |
+          set -e
+          test -f deploy-bundle.zip || { echo "Không có deploy-bundle.zip"; exit 0; }
+          mkdir -p /tmp/bundle
+          unzip -q -o deploy-bundle.zip -d /tmp/bundle
+          rm -rf /tmp/bundle/.github /tmp/bundle/media /tmp/bundle/_test /tmp/bundle/node_modules
+          cp -a /tmp/bundle/. .
+          git rm -q --cached deploy-bundle.zip || true
+          rm -f deploy-bundle.zip
+          echo "Số file trong gói: $(find /tmp/bundle -type f | wc -l)"
+      - name: Commit & push
+        run: |
+          git config user.name "tapeasy-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Cập nhật mã nguồn từ deploy-bundle.zip" || echo "Không có thay đổi"
+          git push

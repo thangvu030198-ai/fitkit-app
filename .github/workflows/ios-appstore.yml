@@ -8,6 +8,9 @@ name: iOS — bản nộp App Store (TestFlight)
 #   APPLE_TEAM_ID        — Team ID 10 ký tự (developer.apple.com → Membership)
 # Xcode tự tạo chứng chỉ + provisioning profile (cloud signing) rồi upload
 # bản build lên TestFlight. Lần chạy đầu có thể cần chỉnh — gửi log cho mình.
+# Secret THÊM (khuyến nghị — đăng nhập Google/Apple native, docs/STORE-COMPLIANCE.md §0.2a):
+#   IOS_GOOGLE_SERVICE_INFO_PLIST — nội dung GoogleService-Info.plist đã mã hoá base64
+# Vòng sửa bảo mật 2 (11/2026): chuỗi quyền "TapEasy" + entitlement Sign in with Apple (App Store 4.8).
 
 on:
   workflow_dispatch: {}
@@ -32,7 +35,7 @@ jobs:
           APPSTORE_KEY_P8: ${{ secrets.APPSTORE_KEY_P8 }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
-      - run: bash scripts/prepare-www.sh
+      - run: STORE_BUILD=1 bash scripts/prepare-www.sh     # integrator (FIX-ux vòng 2): TestFlight/App Store → không cho chạy chế độ demo
       - run: npm install
       - run: npx cap add ios
       - run: npm run assets -- --ios || echo "⚠️ Không tạo được icon, dùng icon mặc định"
@@ -40,12 +43,48 @@ jobs:
       - name: Info.plist
         run: |
           P=ios/App/App/Info.plist
-          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'FIT KIT dùng camera để chụp ảnh tiến trình cơ thể khi bạn bấm chụp.'" $P || true
-          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'FIT KIT cần truy cập thư viện để bạn chọn ảnh đại diện, ảnh tiến trình và video tập.'" $P || true
-          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryAddUsageDescription string 'FIT KIT lưu ảnh tiến trình vào thư viện khi bạn yêu cầu.'" $P || true
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'TapEasy dùng camera để chụp ảnh tiến trình cơ thể khi bạn bấm chụp.'" $P || true
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'TapEasy cần truy cập thư viện để bạn chọn ảnh đại diện, ảnh tiến trình và video tập.'" $P || true
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryAddUsageDescription string 'TapEasy lưu ảnh tiến trình vào thư viện khi bạn yêu cầu.'" $P || true
           /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" $P || true
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $(node -p "require('./package.json').version")" $P
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ github.run_number }}" $P
+
+      # App Store 4.8: nút "Đăng nhập với Apple" phải chạy thật → entitlement com.apple.developer.applesignin cho target App
+      #   (ký tự động -allowProvisioningUpdates bật capability cho App ID; vẫn nên bật tay trong developer.apple.com — README-store.md).
+      - name: Entitlement Sign in with Apple
+        run: |
+          gem list -i xcodeproj >/dev/null || sudo gem install xcodeproj --no-document
+          E=ios/App/App/App.entitlements
+          /usr/libexec/PlistBuddy -c "Add :com.apple.developer.applesignin array" $E 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Print :com.apple.developer.applesignin:0" $E 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :com.apple.developer.applesignin:0 string Default" $E
+          ruby -e 'require "xcodeproj"; p = Xcodeproj::Project.open("ios/App/App.xcodeproj"); t = p.targets.find { |x| x.name == "App" }; t.build_configurations.each { |c| c.build_settings["CODE_SIGN_ENTITLEMENTS"] = "App/App.entitlements" }; p.save'
+          /usr/libexec/PlistBuddy -c "Print" $E
+
+      # Đăng nhập Google/Apple bằng SDK gốc (@capacitor-firebase/authentication — docs/STORE-COMPLIANCE.md §0.2a):
+      #   secret IOS_GOOGLE_SERVICE_INFO_PLIST = base64 của GoogleService-Info.plist (Firebase → Project settings → app iOS vn.thangvu.fitkit).
+      #   Thiếu secret → GỠ plugin khỏi bản build (plugin gọi FirebaseApp.configure() khi mở app — thiếu file là crash ngay);
+      #   nút Google/Apple khi đó báo "chưa cấu hình", đăng nhập email vẫn chạy. Bản nộp App Store NÊN có secret này.
+      - name: Firebase native (GoogleService-Info.plist + Google Sign-In)
+        env:
+          GSI_PLIST: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_PLIST }}
+        run: |
+          if [ -z "$GSI_PLIST" ]; then
+            echo "::warning::Thiếu secret IOS_GOOGLE_SERVICE_INFO_PLIST — bản build KHÔNG có đăng nhập Google/Apple native (gỡ plugin để không crash)."
+            npm uninstall --no-save @capacitor-firebase/authentication
+            exit 0
+          fi
+          echo "$GSI_PLIST" | base64 -d > ios/App/App/GoogleService-Info.plist
+          gem list -i xcodeproj >/dev/null || sudo gem install xcodeproj --no-document
+          ruby -e 'require "xcodeproj"; p = Xcodeproj::Project.open("ios/App/App.xcodeproj"); t = p.targets.find { |x| x.name == "App" }; g = p.main_group.find_subpath("App", false); unless g.files.any? { |f| f.path == "GoogleService-Info.plist" }; t.add_resources([g.new_reference("GoogleService-Info.plist")]); end; p.save'
+          ruby -e 'f = "ios/App/Podfile"; s = File.read(f); l = "  pod %q(CapacitorFirebaseAuthentication/Google), :path => %q(../../node_modules/@capacitor-firebase/authentication)"; s.sub!(/^([ \t]*capacitor_pods[ \t]*)$/) { $1 + "\n" + l } unless s.include?("CapacitorFirebaseAuthentication/Google"); File.write(f, s)'
+          grep -n "CapacitorFirebaseAuthentication" ios/App/Podfile
+          P=ios/App/App/Info.plist
+          REV=$(/usr/libexec/PlistBuddy -c "Print :REVERSED_CLIENT_ID" ios/App/App/GoogleService-Info.plist)
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes array" $P 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" $P
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" $P
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string $REV" $P
 
       - run: npx cap sync ios
 
