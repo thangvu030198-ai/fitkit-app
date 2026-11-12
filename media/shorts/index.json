@@ -1,6 +1,6 @@
 {
  "series": "TapEasy Shorts",
- "generated": "2026-11-12 20:59",
+ "generated": "2026-11-12 21:23",
  "count": 14,
  "format": "1080x1920 H.264 30fps, AAC -14 LUFS",
  "cta": "Tải miễn phí trong cộng đồng TapEasy (QR nhóm Zalo)",
@@ -27,7 +27,7 @@
    "video": "bmr-tdee.mp4",
    "cover": "bmr-tdee.jpg",
    "srt": "bmr-tdee.srt",
-   "mb": 12.73
+   "mb": 12.65
   },
   {
    "id": "tang-co-giam-mo",
@@ -50,7 +50,7 @@
    "video": "tang-co-giam-mo.mp4",
    "cover": "tang-co-giam-mo.jpg",
    "srt": "tang-co-giam-mo.srt",
-   "mb": 13.23
+   "mb": 13.12
   },
   {
    "id": "giac-ngu",
@@ -73,7 +73,7 @@
    "video": "giac-ngu.mp4",
    "cover": "giac-ngu.jpg",
    "srt": "giac-ngu.srt",
-   "mb": 12.05
+   "mb": 11.93
   },
   {
    "id": "sai-lam-calo",
@@ -96,7 +96,7 @@
    "video": "sai-lam-calo.mp4",
    "cover": "sai-lam-calo.jpg",
    "srt": "sai-lam-calo.srt",
-   "mb": 15.99
+   "mb": 15.73
   },
   {
    "id": "protein-bao-nhieu",
@@ -119,7 +119,7 @@
    "video": "protein-bao-nhieu.mp4",
    "cover": "protein-bao-nhieu.jpg",
    "srt": "protein-bao-nhieu.srt",
-   "mb": 11.56
+   "mb": 11.35
   },
   {
    "id": "demo-ghi-set",
@@ -142,7 +142,7 @@
    "video": "demo-ghi-set.mp4",
    "cover": "demo-ghi-set.jpg",
    "srt": "demo-ghi-set.srt",
-   "mb": 17.45
+   "mb": 15.5
   },
   {
    "id": "demo-thuc-don",
@@ -165,7 +165,7 @@
    "video": "demo-thuc-don.mp4",
    "cover": "demo-thuc-don.jpg",
    "srt": "demo-thuc-don.srt",
-   "mb": 14.46
+   "mb": 13.46
   },
   {
    "id": "demo-tim-pt",
@@ -188,7 +188,7 @@
    "video": "demo-tim-pt.mp4",
    "cover": "demo-tim-pt.jpg",
    "srt": "demo-tim-pt.srt",
-   "mb": 11.35
+   "mb": 10.08
   },
   {
    "id": "demo-16-theme",
@@ -211,7 +211,7 @@
    "video": "demo-16-theme.mp4",
    "cover": "demo-16-theme.jpg",
    "srt": "demo-16-theme.srt",
-   "mb": 11.96
+   "mb": 11.39
   },
   {
    "id": "hanh-trinh-12-tuan",
@@ -234,7 +234,7 @@
    "video": "hanh-trinh-12-tuan.mp4",
    "cover": "hanh-trinh-12-tuan.jpg",
    "srt": "hanh-trinh-12-tuan.srt",
-   "mb": 11.0
+   "mb": 10.99
   },
   {
    "id": "suc-manh-12-tuan",
@@ -257,7 +257,7 @@
    "video": "suc-manh-12-tuan.mp4",
    "cover": "suc-manh-12-tuan.jpg",
    "srt": "suc-manh-12-tuan.srt",
-   "mb": 12.61
+   "mb": 12.45
   },
   {
    "id": "tap-bung-giam-mo",
@@ -280,7 +280,7 @@
    "video": "tap-bung-giam-mo.mp4",
    "cover": "tap-bung-giam-mo.jpg",
    "srt": "tap-bung-giam-mo.srt",
-   "mb": 13.07
+   "mb": 12.84
   },
   {
    "id": "mo-hoi-dot-mo",
@@ -303,7 +303,7 @@
    "video": "mo-hoi-dot-mo.mp4",
    "cover": "mo-hoi-dot-mo.jpg",
    "srt": "mo-hoi-dot-mo.srt",
-   "mb": 9.65
+   "mb": 9.48
   },
   {
    "id": "sap-ra-mat",
@@ -326,7 +326,7 @@
    "video": "sap-ra-mat.mp4",
    "cover": "sap-ra-mat.jpg",
    "srt": "sap-ra-mat.srt",
-   "mb": 12.78
+   "mb": 12.72
   }
  ]
 }
