@@ -2,61 +2,330 @@
  "model": "gpt-image-2.5",
  "base": "https://apivn.vn/v1",
  "manifest": "scripts/ai_people_prompts.json",
- "started": "2026-11-12T09:18:02.985091Z",
+ "started": "2026-11-12T10:35:41.595204Z",
  "items": {
-  "hero-m-1": {
+  "pt-thanhtam-5": {
    "ok": true,
    "via": "images",
-   "sec": 37.6
+   "sec": 35.7
   },
-  "hero-m-4": {
+  "pt-khanhvy-2": {
    "ok": true,
    "via": "images",
-   "sec": 16.6
+   "sec": 21.3
   },
-  "hero-m-2": {
+  "pt-khanhvy": {
+   "ok": true,
+   "via": "images",
+   "sec": 38.0
+  },
+  "pt-khanhvy-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 38.4
+  },
+  "pt-khanhvy-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.7
+  },
+  "pt-quanghuy": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.4
+  },
+  "pt-quanghuy-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.4
+  },
+  "pt-khanhvy-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 41.4
+  },
+  "pt-quanghuy-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.5
+  },
+  "pt-quanghuy-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 34.4
+  },
+  "pt-quanghuy-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.2
+  },
+  "pt-my": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.2
+  },
+  "pt-my-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 18.8
+  },
+  "pt-my-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 18.6
+  },
+  "pt-my-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 40.8
+  },
+  "pt-my-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 29.9
+  },
+  "pt-my-5": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.0
+  },
+  "pt-nhatnam": {
+   "ok": true,
+   "via": "images",
+   "sec": 30.8
+  },
+  "pt-nhatnam-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 32.7
+  },
+  "pt-nhatnam-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.3
+  },
+  "pt-nhatnam-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 38.9
+  },
+  "pt-nhatnam-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 17.8
+  },
+  "pt-nhatnam-5": {
+   "ok": true,
+   "via": "images",
+   "sec": 17.9
+  },
+  "pt-thuyduong-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 18.0
+  },
+  "pt-thuyduong": {
+   "ok": true,
+   "via": "images",
+   "sec": 31.9
+  },
+  "pt-thuyduong-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.2
+  },
+  "pt-thuyduong-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.5
+  },
+  "pt-tuankiet": {
+   "ok": true,
+   "via": "images",
+   "sec": 16.5
+  },
+  "pt-thuyduong-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 40.0
+  },
+  "pt-tuankiet-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.9
+  },
+  "pt-tuankiet-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.1
+  },
+  "pt-tuankiet-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.4
+  },
+  "pt-baotram": {
    "ok": true,
    "via": "images",
    "sec": 17.0
   },
-  "hero-m-3": {
+  "pt-tuankiet-4": {
    "ok": true,
    "via": "images",
-   "sec": 17.6
+   "sec": 33.7
   },
-  "hero-f-1": {
+  "pt-baotram-1": {
    "ok": true,
    "via": "images",
-   "sec": 15.4
+   "sec": 38.1
   },
-  "hero-f-2": {
+  "pt-baotram-3": {
    "ok": true,
    "via": "images",
-   "sec": 17.1
+   "sec": 16.7
   },
-  "hero-f-3": {
+  "pt-baotram-2": {
    "ok": true,
    "via": "images",
-   "sec": 26.6
+   "sec": 32.0
   },
-  "ob-gym-empty": {
+  "pt-anhdung": {
+   "ok": true,
+   "via": "images",
+   "sec": 16.2
+  },
+  "pt-baotram-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.0
+  },
+  "pt-anhdung-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.1
+  },
+  "pt-baotram-5": {
+   "ok": true,
+   "via": "images",
+   "sec": 37.7
+  },
+  "pt-anhdung-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.9
+  },
+  "pt-anhdung-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.2
+  },
+  "pt-anhdung-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 36.8
+  },
+  "pt-haiyen": {
+   "ok": true,
+   "via": "images",
+   "sec": 47.5
+  },
+  "pt-haiyen-2": {
    "ok": true,
    "via": "images",
    "sec": 18.7
   },
-  "hero-f-4": {
+  "pt-haiyen-1": {
    "ok": true,
    "via": "images",
-   "sec": 22.8
+   "sec": 30.8
+  },
+  "pt-haiyen-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 16.5
+  },
+  "pt-haiyen-5": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.1
+  },
+  "pt-haiyen-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 35.9
+  },
+  "pt-minhtri": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.0
+  },
+  "pt-minhtri-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 17.0
+  },
+  "pt-minhtri-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 42.7
+  },
+  "pt-minhtri-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 42.6
+  },
+  "pt-minhtri-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 31.5
+  },
+  "pt-minhtri-5": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.2
+  },
+  "rv-pt-progress": {
+   "ok": true,
+   "via": "images",
+   "sec": 32.6
+  },
+  "rv-pt-yoga-home": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.0
+  },
+  "rv-pt-dance-home": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫351,62). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611121044526055472028268d9d6JVMTBTP1)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫351,62, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611121044585359711188268d9d6PAvHmQ8X)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i"
+  },
+  "rv-pt-trail-finish": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫351,62, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611121045039301313958268d9d6rbFpAvzI)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫351,62, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611121045044298424058268d9d6IwDZW8f0)\",\"t"
+  },
+  "rv-pt-posture": {
+   "ok": true,
+   "via": "images",
+   "sec": 36.3
+  },
+  "rv-pt-first-lift": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫351,62, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611121045049254752518268d9d6Q08rW1jd)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫351,62, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611121045081011585378268d9d6YhCyUNOu)\",\"t"
+  },
+  "rv-pt-hipthrust": {
+   "ok": true,
+   "via": "images",
+   "sec": 29.0
   }
  },
- "finished": "2026-11-12T09:19:35.487567Z",
- "ok": 9,
- "fail": 0,
+ "finished": "2026-11-12T10:45:21.155900Z",
+ "ok": 60,
+ "fail": 3,
  "sheets": [
   "contact-01.jpg",
   "contact-02.jpg",
   "contact-03.jpg",
-  "contact-04.jpg"
+  "contact-04.jpg",
+  "contact-05.jpg",
+  "contact-06.jpg"
  ]
 }
