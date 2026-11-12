@@ -65,14 +65,34 @@ function nuCleanImgIndex(idx){
   });
   return out;
 }
+/* Ảnh món tạo bằng AI (media/food-ai, workflow media-food-ai.yml) — đúng món, cùng phong cách; ƯU TIÊN hơn ảnh Pixabay. */
+const FOOD_AI_BASE = "https://thangvu030198-ai.github.io/fitkit-app/media/food-ai/";
+let FOOD_IMG_AI = {};
+function nuCleanAiIndex(idx){
+  const out = {};
+  if(!idx || typeof idx !== "object") return out;
+  Object.keys(idx).forEach(id=>{
+    const e = idx[id];
+    if(!/^[a-z0-9-]+$/.test(id) || !e || typeof e.file !== "string" || !/^[a-z0-9-]+\.(webp|png|jpe?g)$/i.test(e.file)) return;
+    out[id] = { file:e.file, ai:true, base:FOOD_AI_BASE };
+  });
+  return out;
+}
+function nuMergeImg(pix, ai){ return Object.assign({}, pix || {}, ai || {}); }
 (async ()=>{
-  try{ const r = await fetch(FOOD_IMG_BASE + "index.json"); if(r.ok){ FOOD_IMG = nuCleanImgIndex(await r.json()); if(typeof renderNutritionScreen==="function" && $("#screen-nutrition.active")) renderNutritionScreen(); } }catch(e){}
+  let pix = {}, ai = {};
+  await Promise.all([
+    fetch(FOOD_IMG_BASE + "index.json").then(r=> r.ok ? r.json() : {}).then(j=>{ pix = nuCleanImgIndex(j); }).catch(()=>{}),
+    fetch(FOOD_AI_BASE + "index.json").then(r=> r.ok ? r.json() : {}).then(j=>{ ai = nuCleanAiIndex(j); FOOD_IMG_AI = ai; }).catch(()=>{}),
+  ]);
+  FOOD_IMG = nuMergeImg(pix, ai);
+  try{ if(Object.keys(FOOD_IMG).length && typeof renderNutritionScreen==="function" && $("#screen-nutrition.active")) renderNutritionScreen(); }catch(e){}
 })();
 function foodIdOf(idOrName){ if(FOODS.some(f=>f.id===idOrName)) return idOrName; const f = FOODS.find(f=>f.name===idOrName); return f ? f.id : ""; }
 function foodPic(idOrName, cls="fp"){
   const id = RECIPES.some(r=>r.id===idOrName) ? idOrName : foodIdOf(idOrName);
   const hit = FOOD_IMG[id];
-  if(hit) return `<img class="${cls}" src="${FOOD_IMG_BASE+hit.file}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${foodEmoji(id)}'}))">`;
+  if(hit) return `<img class="${cls}" src="${(hit.base || FOOD_IMG_BASE)+hit.file}" alt=""${hit.ai ? ' data-ai="1" title="Ảnh minh hoạ tạo bằng AI"' : ""} loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${foodEmoji(id)}'}))">`;
   const r = RECIPES.find(x=>x.id===id);
   return `<span class="${cls} emo">${r ? r.emoji : foodEmoji(id)}</span>`;
 }

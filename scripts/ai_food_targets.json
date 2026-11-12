@@ -1,0 +1,2773 @@
+[
+ {
+  "id": "com-trang",
+  "name": "Cơm trắng (đã nấu)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "com-gao-lut",
+  "name": "Cơm gạo lứt",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "bun-pho",
+  "name": "Bún / Bánh phở",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "banh-mi",
+  "name": "Bánh mì trắng",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "yen-mach",
+  "name": "Yến mạch (khô)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "khoai-lang",
+  "name": "Khoai lang (luộc)",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "khoai-tay",
+  "name": "Khoai tây (luộc)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "bap",
+  "name": "Bắp / Ngô (luộc)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "uc-ga",
+  "name": "Ức gà (luộc, không da)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "dui-ga",
+  "name": "Đùi gà (có da)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "uc-vit",
+  "name": "Ức vịt",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "thit-bo-nac",
+  "name": "Thịt bò nạc (chín)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "thit-heo-nac",
+  "name": "Thịt heo nạc",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "thit-heo-ba-chi",
+  "name": "Thịt heo ba chỉ",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "ca-hoi",
+  "name": "Cá hồi",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "ca-basa",
+  "name": "Cá basa / Cá tra",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "ca-ngu",
+  "name": "Cá ngừ (đóng hộp, ráo nước)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "tom-luoc",
+  "name": "Tôm (luộc)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "trung-ga",
+  "name": "Trứng gà (luộc)",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "sua-tuoi-khong-duong",
+  "name": "Sữa tươi không đường",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "sua-tuoi-co-duong",
+  "name": "Sữa tươi có đường",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "sua-chua-khong-duong",
+  "name": "Sữa chua không đường",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "sua-chua-hy-lap",
+  "name": "Sữa chua Hy Lạp",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "pho-mai",
+  "name": "Phô mai (Cheddar)",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "dau-hu",
+  "name": "Đậu hũ",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "dau-nanh-luoc",
+  "name": "Đậu nành luộc (Edamame)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "dau-den",
+  "name": "Đậu đen (đã nấu)",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "bong-cai-xanh",
+  "name": "Bông cải xanh (luộc)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "rau-muong",
+  "name": "Rau muống (xào)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "ca-chua",
+  "name": "Cà chua",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "dua-leo",
+  "name": "Dưa leo",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "xa-lach",
+  "name": "Xà lách",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "chuoi",
+  "name": "Chuối",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "tao",
+  "name": "Táo",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "cam",
+  "name": "Cam",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "bo-avocado",
+  "name": "Bơ (trái bơ)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "nho",
+  "name": "Nho",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "bo-dau-phong",
+  "name": "Bơ đậu phộng",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "hanh-nhan",
+  "name": "Hạnh nhân",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "oc-cho",
+  "name": "Hạt óc chó",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "dau-oliu",
+  "name": "Dầu ô liu",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "bo-dong-vat",
+  "name": "Bơ động vật (Butter)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "duong-trang",
+  "name": "Đường trắng",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "mat-ong",
+  "name": "Mật ong",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "sua-dau-nanh",
+  "name": "Sữa đậu nành không đường",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "mi-goi",
+  "name": "Mì gói (khô, chưa nêm)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "khoai-mon",
+  "name": "Khoai môn (luộc)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "nuoc-cam",
+  "name": "Nước cam ép",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "banh-quy",
+  "name": "Bánh quy",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "chocolate-den",
+  "name": "Chocolate đen (70%)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "ca-thu",
+  "name": "Cá thu (nướng)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "muc",
+  "name": "Mực (hấp)",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "thit-bo-xay",
+  "name": "Bò xay nạc 90% (chín)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "dui-ga-bo-da",
+  "name": "Đùi gà bỏ da (chín)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "trung-trang",
+  "name": "Lòng trắng trứng",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "banh-trang",
+  "name": "Bánh tráng (khô)",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "mi-y-nguyen-cam",
+  "name": "Mì Ý nguyên cám (đã nấu)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "banh-mi-nguyen-cam",
+  "name": "Bánh mì nguyên cám",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "tortilla",
+  "name": "Bánh tortilla nguyên cám",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "quinoa",
+  "name": "Hạt diêm mạch Quinoa (đã nấu)",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "granola",
+  "name": "Granola",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "hat-chia",
+  "name": "Hạt chia",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "whey",
+  "name": "Whey protein (bột)",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "nam",
+  "name": "Nấm (rơm, đùi gà, kim châm)",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "dau-que",
+  "name": "Đậu que",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "cai-thia",
+  "name": "Cải thìa",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "bi-do",
+  "name": "Bí đỏ",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "ca-rot",
+  "name": "Cà rốt",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "hanh-tay",
+  "name": "Hành tây",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "ot-chuong",
+  "name": "Ớt chuông",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "mang-tay",
+  "name": "Măng tây",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "cai-bo-xoi",
+  "name": "Cải bó xôi (rau bina)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "rau-thom",
+  "name": "Rau thơm các loại",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "gia-do",
+  "name": "Giá đỗ",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "dau-tay",
+  "name": "Dâu tây",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "viet-quat",
+  "name": "Việt quất",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "xoai",
+  "name": "Xoài",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "dua-hau",
+  "name": "Dưa hấu",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "thit-heo-xay",
+  "name": "Thịt heo xay nạc (chín)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "pho-bo-to",
+  "name": "Phở bò (tô)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "bun-bo-hue-to",
+  "name": "Bún bò Huế (tô)",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "hu-tieu-to",
+  "name": "Hủ tiếu (tô)",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "mi-quang-to",
+  "name": "Mì Quảng (tô)",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "bun-cha-suat",
+  "name": "Bún chả (suất)",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "com-tam-suon",
+  "name": "Cơm tấm sườn bì chả (đĩa)",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "com-van-phong",
+  "name": "Cơm văn phòng gà/thịt (hộp)",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "com-chien",
+  "name": "Cơm chiên (đĩa)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "banh-mi-thit",
+  "name": "Bánh mì thịt (ổ)",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "xoi-man",
+  "name": "Xôi mặn / xôi gà (gói)",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "banh-cuon-dia",
+  "name": "Bánh cuốn (đĩa)",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "banh-xeo",
+  "name": "Bánh xèo (cái)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "banh-bao",
+  "name": "Bánh bao nhân thịt (cái)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "chao-ga-to",
+  "name": "Cháo gà (tô)",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "goi-cuon-san",
+  "name": "Gỏi cuốn (cuốn)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "tra-sua",
+  "name": "Trà sữa trân châu (ly)",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "ca-phe-sua-da",
+  "name": "Cà phê sữa đá (ly)",
+  "kind": "food",
+  "reason": "ok"
+ },
+ {
+  "id": "nuoc-ngot",
+  "name": "Nước ngọt có ga (lon)",
+  "kind": "food",
+  "reason": "questionable"
+ },
+ {
+  "id": "bia",
+  "name": "Bia (lon)",
+  "kind": "food",
+  "reason": "wrong"
+ },
+ {
+  "id": "tempeh",
+  "name": "Tempeh (đậu nành lên men)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "dau-lang",
+  "name": "Đậu lăng (đã nấu)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "dau-ga",
+  "name": "Đậu gà (đã nấu)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "mi-can",
+  "name": "Mì căn (seitan, đạm lúa mì)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "dau-hu-ky",
+  "name": "Tàu hũ ky (váng đậu, khô)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "dau-hu-non",
+  "name": "Đậu hũ non (tàu hũ)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "tvp",
+  "name": "Đạm đậu nành khô (TVP / thịt chay)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "dau-xanh",
+  "name": "Đậu xanh (đã nấu)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "dau-do",
+  "name": "Đậu đỏ (đã nấu)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "dau-phong",
+  "name": "Đậu phộng rang",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "hat-dieu",
+  "name": "Hạt điều",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "hat-bi",
+  "name": "Hạt bí xanh (bóc vỏ)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "me-vung",
+  "name": "Mè (vừng) rang",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "hat-lanh",
+  "name": "Hạt lanh",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "protein-thuc-vat",
+  "name": "Bột đạm thực vật (đậu Hà Lan)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "hummus",
+  "name": "Hummus (sốt đậu gà)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "sua-hanh-nhan",
+  "name": "Sữa hạnh nhân không đường",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "dau-ha-lan",
+  "name": "Đậu Hà Lan (luộc)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "ca-ro-phi",
+  "name": "Cá rô phi (hấp/nướng)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "ca-nuc",
+  "name": "Cá nục (kho/hấp)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "trung-cut",
+  "name": "Trứng cút (luộc)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "gio-lua",
+  "name": "Giò lụa (chả lụa)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "pho-mai-tuoi",
+  "name": "Phô mai tươi ít béo (cottage)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "sua-tach-beo",
+  "name": "Sữa tươi tách béo",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "ngheu",
+  "name": "Nghêu / ngao (ruột, đã hấp)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "xoi-trang",
+  "name": "Xôi trắng (nếp đã đồ)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "mien-dong",
+  "name": "Miến dong (khô)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "khoai-mi",
+  "name": "Khoai mì / sắn (luộc)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "banh-gao-lut",
+  "name": "Bánh gạo lứt (rice cake)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "bap-cai",
+  "name": "Bắp cải",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "cai-ngot",
+  "name": "Cải ngọt / cải xanh",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "mong-toi",
+  "name": "Mồng tơi",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "bi-dao",
+  "name": "Bí đao (bí xanh)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "muop",
+  "name": "Mướp",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "kho-qua",
+  "name": "Khổ qua (mướp đắng)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "ca-tim",
+  "name": "Cà tím",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "dau-bap",
+  "name": "Đậu bắp",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "sup-lo",
+  "name": "Súp lơ trắng",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "nam-dong-co",
+  "name": "Nấm đông cô tươi (shiitake)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "su-su",
+  "name": "Su su",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "kim-chi",
+  "name": "Kim chi cải thảo",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "oi",
+  "name": "Ổi",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "du-du",
+  "name": "Đu đủ chín",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "thanh-long",
+  "name": "Thanh long",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "buoi",
+  "name": "Bưởi",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "dua-thom",
+  "name": "Dứa (thơm)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "kiwi",
+  "name": "Kiwi",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "nuoc-dua",
+  "name": "Nước dừa tươi",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "dau-an",
+  "name": "Dầu ăn (đậu nành / hướng dương)",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "dau-me",
+  "name": "Dầu mè",
+  "kind": "food",
+  "reason": "missing"
+ },
+ {
+  "id": "ga-sa-ot-af",
+  "name": "Ức gà sả ớt nồi chiên không dầu, cơm lứt, dưa leo",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "airfryer",
+  "tags": [
+   "giam-mo",
+   "tang-co"
+  ],
+  "emoji": "🍗",
+  "items": [
+   "uc-ga",
+   "com-gao-lut",
+   "dua-leo",
+   "dau-oliu"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "goi-cuon",
+  "name": "Gỏi cuốn tôm thịt",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "giam-mo",
+   "an-vat"
+  ],
+  "emoji": "🥢",
+  "items": [
+   "banh-trang",
+   "tom-luoc",
+   "thit-heo-nac",
+   "bun-pho",
+   "xa-lach",
+   "rau-thom"
+  ],
+  "reason": "wrong"
+ },
+ {
+  "id": "pho-bo-nac",
+  "name": "Phở bò tái nạc",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🍜",
+  "items": [
+   "bun-pho",
+   "thit-bo-nac",
+   "hanh-tay",
+   "rau-thom",
+   "gia-do"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "bun-ga-xe",
+  "name": "Bún gà xé rau thơm",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🍲",
+  "items": [
+   "bun-pho",
+   "uc-ga",
+   "rau-thom",
+   "gia-do",
+   "hanh-tay"
+  ],
+  "reason": "questionable"
+ },
+ {
+  "id": "ca-basa-kho",
+  "name": "Cá basa kho tộ ít dầu, cơm lứt, rau muống",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "pan",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🐟",
+  "items": [
+   "ca-basa",
+   "com-gao-lut",
+   "rau-muong"
+  ],
+  "reason": "questionable"
+ },
+ {
+  "id": "canh-bi-do",
+  "name": "Canh bí đỏ thịt bằm, cơm, trứng luộc",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "tang-co"
+  ],
+  "emoji": "🎃",
+  "items": [
+   "bi-do",
+   "thit-heo-xay",
+   "com-trang",
+   "trung-ga"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "dau-hu-sot-ca",
+  "name": "Đậu hũ sốt cà, cơm lứt, rau muống",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "pan",
+  "tags": [
+   "chay",
+   "giam-mo",
+   "thuan-chay"
+  ],
+  "emoji": "🍅",
+  "items": [
+   "dau-hu",
+   "ca-chua",
+   "com-gao-lut",
+   "rau-muong"
+  ],
+  "reason": "questionable"
+ },
+ {
+  "id": "ca-thu-af",
+  "name": "Cá thu nướng nồi chiên không dầu, khoai lang, cải thìa",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "airfryer",
+  "tags": [
+   "tang-co"
+  ],
+  "emoji": "🐠",
+  "items": [
+   "ca-thu",
+   "khoai-lang",
+   "cai-thia"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "bo-xao-cai",
+  "name": "Bò xào cải thìa nấm, cơm lứt",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "pan",
+  "tags": [
+   "tang-co"
+  ],
+  "emoji": "🥩",
+  "items": [
+   "thit-bo-nac",
+   "cai-thia",
+   "nam",
+   "com-gao-lut",
+   "dau-oliu"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "chao-yen-mach-ga",
+  "name": "Cháo yến mạch ức gà nấm",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🥣",
+  "items": [
+   "yen-mach",
+   "uc-ga",
+   "nam",
+   "rau-thom"
+  ],
+  "reason": "questionable"
+ },
+ {
+  "id": "banh-mi-trung",
+  "name": "Bánh mì trứng & dưa leo",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "pan",
+  "tags": [
+   "tang-co"
+  ],
+  "emoji": "🥖",
+  "items": [
+   "banh-mi",
+   "trung-ga",
+   "dua-leo"
+  ],
+  "reason": "questionable"
+ },
+ {
+  "id": "muc-hap-gung",
+  "name": "Mực hấp gừng hành, rau luộc",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "steam",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🦑",
+  "items": [
+   "muc",
+   "bong-cai-xanh",
+   "com-gao-lut"
+  ],
+  "reason": "wrong"
+ },
+ {
+  "id": "com-ga",
+  "name": "Cơm lứt gà luộc & bông cải",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "giam-mo",
+   "tang-co"
+  ],
+  "emoji": "🍱",
+  "items": [
+   "com-gao-lut",
+   "uc-ga",
+   "bong-cai-xanh"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "dui-ga-mat-ong-af",
+  "name": "Đùi gà nướng mật ong nồi chiên không dầu, cơm, salad",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "airfryer",
+  "tags": [
+   "tang-co"
+  ],
+  "emoji": "🍯",
+  "items": [
+   "dui-ga-bo-da",
+   "com-trang",
+   "xa-lach",
+   "ca-chua",
+   "mat-ong"
+  ],
+  "reason": "wrong"
+ },
+ {
+  "id": "bun-bo",
+  "name": "Bún bò nạc thanh đạm",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🍜",
+  "items": [
+   "bun-pho",
+   "thit-bo-nac",
+   "xa-lach",
+   "ca-chua"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "tom-bap",
+  "name": "Tôm luộc & bắp",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🍤",
+  "items": [
+   "tom-luoc",
+   "bap",
+   "xa-lach"
+  ],
+  "reason": "wrong"
+ },
+ {
+  "id": "khoai-lang-af",
+  "name": "Khoai lang que nồi chiên không dầu",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "airfryer",
+  "tags": [
+   "an-vat",
+   "chay",
+   "thuan-chay"
+  ],
+  "emoji": "🍠",
+  "items": [
+   "khoai-lang",
+   "dau-oliu"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "dau-hu-hap-nam",
+  "name": "Đậu hũ non hấp nấm, cơm lứt, cải thìa",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "steam",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "giam-mo"
+  ],
+  "emoji": "🍄",
+  "items": [
+   "dau-hu",
+   "nam",
+   "com-gao-lut",
+   "cai-thia"
+  ],
+  "reason": "questionable"
+ },
+ {
+  "id": "bun-chay-dau-hu",
+  "name": "Bún chay đậu hũ chiên không dầu",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "airfryer",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "giam-mo"
+  ],
+  "emoji": "🥗",
+  "items": [
+   "bun-pho",
+   "dau-hu",
+   "gia-do",
+   "rau-thom",
+   "dua-leo",
+   "bo-dau-phong"
+  ],
+  "reason": "questionable"
+ },
+ {
+  "id": "dau-hu-nam-af",
+  "name": "Đậu hũ sốt nấm nồi chiên, cơm lứt, bông cải (tăng cơ chay)",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "airfryer",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "tang-co"
+  ],
+  "emoji": "🍱",
+  "items": [
+   "dau-hu",
+   "nam",
+   "com-gao-lut",
+   "bong-cai-xanh",
+   "dau-oliu"
+  ],
+  "reason": "wrong"
+ },
+ {
+  "id": "sua-dau-yen-mach",
+  "name": "Yến mạch sữa đậu nành, chuối & hạt chia",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "boil",
+  "tags": [
+   "chay",
+   "thuan-chay"
+  ],
+  "emoji": "🥣",
+  "items": [
+   "yen-mach",
+   "sua-dau-nanh",
+   "chuoi",
+   "hat-chia"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "dau-den-bowl",
+  "name": "Bowl đậu đen, cơm lứt, bơ & salsa",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "nocook",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "tang-co"
+  ],
+  "emoji": "🌯",
+  "items": [
+   "dau-den",
+   "com-gao-lut",
+   "bo-avocado",
+   "ca-chua",
+   "ot-chuong",
+   "hanh-tay"
+  ],
+  "reason": "wrong"
+ },
+ {
+  "id": "quinoa-edamame",
+  "name": "Salad quinoa edamame",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "boil",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "giam-mo"
+  ],
+  "emoji": "🥗",
+  "items": [
+   "quinoa",
+   "dau-nanh-luoc",
+   "dua-leo",
+   "ca-chua",
+   "dau-oliu"
+  ],
+  "reason": "wrong"
+ },
+ {
+  "id": "com-trung-rau",
+  "name": "Cơm trứng rau muống (rẻ – sinh viên)",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "pan",
+  "tags": [
+   "re",
+   "tang-co",
+   "chay"
+  ],
+  "emoji": "🍳",
+  "items": [
+   "com-trang",
+   "trung-ga",
+   "rau-muong"
+  ],
+  "reason": "questionable"
+ },
+ {
+  "id": "mi-trung-rau",
+  "name": "Mì gói nâng cấp: trứng + rau",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "re"
+  ],
+  "emoji": "🍜",
+  "items": [
+   "mi-goi",
+   "trung-ga",
+   "cai-thia"
+  ],
+  "reason": "questionable"
+ },
+ {
+  "id": "ca-ngu-com",
+  "name": "Cơm cá ngừ hộp sốt cà (rẻ)",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "pan",
+  "tags": [
+   "re",
+   "tang-co"
+  ],
+  "emoji": "🐟",
+  "items": [
+   "ca-ngu",
+   "ca-chua",
+   "com-trang",
+   "dua-leo"
+  ],
+  "reason": "wrong"
+ },
+ {
+  "id": "chao-yen-mach-dau-hu",
+  "name": "Cháo yến mạch đậu hũ nấm (chay)",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "giam-mo"
+  ],
+  "emoji": "🥣",
+  "items": [
+   "yen-mach",
+   "dau-hu",
+   "nam",
+   "rau-thom"
+  ],
+  "reason": "questionable"
+ },
+ {
+  "id": "sua-dau-chuoi-hat",
+  "name": "Sữa đậu nành, chuối & hạnh nhân",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "nocook",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "an-vat"
+  ],
+  "emoji": "🥛",
+  "items": [
+   "sua-dau-nanh",
+   "chuoi",
+   "hanh-nhan"
+  ],
+  "reason": "questionable"
+ },
+ {
+  "id": "dau-hu-trung-hap",
+  "name": "Trứng hấp đậu hũ, cơm, rau luộc",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "steam",
+  "tags": [
+   "chay",
+   "tang-co",
+   "re"
+  ],
+  "emoji": "🍳",
+  "items": [
+   "trung-ga",
+   "dau-hu",
+   "com-trang",
+   "rau-muong"
+  ],
+  "reason": "wrong"
+ },
+ {
+  "id": "overnight-oats",
+  "name": "Overnight oats hạt chia & việt quất",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "nocook",
+  "tags": [
+   "giam-mo",
+   "chay"
+  ],
+  "emoji": "🫐",
+  "items": [
+   "yen-mach",
+   "sua-chua-hy-lap",
+   "sua-tuoi-khong-duong",
+   "hat-chia",
+   "viet-quat"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "parfait",
+  "name": "Sữa chua Hy Lạp granola dâu tây",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "nocook",
+  "tags": [
+   "an-vat",
+   "tang-co"
+  ],
+  "emoji": "🍓",
+  "items": [
+   "sua-chua-hy-lap",
+   "granola",
+   "dau-tay",
+   "mat-ong"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "omelette-trang",
+  "name": "Omelette lòng trắng rau bina nấm, bánh mì nguyên cám",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "pan",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🍳",
+  "items": [
+   "trung-trang",
+   "trung-ga",
+   "cai-bo-xoi",
+   "nam",
+   "banh-mi-nguyen-cam"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "salmon-af",
+  "name": "Cá hồi nồi chiên không dầu, măng tây, quinoa",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "airfryer",
+  "tags": [
+   "tang-co"
+  ],
+  "emoji": "🍣",
+  "items": [
+   "ca-hoi",
+   "mang-tay",
+   "quinoa"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "chicken-salad",
+  "name": "Salad ức gà, bơ & cà chua",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "pan",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🥗",
+  "items": [
+   "uc-ga",
+   "xa-lach",
+   "ca-chua",
+   "dua-leo",
+   "bo-avocado",
+   "dau-oliu"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "spaghetti-bo",
+  "name": "Mì Ý nguyên cám sốt bò bằm cà chua",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "boil",
+  "tags": [
+   "tang-co"
+  ],
+  "emoji": "🍝",
+  "items": [
+   "mi-y-nguyen-cam",
+   "thit-bo-xay",
+   "ca-chua",
+   "hanh-tay",
+   "ca-rot"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "wrap-ga",
+  "name": "Wrap gà nguyên cám rau củ",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "pan",
+  "tags": [
+   "giam-mo",
+   "tang-co"
+  ],
+  "emoji": "🌯",
+  "items": [
+   "tortilla",
+   "uc-ga",
+   "xa-lach",
+   "ot-chuong",
+   "sua-chua-hy-lap"
+  ],
+  "reason": "questionable"
+ },
+ {
+  "id": "steak-khoai",
+  "name": "Bò áp chảo, khoai tây nồi chiên, bông cải",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "pan",
+  "tags": [
+   "tang-co"
+  ],
+  "emoji": "🥩",
+  "items": [
+   "thit-bo-nac",
+   "khoai-tay",
+   "bong-cai-xanh",
+   "dau-oliu"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "tuna-sandwich",
+  "name": "Sandwich cá ngừ nguyên cám",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "nocook",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🥪",
+  "items": [
+   "banh-mi-nguyen-cam",
+   "ca-ngu",
+   "sua-chua-hy-lap",
+   "xa-lach",
+   "ca-chua"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "salad-ca-ngu",
+  "name": "Salad cá ngừ trứng",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "nocook",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🥗",
+  "items": [
+   "ca-ngu",
+   "trung-ga",
+   "xa-lach",
+   "ca-chua",
+   "dua-leo",
+   "dau-oliu"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "ca-hoi-khoai",
+  "name": "Cá hồi áp chảo & khoai lang",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "pan",
+  "tags": [
+   "tang-co"
+  ],
+  "emoji": "🐟",
+  "items": [
+   "ca-hoi",
+   "khoai-lang",
+   "bong-cai-xanh"
+  ],
+  "reason": "questionable"
+ },
+ {
+  "id": "yen-mach-chuoi",
+  "name": "Yến mạch chuối bơ đậu phộng",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "boil",
+  "tags": [
+   "tang-co"
+  ],
+  "emoji": "🥣",
+  "items": [
+   "yen-mach",
+   "sua-tuoi-khong-duong",
+   "chuoi",
+   "bo-dau-phong"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "shake-tang-can",
+  "name": "Sinh tố tăng cân: chuối, yến mạch, bơ đậu phộng, whey",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "blender",
+  "tags": [
+   "tang-co"
+  ],
+  "emoji": "🥤",
+  "items": [
+   "sua-tuoi-khong-duong",
+   "chuoi",
+   "yen-mach",
+   "bo-dau-phong",
+   "whey"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "smoothie-dau",
+  "name": "Sinh tố dâu sữa chua protein",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "blender",
+  "tags": [
+   "giam-mo",
+   "an-vat"
+  ],
+  "emoji": "🍓",
+  "items": [
+   "dau-tay",
+   "sua-chua-khong-duong",
+   "whey"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "sua-chua-hat",
+  "name": "Sữa chua Hy Lạp, hạnh nhân & nho",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "nocook",
+  "tags": [
+   "an-vat",
+   "giam-mo"
+  ],
+  "emoji": "🍇",
+  "items": [
+   "sua-chua-hy-lap",
+   "hanh-nhan",
+   "nho"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "edamame-tao",
+  "name": "Edamame & táo",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "an-vat",
+   "chay",
+   "thuan-chay"
+  ],
+  "emoji": "🍏",
+  "items": [
+   "dau-nanh-luoc",
+   "tao"
+  ],
+  "reason": "ok"
+ },
+ {
+  "id": "tempeh-sa-ot-af",
+  "name": "Tempeh sả ớt nồi chiên, cơm lứt, cải ngọt",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "airfryer",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "tang-co",
+   "giam-mo"
+  ],
+  "emoji": "🌱",
+  "items": [
+   "tempeh",
+   "com-gao-lut",
+   "cai-ngot",
+   "dau-an"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "ca-ri-dau-ga",
+  "name": "Cà ri đậu gà & đậu hũ, rau bina, cơm lứt",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "boil",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "tang-co"
+  ],
+  "emoji": "🍛",
+  "items": [
+   "dau-ga",
+   "dau-hu",
+   "ca-chua",
+   "hanh-tay",
+   "cai-bo-xoi",
+   "com-gao-lut",
+   "dau-an"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "dau-lang-ham",
+  "name": "Đậu lăng hầm cà chua cà rốt, bánh mì nguyên cám",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "boil",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "giam-mo",
+   "tang-co"
+  ],
+  "emoji": "🥣",
+  "items": [
+   "dau-lang",
+   "ca-chua",
+   "ca-rot",
+   "hanh-tay",
+   "cai-bo-xoi",
+   "banh-mi-nguyen-cam",
+   "dau-oliu"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "mi-can-xao-sa",
+  "name": "Mì căn xào sả ớt, đậu que, cơm trắng",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "pan",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "tang-co",
+   "giam-mo"
+  ],
+  "emoji": "🍢",
+  "items": [
+   "mi-can",
+   "com-trang",
+   "dau-que",
+   "hanh-tay",
+   "dau-an"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "tau-hu-ky-cuon-nam",
+  "name": "Tàu hũ ky cuộn nấm hấp, cơm lứt, cải ngọt",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "steam",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "giam-mo",
+   "tang-co"
+  ],
+  "emoji": "🥟",
+  "items": [
+   "dau-hu-ky",
+   "nam",
+   "dau-hu",
+   "com-gao-lut",
+   "cai-ngot"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "bun-tron-tvp",
+  "name": "Bún trộn 'thịt' chay đậu nành sả ớt",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "pan",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "giam-mo",
+   "tang-co"
+  ],
+  "emoji": "🥗",
+  "items": [
+   "tvp",
+   "bun-pho",
+   "gia-do",
+   "rau-thom",
+   "dua-leo",
+   "dau-phong",
+   "dau-an"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "bowl-dau-ga-quinoa",
+  "name": "Bowl đậu gà, quinoa, edamame & hummus",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "boil",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "giam-mo",
+   "tang-co"
+  ],
+  "emoji": "🥙",
+  "items": [
+   "dau-ga",
+   "quinoa",
+   "dau-nanh-luoc",
+   "hummus",
+   "dua-leo",
+   "ca-chua",
+   "cai-bo-xoi"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "yen-mach-protein-chay",
+  "name": "Yến mạch sữa đậu nành, đạm thực vật, chuối & hạt bí",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "boil",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "tang-co",
+   "giam-mo"
+  ],
+  "emoji": "🥣",
+  "items": [
+   "yen-mach",
+   "sua-dau-nanh",
+   "protein-thuc-vat",
+   "chuoi",
+   "hat-bi"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "banh-mi-dau-hu-chay",
+  "name": "Bánh mì đậu hũ sả & đồ chua (chay)",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "pan",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "re",
+   "giam-mo"
+  ],
+  "emoji": "🥖",
+  "items": [
+   "banh-mi",
+   "dau-hu",
+   "dua-leo",
+   "ca-rot",
+   "rau-thom",
+   "dau-an"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "edamame-hat-bi",
+  "name": "Edamame luộc muối & hạt bí",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "an-vat",
+   "giam-mo",
+   "tang-co"
+  ],
+  "emoji": "🥜",
+  "items": [
+   "dau-nanh-luoc",
+   "hat-bi"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "smoothie-dam-thuc-vat",
+  "name": "Sinh tố chuối bơ đậu phộng & đạm thực vật",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "blender",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "an-vat",
+   "tang-co"
+  ],
+  "emoji": "🥤",
+  "items": [
+   "sua-dau-nanh",
+   "chuoi",
+   "protein-thuc-vat",
+   "bo-dau-phong",
+   "yen-mach"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "dau-hu-kho-nam-dong-co",
+  "name": "Đậu hũ kho nấm đông cô, cơm lứt, cải ngọt",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "pan",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "giam-mo"
+  ],
+  "emoji": "🍄",
+  "items": [
+   "dau-hu",
+   "nam-dong-co",
+   "com-gao-lut",
+   "cai-ngot",
+   "dau-an"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "salad-tempeh-xoai",
+  "name": "Salad tempeh áp chảo, xoài & mè rang",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "pan",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "giam-mo"
+  ],
+  "emoji": "🥗",
+  "items": [
+   "tempeh",
+   "xa-lach",
+   "xoai",
+   "dua-leo",
+   "me-vung",
+   "dau-me"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "chili-dau-do-tvp",
+  "name": "Đậu đỏ hầm kiểu chili với 'thịt' đậu nành, cơm lứt",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "boil",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "tang-co"
+  ],
+  "emoji": "🌶️",
+  "items": [
+   "dau-do",
+   "tvp",
+   "ca-chua",
+   "hanh-tay",
+   "ot-chuong",
+   "com-gao-lut",
+   "dau-an"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "com-dau-hu-sa-mong-toi",
+  "name": "Cơm đậu hũ chiên sả (không dầu), canh mồng tơi",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "airfryer",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "re",
+   "giam-mo",
+   "tang-co"
+  ],
+  "emoji": "🍚",
+  "items": [
+   "dau-hu",
+   "com-trang",
+   "mong-toi",
+   "dau-an"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "pho-chay-nam-dau-hu",
+  "name": "Phở chay nấm & đậu hũ",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "giam-mo"
+  ],
+  "emoji": "🍜",
+  "items": [
+   "bun-pho",
+   "dau-hu",
+   "nam",
+   "cai-ngot",
+   "gia-do",
+   "rau-thom"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "sua-chua-oi",
+  "name": "Sữa chua Hy Lạp & ổi",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "nocook",
+  "tags": [
+   "chay",
+   "an-vat",
+   "giam-mo"
+  ],
+  "emoji": "🍐",
+  "items": [
+   "sua-chua-hy-lap",
+   "oi"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "trung-luoc-rau",
+  "name": "2 trứng luộc, dưa leo & cà chua",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "chay",
+   "an-vat",
+   "giam-mo",
+   "re"
+  ],
+  "emoji": "🥚",
+  "items": [
+   "trung-ga",
+   "dua-leo",
+   "ca-chua"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "banh-gao-bo-dau-chuoi",
+  "name": "Bánh gạo lứt bơ đậu phộng, chuối & sữa",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "nocook",
+  "tags": [
+   "chay",
+   "an-vat",
+   "tang-co"
+  ],
+  "emoji": "🍘",
+  "items": [
+   "banh-gao-lut",
+   "bo-dau-phong",
+   "chuoi",
+   "sua-tuoi-khong-duong"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "pho-mai-tuoi-dua",
+  "name": "Phô mai tươi (cottage) với dứa",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "nocook",
+  "tags": [
+   "chay",
+   "an-vat",
+   "giam-mo"
+  ],
+  "emoji": "🍍",
+  "items": [
+   "pho-mai-tuoi",
+   "dua-thom"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "shake-whey-chuoi",
+  "name": "Shake whey chuối sữa tách béo (sau tập)",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "blender",
+  "tags": [
+   "chay",
+   "an-vat",
+   "tang-co",
+   "giam-mo"
+  ],
+  "emoji": "🥤",
+  "items": [
+   "whey",
+   "sua-tach-beo",
+   "chuoi"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "khoai-lang-trung",
+  "name": "Khoai lang luộc & trứng luộc",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "chay",
+   "an-vat",
+   "giam-mo",
+   "re"
+  ],
+  "emoji": "🍠",
+  "items": [
+   "khoai-lang",
+   "trung-ga"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "banh-gao-ca-ngu",
+  "name": "Bánh gạo lứt phết cá ngừ sữa chua",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "nocook",
+  "tags": [
+   "an-vat",
+   "giam-mo"
+  ],
+  "emoji": "🐟",
+  "items": [
+   "banh-gao-lut",
+   "ca-ngu",
+   "sua-chua-hy-lap",
+   "dua-leo"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "sinh-to-bo-yen-mach",
+  "name": "Sinh tố bơ sữa yến mạch (tăng cân)",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "blender",
+  "tags": [
+   "chay",
+   "an-vat",
+   "tang-co"
+  ],
+  "emoji": "🥑",
+  "items": [
+   "bo-avocado",
+   "sua-tuoi-khong-duong",
+   "yen-mach",
+   "mat-ong",
+   "whey"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "hat-mix-tao",
+  "name": "Mix hạt (hạnh nhân, điều, bí) & táo",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "nocook",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "an-vat",
+   "tang-co"
+  ],
+  "emoji": "🍎",
+  "items": [
+   "hanh-nhan",
+   "hat-dieu",
+   "hat-bi",
+   "tao"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "sua-dau-banh-mi-bo-dau",
+  "name": "Sữa đậu nành & bánh mì nguyên cám bơ đậu phộng",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "nocook",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "an-vat",
+   "tang-co",
+   "re"
+  ],
+  "emoji": "🥛",
+  "items": [
+   "sua-dau-nanh",
+   "banh-mi-nguyen-cam",
+   "bo-dau-phong"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "xoi-dau-xanh-trung",
+  "name": "Xôi đậu xanh & 2 trứng luộc",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "steam",
+  "tags": [
+   "chay",
+   "tang-co",
+   "re"
+  ],
+  "emoji": "🍙",
+  "items": [
+   "xoi-trang",
+   "dau-xanh",
+   "trung-ga",
+   "dau-an"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "banh-cuon-cha-lua",
+  "name": "Bánh cuốn chả lụa (gọi ít nước mắm, nhiều rau)",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "steam",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🥟",
+  "items": [
+   "banh-cuon-dia",
+   "gio-lua",
+   "rau-thom",
+   "gia-do"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "chao-ca-ro-phi",
+  "name": "Cháo cá rô phi gừng hành",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "giam-mo",
+   "tang-co"
+  ],
+  "emoji": "🍲",
+  "items": [
+   "ca-ro-phi",
+   "com-trang",
+   "rau-thom"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "banh-mi-ga-xe",
+  "name": "Bánh mì nguyên cám gà xé, dưa leo, đồ chua",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "nocook",
+  "tags": [
+   "giam-mo",
+   "tang-co"
+  ],
+  "emoji": "🥪",
+  "items": [
+   "banh-mi-nguyen-cam",
+   "uc-ga",
+   "dua-leo",
+   "ca-rot",
+   "rau-thom",
+   "sua-chua-hy-lap"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "pho-ga-nac",
+  "name": "Phở gà nạc nhiều rau (bỏ da)",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🍜",
+  "items": [
+   "bun-pho",
+   "uc-ga",
+   "hanh-tay",
+   "rau-thom",
+   "gia-do"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "hu-tieu-tom-thit",
+  "name": "Hủ tiếu tôm thịt nạc nước trong",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "giam-mo",
+   "tang-co"
+  ],
+  "emoji": "🍤",
+  "items": [
+   "bun-pho",
+   "tom-luoc",
+   "thit-heo-nac",
+   "gia-do",
+   "cai-ngot"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "khoai-lang-trung-sua-dau",
+  "name": "Khoai lang luộc, 2 trứng & sữa đậu nành",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "chay",
+   "giam-mo",
+   "re"
+  ],
+  "emoji": "🍠",
+  "items": [
+   "khoai-lang",
+   "trung-ga",
+   "sua-dau-nanh"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "com-ca-nuc-kho",
+  "name": "Cơm cá nục kho cà chua, bắp cải luộc",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "pan",
+  "tags": [
+   "re",
+   "tang-co",
+   "giam-mo"
+  ],
+  "emoji": "🐟",
+  "items": [
+   "ca-nuc",
+   "com-trang",
+   "ca-chua",
+   "bap-cai"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "canh-bi-dao-thit-trung",
+  "name": "Cơm, canh bí đao thịt bằm & trứng chiên",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "re",
+   "tang-co"
+  ],
+  "emoji": "🍳",
+  "items": [
+   "com-trang",
+   "bi-dao",
+   "thit-heo-xay",
+   "trung-ga",
+   "dau-an"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "dau-hu-nhoi-thit",
+  "name": "Đậu hũ nhồi thịt sốt cà, cơm, rau muống",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "pan",
+  "tags": [
+   "re",
+   "tang-co"
+  ],
+  "emoji": "🍅",
+  "items": [
+   "dau-hu",
+   "thit-heo-xay",
+   "ca-chua",
+   "com-trang",
+   "rau-muong"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "ca-basa-ap-chao-nghe",
+  "name": "Cá basa áp chảo nghệ, cơm, cải ngọt",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "pan",
+  "tags": [
+   "re",
+   "tang-co",
+   "giam-mo"
+  ],
+  "emoji": "🐠",
+  "items": [
+   "ca-basa",
+   "com-trang",
+   "cai-ngot",
+   "dau-an"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "trung-cut-kho-thit",
+  "name": "Trứng cút kho thịt nạc, cơm, dưa leo",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "pan",
+  "tags": [
+   "re",
+   "tang-co"
+  ],
+  "emoji": "🥚",
+  "items": [
+   "trung-cut",
+   "thit-heo-nac",
+   "com-trang",
+   "dua-leo"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "mien-ga-nam",
+  "name": "Miến gà nấm (nấu nhanh)",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "re",
+   "giam-mo"
+  ],
+  "emoji": "🍜",
+  "items": [
+   "mien-dong",
+   "uc-ga",
+   "nam",
+   "cai-ngot",
+   "rau-thom"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "ca-ro-phi-hap",
+  "name": "Cá rô phi hấp xì dầu, bông cải, khoai lang",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "steam",
+  "tags": [
+   "giam-mo",
+   "tang-co"
+  ],
+  "emoji": "🐟",
+  "items": [
+   "ca-ro-phi",
+   "bong-cai-xanh",
+   "khoai-lang"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "ngheu-hap-sa-bun",
+  "name": "Nghêu hấp sả, bún & rau thơm",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "steam",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🐚",
+  "items": [
+   "ngheu",
+   "bun-pho",
+   "rau-thom",
+   "dua-leo"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "bo-luc-lac-salad",
+  "name": "Bò lúc lắc nồi chiên, salad xà lách, cơm lứt",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "airfryer",
+  "tags": [
+   "tang-co"
+  ],
+  "emoji": "🥩",
+  "items": [
+   "thit-bo-nac",
+   "xa-lach",
+   "ca-chua",
+   "hanh-tay",
+   "com-gao-lut",
+   "dau-oliu"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "ga-kho-gung",
+  "name": "Gà kho gừng (bỏ da), cơm, bí đao luộc",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "pan",
+  "tags": [
+   "tang-co"
+  ],
+  "emoji": "🍗",
+  "items": [
+   "dui-ga-bo-da",
+   "com-trang",
+   "bi-dao"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "canh-chua-ca-basa",
+  "name": "Canh chua cá basa, cơm lứt",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🍲",
+  "items": [
+   "ca-basa",
+   "ca-chua",
+   "dua-thom",
+   "dau-bap",
+   "gia-do",
+   "com-gao-lut"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "kho-qua-nhoi-thit",
+  "name": "Canh khổ qua nhồi thịt, cơm",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "giam-mo"
+  ],
+  "emoji": "🥒",
+  "items": [
+   "kho-qua",
+   "thit-heo-xay",
+   "com-trang",
+   "nam"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "trai-cay-banh-gao",
+  "name": "Táo, chuối & bánh gạo lứt",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "nocook",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "an-vat",
+   "re"
+  ],
+  "emoji": "🍎",
+  "items": [
+   "tao",
+   "chuoi",
+   "banh-gao-lut"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "bap-luoc-du-du",
+  "name": "Bắp luộc & đu đủ chín",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "an-vat",
+   "re"
+  ],
+  "emoji": "🌽",
+  "items": [
+   "bap",
+   "du-du"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "khoai-mon-hap-thanh-long",
+  "name": "Khoai môn hấp & thanh long",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "steam",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "an-vat",
+   "re"
+  ],
+  "emoji": "🍠",
+  "items": [
+   "khoai-mon",
+   "thanh-long"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "xoi-bap-me",
+  "name": "Xôi bắp rắc mè (ít đường)",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "steam",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "re"
+  ],
+  "emoji": "🍙",
+  "items": [
+   "xoi-trang",
+   "bap",
+   "me-vung",
+   "dau-an"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "chao-khoai-lang",
+  "name": "Cháo trắng nấu khoai lang, rắc mè",
+  "kind": "recipe",
+  "cuisine": "vn",
+  "method": "boil",
+  "tags": [
+   "chay",
+   "thuan-chay",
+   "re"
+  ],
+  "emoji": "🥣",
+  "items": [
+   "com-trang",
+   "khoai-lang",
+   "me-vung"
+  ],
+  "reason": "missing"
+ },
+ {
+  "id": "banh-mi-bo-ca-chua",
+  "name": "Bánh mì bơ dầm & cà chua",
+  "kind": "recipe",
+  "cuisine": "au",
+  "method": "nocook",
+  "tags": [
+   "chay",
+   "thuan-chay"
+  ],
+  "emoji": "🥑",
+  "items": [
+   "banh-mi",
+   "bo-avocado",
+   "ca-chua"
+  ],
+  "reason": "missing"
+ }
+]

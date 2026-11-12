@@ -1,0 +1,2979 @@
+[
+ {
+  "id": "bun-pho",
+  "name": "Bún / Bánh phở",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "plain cooked Vietnamese rice noodles: bún vermicelli and flat phở noodles",
+  "prompt": "Professional food photography of plain cooked Vietnamese rice noodles: bún vermicelli and flat phở noodles. Two small loose nests side by side on a white plate: thin round bún vermicelli and flat ribbon-like bánh phở, both soft, opaque white, freshly cooked, glossy and unsauced, a few strands draping naturally. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "two loose nests of plain white rice noodles",
+   "one nest thin and round (bún), one flat ribbon (phở)",
+   "opaque white, soft, freshly cooked",
+   "white plate, nothing else"
+  ],
+  "must_not": [
+   "no broth or soup",
+   "no yellow egg noodles or ramen",
+   "no translucent glass noodles",
+   "no meat, herbs or sauce"
+  ]
+ },
+ {
+  "id": "banh-mi",
+  "name": "Bánh mì trắng",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "one plain Vietnamese baguette (bánh mì)",
+  "prompt": "Professional food photography of one plain Vietnamese baguette (bánh mì). A single short, puffy Vietnamese baguette about 25 cm long with a thin, crackly, shiny golden-brown crust, one long split score along the top and tapered ends; one end cut to show the very light, airy white crumb. Unfilled. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "one short puffy baguette with tapered ends",
+   "thin crackly golden crust with a long score",
+   "airy white crumb visible at the cut end",
+   "no filling"
+  ],
+  "must_not": [
+   "no filling, meat or vegetables",
+   "not a long thin French baguette or sliced sandwich loaf",
+   "no sesame seeds",
+   "no bread basket"
+  ]
+ },
+ {
+  "id": "khoai-lang",
+  "name": "Khoai lang (luộc)",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "one boiled Vietnamese sweet potato",
+  "prompt": "Professional food photography of one boiled Vietnamese sweet potato. A whole boiled sweet potato with thin reddish-purple skin, cut in half to show soft, moist, golden-yellow flesh with a slight steam, on a small white plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "one boiled sweet potato, halved",
+   "reddish-purple skin",
+   "soft golden-yellow flesh",
+   "small white plate"
+  ],
+  "must_not": [
+   "not raw",
+   "not fries or wedges",
+   "no butter, marshmallow or toppings",
+   "not a regular potato"
+  ]
+ },
+ {
+  "id": "ca-basa",
+  "name": "Cá basa / Cá tra",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "a raw Vietnamese basa (pangasius) fish fillet",
+  "prompt": "Professional food photography of a raw Vietnamese basa (pangasius) fish fillet. One long boneless, skinless basa fillet as sold at Vietnamese markets: pale white to faintly pink, slightly translucent, smooth surface with a thin tapered belly edge, lying flat on a white plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "one long skinless boneless fillet",
+   "pale white to faintly pink flesh",
+   "smooth slightly translucent surface",
+   "white plate"
+  ],
+  "must_not": [
+   "not salmon or orange-pink flesh",
+   "no skin, scales, head or whole fish",
+   "not sliced sashimi",
+   "not breaded or fried"
+  ]
+ },
+ {
+  "id": "trung-ga",
+  "name": "Trứng gà (luộc)",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "two hard-boiled chicken eggs",
+  "prompt": "Professional food photography of two hard-boiled chicken eggs. Two hard-boiled chicken eggs on a small white plate: one whole in its light-brown shell, one peeled and cut in half lengthwise showing smooth white egg white and a fully set, pale-yellow yolk. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "two chicken eggs",
+   "one in light-brown shell",
+   "one peeled and halved",
+   "fully set pale-yellow yolk"
+  ],
+  "must_not": [
+   "not fried or scrambled",
+   "no runny yolk",
+   "not quail eggs",
+   "no Easter decoration or painted eggs"
+  ]
+ },
+ {
+  "id": "sua-tuoi-co-duong",
+  "name": "Sữa tươi có đường",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "a glass of sweetened fresh cow's milk",
+  "prompt": "Professional food photography of a glass of sweetened fresh cow's milk. A plain clear drinking glass filled with creamy white fresh milk, a soft foam line at the top, beside a small blank white 180 ml drink carton with a short plain straw, typical of Vietnamese boxed milk. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "plain clear glass of white milk",
+   "small blank white drink carton",
+   "creamy opaque white color"
+  ],
+  "must_not": [
+   "no brand, text or cow graphic on carton",
+   "not chocolate or strawberry milk",
+   "not yogurt or milkshake"
+  ]
+ },
+ {
+  "id": "sua-chua-hy-lap",
+  "name": "Sữa chua Hy Lạp",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "a small bowl of plain Greek yogurt",
+  "prompt": "Professional food photography of a small bowl of plain Greek yogurt. A small white bowl of thick, strained plain Greek yogurt, dense and creamy, with a glossy spoon-made swirl and a soft peak that holds its shape. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small white bowl",
+   "very thick, dense white yogurt",
+   "glossy swirl that holds its shape"
+  ],
+  "must_not": [
+   "no fruit, granola or honey toppings",
+   "not runny drinking yogurt",
+   "not ice cream scoop",
+   "no branded cup"
+  ]
+ },
+ {
+  "id": "pho-mai",
+  "name": "Phô mai (Cheddar)",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "a small block of cheddar cheese with slices",
+  "prompt": "Professional food photography of a small block of cheddar cheese with slices. A small rectangular block of orange-yellow aged cheddar with a slightly crumbly cut face, two thin slices leaning against it, on a small white plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "orange-yellow cheddar block",
+   "two thin cut slices",
+   "firm slightly crumbly texture"
+  ],
+  "must_not": [
+   "not Swiss cheese with holes",
+   "not individually wrapped processed slices",
+   "not butter",
+   "no crackers or wine"
+  ]
+ },
+ {
+  "id": "dau-den",
+  "name": "Đậu đen (đã nấu)",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "a small bowl of cooked black beans",
+  "prompt": "Professional food photography of a small bowl of cooked black beans. A small white bowl of cooked black beans, plump, soft and glossy with a little dark cooking liquid, a few skins split to show the creamy pale interior. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small white bowl",
+   "cooked plump glossy black beans",
+   "a few split beans with pale interior"
+  ],
+  "must_not": [
+   "not coffee beans",
+   "not dry raw beans",
+   "no meat or sausage",
+   "not black sesame"
+  ]
+ },
+ {
+  "id": "oc-cho",
+  "name": "Hạt óc chó",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "a small heap of shelled walnuts",
+  "prompt": "Professional food photography of a small heap of shelled walnuts. A small heap of walnut halves with wrinkled, brain-like light golden-brown kernels, plus one whole walnut in its tan shell cracked open beside them. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "walnut halves with brain-like shape",
+   "light golden-brown kernels",
+   "one cracked whole walnut in shell"
+  ],
+  "must_not": [
+   "not pecans",
+   "not almonds or hazelnuts",
+   "no candied coating"
+  ]
+ },
+ {
+  "id": "duong-trang",
+  "name": "Đường trắng",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "a small bowl of white granulated sugar",
+  "prompt": "Professional food photography of a small bowl of white granulated sugar. A small white bowl heaped with sparkling white granulated sugar, fine even crystals, a stainless teaspoon resting in it lifting a spoonful. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small bowl of white sugar",
+   "fine sparkling crystals",
+   "teaspoon with a spoonful"
+  ],
+  "must_not": [
+   "not sugar cubes",
+   "not coarse salt",
+   "not brown or powdered sugar",
+   "no sugar packets"
+  ]
+ },
+ {
+  "id": "muc",
+  "name": "Mực (hấp)",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "Vietnamese steamed squid",
+  "prompt": "Professional food photography of Vietnamese steamed squid. Steamed squid on a white plate: tube pieces scored in a fine diamond pattern that curled into pine-cone shapes, a few rings and tentacles, opaque white with a faint pink-purple edge, topped with thin julienned ginger and scallion. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "curled scored squid pieces",
+   "opaque white flesh, glistening",
+   "a few tentacles",
+   "ginger strips and scallion"
+  ],
+  "must_not": [
+   "not fried calamari or battered rings",
+   "not octopus",
+   "not raw translucent squid",
+   "no heavy sauce"
+  ]
+ },
+ {
+  "id": "trung-trang",
+  "name": "Lòng trắng trứng",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "hard-boiled egg whites with yolks removed",
+  "prompt": "Professional food photography of hard-boiled egg whites with yolks removed. Four halves of hard-boiled egg white with the yolks removed, smooth glossy white cups with empty hollow centers, arranged on a small pale celadon-glazed plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "egg white halves",
+   "empty hollow centers",
+   "no yolk visible",
+   "pale celadon plate"
+  ],
+  "must_not": [
+   "no yolk",
+   "not raw liquid egg white",
+   "not meringue",
+   "not whole eggs"
+  ]
+ },
+ {
+  "id": "banh-trang",
+  "name": "Bánh tráng (khô)",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "dry Vietnamese rice paper sheets",
+  "prompt": "Professional food photography of dry Vietnamese rice paper sheets. A small stack of dry round Vietnamese rice paper sheets about 22 cm wide, thin, brittle, semi-translucent off-white with a faint woven crosshatch bamboo-mat pattern; the top sheet slightly offset showing the thin edge. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "stack of round dry sheets",
+   "thin semi-translucent off-white",
+   "faint crosshatch woven pattern",
+   "brittle, not soaked"
+  ],
+  "must_not": [
+   "not tortillas",
+   "not finished spring rolls",
+   "no sesame seeds (not bánh tráng mè)",
+   "not soft or wet"
+  ]
+ },
+ {
+  "id": "quinoa",
+  "name": "Hạt diêm mạch Quinoa (đã nấu)",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "a small bowl of cooked white quinoa",
+  "prompt": "Professional food photography of a small bowl of cooked white quinoa. A small white bowl of fluffy cooked white quinoa: tiny round pale ivory grains, each with a visible little curled germ tail, light and separate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small white bowl",
+   "tiny round ivory grains",
+   "visible curled germ tails",
+   "fluffy, separate grains"
+  ],
+  "must_not": [
+   "not couscous",
+   "not rice or millet",
+   "not raw dry seeds",
+   "no vegetables or toppings"
+  ]
+ },
+ {
+  "id": "hat-chia",
+  "name": "Hạt chia",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "a small dish of dry chia seeds",
+  "prompt": "Professional food photography of a small dish of dry chia seeds. A small white ceramic dish holding a little mound of dry chia seeds: tiny oval, mottled grey, black and white seeds, matte, with a few spilled beside. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small mound of tiny oval seeds",
+   "mottled grey-black-white colors",
+   "dry, matte"
+  ],
+  "must_not": [
+   "not poppy seeds",
+   "not black sesame",
+   "not chia pudding or soaked gel"
+  ]
+ },
+ {
+  "id": "whey",
+  "name": "Whey protein (bột)",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "a scoop of vanilla whey protein powder",
+  "prompt": "Professional food photography of a scoop of vanilla whey protein powder. A plain white plastic measuring scoop filled level with fine off-white whey protein powder, resting on a small soft mound of the same powder. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "plain white scoop",
+   "fine off-white powder",
+   "small mound of powder"
+  ],
+  "must_not": [
+   "no tub, jar or labelled container",
+   "not flour bag",
+   "not coffee or cocoa",
+   "not a mixed shake"
+  ]
+ },
+ {
+  "id": "nam",
+  "name": "Nấm (rơm, đùi gà, kim châm)",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "fresh Asian mushrooms: straw, king oyster and enoki",
+  "prompt": "Professional food photography of fresh Asian mushrooms: straw, king oyster and enoki. A small arranged handful of fresh mushrooms: a few straw mushrooms with small egg-shaped grey-brown caps (one halved), two king oyster mushrooms with thick white stems and small tan caps, and a cluster of long thin white enoki with tiny caps. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "egg-shaped grey-brown straw mushrooms",
+   "thick-stemmed king oyster mushrooms",
+   "cluster of thin white enoki",
+   "fresh, raw"
+  ],
+  "must_not": [
+   "not only button mushrooms",
+   "not dried mushrooms",
+   "no meat",
+   "no cooked sauce"
+  ]
+ },
+ {
+  "id": "rau-thom",
+  "name": "Rau thơm các loại",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "a bundle of fresh Vietnamese herbs",
+  "prompt": "Professional food photography of a bundle of fresh Vietnamese herbs. A loose bundle of fresh Vietnamese herbs: Thai basil with purple stems, spearmint, perilla leaves green on top and purple underneath, pointed Vietnamese coriander (rau răm) and long serrated sawtooth coriander (ngò gai). Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "Thai basil with purple stems",
+   "perilla leaves with purple undersides",
+   "mint leaves",
+   "long serrated sawtooth coriander"
+  ],
+  "must_not": [
+   "not a lettuce head",
+   "not only parsley",
+   "not dried herbs",
+   "no meat or noodles"
+  ]
+ },
+ {
+  "id": "dau-tay",
+  "name": "Dâu tây",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "a small heap of fresh strawberries",
+  "prompt": "Professional food photography of a small heap of fresh strawberries. About eight ripe, glossy bright-red strawberries with green leafy caps and visible seeds, one cut in half to show the pale red center, in a small loose heap. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "bright red strawberries with green caps",
+   "visible surface seeds",
+   "one halved"
+  ],
+  "must_not": [
+   "not raspberries",
+   "not cherry tomatoes",
+   "no cream or chocolate"
+  ]
+ },
+ {
+  "id": "viet-quat",
+  "name": "Việt quất",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "a small bowl of fresh blueberries",
+  "prompt": "Professional food photography of a small bowl of fresh blueberries. A small white bowl of plump fresh blueberries with a dusty blue bloom and tiny star-shaped crowns, a few spilling beside the bowl. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "round dusty-blue berries",
+   "tiny star-shaped crowns",
+   "small white bowl"
+  ],
+  "must_not": [
+   "not grapes",
+   "not blackberries",
+   "not purple olives"
+  ]
+ },
+ {
+  "id": "xoai",
+  "name": "Xoài",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "a ripe Vietnamese yellow mango",
+  "prompt": "Professional food photography of a ripe Vietnamese yellow mango. One ripe elongated Vietnamese mango with smooth golden-yellow skin, plus one cut cheek scored into a hedgehog of juicy deep-yellow cubes. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "elongated golden-yellow mango",
+   "one cheek cut hedgehog-style",
+   "juicy deep-yellow flesh"
+  ],
+  "must_not": [
+   "not green unripe mango",
+   "not red-skinned mango",
+   "not papaya",
+   "no sticky rice"
+  ]
+ },
+ {
+  "id": "dua-hau",
+  "name": "Dưa hấu",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "a wedge of watermelon",
+  "prompt": "Professional food photography of a wedge of watermelon. One triangular wedge of watermelon with bright red juicy flesh, scattered black seeds, a thin pale band and a dark-green striped rind. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "triangular wedge",
+   "bright red juicy flesh",
+   "black seeds",
+   "green striped rind"
+  ],
+  "must_not": [
+   "not a whole watermelon",
+   "not papaya or cantaloupe",
+   "not juice in a glass"
+  ]
+ },
+ {
+  "id": "bun-bo-hue-to",
+  "name": "Bún bò Huế (tô)",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "a bowl of Vietnamese bún bò Huế",
+  "prompt": "Professional food photography of a bowl of Vietnamese bún bò Huế. A large white bowl of Huế spicy beef noodle soup: thick round white rice noodles in a fiery orange-red lemongrass broth with a sheen of chili oil, slices of beef shank, a slice of pork knuckle, round slices of pale chả lụa pork roll, topped with scallion, thin onion and cilantro, a lime wedge on the rim. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "thick round white rice noodles",
+   "orange-red broth with chili oil sheen",
+   "beef shank slices and pork roll slices",
+   "scallion, onion and cilantro"
+  ],
+  "must_not": [
+   "not clear-broth phở",
+   "not ramen or yellow noodles",
+   "no coconut milk (not Thai curry)",
+   "no egg"
+  ]
+ },
+ {
+  "id": "hu-tieu-to",
+  "name": "Hủ tiếu (tô)",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "a bowl of Southern Vietnamese hủ tiếu noodle soup",
+  "prompt": "Professional food photography of a bowl of Southern Vietnamese hủ tiếu noodle soup. A white bowl of hủ tiếu: chewy thin translucent-white rice noodles in a clear light-golden pork broth, topped with halved pink shrimp, thin slices of lean pork, a little minced pork, a peeled quail egg, garlic chives, celery leaves and a pinch of fried garlic. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "thin translucent-white rice noodles",
+   "clear light-golden broth",
+   "halved shrimp and sliced pork",
+   "garlic chives and a quail egg"
+  ],
+  "must_not": [
+   "not ramen or yellow egg noodles",
+   "not dark brown broth",
+   "not phở with beef and basil",
+   "no wontons"
+  ]
+ },
+ {
+  "id": "mi-quang-to",
+  "name": "Mì Quảng (tô)",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "a bowl of Vietnamese mì Quảng",
+  "prompt": "Professional food photography of a bowl of Vietnamese mì Quảng. A wide shallow bowl of mì Quảng: flat wide turmeric-yellow rice noodles with only a little concentrated orange-tinted broth at the bottom, topped with shrimp, sliced pork, half a boiled egg, crushed roasted peanuts, scallion and fresh herbs, a broken black-sesame rice cracker on the side. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "flat wide yellow rice noodles",
+   "only a little orange broth (not soupy)",
+   "shrimp, pork and half an egg",
+   "crushed peanuts and black-sesame rice cracker"
+  ],
+  "must_not": [
+   "not a full soup bowl",
+   "not ramen or egg noodles",
+   "not pad thai",
+   "no curry sauce"
+  ]
+ },
+ {
+  "id": "bun-cha-suat",
+  "name": "Bún chả (suất)",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "a serving of Hanoi bún chả",
+  "prompt": "Professional food photography of a serving of Hanoi bún chả. Grilled pork patties and caramelized pork belly slices in a bowl of light amber dipping broth with pickled green papaya and carrot slices, beside a separate plate of thin rice vermicelli in small pressed bundles and fresh lettuce, perilla and mint; slight char marks on the pork. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "bowl of amber broth with grilled pork patties and belly slices",
+   "pickled papaya and carrot slices",
+   "separate plate of rice vermicelli bundles",
+   "fresh lettuce, perilla and mint"
+  ],
+  "must_not": [
+   "not a noodle soup with noodles in the broth",
+   "not Korean BBQ",
+   "not meatballs in tomato sauce",
+   "no rice"
+  ]
+ },
+ {
+  "id": "com-tam-suon",
+  "name": "Cơm tấm sườn bì chả (đĩa)",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "a plate of Vietnamese cơm tấm sườn bì chả",
+  "prompt": "Professional food photography of a plate of Vietnamese cơm tấm sườn bì chả. A white plate of fluffy broken rice topped with a whole grilled caramelized pork chop on the bone, a heap of thin shredded pork skin (bì), a square slice of steamed egg-pork meatloaf with a yellow yolk top, scallion oil, cucumber and tomato slices, pickled carrot-daikon and a small bowl of fish sauce. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "broken rice",
+   "grilled caramelized bone-in pork chop",
+   "shredded pork skin and steamed egg meatloaf square",
+   "cucumber, tomato, scallion oil"
+  ],
+  "must_not": [
+   "not breaded pork cutlet",
+   "not fried rice",
+   "no fried egg replacing the meatloaf",
+   "not Korean dish"
+  ]
+ },
+ {
+  "id": "com-van-phong",
+  "name": "Cơm văn phòng gà/thịt (hộp)",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "a Vietnamese office lunch box",
+  "prompt": "Professional food photography of a Vietnamese office lunch box. A plain white compartment takeaway lunch box with the lid off: white rice, Vietnamese braised chicken pieces in a light caramel sauce, stir-fried green vegetables, a few cucumber slices and half a boiled egg. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "plain white compartment box, lid off",
+   "white rice",
+   "caramel-braised chicken pieces",
+   "stir-fried greens and cucumber"
+  ],
+  "must_not": [
+   "not Japanese bento (no sushi, tamagoyaki)",
+   "no logo or printing on the box",
+   "no chopsticks wrapper with text"
+  ]
+ },
+ {
+  "id": "banh-mi-thit",
+  "name": "Bánh mì thịt (ổ)",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "a Vietnamese bánh mì thịt sandwich",
+  "prompt": "Professional food photography of a Vietnamese bánh mì thịt sandwich. A short, crispy, airy golden Vietnamese baguette split open and stuffed with pork pâté, slices of pale chả lụa and pink roast pork, pickled carrot and daikon strips, cucumber spears, cilantro sprigs and sliced red chili. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "short crispy golden baguette split open",
+   "cold cuts and pâté",
+   "pickled carrot-daikon strips",
+   "cucumber and cilantro"
+  ],
+  "must_not": [
+   "not a sub with cheese and lettuce",
+   "not a hot dog",
+   "not a burger bun",
+   "no paper wrapper with text"
+  ]
+ },
+ {
+  "id": "xoi-man",
+  "name": "Xôi mặn / xôi gà (gói)",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "a portion of Vietnamese savory sticky rice (xôi mặn)",
+  "prompt": "Professional food photography of a portion of Vietnamese savory sticky rice (xôi mặn). A mound of glossy white sticky rice on an open green banana leaf, topped with shredded chicken, slices of red Chinese sausage, strips of chả lụa, fluffy golden pork floss, crispy fried shallots and a drizzle of scallion oil. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "glossy white sticky rice mound",
+   "open banana leaf",
+   "shredded chicken and sausage slices",
+   "pork floss and fried shallots"
+  ],
+  "must_not": [
+   "not mango sticky rice",
+   "not fried rice",
+   "not sushi",
+   "no coconut cream"
+  ]
+ },
+ {
+  "id": "banh-cuon-dia",
+  "name": "Bánh cuốn (đĩa)",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "a plate of Vietnamese bánh cuốn",
+  "prompt": "Professional food photography of a plate of Vietnamese bánh cuốn. A white plate of several soft, thin, silky, semi-translucent steamed rice rolls with minced pork and wood ear mushroom filling showing through, sprinkled with crispy fried shallots, beside a small bowl of light amber fish sauce dip with chili. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "silky semi-translucent steamed rice rolls",
+   "pork and wood-ear filling showing through",
+   "fried shallots on top",
+   "small bowl of light fish sauce"
+  ],
+  "must_not": [
+   "not Chinese cheung fun in soy sauce pool",
+   "not fried spring rolls",
+   "not fresh rice paper rolls with whole shrimp"
+  ]
+ },
+ {
+  "id": "chao-ga-to",
+  "name": "Cháo gà (tô)",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "a bowl of Vietnamese chicken rice porridge (cháo gà)",
+  "prompt": "Professional food photography of a bowl of Vietnamese chicken rice porridge (cháo gà). A white bowl of smooth creamy white rice congee topped with shredded boiled chicken, sliced scallion, cilantro, thin julienned ginger, cracked black pepper and a few fried shallots, a lime wedge at the side. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "smooth white rice congee",
+   "shredded chicken on top",
+   "scallion, ginger and cilantro",
+   "black pepper"
+  ],
+  "must_not": [
+   "not clear chicken soup",
+   "not oatmeal",
+   "not risotto",
+   "no egg yolk"
+  ]
+ },
+ {
+  "id": "tra-sua",
+  "name": "Trà sữa trân châu (ly)",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "a cup of Vietnamese bubble milk tea",
+  "prompt": "Professional food photography of a cup of Vietnamese bubble milk tea. A tall plain clear plastic cup of milk tea: light caramel-beige milky tea with ice cubes, a thick layer of glossy dark-brown tapioca pearls at the bottom, a plain clear sealed film lid and a wide plain straw. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "tall clear cup",
+   "beige milk tea with ice",
+   "dark tapioca pearls at bottom",
+   "plain wide straw"
+  ],
+  "must_not": [
+   "no logo or print on cup or seal",
+   "no whipped cream",
+   "not iced coffee",
+   "no fruit jelly colors"
+  ]
+ },
+ {
+  "id": "nuoc-ngot",
+  "name": "Nước ngọt có ga (lon)",
+  "kind": "food",
+  "reason": "questionable",
+  "subject": "a glass of cola soft drink with a blank can",
+  "prompt": "Professional food photography of a glass of cola soft drink with a blank can. A plain clear glass of fizzy dark-amber cola with ice cubes and rising bubbles, beside a blank brushed-silver 330 ml aluminum can with condensation droplets. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "clear glass of dark fizzy cola with ice",
+   "blank silver aluminum can",
+   "bubbles and condensation"
+  ],
+  "must_not": [
+   "no logo, red branding or text on can",
+   "not coffee",
+   "not beer"
+  ]
+ },
+ {
+  "id": "bia",
+  "name": "Bia (lon)",
+  "kind": "food",
+  "reason": "wrong",
+  "subject": "a glass of lager beer with a blank can",
+  "prompt": "Professional food photography of a glass of lager beer with a blank can. A plain clear glass of golden lager with a white foam head and rising bubbles, beside a blank brushed-silver 330 ml aluminum can with condensation droplets. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "clear glass of golden lager",
+   "white foam head",
+   "blank silver aluminum can"
+  ],
+  "must_not": [
+   "no logo, brand colors or text",
+   "not dark stout",
+   "not wine or juice",
+   "no bar scene"
+  ]
+ },
+ {
+  "id": "tempeh",
+  "name": "Tempeh (đậu nành lên men)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a block of tempeh",
+  "prompt": "Professional food photography of a block of tempeh. A rectangular cake of fresh tempeh: whole beige soybeans pressed together and bound by white mycelium, with a few thick slices cut to show the bean-studded cross-section, on a small white plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "rectangular cake with visible whole soybeans",
+   "white mycelium binding",
+   "sliced cross-section"
+  ],
+  "must_not": [
+   "not smooth tofu",
+   "not nougat or granola bar",
+   "not cheese",
+   "no meat"
+  ]
+ },
+ {
+  "id": "dau-lang",
+  "name": "Đậu lăng (đã nấu)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small bowl of cooked lentils",
+  "prompt": "Professional food photography of a small bowl of cooked lentils. A small white bowl of cooked brown-green lentils, tender but holding their small lens shape, slightly glossy. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small white bowl",
+   "cooked lens-shaped lentils",
+   "brown-green color"
+  ],
+  "must_not": [
+   "not dry raw lentils",
+   "not soup with meat",
+   "not beans or peas"
+  ]
+ },
+ {
+  "id": "dau-ga",
+  "name": "Đậu gà (đã nấu)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small bowl of cooked chickpeas",
+  "prompt": "Professional food photography of a small bowl of cooked chickpeas. A small white bowl of cooked chickpeas, plump, round, beige with the little pointed beak visible, slightly glossy. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small white bowl",
+   "plump round beige chickpeas",
+   "visible pointed beak"
+  ],
+  "must_not": [
+   "not hummus",
+   "not dry raw chickpeas",
+   "not corn kernels"
+  ]
+ },
+ {
+  "id": "mi-can",
+  "name": "Mì căn (seitan, đạm lúa mì)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "pieces of Vietnamese mì căn (wheat gluten seitan)",
+  "prompt": "Professional food photography of pieces of Vietnamese mì căn (wheat gluten seitan). A few torn, chunky pieces of Vietnamese mì căn on a small white plate: beige-tan, spongy and slightly chewy, with a porous, stringy torn texture. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "torn chunky beige-tan pieces",
+   "spongy porous texture",
+   "stringy torn edges"
+  ],
+  "must_not": [
+   "no meat",
+   "not bread",
+   "not tofu",
+   "no sauce"
+  ]
+ },
+ {
+  "id": "dau-hu-ky",
+  "name": "Tàu hũ ky (váng đậu, khô)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "dried Vietnamese tofu skin sheets (tàu hũ ky)",
+  "prompt": "Professional food photography of dried Vietnamese tofu skin sheets (tàu hũ ky). A few large folded sheets of dried tofu skin: thin, wrinkled, glossy translucent golden-yellow, stiff and brittle, layered loosely on a small white plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "thin wrinkled golden-yellow sheets",
+   "glossy translucent surface",
+   "dry and brittle"
+  ],
+  "must_not": [
+   "not fried spring rolls",
+   "not dried lasagna sheets",
+   "not paper",
+   "no meat"
+  ]
+ },
+ {
+  "id": "dau-hu-non",
+  "name": "Đậu hũ non (tàu hũ)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a block of Vietnamese silken tofu",
+  "prompt": "Professional food photography of a block of Vietnamese silken tofu. A block of silken tofu on a small pale celadon-glazed plate: very smooth, glossy, wobbly, custard-like, with one corner spooned out to show the soft interior. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "smooth glossy white block",
+   "custard-like soft texture",
+   "spooned corner",
+   "celadon plate"
+  ],
+  "must_not": [
+   "not firm or fried tofu",
+   "no ginger syrup (not tofu dessert)",
+   "not panna cotta or cheese"
+  ]
+ },
+ {
+  "id": "tvp",
+  "name": "Đạm đậu nành khô (TVP / thịt chay)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small heap of dry textured soy protein (TVP)",
+  "prompt": "Professional food photography of a small heap of dry textured soy protein (TVP). A small heap of dry textured soy protein chunks: irregular beige-tan nuggets, matte, porous, light and crunchy-looking, on a small white plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "irregular beige-tan chunks",
+   "dry matte porous surface",
+   "small heap"
+  ],
+  "must_not": [
+   "no meat",
+   "not croutons",
+   "not breakfast cereal",
+   "no sauce"
+  ]
+ },
+ {
+  "id": "dau-xanh",
+  "name": "Đậu xanh (đã nấu)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small bowl of cooked mung beans",
+  "prompt": "Professional food photography of a small bowl of cooked mung beans. A small white bowl of cooked whole mung beans: small, soft, olive-green beans, some split open to show the pale-yellow interior, slightly moist. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small white bowl",
+   "small olive-green beans",
+   "some split showing yellow interior"
+  ],
+  "must_not": [
+   "not edamame",
+   "not green peas",
+   "not lentils",
+   "no coconut milk (not sweet soup)"
+  ]
+ },
+ {
+  "id": "dau-do",
+  "name": "Đậu đỏ (đã nấu)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small bowl of cooked red beans",
+  "prompt": "Professional food photography of a small bowl of cooked red beans. A small white bowl of cooked small dark-red adzuki beans, soft, glossy and holding their shape, a thin white line visible on each bean. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small white bowl",
+   "small dark-red beans",
+   "glossy, holding shape"
+  ],
+  "must_not": [
+   "not chili con carne",
+   "not sweet red bean paste",
+   "not kidney beans in tomato sauce"
+  ]
+ },
+ {
+  "id": "dau-phong",
+  "name": "Đậu phộng rang",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small heap of roasted peanuts",
+  "prompt": "Professional food photography of a small heap of roasted peanuts. A small heap of roasted shelled peanuts with thin reddish-brown papery skins, some skins flaking off and a few halves showing golden interior. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "shelled peanuts",
+   "reddish-brown papery skins",
+   "some golden halves"
+  ],
+  "must_not": [
+   "not almonds",
+   "not peanut butter",
+   "no candy coating"
+  ]
+ },
+ {
+  "id": "hat-dieu",
+  "name": "Hạt điều",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small heap of cashew nuts",
+  "prompt": "Professional food photography of a small heap of cashew nuts. A small heap of whole roasted cashew nuts, pale golden crescent-shaped kernels, smooth and lightly toasted. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "crescent-shaped kernels",
+   "pale golden color",
+   "small heap"
+  ],
+  "must_not": [
+   "not peanuts",
+   "not the cashew apple fruit",
+   "no chocolate coating"
+  ]
+ },
+ {
+  "id": "hat-bi",
+  "name": "Hạt bí xanh (bóc vỏ)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small heap of shelled green pumpkin seeds",
+  "prompt": "Professional food photography of a small heap of shelled green pumpkin seeds. A small heap of shelled pumpkin seeds (pepitas): flat, oval, deep olive-green, slightly glossy. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "flat oval seeds",
+   "deep olive-green color",
+   "shelled"
+  ],
+  "must_not": [
+   "not white in-shell pumpkin seeds",
+   "not sunflower seeds",
+   "not pistachios"
+  ]
+ },
+ {
+  "id": "me-vung",
+  "name": "Mè (vừng) rang",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small heap of toasted white sesame seeds",
+  "prompt": "Professional food photography of a small heap of toasted white sesame seeds. A small heap of toasted white sesame seeds, tiny flat teardrop-shaped, golden-beige, in a small white dish with a few spilled beside. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "tiny teardrop-shaped seeds",
+   "golden-beige toasted color",
+   "small dish"
+  ],
+  "must_not": [
+   "not black sesame",
+   "not rice grains",
+   "not flaxseed"
+  ]
+ },
+ {
+  "id": "hat-lanh",
+  "name": "Hạt lanh",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small heap of whole flaxseeds",
+  "prompt": "Professional food photography of a small heap of whole flaxseeds. A small heap of whole brown flaxseeds: glossy, flat, teardrop-shaped, reddish-brown, in a small white dish. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "glossy flat teardrop seeds",
+   "reddish-brown color",
+   "small white dish"
+  ],
+  "must_not": [
+   "not sesame seeds",
+   "not chia seeds",
+   "not ground flax meal"
+  ]
+ },
+ {
+  "id": "protein-thuc-vat",
+  "name": "Bột đạm thực vật (đậu Hà Lan)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a scoop of pea protein powder",
+  "prompt": "Professional food photography of a scoop of pea protein powder. A plain white plastic measuring scoop filled with fine pale beige-yellow pea protein powder, resting on a small mound of powder, with a few dried green split peas beside it. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "plain white scoop",
+   "fine pale beige-yellow powder",
+   "a few green split peas"
+  ],
+  "must_not": [
+   "no tub or label",
+   "not flour",
+   "not a shake"
+  ]
+ },
+ {
+  "id": "hummus",
+  "name": "Hummus (sốt đậu gà)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small bowl of hummus",
+  "prompt": "Professional food photography of a small bowl of hummus. A small white bowl of smooth, creamy beige hummus swirled with a shallow well of golden olive oil, dusted with red paprika and topped with a few whole chickpeas. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "smooth beige hummus",
+   "swirl with olive oil",
+   "paprika and whole chickpeas"
+  ],
+  "must_not": [
+   "not mashed potato",
+   "not peanut butter",
+   "no pita chips or meat"
+  ]
+ },
+ {
+  "id": "sua-hanh-nhan",
+  "name": "Sữa hạnh nhân không đường",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a glass of unsweetened almond milk",
+  "prompt": "Professional food photography of a glass of unsweetened almond milk. A plain clear glass of opaque off-white almond milk with a small handful of whole almonds beside the glass. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "plain clear glass",
+   "off-white almond milk",
+   "whole almonds beside"
+  ],
+  "must_not": [
+   "no carton or brand",
+   "not coffee latte",
+   "not milkshake"
+  ]
+ },
+ {
+  "id": "dau-ha-lan",
+  "name": "Đậu Hà Lan (luộc)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small bowl of boiled green peas",
+  "prompt": "Professional food photography of a small bowl of boiled green peas. A small white bowl of boiled bright-green round garden peas, tender and glossy. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small white bowl",
+   "round bright-green peas",
+   "glossy, cooked"
+  ],
+  "must_not": [
+   "not edamame or pods",
+   "not snow peas",
+   "not wasabi peas"
+  ]
+ },
+ {
+  "id": "ca-ro-phi",
+  "name": "Cá rô phi (hấp/nướng)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a steamed tilapia fillet",
+  "prompt": "Professional food photography of a steamed tilapia fillet. One steamed tilapia fillet on a white plate: opaque white, moist, flaky flesh with a faint grey-pink line, topped with a few thin ginger strips and scallion. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "one cooked white fillet",
+   "opaque flaky flesh",
+   "ginger strips and scallion"
+  ],
+  "must_not": [
+   "not raw",
+   "not salmon",
+   "not breaded or deep-fried"
+  ]
+ },
+ {
+  "id": "ca-nuc",
+  "name": "Cá nục (kho/hấp)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "Vietnamese braised round scad (cá nục kho)",
+  "prompt": "Professional food photography of Vietnamese braised round scad (cá nục kho). Two small whole round scad, heads removed, braised Vietnamese-style in a small white dish: plump cigar-shaped fish with glossy amber-brown skin in a little thick caramel fish-sauce glaze, cracked black pepper and a slice of red chili. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "two small cigar-shaped fish, headless",
+   "glossy amber-brown braised skin",
+   "thick caramel glaze with black pepper"
+  ],
+  "must_not": [
+   "not canned sardines",
+   "not raw fish",
+   "not fillets",
+   "not deep-fried"
+  ]
+ },
+ {
+  "id": "trung-cut",
+  "name": "Trứng cút (luộc)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "boiled quail eggs",
+  "prompt": "Professional food photography of boiled quail eggs. Five boiled quail eggs on a small white plate: three in speckled cream-and-brown shells, two peeled white, one of them halved to show the small yellow yolk. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small quail eggs",
+   "speckled shells",
+   "peeled ones with one halved"
+  ],
+  "must_not": [
+   "not chicken eggs",
+   "not chocolate or candy eggs",
+   "no Easter decor"
+  ]
+ },
+ {
+  "id": "gio-lua",
+  "name": "Giò lụa (chả lụa)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "Vietnamese giò lụa (pork roll)",
+  "prompt": "Professional food photography of Vietnamese giò lụa (pork roll). A cylindrical Vietnamese pork roll partly unwrapped from green banana leaf, with several round slices cut: smooth, dense, pale pinkish-beige interior with tiny fine holes and a thin light-brown outer skin. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "cylindrical roll in banana leaf",
+   "round slices",
+   "smooth dense pale pinkish-beige interior"
+  ],
+  "must_not": [
+   "not ham or bologna with fat specks",
+   "not salami",
+   "not Japanese fish cake with pink rim"
+  ]
+ },
+ {
+  "id": "pho-mai-tuoi",
+  "name": "Phô mai tươi ít béo (cottage)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small bowl of low-fat cottage cheese",
+  "prompt": "Professional food photography of a small bowl of low-fat cottage cheese. A small white bowl of low-fat cottage cheese: soft, moist, lumpy white curds in a little creamy liquid. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small white bowl",
+   "lumpy white curds",
+   "moist creamy texture"
+  ],
+  "must_not": [
+   "not smooth yogurt",
+   "not cooked rice",
+   "not feta block",
+   "no fruit toppings"
+  ]
+ },
+ {
+  "id": "sua-tach-beo",
+  "name": "Sữa tươi tách béo",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a glass of skim milk",
+  "prompt": "Professional food photography of a glass of skim milk. A plain clear drinking glass filled with skim milk, thin and slightly bluish-white, a few tiny bubbles at the rim. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "plain clear glass",
+   "thin bluish-white milk",
+   "filled about three-quarters, no carton"
+  ],
+  "must_not": [
+   "no carton or brand",
+   "not yogurt",
+   "not milkshake"
+  ]
+ },
+ {
+  "id": "ngheu",
+  "name": "Nghêu / ngao (ruột, đã hấp)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "steamed Vietnamese clam meat",
+  "prompt": "Professional food photography of steamed Vietnamese clam meat. A small white bowl of shelled steamed clam meat, plump pale orange-beige, with a few small hard clams still in their open cream-brown shells and a piece of lemongrass beside. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "bowl of shelled clam meat",
+   "a few open small clams",
+   "cream-brown shells",
+   "lemongrass piece"
+  ],
+  "must_not": [
+   "not mussels",
+   "not oysters",
+   "not raw",
+   "not pasta"
+  ]
+ },
+ {
+  "id": "xoi-trang",
+  "name": "Xôi trắng (nếp đã đồ)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "plain Vietnamese white sticky rice (xôi trắng)",
+  "prompt": "Professional food photography of plain Vietnamese white sticky rice (xôi trắng). A soft mound of plain steamed glutinous rice on a piece of green banana leaf: glossy, translucent-white, chewy grains clumping together. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "glossy white sticky rice mound",
+   "translucent clumping grains",
+   "banana leaf"
+  ],
+  "must_not": [
+   "no toppings",
+   "not regular separate-grain rice",
+   "not rice balls with seaweed"
+  ]
+ },
+ {
+  "id": "mien-dong",
+  "name": "Miến dong (khô)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a dry bundle of Vietnamese arrowroot glass noodles (miến dong)",
+  "prompt": "Professional food photography of a dry bundle of Vietnamese arrowroot glass noodles (miến dong). A loose dry bundle of miến dong: thin, wiry, wavy, greyish-translucent dry strands tied into a nest, on a small white plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "dry bundle of thin wiry strands",
+   "greyish-translucent color",
+   "wavy texture"
+  ],
+  "must_not": [
+   "not cooked noodles",
+   "not instant ramen block",
+   "not white rice vermicelli"
+  ]
+ },
+ {
+  "id": "khoai-mi",
+  "name": "Khoai mì / sắn (luộc)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "boiled cassava root",
+  "prompt": "Professional food photography of boiled cassava root. Two chunks of peeled boiled cassava: cylindrical, cream-white to pale yellow, slightly translucent, with a cracked fluffy surface and a visible fibrous core, on a small white plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "two cylindrical chunks",
+   "cream to pale yellow flesh",
+   "fibrous core visible"
+  ],
+  "must_not": [
+   "not potato",
+   "not taro with purple specks",
+   "no coconut topping"
+  ]
+ },
+ {
+  "id": "banh-gao-lut",
+  "name": "Bánh gạo lứt (rice cake)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "two puffed brown rice cakes",
+  "prompt": "Professional food photography of two puffed brown rice cakes. Two round puffed brown rice cakes stacked slightly offset: light, airy, with visible popped grain texture, golden-tan. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "two round rice cakes",
+   "popped grain texture",
+   "golden-tan color"
+  ],
+  "must_not": [
+   "not Korean tteok",
+   "not glazed senbei with seaweed",
+   "no spreads"
+  ]
+ },
+ {
+  "id": "bap-cai",
+  "name": "Bắp cải",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a fresh green cabbage",
+  "prompt": "Professional food photography of a fresh green cabbage. A small round green cabbage with one half cut showing tightly packed pale-green leaf layers, the outer leaves slightly darker green. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "round green cabbage",
+   "cut half showing tight layers",
+   "pale-green inner leaves"
+  ],
+  "must_not": [
+   "not lettuce",
+   "not red cabbage",
+   "not napa cabbage"
+  ]
+ },
+ {
+  "id": "cai-ngot",
+  "name": "Cải ngọt / cải xanh",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a bunch of Vietnamese cải ngọt (choy sum)",
+  "prompt": "Professional food photography of a bunch of Vietnamese cải ngọt (choy sum). A small bunch of fresh choy sum: slender light-green stems, oval bright-green leaves and a few tiny yellow flower buds. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "slender light-green stems",
+   "oval bright-green leaves",
+   "tiny yellow buds"
+  ],
+  "must_not": [
+   "not bok choy with thick white stems",
+   "not spinach",
+   "not kale"
+  ]
+ },
+ {
+  "id": "mong-toi",
+  "name": "Mồng tơi",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a bunch of Vietnamese mồng tơi (Malabar spinach)",
+  "prompt": "Professional food photography of a bunch of Vietnamese mồng tơi (Malabar spinach). A small bunch of fresh Malabar spinach: thick, fleshy, glossy, heart-shaped dark-green leaves on succulent green stems. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "glossy heart-shaped leaves",
+   "thick fleshy texture",
+   "succulent green stems"
+  ],
+  "must_not": [
+   "not regular spinach",
+   "not watercress",
+   "not basil"
+  ]
+ },
+ {
+  "id": "bi-dao",
+  "name": "Bí đao (bí xanh)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a chunk of winter melon (bí đao)",
+  "prompt": "Professional food photography of a chunk of winter melon (bí đao). A thick cylindrical chunk of winter melon: dull dark-green waxy skin with a faint white powdery bloom, the cut face showing thick white-pale-green flesh and a spongy center with a few flat seeds. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "dark-green waxy skin with white bloom",
+   "thick white flesh",
+   "spongy seed center"
+  ],
+  "must_not": [
+   "not cucumber",
+   "not zucchini",
+   "not watermelon"
+  ]
+ },
+ {
+  "id": "muop",
+  "name": "Mướp",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a fresh Vietnamese smooth luffa (mướp)",
+  "prompt": "Professional food photography of a fresh Vietnamese smooth luffa (mướp). One long smooth luffa gourd, pale-to-medium green with faint darker lengthwise stripes, slightly curved, plus a few round slices showing pale green-white flesh with tiny seeds. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "long smooth green gourd",
+   "faint lengthwise stripes",
+   "round slices with pale flesh"
+  ],
+  "must_not": [
+   "not cucumber",
+   "not zucchini",
+   "not ridged angled luffa"
+  ]
+ },
+ {
+  "id": "kho-qua",
+  "name": "Khổ qua (mướp đắng)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a fresh Vietnamese bitter melon (khổ qua)",
+  "prompt": "Professional food photography of a fresh Vietnamese bitter melon (khổ qua). One fresh light-green bitter melon, oblong with a bumpy, ridged, warty skin, plus one half cut lengthwise showing white spongy pith and seeds. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "light-green oblong gourd",
+   "bumpy warty ridged skin",
+   "halved with white pith and seeds"
+  ],
+  "must_not": [
+   "not cucumber",
+   "not dark spiky Indian karela",
+   "not zucchini"
+  ]
+ },
+ {
+  "id": "ca-tim",
+  "name": "Cà tím",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a long Asian eggplant",
+  "prompt": "Professional food photography of a long Asian eggplant. One long, slender, glossy deep-purple Asian eggplant with a green calyx, plus a few round slices showing cream flesh. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "long slender purple eggplant",
+   "green calyx",
+   "cream-colored slices"
+  ],
+  "must_not": [
+   "not round Italian globe eggplant",
+   "not white or green Thai eggplant"
+  ]
+ },
+ {
+  "id": "dau-bap",
+  "name": "Đậu bắp",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "five fresh okra pods",
+  "prompt": "Professional food photography of five fresh okra pods. Five fresh green okra pods, ridged and tapered with caps, one sliced crosswise into rounds showing the star-shaped cross-section with seeds. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "five green ridged pods with caps",
+   "tapered pod shape",
+   "star-shaped cross-section slices"
+  ],
+  "must_not": [
+   "not green chili peppers",
+   "not green beans",
+   "not cooked or slimy"
+  ]
+ },
+ {
+  "id": "sup-lo",
+  "name": "Súp lơ trắng",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "fresh white cauliflower florets",
+  "prompt": "Professional food photography of fresh white cauliflower florets. A small heap of raw white cauliflower florets, tight creamy-white curds with pale-green stems. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "creamy-white curds",
+   "pale-green stems",
+   "raw florets"
+  ],
+  "must_not": [
+   "not broccoli",
+   "not romanesco",
+   "no cheese sauce"
+  ]
+ },
+ {
+  "id": "nam-dong-co",
+  "name": "Nấm đông cô tươi (shiitake)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "fresh shiitake mushrooms",
+  "prompt": "Professional food photography of fresh shiitake mushrooms. A small handful of fresh shiitake mushrooms: brown domed caps with light cracks, cream gills and short stems, one flipped to show the gills. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "brown domed caps",
+   "cream gills on one flipped mushroom",
+   "fresh, not dried"
+  ],
+  "must_not": [
+   "not dried shiitake",
+   "not button mushrooms",
+   "not portobello"
+  ]
+ },
+ {
+  "id": "su-su",
+  "name": "Su su",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a fresh chayote (su su)",
+  "prompt": "Professional food photography of a fresh chayote (su su). One whole pear-shaped chayote, pale lime-green with deep furrows and a puckered bottom, plus one half showing pale green-white flesh and the single flat seed. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "pear-shaped pale-green chayote",
+   "deep furrows",
+   "halved with single flat seed"
+  ],
+  "must_not": [
+   "not a pear",
+   "not avocado",
+   "not green apple"
+  ]
+ },
+ {
+  "id": "kim-chi",
+  "name": "Kim chi cải thảo",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small bowl of napa cabbage kimchi",
+  "prompt": "Professional food photography of a small bowl of napa cabbage kimchi. A small white bowl of napa cabbage kimchi: glossy red chili-coated cabbage wedges and leaves with pieces of scallion. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small white bowl",
+   "red chili-coated napa cabbage",
+   "scallion pieces"
+  ],
+  "must_not": [
+   "not plain salad",
+   "not pickled red cabbage",
+   "no Korean text jar"
+  ]
+ },
+ {
+  "id": "oi",
+  "name": "Ổi",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a Vietnamese green guava",
+  "prompt": "Professional food photography of a Vietnamese green guava. One whole green guava with bumpy light-green skin and one cut in half showing crisp white flesh with a seeded center. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "round light-green guava",
+   "halved with crisp white flesh",
+   "seeded center"
+  ],
+  "must_not": [
+   "not lime",
+   "not pear or green apple",
+   "not pink-fleshed guava"
+  ]
+ },
+ {
+  "id": "du-du",
+  "name": "Đu đủ chín",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "ripe papaya",
+  "prompt": "Professional food photography of ripe papaya. Half a small ripe papaya with yellow-orange skin, deep orange flesh and black seeds in the hollow, beside two peeled wedges. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "deep orange flesh",
+   "black seeds in hollow",
+   "two peeled wedges"
+  ],
+  "must_not": [
+   "not cantaloupe",
+   "not mango",
+   "not green papaya"
+  ]
+ },
+ {
+  "id": "thanh-long",
+  "name": "Thanh long",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a white-fleshed dragon fruit",
+  "prompt": "Professional food photography of a white-fleshed dragon fruit. A dragon fruit cut in half: vivid pink skin with green-tipped scales and white flesh speckled with tiny black seeds, plus a few cubes beside it. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "vivid pink skin with green-tipped scales",
+   "white flesh with tiny black seeds",
+   "a few cubes"
+  ],
+  "must_not": [
+   "not red-fleshed variety",
+   "not kiwi",
+   "not lychee"
+  ]
+ },
+ {
+  "id": "buoi",
+  "name": "Bưởi",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "peeled Vietnamese pomelo segments",
+  "prompt": "Professional food photography of peeled Vietnamese pomelo segments. Three fully peeled pomelo segments with plump, juicy, pale pink-blush vesicles, membranes removed, on a small white plate beside a piece of thick green peel. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "three peeled segments",
+   "juicy pale pink vesicles",
+   "thick green peel piece"
+  ],
+  "must_not": [
+   "not grapefruit halves",
+   "not orange",
+   "no sugar"
+  ]
+ },
+ {
+  "id": "dua-thom",
+  "name": "Dứa (thơm)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "fresh pineapple wedges",
+  "prompt": "Professional food photography of fresh pineapple wedges. Two thick wedges of peeled ripe pineapple, bright golden-yellow and juicy with a fibrous texture and pale core edge. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "peeled pineapple wedges",
+   "bright golden-yellow",
+   "fibrous juicy texture"
+  ],
+  "must_not": [
+   "not canned rings in syrup",
+   "not mango",
+   "no whole pineapple crown"
+  ]
+ },
+ {
+  "id": "kiwi",
+  "name": "Kiwi",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "kiwifruit",
+  "prompt": "Professional food photography of kiwifruit. One whole fuzzy brown kiwi and one halved showing bright green flesh with a ring of tiny black seeds and a creamy white core. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "fuzzy brown skin",
+   "bright green flesh",
+   "black seed ring and white core"
+  ],
+  "must_not": [
+   "not lime",
+   "not passion fruit",
+   "not gold kiwi"
+  ]
+ },
+ {
+  "id": "nuoc-dua",
+  "name": "Nước dừa tươi",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a fresh young green coconut for drinking",
+  "prompt": "Professional food photography of a fresh young green coconut for drinking. A young green coconut with the husk trimmed to a pointed top, a small opening cut showing white inner flesh and clear coconut water, with a plain straw inserted. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "young green coconut, trimmed husk",
+   "small opening with white flesh",
+   "plain straw"
+  ],
+  "must_not": [
+   "not brown hairy mature coconut",
+   "not coconut milk",
+   "no colorful printed straw"
+  ]
+ },
+ {
+  "id": "dau-an",
+  "name": "Dầu ăn (đậu nành / hướng dương)",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small bowl of vegetable cooking oil",
+  "prompt": "Professional food photography of a small bowl of vegetable cooking oil. A small clear glass bowl of light golden soybean-sunflower cooking oil, a stainless tablespoon filled with oil resting beside it, with a few sunflower seeds and soybeans for context. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "clear glass bowl of light golden oil",
+   "tablespoon of oil",
+   "sunflower seeds and soybeans"
+  ],
+  "must_not": [
+   "no labeled bottle",
+   "not green olive oil",
+   "not honey"
+  ]
+ },
+ {
+  "id": "dau-me",
+  "name": "Dầu mè",
+  "kind": "food",
+  "reason": "missing",
+  "subject": "a small bowl of toasted sesame oil",
+  "prompt": "Professional food photography of a small bowl of toasted sesame oil. A small clear glass bowl of dark amber toasted sesame oil, beside a small heap of toasted sesame seeds. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "clear glass bowl",
+   "dark amber translucent oil",
+   "toasted sesame seeds beside"
+  ],
+  "must_not": [
+   "no labeled bottle",
+   "not soy sauce",
+   "not honey"
+  ]
+ },
+ {
+  "id": "goi-cuon",
+  "name": "Gỏi cuốn tôm thịt",
+  "kind": "recipe",
+  "reason": "wrong",
+  "subject": "three Vietnamese fresh summer rolls (gỏi cuốn) with shrimp and pork",
+  "prompt": "Professional food photography of three Vietnamese fresh summer rolls (gỏi cuốn) with shrimp and pork. Three soft translucent rice paper rolls on a white plate, filled with rice vermicelli, lettuce and herbs, halved pink-orange shrimp pressed against the wrapper with thin slices of boiled pork; one roll cut to show the cross-section; a small bowl of hoisin dip topped with crushed peanuts. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "translucent soft rice paper rolls",
+   "halved pink shrimp visible through wrapper",
+   "vermicelli, lettuce, herbs inside",
+   "small bowl of hoisin-peanut dip"
+  ],
+  "must_not": [
+   "not fried spring rolls (chả giò)",
+   "not sushi or nori rolls",
+   "not Chinese egg rolls",
+   "not deep-fried or golden"
+  ]
+ },
+ {
+  "id": "bun-ga-xe",
+  "name": "Bún gà xé rau thơm",
+  "kind": "recipe",
+  "reason": "questionable",
+  "subject": "a bowl of Vietnamese shredded chicken rice noodle soup (bún gà xé)",
+  "prompt": "Professional food photography of a bowl of Vietnamese shredded chicken rice noodle soup (bún gà xé). A white bowl of soft round rice vermicelli in clear light-golden chicken broth, topped with shredded skinless boiled chicken breast, bean sprouts, thin onion slices, scallion and fresh Vietnamese herbs, a lime wedge on the rim. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "round white rice vermicelli",
+   "clear light-golden broth",
+   "shredded white chicken breast",
+   "herbs, bean sprouts, onion"
+  ],
+  "must_not": [
+   "not ramen or egg noodles",
+   "no chicken skin",
+   "not creamy soup"
+  ]
+ },
+ {
+  "id": "ca-basa-kho",
+  "name": "Cá basa kho tộ ít dầu, cơm lứt, rau muống",
+  "kind": "recipe",
+  "reason": "questionable",
+  "subject": "Vietnamese clay-pot caramel-braised basa fish with brown rice and water spinach",
+  "prompt": "Professional food photography of Vietnamese clay-pot caramel-braised basa fish with brown rice and water spinach. Two thick basa fish steaks with skin in a small brown clay pot, glossy deep amber-brown caramel fish-sauce glaze, cracked black pepper, sliced chili and scallion; beside a small bowl of brown rice and a plate of boiled water spinach (long hollow stems, arrow leaves). Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small clay pot with amber-brown braised fish steaks",
+   "glossy caramel glaze, black pepper, chili",
+   "bowl of brown rice",
+   "boiled water spinach"
+  ],
+  "must_not": [
+   "not fried fish",
+   "not curry",
+   "not salmon",
+   "not oily"
+  ]
+ },
+ {
+  "id": "dau-hu-sot-ca",
+  "name": "Đậu hũ sốt cà, cơm lứt, rau muống",
+  "kind": "recipe",
+  "reason": "questionable",
+  "subject": "Vietnamese tofu in tomato sauce with brown rice and water spinach",
+  "prompt": "Professional food photography of Vietnamese tofu in tomato sauce with brown rice and water spinach. Golden pan-fried tofu cubes simmered in a glossy red-orange tomato sauce, sprinkled with sliced scallion, on a white plate; beside a small bowl of brown rice and a plate of boiled water spinach. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "golden tofu cubes",
+   "glossy red tomato sauce",
+   "brown rice bowl",
+   "boiled water spinach"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "not shakshuka",
+   "not pasta"
+  ]
+ },
+ {
+  "id": "chao-yen-mach-ga",
+  "name": "Cháo yến mạch ức gà nấm",
+  "kind": "recipe",
+  "reason": "questionable",
+  "subject": "a bowl of savory Vietnamese oat porridge with chicken and mushrooms",
+  "prompt": "Professional food photography of a bowl of savory Vietnamese oat porridge with chicken and mushrooms. A white bowl of creamy savory porridge made from rolled oats (oat flakes visible) cooked in chicken broth, topped with shredded chicken breast, sautéed straw and enoki mushrooms, sliced scallion, julienned ginger and black pepper. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "creamy oat porridge with visible oat flakes",
+   "shredded chicken",
+   "straw and enoki mushrooms",
+   "scallion, ginger, pepper"
+  ],
+  "must_not": [
+   "no fruit, berries, honey or milk (not sweet)",
+   "not smooth rice congee",
+   "not cereal"
+  ]
+ },
+ {
+  "id": "banh-mi-trung",
+  "name": "Bánh mì trứng & dưa leo",
+  "kind": "recipe",
+  "reason": "questionable",
+  "subject": "a Vietnamese bánh mì with fried eggs and cucumber",
+  "prompt": "Professional food photography of a Vietnamese bánh mì with fried eggs and cucumber. A short crispy golden Vietnamese baguette split open and filled with two sunny-side-up fried eggs (set whites, golden yolks), cucumber spears and cilantro sprigs, with a splash of soy sauce. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "short crispy golden baguette",
+   "two fried eggs with golden yolks",
+   "cucumber spears and cilantro"
+  ],
+  "must_not": [
+   "no meat, pâté or ham",
+   "not a burger bun",
+   "not scrambled eggs",
+   "no cheese"
+  ]
+ },
+ {
+  "id": "muc-hap-gung",
+  "name": "Mực hấp gừng hành, rau luộc",
+  "kind": "recipe",
+  "reason": "wrong",
+  "subject": "Vietnamese steamed squid with ginger and scallion, broccoli and brown rice",
+  "prompt": "Professional food photography of Vietnamese steamed squid with ginger and scallion, broccoli and brown rice. Squid pieces scored in a diamond pattern and curled, opaque white, on a white plate with julienned ginger, bruised lemongrass and scallion; beside steamed broccoli florets, a small bowl of brown rice and a tiny dish of salt-pepper-lime dip. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "curled diamond-scored white squid",
+   "ginger, lemongrass, scallion",
+   "steamed broccoli",
+   "small bowl of brown rice"
+  ],
+  "must_not": [
+   "not fried or battered calamari",
+   "not octopus",
+   "not raw"
+  ]
+ },
+ {
+  "id": "dui-ga-mat-ong-af",
+  "name": "Đùi gà nướng mật ong nồi chiên không dầu, cơm, salad",
+  "kind": "recipe",
+  "reason": "wrong",
+  "subject": "air-fried honey-glazed skinless chicken leg with rice and salad",
+  "prompt": "Professional food photography of air-fried honey-glazed skinless chicken leg with rice and salad. A skinless chicken leg (drumstick and thigh), scored, with a glossy honey-garlic-soy glaze and golden-brown caramelized surface with light charred edges, low-oil air-fried look; beside a mound of white rice and a simple lettuce and tomato salad. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "one skinless chicken leg",
+   "glossy honey glaze, golden-brown",
+   "light charred edges",
+   "white rice and lettuce-tomato salad"
+  ],
+  "must_not": [
+   "no breading or batter",
+   "not deep-fried crispy skin",
+   "not fried chicken bucket",
+   "not oily"
+  ]
+ },
+ {
+  "id": "tom-bap",
+  "name": "Tôm luộc & bắp",
+  "kind": "recipe",
+  "reason": "wrong",
+  "subject": "Vietnamese boiled shrimp with boiled corn and lettuce",
+  "prompt": "Professional food photography of Vietnamese boiled shrimp with boiled corn and lettuce. A heap of bright orange-pink boiled whole shrimp in their shells, a boiled yellow corn cob cut in two, a few lettuce leaves, and a tiny dish of Vietnamese salt-pepper-lime dip, on a white plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "bright orange-pink shell-on boiled shrimp",
+   "boiled yellow corn cob pieces",
+   "lettuce leaves",
+   "salt-pepper-lime dip"
+  ],
+  "must_not": [
+   "not grilled buttered corn",
+   "not shrimp cocktail",
+   "not Cajun seafood boil",
+   "no sauce"
+  ]
+ },
+ {
+  "id": "dau-hu-hap-nam",
+  "name": "Đậu hũ non hấp nấm, cơm lứt, cải thìa",
+  "kind": "recipe",
+  "reason": "questionable",
+  "subject": "steamed silken tofu with mushrooms, brown rice and bok choy",
+  "prompt": "Professional food photography of steamed silken tofu with mushrooms, brown rice and bok choy. Smooth white silken tofu squares in a shallow white dish, topped with king oyster mushroom slices and enoki, a light soy-sesame sauce pooling around, minced ginger and scallion; beside a small bowl of brown rice and blanched bok choy. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "smooth silken tofu squares",
+   "king oyster and enoki mushrooms",
+   "light soy sauce pooling",
+   "brown rice and bok choy"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "no minced pork (not mapo tofu)",
+   "not fried tofu"
+  ]
+ },
+ {
+  "id": "bun-chay-dau-hu",
+  "name": "Bún chay đậu hũ chiên không dầu",
+  "kind": "recipe",
+  "reason": "questionable",
+  "subject": "a bowl of Vietnamese vegan rice vermicelli with air-fried tofu",
+  "prompt": "Professional food photography of a bowl of Vietnamese vegan rice vermicelli with air-fried tofu. A white bowl of cool rice vermicelli (no broth) topped with golden crisp air-fried tofu batons, cucumber sticks, bean sprouts, mint, perilla and Thai basil, sprinkled with crushed peanuts; a tiny dish of soy-lime-chili dipping sauce beside. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "rice vermicelli without broth",
+   "golden crisp tofu batons",
+   "herbs, cucumber, bean sprouts",
+   "crushed peanuts"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "no spring rolls",
+   "not noodle soup"
+  ]
+ },
+ {
+  "id": "dau-hu-nam-af",
+  "name": "Đậu hũ sốt nấm nồi chiên, cơm lứt, bông cải (tăng cơ chay)",
+  "kind": "recipe",
+  "reason": "wrong",
+  "subject": "air-fried tofu with mushroom sauce, brown rice and broccoli",
+  "prompt": "Professional food photography of air-fried tofu with mushroom sauce, brown rice and broccoli. Golden-crisp air-fried tofu cubes with a glossy brown mushroom-soy sauce of sliced king oyster and straw mushrooms spooned over, on a white plate with brown rice and steamed broccoli florets. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "golden crisp tofu cubes",
+   "glossy brown mushroom sauce",
+   "brown rice",
+   "steamed broccoli"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "not deep-fried oily tofu",
+   "not beef with broccoli"
+  ]
+ },
+ {
+  "id": "dau-den-bowl",
+  "name": "Bowl đậu đen, cơm lứt, bơ & salsa",
+  "kind": "recipe",
+  "reason": "wrong",
+  "subject": "a black bean, brown rice, avocado and salsa bowl",
+  "prompt": "Professional food photography of a black bean, brown rice, avocado and salsa bowl. A wide white bowl with sections of brown rice, seasoned black beans, fresh pico de gallo salsa of diced tomato, bell pepper and red onion, fanned avocado slices and a lime wedge. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "brown rice",
+   "black beans",
+   "diced tomato-pepper-onion salsa",
+   "fanned avocado slices"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "no cheese or sour cream",
+   "no tortilla chips"
+  ]
+ },
+ {
+  "id": "quinoa-edamame",
+  "name": "Salad quinoa edamame",
+  "kind": "recipe",
+  "reason": "wrong",
+  "subject": "a quinoa and edamame salad",
+  "prompt": "Professional food photography of a quinoa and edamame salad. A white bowl of fluffy quinoa tossed with bright-green shelled edamame, diced cucumber and diced tomato, glistening with olive oil, a lemon wedge on the side. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "fluffy quinoa",
+   "bright-green shelled edamame",
+   "diced cucumber and tomato",
+   "lemon wedge"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "no feta cheese",
+   "not couscous"
+  ]
+ },
+ {
+  "id": "com-trung-rau",
+  "name": "Cơm trứng rau muống (rẻ – sinh viên)",
+  "kind": "recipe",
+  "reason": "questionable",
+  "subject": "a Vietnamese student meal of rice, fried eggs and boiled water spinach",
+  "prompt": "Professional food photography of a Vietnamese student meal of rice, fried eggs and boiled water spinach. A bowl of white rice with two sunny-side-up fried eggs, beside a plate of boiled water spinach (long hollow stems, arrow leaves) and a small bowl of its clear cooking broth with a lime slice. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "white rice",
+   "two fried eggs",
+   "boiled water spinach",
+   "small bowl of clear broth"
+  ],
+  "must_not": [
+   "no meat or sausage",
+   "not fried rice",
+   "no fish"
+  ]
+ },
+ {
+  "id": "mi-trung-rau",
+  "name": "Mì gói nâng cấp: trứng + rau",
+  "kind": "recipe",
+  "reason": "questionable",
+  "subject": "a bowl of upgraded instant noodles with eggs and bok choy",
+  "prompt": "Professional food photography of a bowl of upgraded instant noodles with eggs and bok choy. A white bowl of wavy instant noodles in a light clear golden broth (no oil slick), two soft poached eggs and blanched bok choy on top. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "wavy instant noodles",
+   "light clear golden broth",
+   "two poached eggs",
+   "bok choy"
+  ],
+  "must_not": [
+   "no noodle packet or brand",
+   "no meat or sausage",
+   "not red spicy Korean broth"
+  ]
+ },
+ {
+  "id": "ca-ngu-com",
+  "name": "Cơm cá ngừ hộp sốt cà (rẻ)",
+  "kind": "recipe",
+  "reason": "wrong",
+  "subject": "Vietnamese canned tuna in tomato sauce with rice and cucumber",
+  "prompt": "Professional food photography of Vietnamese canned tuna in tomato sauce with rice and cucumber. Flaked cooked tuna simmered in a chunky red tomato sauce with garlic and scallion, served on a white plate beside a mound of white rice and fresh cucumber slices. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "flaked cooked tuna in red tomato sauce",
+   "white rice",
+   "cucumber slices"
+  ],
+  "must_not": [
+   "not sashimi or raw fish",
+   "not seared tuna steak",
+   "no tuna can or label",
+   "not spaghetti"
+  ]
+ },
+ {
+  "id": "chao-yen-mach-dau-hu",
+  "name": "Cháo yến mạch đậu hũ nấm (chay)",
+  "kind": "recipe",
+  "reason": "questionable",
+  "subject": "a bowl of savory vegan oat porridge with tofu and mushrooms",
+  "prompt": "Professional food photography of a bowl of savory vegan oat porridge with tofu and mushrooms. A white bowl of creamy savory porridge of rolled oats (oat flakes visible), with small diced tofu cubes, straw and enoki mushrooms, scallion, herbs and black pepper on top. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "creamy oat porridge, oat flakes visible",
+   "diced tofu cubes",
+   "mushrooms",
+   "scallion and pepper"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "no fruit, honey or sweet toppings",
+   "not smooth rice congee"
+  ]
+ },
+ {
+  "id": "sua-dau-chuoi-hat",
+  "name": "Sữa đậu nành, chuối & hạnh nhân",
+  "kind": "recipe",
+  "reason": "questionable",
+  "subject": "a glass of soy milk with a banana and almonds",
+  "prompt": "Professional food photography of a glass of soy milk with a banana and almonds. A plain clear glass of unsweetened soy milk, pale creamy beige, beside one ripe yellow banana and a small handful of whole almonds. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "plain glass of pale beige soy milk",
+   "one ripe banana",
+   "small handful of almonds"
+  ],
+  "must_not": [
+   "no carton or brand",
+   "not milkshake or smoothie",
+   "no chocolate"
+  ]
+ },
+ {
+  "id": "dau-hu-trung-hap",
+  "name": "Trứng hấp đậu hũ, cơm, rau luộc",
+  "kind": "recipe",
+  "reason": "wrong",
+  "subject": "Vietnamese steamed egg with tofu, rice and boiled greens",
+  "prompt": "Professional food photography of Vietnamese steamed egg with tofu, rice and boiled greens. A shallow white dish of smooth set pale-yellow steamed egg custard mixed with mashed tofu, topped with sliced scallion and a drizzle of soy sauce; beside a bowl of white rice and a plate of boiled water spinach. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "smooth pale-yellow steamed egg-tofu custard",
+   "scallion and soy drizzle",
+   "white rice",
+   "boiled water spinach"
+  ],
+  "must_not": [
+   "no minced pork or meat",
+   "not browned omelette or frittata",
+   "no fish"
+  ]
+ },
+ {
+  "id": "wrap-ga",
+  "name": "Wrap gà nguyên cám rau củ",
+  "kind": "recipe",
+  "reason": "questionable",
+  "subject": "a whole-wheat chicken and vegetable wrap",
+  "prompt": "Professional food photography of a whole-wheat chicken and vegetable wrap. A whole-wheat tortilla wrap cut in half on the diagonal, the halves stacked to show the filling: paprika-seasoned sliced chicken breast, crisp lettuce, red and yellow bell pepper strips and a white Greek yogurt spread. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "whole-wheat tortilla, cut diagonally",
+   "sliced seasoned chicken",
+   "lettuce and bell pepper strips",
+   "yogurt spread"
+  ],
+  "must_not": [
+   "not a burrito with rice and beans",
+   "no cheese",
+   "not fried"
+  ]
+ },
+ {
+  "id": "ca-hoi-khoai",
+  "name": "Cá hồi áp chảo & khoai lang",
+  "kind": "recipe",
+  "reason": "questionable",
+  "subject": "pan-seared salmon with boiled sweet potato and broccoli",
+  "prompt": "Professional food photography of pan-seared salmon with boiled sweet potato and broccoli. A pan-seared salmon fillet with crisp golden skin and a moist pink, flaky, fully cooked interior, beside chunks of boiled sweet potato with golden flesh and steamed broccoli florets with a lemon wedge, on a white plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "seared salmon fillet with crisp skin",
+   "cooked pink flaky flesh",
+   "boiled sweet potato chunks",
+   "broccoli and lemon"
+  ],
+  "must_not": [
+   "not raw salmon or sashimi",
+   "not fries",
+   "no creamy sauce"
+  ]
+ },
+ {
+  "id": "tempeh-sa-ot-af",
+  "name": "Tempeh sả ớt nồi chiên, cơm lứt, cải ngọt",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "air-fried lemongrass-chili tempeh with brown rice and choy sum",
+  "prompt": "Professional food photography of air-fried lemongrass-chili tempeh with brown rice and choy sum. Slices of air-fried tempeh with golden-brown crisp edges and visible whole soybeans, flecked with minced lemongrass and red chili; beside brown rice and blanched choy sum, a tiny dish of chili soy sauce. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "tempeh slices with visible soybeans",
+   "golden crisp edges, lemongrass and chili flecks",
+   "brown rice",
+   "blanched choy sum"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "not smooth tofu",
+   "not deep-fried oily"
+  ]
+ },
+ {
+  "id": "ca-ri-dau-ga",
+  "name": "Cà ri đậu gà & đậu hũ, rau bina, cơm lứt",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a chickpea and tofu curry with spinach and brown rice",
+  "prompt": "Professional food photography of a chickpea and tofu curry with spinach and brown rice. A bowl of golden-orange tomato curry with chickpeas, tofu cubes and wilted spinach, beside a mound of brown rice. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "golden-orange curry sauce",
+   "chickpeas and tofu cubes",
+   "wilted spinach",
+   "brown rice"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "not green curry",
+   "no naan"
+  ]
+ },
+ {
+  "id": "dau-lang-ham",
+  "name": "Đậu lăng hầm cà chua cà rốt, bánh mì nguyên cám",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a lentil stew with tomato and carrot, whole-grain toast",
+  "prompt": "Professional food photography of a lentil stew with tomato and carrot, whole-grain toast. A white bowl of thick lentil stew with tomato, diced carrot, onion and wilted spinach, beside two slices of toasted whole-grain bread. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "thick lentil stew",
+   "diced carrot, tomato, spinach",
+   "two slices of whole-grain toast"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "no sausage or bacon",
+   "no cheese or cream"
+  ]
+ },
+ {
+  "id": "mi-can-xao-sa",
+  "name": "Mì căn xào sả ớt, đậu que, cơm trắng",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese stir-fried seitan (mì căn) with lemongrass, chili and green beans",
+  "prompt": "Professional food photography of Vietnamese stir-fried seitan (mì căn) with lemongrass, chili and green beans. Torn chewy pieces of mì căn, golden-browned at the edges with a spongy porous texture, stir-fried with minced lemongrass, red chili, cut green beans and onion wedges, on a white plate beside a bowl of white rice. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "torn spongy seitan pieces, browned edges",
+   "minced lemongrass and chili",
+   "cut green beans and onion",
+   "bowl of white rice"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "not beef stir-fry",
+   "no shrimp"
+  ]
+ },
+ {
+  "id": "tau-hu-ky-cuon-nam",
+  "name": "Tàu hũ ky cuộn nấm hấp, cơm lứt, cải ngọt",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "steamed tofu-skin rolls with mushroom filling, brown rice and choy sum",
+  "prompt": "Professional food photography of steamed tofu-skin rolls with mushroom filling, brown rice and choy sum. Several thick round slices of steamed tofu-skin rolls with a pale golden wrinkled wrapper and a grey-brown chopped mushroom and tofu filling, on a white plate; beside brown rice, blanched choy sum and a tiny dish of ginger soy sauce. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "sliced rolls with wrinkled pale golden tofu-skin wrapper",
+   "mushroom-tofu filling",
+   "brown rice",
+   "choy sum"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "not deep-fried spring rolls",
+   "not sushi"
+  ]
+ },
+ {
+  "id": "bun-tron-tvp",
+  "name": "Bún trộn 'thịt' chay đậu nành sả ớt",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a Vietnamese vegan vermicelli bowl with lemongrass soy 'meat'",
+  "prompt": "Professional food photography of a Vietnamese vegan vermicelli bowl with lemongrass soy 'meat'. A white bowl of rice vermicelli (no broth) topped with browned, crumbly lemongrass-chili textured soy protein chunks, bean sprouts, cucumber, mint and perilla, sprinkled with crushed roasted peanuts and a little soy-lime dressing. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "rice vermicelli without broth",
+   "browned crumbly soy protein chunks",
+   "herbs, cucumber, bean sprouts",
+   "crushed peanuts"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "not noodle soup",
+   "no spring rolls"
+  ]
+ },
+ {
+  "id": "bowl-dau-ga-quinoa",
+  "name": "Bowl đậu gà, quinoa, edamame & hummus",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a chickpea, quinoa, edamame and hummus bowl",
+  "prompt": "Professional food photography of a chickpea, quinoa, edamame and hummus bowl. A wide white bowl with sections of quinoa, roasted spiced chickpeas, shelled edamame, diced cucumber and tomato and baby spinach, a dollop of hummus in the center and a lemon wedge. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "quinoa",
+   "roasted chickpeas",
+   "edamame",
+   "hummus dollop in center"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "no feta cheese"
+  ]
+ },
+ {
+  "id": "yen-mach-protein-chay",
+  "name": "Yến mạch sữa đậu nành, đạm thực vật, chuối & hạt bí",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a bowl of soy-milk oatmeal with banana and pumpkin seeds",
+  "prompt": "Professional food photography of a bowl of soy-milk oatmeal with banana and pumpkin seeds. A white bowl of creamy oatmeal cooked with soy milk, topped with neat banana slices and a sprinkle of green pumpkin seeds. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "creamy oatmeal",
+   "banana slices",
+   "green pumpkin seeds"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "no berries or honey drizzle",
+   "not savory"
+  ]
+ },
+ {
+  "id": "banh-mi-dau-hu-chay",
+  "name": "Bánh mì đậu hũ sả & đồ chua (chay)",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a Vietnamese vegan bánh mì with lemongrass tofu",
+  "prompt": "Professional food photography of a Vietnamese vegan bánh mì with lemongrass tofu. A short crispy golden Vietnamese baguette split and filled with golden pan-fried lemongrass tofu strips, quick-pickled shredded carrot, cucumber spears, cilantro and a drizzle of chili soy sauce. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "crispy golden baguette",
+   "golden lemongrass tofu strips",
+   "pickled shredded carrot",
+   "cucumber and cilantro"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "no pâté, ham or cold cuts",
+   "no mayonnaise"
+  ]
+ },
+ {
+  "id": "edamame-hat-bi",
+  "name": "Edamame luộc muối & hạt bí",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "salted boiled edamame with pumpkin seeds",
+  "prompt": "Professional food photography of salted boiled edamame with pumpkin seeds. A white bowl of bright-green boiled edamame in their pods, sprinkled with coarse salt and a few chili flakes, beside a tiny dish of green pumpkin seeds. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "bright-green edamame pods",
+   "coarse salt flakes",
+   "small dish of green pumpkin seeds"
+  ],
+  "must_not": [
+   "not green beans",
+   "not snap peas",
+   "no meat"
+  ]
+ },
+ {
+  "id": "smoothie-dam-thuc-vat",
+  "name": "Sinh tố chuối bơ đậu phộng & đạm thực vật",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a banana peanut-butter plant protein smoothie",
+  "prompt": "Professional food photography of a banana peanut-butter plant protein smoothie. A tall plain clear glass of thick, creamy, pale tan banana-peanut butter smoothie, a few banana slices and rolled oats beside the glass. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "tall plain glass",
+   "thick pale tan smoothie",
+   "banana slices and oats beside"
+  ],
+  "must_not": [
+   "no whipped cream",
+   "not chocolate or coffee",
+   "no branded shaker",
+   "no dairy milk carton"
+  ]
+ },
+ {
+  "id": "dau-hu-kho-nam-dong-co",
+  "name": "Đậu hũ kho nấm đông cô, cơm lứt, cải ngọt",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese tofu braised with shiitake, brown rice and choy sum",
+  "prompt": "Professional food photography of Vietnamese tofu braised with shiitake, brown rice and choy sum. Thick golden-browned tofu slabs and halved shiitake mushrooms in a glossy dark soy-caramel glaze with black pepper, in a small clay pot; beside brown rice and blanched choy sum. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "golden tofu slabs",
+   "halved shiitake mushrooms",
+   "glossy dark glaze in clay pot",
+   "brown rice and choy sum"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "no pork belly",
+   "no boiled eggs"
+  ]
+ },
+ {
+  "id": "salad-tempeh-xoai",
+  "name": "Salad tempeh áp chảo, xoài & mè rang",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a tempeh, mango and sesame salad",
+  "prompt": "Professional food photography of a tempeh, mango and sesame salad. A white bowl of lettuce with julienned ripe mango and cucumber, topped with golden-crisp pan-seared tempeh batons (whole soybeans visible), sprinkled with toasted white sesame seeds and a light sesame-soy dressing. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "lettuce, julienned mango and cucumber",
+   "golden tempeh batons with visible soybeans",
+   "toasted sesame seeds"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "no shrimp or chicken",
+   "no croutons or cheese"
+  ]
+ },
+ {
+  "id": "chili-dau-do-tvp",
+  "name": "Đậu đỏ hầm kiểu chili với 'thịt' đậu nành, cơm lứt",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a vegan red bean chili with soy 'mince' and brown rice",
+  "prompt": "Professional food photography of a vegan red bean chili with soy 'mince' and brown rice. A white bowl of thick red bean chili with crumbled soy mince, diced bell pepper and onion in a smoky red tomato sauce, beside a mound of brown rice. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "thick red bean chili",
+   "crumbled soy mince",
+   "diced bell pepper",
+   "brown rice"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "no cheese or sour cream",
+   "no tortilla chips"
+  ]
+ },
+ {
+  "id": "com-dau-hu-sa-mong-toi",
+  "name": "Cơm đậu hũ chiên sả (không dầu), canh mồng tơi",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese air-fried lemongrass tofu with rice and Malabar spinach soup",
+  "prompt": "Professional food photography of Vietnamese air-fried lemongrass tofu with rice and Malabar spinach soup. Golden air-fried tofu cubes coated with minced lemongrass and chili flakes on a small plate, a bowl of white rice, and a bowl of clear soup with glossy dark-green heart-shaped Malabar spinach (mồng tơi) leaves. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "golden lemongrass-coated tofu cubes",
+   "bowl of white rice",
+   "clear soup with glossy heart-shaped greens"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "no dried shrimp or crab in soup",
+   "not deep-fried oily"
+  ]
+ },
+ {
+  "id": "pho-chay-nam-dau-hu",
+  "name": "Phở chay nấm & đậu hũ",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a bowl of Vietnamese vegetarian phở with mushrooms and tofu",
+  "prompt": "Professional food photography of a bowl of Vietnamese vegetarian phở with mushrooms and tofu. A white bowl of flat rice noodles in clear light-amber vegetable broth, topped with golden tofu pieces, king oyster, straw and enoki mushrooms, choy sum, bean sprouts, Thai basil, cilantro, a lime wedge and red chili slices. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "flat white rice noodles",
+   "clear light-amber broth",
+   "golden tofu and mushrooms",
+   "Thai basil, bean sprouts, lime"
+  ],
+  "must_not": [
+   "no meat, poultry, fish, seafood or egg",
+   "no beef slices",
+   "not ramen"
+  ]
+ },
+ {
+  "id": "sua-chua-oi",
+  "name": "Sữa chua Hy Lạp & ổi",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Greek yogurt with Vietnamese green guava",
+  "prompt": "Professional food photography of Greek yogurt with Vietnamese green guava. A small white bowl of thick plain Greek yogurt beside wedges of green guava with skin on, crisp white flesh and seeds. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small bowl of thick white Greek yogurt",
+   "guava wedges with green skin",
+   "crisp white guava flesh with seeds"
+  ],
+  "must_not": [
+   "no granola or berries",
+   "not pink guava",
+   "not apple or pear"
+  ]
+ },
+ {
+  "id": "trung-luoc-rau",
+  "name": "2 trứng luộc, dưa leo & cà chua",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "two boiled eggs with cucumber and tomato",
+  "prompt": "Professional food photography of two boiled eggs with cucumber and tomato. Two peeled hard-boiled eggs, one halved showing a set yellow yolk, with cucumber slices, tomato wedges and a tiny dish of salt-pepper with a lime wedge, on a white plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "two boiled eggs, one halved",
+   "cucumber slices",
+   "tomato wedges",
+   "salt-pepper-lime dip"
+  ],
+  "must_not": [
+   "no meat",
+   "no mayonnaise",
+   "not deviled eggs",
+   "not fried eggs"
+  ]
+ },
+ {
+  "id": "banh-gao-bo-dau-chuoi",
+  "name": "Bánh gạo lứt bơ đậu phộng, chuối & sữa",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "brown rice cakes with peanut butter, banana and a glass of milk",
+  "prompt": "Professional food photography of brown rice cakes with peanut butter, banana and a glass of milk. Two round puffed brown rice cakes spread with peanut butter and topped with banana slices, beside a plain clear glass of milk. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "two round rice cakes",
+   "peanut butter spread",
+   "banana slices",
+   "plain glass of milk"
+  ],
+  "must_not": [
+   "no jam or chocolate",
+   "no carton or brand",
+   "not toast"
+  ]
+ },
+ {
+  "id": "pho-mai-tuoi-dua",
+  "name": "Phô mai tươi (cottage) với dứa",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "cottage cheese with pineapple",
+  "prompt": "Professional food photography of cottage cheese with pineapple. A small white bowl of lumpy white low-fat cottage cheese topped with bright golden fresh pineapple chunks and a light dusting of cinnamon. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "lumpy white cottage cheese curds",
+   "golden pineapple chunks",
+   "cinnamon dust"
+  ],
+  "must_not": [
+   "not smooth yogurt",
+   "no granola",
+   "not canned pineapple rings"
+  ]
+ },
+ {
+  "id": "shake-whey-chuoi",
+  "name": "Shake whey chuối sữa tách béo (sau tập)",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a banana whey protein shake",
+  "prompt": "Professional food photography of a banana whey protein shake. A tall plain clear glass of creamy pale off-white banana whey shake with a little froth on top, a few banana slices beside the glass. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "tall plain glass",
+   "creamy pale off-white shake",
+   "banana slices beside"
+  ],
+  "must_not": [
+   "no branded shaker or tub",
+   "no whipped cream",
+   "not chocolate"
+  ]
+ },
+ {
+  "id": "khoai-lang-trung",
+  "name": "Khoai lang luộc & trứng luộc",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a boiled sweet potato with a boiled egg",
+  "prompt": "Professional food photography of a boiled sweet potato with a boiled egg. One boiled sweet potato with reddish-purple skin, halved to show soft golden flesh, beside one peeled hard-boiled egg cut in half, on a small white plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "halved boiled sweet potato with golden flesh",
+   "reddish-purple skin",
+   "one halved boiled egg"
+  ],
+  "must_not": [
+   "not fries",
+   "no butter or toppings",
+   "not fried egg"
+  ]
+ },
+ {
+  "id": "banh-gao-ca-ngu",
+  "name": "Bánh gạo lứt phết cá ngừ sữa chua",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "brown rice cakes with tuna-yogurt spread and cucumber",
+  "prompt": "Professional food photography of brown rice cakes with tuna-yogurt spread and cucumber. Two round puffed brown rice cakes topped with a creamy spread of flaked cooked tuna, Greek yogurt, minced onion and black pepper, beside fresh cucumber slices. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "two round rice cakes",
+   "creamy flaked tuna spread",
+   "cucumber slices"
+  ],
+  "must_not": [
+   "not raw tuna or sushi",
+   "no tuna can or label",
+   "not crackers"
+  ]
+ },
+ {
+  "id": "sinh-to-bo-yen-mach",
+  "name": "Sinh tố bơ sữa yến mạch (tăng cân)",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a Vietnamese avocado oat smoothie (sinh tố bơ)",
+  "prompt": "Professional food photography of a Vietnamese avocado oat smoothie (sinh tố bơ). A tall plain clear glass of thick, creamy pale-green avocado smoothie with a smooth top, half an avocado with its pit beside the glass. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "tall plain glass",
+   "thick pale-green avocado smoothie",
+   "half avocado beside"
+  ],
+  "must_not": [
+   "no whipped cream or ice cream",
+   "not matcha latte",
+   "no straw with print"
+  ]
+ },
+ {
+  "id": "hat-mix-tao",
+  "name": "Mix hạt (hạnh nhân, điều, bí) & táo",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a mix of almonds, cashews and pumpkin seeds with an apple",
+  "prompt": "Professional food photography of a mix of almonds, cashews and pumpkin seeds with an apple. A small white bowl of mixed whole almonds, cashews and green pumpkin seeds, beside one whole red apple and a few apple slices with skin. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "almonds, cashews and green pumpkin seeds",
+   "whole red apple",
+   "apple slices"
+  ],
+  "must_not": [
+   "no chocolate or candy",
+   "no dried fruit",
+   "not peanuts only"
+  ]
+ },
+ {
+  "id": "sua-dau-banh-mi-bo-dau",
+  "name": "Sữa đậu nành & bánh mì nguyên cám bơ đậu phộng",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "soy milk with whole-grain toast and peanut butter",
+  "prompt": "Professional food photography of soy milk with whole-grain toast and peanut butter. A plain clear glass of pale beige soy milk beside two slices of toasted whole-grain bread spread with peanut butter. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "plain glass of soy milk",
+   "two slices of whole-grain toast",
+   "peanut butter spread"
+  ],
+  "must_not": [
+   "no jam",
+   "no carton or brand",
+   "not white bread"
+  ]
+ },
+ {
+  "id": "xoi-dau-xanh-trung",
+  "name": "Xôi đậu xanh & 2 trứng luộc",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese mung bean sticky rice with two boiled eggs",
+  "prompt": "Professional food photography of Vietnamese mung bean sticky rice with two boiled eggs. A mound of glossy white sticky rice mixed with pale-yellow hulled mung beans, drizzled with a little scallion oil, on an open green banana leaf, beside two peeled hard-boiled eggs. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "glossy sticky rice with yellow mung beans",
+   "scallion oil drizzle",
+   "banana leaf",
+   "two peeled boiled eggs"
+  ],
+  "must_not": [
+   "no pork floss or meat",
+   "not mango sticky rice",
+   "no coconut cream or sugar"
+  ]
+ },
+ {
+  "id": "banh-cuon-cha-lua",
+  "name": "Bánh cuốn chả lụa (gọi ít nước mắm, nhiều rau)",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese bánh cuốn with chả lụa, herbs and bean sprouts",
+  "prompt": "Professional food photography of Vietnamese bánh cuốn with chả lụa, herbs and bean sprouts. Silky, thin, semi-translucent steamed rice rolls with minced pork and wood-ear filling showing through, a few fried shallots on top, with round slices of pale chả lụa pork roll, blanched bean sprouts, fresh herbs and a small bowl of diluted fish sauce with chili. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "silky semi-translucent rice rolls",
+   "round slices of pale pork roll",
+   "blanched bean sprouts and herbs",
+   "small bowl of fish sauce"
+  ],
+  "must_not": [
+   "not Chinese cheung fun in soy sauce",
+   "not fried spring rolls",
+   "not fresh rice paper rolls"
+  ]
+ },
+ {
+  "id": "chao-ca-ro-phi",
+  "name": "Cháo cá rô phi gừng hành",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a bowl of Vietnamese tilapia rice porridge with ginger",
+  "prompt": "Professional food photography of a bowl of Vietnamese tilapia rice porridge with ginger. A white bowl of smooth white rice congee topped with flakes of white tilapia, julienned ginger, sliced scallion, dill sprigs and black pepper. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "smooth white rice congee",
+   "white fish flakes",
+   "ginger, scallion and dill",
+   "black pepper"
+  ],
+  "must_not": [
+   "no whole fish or bones",
+   "not oatmeal",
+   "not creamy chowder"
+  ]
+ },
+ {
+  "id": "banh-mi-ga-xe",
+  "name": "Bánh mì nguyên cám gà xé, dưa leo, đồ chua",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a whole-grain Vietnamese bánh mì with shredded chicken and pickles",
+  "prompt": "Professional food photography of a whole-grain Vietnamese bánh mì with shredded chicken and pickles. A brown whole-grain baguette split and filled with shredded chicken breast, cucumber spears, pickled shredded carrot, cilantro and a thin white Greek yogurt spread. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "brown whole-grain baguette",
+   "shredded chicken",
+   "pickled carrot and cucumber",
+   "cilantro"
+  ],
+  "must_not": [
+   "no pâté or cold cuts",
+   "not a burger bun",
+   "no cheese"
+  ]
+ },
+ {
+  "id": "pho-ga-nac",
+  "name": "Phở gà nạc nhiều rau (bỏ da)",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a bowl of Vietnamese chicken phở (phở gà)",
+  "prompt": "Professional food photography of a bowl of Vietnamese chicken phở (phở gà). A white bowl of flat rice noodles in clear golden chicken broth, topped with shredded skinless chicken breast, thin onion slices, scallion, cilantro and bean sprouts, a lime wedge and red chili slices. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "flat white rice noodles",
+   "clear golden broth",
+   "shredded skinless chicken",
+   "onion, scallion, cilantro"
+  ],
+  "must_not": [
+   "no chicken skin",
+   "no beef",
+   "not ramen"
+  ]
+ },
+ {
+  "id": "hu-tieu-tom-thit",
+  "name": "Hủ tiếu tôm thịt nạc nước trong",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a bowl of clear-broth hủ tiếu with shrimp and lean pork",
+  "prompt": "Professional food photography of a bowl of clear-broth hủ tiếu with shrimp and lean pork. A white bowl of chewy thin translucent rice noodles in clear pork broth, topped with halved pink shrimp, thin slices of lean pork, bean sprouts, choy sum, garlic chives and black pepper. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "thin translucent rice noodles",
+   "clear broth",
+   "halved shrimp and lean pork slices",
+   "garlic chives, choy sum"
+  ],
+  "must_not": [
+   "not ramen or egg noodles",
+   "no fried pork lard bits",
+   "not dark broth"
+  ]
+ },
+ {
+  "id": "khoai-lang-trung-sua-dau",
+  "name": "Khoai lang luộc, 2 trứng & sữa đậu nành",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a boiled sweet potato, two boiled eggs and a glass of soy milk",
+  "prompt": "Professional food photography of a boiled sweet potato, two boiled eggs and a glass of soy milk. One boiled sweet potato halved to show golden flesh, two peeled hard-boiled eggs (one halved), and a plain clear glass of pale beige soy milk. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "halved boiled sweet potato",
+   "two boiled eggs",
+   "plain glass of soy milk"
+  ],
+  "must_not": [
+   "no carton or brand",
+   "not fries",
+   "no meat"
+  ]
+ },
+ {
+  "id": "com-ca-nuc-kho",
+  "name": "Cơm cá nục kho cà chua, bắp cải luộc",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese tomato-braised round scad with rice and boiled cabbage",
+  "prompt": "Professional food photography of Vietnamese tomato-braised round scad with rice and boiled cabbage. Three small headless round scad braised in a thick red-amber tomato fish-sauce glaze with tomato wedges, black pepper and chili in a small dish; beside a bowl of white rice and a plate of boiled cabbage. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small whole headless fish in red-amber tomato glaze",
+   "tomato wedges and black pepper",
+   "white rice",
+   "boiled cabbage"
+  ],
+  "must_not": [
+   "not canned sardines",
+   "not fried fish",
+   "not fish fillets"
+  ]
+ },
+ {
+  "id": "canh-bi-dao-thit-trung",
+  "name": "Cơm, canh bí đao thịt bằm & trứng chiên",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a Vietnamese home meal of winter melon soup, rice and fried egg",
+  "prompt": "Professional food photography of a Vietnamese home meal of winter melon soup, rice and fried egg. A bowl of clear soup with translucent pale-green winter melon chunks, a little minced pork and scallion; a bowl of white rice; and a golden scallion fried egg on a small plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "clear soup with translucent winter melon chunks",
+   "minced pork and scallion",
+   "bowl of white rice",
+   "golden fried egg"
+  ],
+  "must_not": [
+   "not cream soup",
+   "not cucumber",
+   "no noodles"
+  ]
+ },
+ {
+  "id": "dau-hu-nhoi-thit",
+  "name": "Đậu hũ nhồi thịt sốt cà, cơm, rau muống",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese pork-stuffed tofu in tomato sauce with rice and water spinach",
+  "prompt": "Professional food photography of Vietnamese pork-stuffed tofu in tomato sauce with rice and water spinach. Golden pan-fried tofu pieces, each slit and stuffed with seasoned minced pork, simmered in glossy red tomato sauce with scallion, on a white plate; beside white rice and boiled water spinach. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "golden tofu pieces stuffed with minced pork",
+   "glossy red tomato sauce",
+   "white rice",
+   "boiled water spinach"
+  ],
+  "must_not": [
+   "not lasagna",
+   "not meatballs alone",
+   "not mapo tofu"
+  ]
+ },
+ {
+  "id": "ca-basa-ap-chao-nghe",
+  "name": "Cá basa áp chảo nghệ, cơm, cải ngọt",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "turmeric pan-seared basa fish with rice and choy sum",
+  "prompt": "Professional food photography of turmeric pan-seared basa fish with rice and choy sum. Pieces of basa fillet pan-seared with turmeric to a golden-yellow crust, white flaky flesh inside, on a white plate beside white rice, blanched choy sum and a tiny dish of garlic-chili fish sauce. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "golden-yellow turmeric-seared fish pieces",
+   "white flaky flesh",
+   "white rice",
+   "choy sum"
+  ],
+  "must_not": [
+   "not battered fish and chips",
+   "not salmon",
+   "not curry"
+  ]
+ },
+ {
+  "id": "trung-cut-kho-thit",
+  "name": "Trứng cút kho thịt nạc, cơm, dưa leo",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese caramel-braised quail eggs and lean pork with rice and cucumber",
+  "prompt": "Professional food photography of Vietnamese caramel-braised quail eggs and lean pork with rice and cucumber. Peeled quail eggs and small pieces of lean pork glazed in a glossy amber-brown caramel fish-sauce sauce in a small bowl, beside white rice and cucumber slices. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "peeled quail eggs, amber-glazed",
+   "lean pork pieces",
+   "white rice",
+   "cucumber slices"
+  ],
+  "must_not": [
+   "not chicken eggs",
+   "not fatty pork belly",
+   "not marbled tea eggs"
+  ]
+ },
+ {
+  "id": "mien-ga-nam",
+  "name": "Miến gà nấm (nấu nhanh)",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a bowl of Vietnamese glass noodle soup with chicken and mushrooms (miến gà)",
+  "prompt": "Professional food photography of a bowl of Vietnamese glass noodle soup with chicken and mushrooms (miến gà). A white bowl of translucent greyish glass noodles in clear chicken broth, topped with shredded chicken breast, straw and enoki mushrooms, choy sum, scallion, cilantro and black pepper. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "translucent glass noodles",
+   "clear broth",
+   "shredded chicken and mushrooms",
+   "choy sum, scallion"
+  ],
+  "must_not": [
+   "not ramen",
+   "not opaque white rice noodles",
+   "not stir-fried japchae"
+  ]
+ },
+ {
+  "id": "ca-ro-phi-hap",
+  "name": "Cá rô phi hấp xì dầu, bông cải, khoai lang",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese steamed tilapia with soy sauce, broccoli and sweet potato",
+  "prompt": "Professional food photography of Vietnamese steamed tilapia with soy sauce, broccoli and sweet potato. A small whole tilapia, scored and steamed, opaque white flesh, topped with julienned ginger, scallion and cilantro with light soy sauce pooling on an oval white plate; beside steamed broccoli and boiled sweet potato pieces. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "small whole steamed tilapia, scored",
+   "ginger, scallion, cilantro on top",
+   "light soy sauce pooling",
+   "broccoli and sweet potato"
+  ],
+  "must_not": [
+   "not fried fish",
+   "not salmon",
+   "not raw"
+  ]
+ },
+ {
+  "id": "ngheu-hap-sa-bun",
+  "name": "Nghêu hấp sả, bún & rau thơm",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese clams steamed with lemongrass, with rice vermicelli and herbs",
+  "prompt": "Professional food photography of Vietnamese clams steamed with lemongrass, with rice vermicelli and herbs. A white bowl of small opened hard clams with cream-brown shells, steamed with bruised lemongrass stalks, lime leaves, ginger and chili in a little clear broth; beside a small plate of rice vermicelli, fresh herbs and cucumber. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "opened small clams with cream-brown shells",
+   "lemongrass stalks and lime leaves",
+   "rice vermicelli, herbs, cucumber"
+  ],
+  "must_not": [
+   "not mussels",
+   "not pasta vongole",
+   "no cream sauce"
+  ]
+ },
+ {
+  "id": "bo-luc-lac-salad",
+  "name": "Bò lúc lắc nồi chiên, salad xà lách, cơm lứt",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese air-fried shaking beef (bò lúc lắc) with salad and brown rice",
+  "prompt": "Professional food photography of Vietnamese air-fried shaking beef (bò lúc lắc) with salad and brown rice. Cubes of lean beef seared dark-brown outside, juicy and slightly pink in the center, with softened onion wedges, served over lettuce and tomato slices; beside a small bowl of brown rice and a tiny dish of salt-pepper-lime dip. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "seared beef cubes",
+   "onion wedges",
+   "lettuce and tomato bed",
+   "brown rice"
+  ],
+  "must_not": [
+   "not beef stew",
+   "not meatballs",
+   "no noodles",
+   "not oily"
+  ]
+ },
+ {
+  "id": "ga-kho-gung",
+  "name": "Gà kho gừng (bỏ da), cơm, bí đao luộc",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese ginger-braised chicken with rice and boiled winter melon",
+  "prompt": "Professional food photography of Vietnamese ginger-braised chicken with rice and boiled winter melon. Bite-size skinless chicken pieces in a glossy caramel-brown sauce with lots of julienned ginger and black pepper in a small bowl; beside white rice and boiled pale-green winter melon chunks. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "skinless chicken pieces in caramel-brown glaze",
+   "julienned ginger",
+   "white rice",
+   "boiled winter melon"
+  ],
+  "must_not": [
+   "no chicken skin",
+   "not curry",
+   "not fried chicken"
+  ]
+ },
+ {
+  "id": "canh-chua-ca-basa",
+  "name": "Canh chua cá basa, cơm lứt",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese sour soup with basa fish (canh chua) and brown rice",
+  "prompt": "Professional food photography of Vietnamese sour soup with basa fish (canh chua) and brown rice. A bowl of light reddish-orange tamarind broth with basa fish steaks, pineapple chunks, tomato wedges, sliced okra and bean sprouts, topped with rice paddy herb, sawtooth coriander and chili; beside a bowl of brown rice. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "reddish-orange clear sour broth",
+   "fish steaks",
+   "pineapple, tomato, okra, bean sprouts",
+   "brown rice"
+  ],
+  "must_not": [
+   "no coconut milk (not Thai tom yum)",
+   "not creamy",
+   "no shrimp"
+  ]
+ },
+ {
+  "id": "kho-qua-nhoi-thit",
+  "name": "Canh khổ qua nhồi thịt, cơm",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese bitter melon stuffed with pork soup (canh khổ qua) with rice",
+  "prompt": "Professional food photography of Vietnamese bitter melon stuffed with pork soup (canh khổ qua) with rice. A bowl of clear broth with several 4 cm cylinders of pale-green bumpy bitter melon, hollowed and stuffed with minced pork and wood-ear filling, scallion and cilantro; beside a bowl of white rice. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "clear broth",
+   "pale-green bitter melon cylinders stuffed with pork",
+   "scallion, cilantro",
+   "bowl of white rice"
+  ],
+  "must_not": [
+   "not cucumber",
+   "not dark spiky Indian bitter gourd",
+   "not black bean stir-fry"
+  ]
+ },
+ {
+  "id": "trai-cay-banh-gao",
+  "name": "Táo, chuối & bánh gạo lứt",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "an apple, a banana and brown rice cakes",
+  "prompt": "Professional food photography of an apple, a banana and brown rice cakes. A red apple cut into wedges with skin, one peeled ripe banana, and two round puffed brown rice cakes, arranged on a white plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "red apple wedges with skin",
+   "peeled banana",
+   "two round rice cakes"
+  ],
+  "must_not": [
+   "no spreads or chocolate",
+   "no other fruit"
+  ]
+ },
+ {
+  "id": "bap-luoc-du-du",
+  "name": "Bắp luộc & đu đủ chín",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese boiled corn with ripe papaya",
+  "prompt": "Professional food photography of Vietnamese boiled corn with ripe papaya. A boiled yellow corn cob with a few pale husk leaves peeled back, beside wedges of ripe deep-orange papaya without seeds, on a white plate. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "boiled yellow corn cob",
+   "pale husk leaves peeled back",
+   "ripe deep-orange papaya wedges"
+  ],
+  "must_not": [
+   "no butter",
+   "not grilled corn",
+   "not mango or cantaloupe"
+  ]
+ },
+ {
+  "id": "khoai-mon-hap-thanh-long",
+  "name": "Khoai môn hấp & thanh long",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "steamed taro with dragon fruit",
+  "prompt": "Professional food photography of steamed taro with dragon fruit. Peeled steamed taro chunks with fluffy cream flesh flecked with tiny purple specks, beside half a dragon fruit with pink skin and white black-seeded flesh plus a few cubes. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "steamed taro with purple-flecked cream flesh",
+   "half dragon fruit, white flesh",
+   "dragon fruit cubes"
+  ],
+  "must_not": [
+   "not potato",
+   "not bright purple ube",
+   "not red-fleshed dragon fruit"
+  ]
+ },
+ {
+  "id": "xoi-bap-me",
+  "name": "Xôi bắp rắc mè (ít đường)",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese sticky rice with corn and sesame (xôi bắp)",
+  "prompt": "Professional food photography of Vietnamese sticky rice with corn and sesame (xôi bắp). A mound of glossy white sticky rice mixed with yellow corn kernels, sprinkled with toasted white sesame seeds and a little scallion oil, on an open green banana leaf. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "glossy sticky rice with yellow corn kernels",
+   "toasted sesame seeds",
+   "banana leaf"
+  ],
+  "must_not": [
+   "not fried rice",
+   "not corn salad",
+   "no coconut cream or sugar crystals",
+   "no meat"
+  ]
+ },
+ {
+  "id": "chao-khoai-lang",
+  "name": "Cháo trắng nấu khoai lang, rắc mè",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "a bowl of Vietnamese rice porridge with sweet potato and sesame",
+  "prompt": "Professional food photography of a bowl of Vietnamese rice porridge with sweet potato and sesame. A white bowl of plain white rice porridge with diced golden-orange sweet potato cubes, sprinkled with toasted sesame seeds. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "white rice porridge",
+   "diced golden sweet potato",
+   "toasted sesame seeds"
+  ],
+  "must_not": [
+   "no meat",
+   "not pureed orange soup",
+   "not oatmeal"
+  ]
+ },
+ {
+  "id": "banh-mi-bo-ca-chua",
+  "name": "Bánh mì bơ dầm & cà chua",
+  "kind": "recipe",
+  "reason": "missing",
+  "subject": "Vietnamese baguette with smashed avocado and tomato",
+  "prompt": "Professional food photography of Vietnamese baguette with smashed avocado and tomato. A short Vietnamese baguette sliced open lengthwise into two halves, each spread with green smashed avocado and topped with tomato slices and cracked black pepper. Single serving, centered, three-quarter overhead view at about 45 degrees, the dish fills about 80% of the frame, isolated on a plain pure white background, soft diffused natural daylight, gentle soft shadow, realistic textures, appetizing, high detail. No text, no labels, no logos, no brand packaging, no hands, no people, no watermark.",
+  "must_have": [
+   "two baguette halves, open-faced",
+   "green smashed avocado",
+   "tomato slices, black pepper"
+  ],
+  "must_not": [
+   "no egg",
+   "no bacon or meat",
+   "no cheese"
+  ]
+ }
+]
