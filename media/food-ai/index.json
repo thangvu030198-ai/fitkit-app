@@ -1,0 +1,29 @@
+{
+ "goi-cuon": {
+  "file": "goi-cuon.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "c9133b6e0c64",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Gỏi cuốn tôm thịt"
+ },
+ "ca-ngu-com": {
+  "file": "ca-ngu-com.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "b79c2a93d0d0",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Cơm cá ngừ hộp sốt cà (rẻ)"
+ },
+ "dau-hu-trung-hap": {
+  "file": "dau-hu-trung-hap.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "d23a46492ba0",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Trứng hấp đậu hũ, cơm, rau luộc"
+ }
+}

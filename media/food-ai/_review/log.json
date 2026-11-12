@@ -1,0 +1,28 @@
+{
+ "model": "gpt-image-2.5",
+ "base": "https://apivn.vn/v1",
+ "started": "2026-11-12T00:08:55.812512Z",
+ "items": {
+  "goi-cuon": {
+   "ok": true,
+   "via": "images",
+   "sec": 72.5
+  },
+  "ca-ngu-com": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.9
+  },
+  "dau-hu-trung-hap": {
+   "ok": true,
+   "via": "images",
+   "sec": 29.6
+  }
+ },
+ "finished": "2026-11-12T00:10:37.866071Z",
+ "ok": 3,
+ "fail": 0,
+ "sheets": [
+  "contact-01.jpg"
+ ]
+}
