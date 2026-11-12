@@ -265,7 +265,7 @@ html.lowfx[data-theme] .nav-item.active .material-symbols-rounded{ box-shadow:no
 /* 12/11 — Màn chào: chỉ 1 nút tạm dừng; vệt sáng trang trí không cắt ngang chữ; nền đen trắng thuần (bỏ quầng cam/teal). */
 .wl-hero .fk-vid-toggle{ display:none !important; }
 .wl-speed{ z-index:0; }
-.wl-hero-body, .wl-nav{ position:relative; z-index:2; }
+.wl-hero-body{ position:relative; z-index:2; } .wl-nav{ z-index:3; }
 .wl-speed i:nth-child(2), .wl-speed i:nth-child(3), .wl-speed i:nth-child(5){ display:none; }
 .wl-speed i:nth-child(1){ top:9%; } .wl-speed i:nth-child(4){ top:93%; }
 html[data-theme] .wl-speed i, .wl-speed i{ background:linear-gradient(90deg, transparent, rgba(255,255,255,.55)) !important; }
