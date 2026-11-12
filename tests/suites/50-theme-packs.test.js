@@ -13,6 +13,9 @@ const { scriptOrder, APP_DIR } = require("../lib/harness");
 
 const read = f=> fs.readFileSync(path.join(APP_DIR, f), "utf8");
 const PACKS = ["aurora", "espresso", "alpine", "wellness", "sanctuary"];
+/* (12/11, vòng accent) +4 gói học từ ảnh mẫu chủ app — kiểm chi tiết ở tests/suites/72-theme-accent.test.js */
+const NEW_PACKS = ["ember", "volt", "violet", "lime"];
+const LIGHT_PACKS = ["alpine", "ember", "lime"];
 const CLASSIC = ["navy", "ocean", "sunset", "forest", "midnight", "light"];
 
 /* ---------- màu & tương phản WCAG 2.x ---------- */
@@ -66,7 +69,9 @@ module.exports = {
       const o = scriptOrder(), at = f=> o.indexOf(f);
       assert.ok(at("admin.js") < at("theme-packs.js") && at("theme-packs.js") < at("ui-signature.js"), "theme-packs.js → ui-signature.js sau admin.js");
       // (12/11) morph-icons.js (icon biến hình, docs/MORPH-ICONS.md) được phép nằm giữa — yêu cầu "ngay trước health-safety.js"
-      assert.equal(at("ui-signature.js"), at("health-safety.js") - 1 - (at("morph-icons.js") === at("health-safety.js") - 1 ? 1 : 0), "ui-signature.js ngay trước health-safety.js (chỉ morph-icons.js được xen giữa)");
+      // (12/11) press-feel.js (cảm giác bấm, docs/PRESS-FEEL.md) nằm ngay trước morph-icons.js — cũng được xen giữa
+      const between = o.slice(at("ui-signature.js") + 1, at("health-safety.js"));
+      assert.ok(at("ui-signature.js") >= 0 && between.every(f=> f === "morph-icons.js" || f === "press-feel.js"), "ui-signature.js ngay trước health-safety.js (chỉ press-feel.js / morph-icons.js được xen giữa): " + between.join(", "));
       assert.equal(o[o.length - 1], "health-safety.js");
       assert.ok(at("themes.js") < at("icons.js"), "themes.js vẫn trong <head>");
       const sw = read("sw.js"), www = read("scripts/prepare-www.sh");
@@ -81,26 +86,26 @@ module.exports = {
       const list = app.evj("fkTheme.list.map(x=> ({ id:x.id, name:x.name, pack:!!x.pack, pv:!!x.pv, fonts:x.fonts || [], mode:x.mode || 'dark' }))");
       assert.deepEqual(list.filter(x=> !x.pack).map(x=> x.id), ["auto", ...CLASSIC]);
       assert.deepEqual(list.filter(x=> !x.pack).map(x=> x.name), ["Tự động","Mặc định","Đại dương","Hoàng hôn","Rừng","Tím đêm","Sáng"]);
-      assert.deepEqual(list.filter(x=> x.pack).map(x=> x.id), PACKS);
-      assert.deepEqual(list.filter(x=> x.pack).map(x=> x.name), ["Aurora","Espresso","Thu Alpine","Sương Wellness","Sanctuary"]);
+      assert.deepEqual(list.filter(x=> x.pack).map(x=> x.id), [...PACKS, ...NEW_PACKS]);
+      assert.deepEqual(list.filter(x=> x.pack).map(x=> x.name), ["Aurora","Espresso","Thu Alpine","Sương Wellness","Sanctuary","Cam năng lượng","Volt","Tím Đêm Pro","Chanh sáng"]);
       assert.ok(list.filter(x=> x.pack).every(x=> x.pv && x.fonts.length), "gói thiếu pv / fonts");
-      assert.equal(list.find(x=> x.id === "alpine").mode, "light", "Thu Alpine là gói SÁNG");
+      for(const id of LIGHT_PACKS) assert.equal(list.find(x=> x.id === id).mode, "light", id + " là gói SÁNG");
       const fams = [...new Set(list.flatMap(x=> x.fonts).map(f=> f.split(":")[0].replace(/\+/g, " ")))].sort();
       assert.deepEqual(fams, ["Inter", "Inter Tight", "JetBrains Mono", "Manrope"], "chỉ font Google miễn phí (OFL)");
       assert.match(TJS, /const GF = "https:\/\/fonts\.googleapis\.com\/css2\?"/);
       app.run("fkTheme.set('navy')");
       const card = app.lastHtml("fk-theme-card");
-      assert.equal((card.match(/data-fk-theme="/g) || []).length, 12, "12 lựa chọn (Tự động + 6 + 5)");
-      assert.equal((card.match(/class="fk-pack-pv"/g) || []).length, 5, "5 ảnh xem trước");
+      assert.equal((card.match(/data-fk-theme="/g) || []).length, 16, "16 lựa chọn (Tự động + 6 + 9 gói)");
+      assert.equal((card.match(/class="fk-pack-pv"/g) || []).length, 9, "9 ảnh xem trước");
       assert.match(card, /role="radiogroup"/); assert.match(card, /Gói giao diện/);
     });
 
     t.test("Áp gói: data-theme/data-pack, class tp-pack, fk-light cho Thu Alpine, lưu state.theme; về Mặc định gỡ tp-pack", ()=>{
-      for(const id of PACKS){
+      for(const id of [...PACKS, ...NEW_PACKS]){
         app.run(`fkTheme.set(${JSON.stringify(id)})`);
         const r = app.evj(`({ th:document.documentElement.getAttribute("data-theme"), pk:document.documentElement.getAttribute("data-pack"),
           tp:document.documentElement.classList.contains("tp-pack"), lt:document.documentElement.classList.contains("fk-light"), st:state.theme })`);
-        assert.deepEqual(r, { th:id, pk:id, tp:true, lt:id === "alpine", st:id }, id);
+        assert.deepEqual(r, { th:id, pk:id, tp:true, lt:LIGHT_PACKS.includes(id), st:id }, id);
       }
       app.run("fkTheme.set('navy')");
       assert.equal(app.ev("document.documentElement.classList.contains('tp-pack')"), false);
@@ -304,7 +309,7 @@ module.exports = {
     });
 
     t.test("Lớp màu module đã sinh lại cho MỌI CSS module (gen_themes_layer.py --modules)", ()=>{
-      const SKIP = ["style.css","themes.css","themes-modules.css","ui-kit.css","brand.css","theme-packs.css","ui-signature.css"];
+      const SKIP = ["style.css","themes.css","themes-modules.css","ui-kit.css","brand.css","theme-packs.css","ui-signature.css","theme-accent.css"];   // theme-accent.css: chỉ dùng token (vòng accent)
       const mods = fs.readdirSync(APP_DIR).filter(f=> f.endsWith(".css") && !SKIP.includes(f)).sort();
       const tm = read("themes-modules.css");
       const src = (tm.match(/Nguồn: ([^—]+) —/) || [])[1] || "";

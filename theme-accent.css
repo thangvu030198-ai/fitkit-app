@@ -1,0 +1,263 @@
+/* =========================================================================
+   TapEasy — HỆ TOKEN ACCENT THEO THEME (theme-accent.css) · đi kèm theme-accent.js · docs/THEME-PACKS.md §8
+   -------------------------------------------------------------------------
+   Vấn đề: nút chính, chip đang chọn, tab đang chọn, vòng tiến độ, link "Xem tất cả", toggle, tick hiệp, badge,
+   logo… mỗi nơi tự lấy --mint / --coral / màu cứng (#5EE6C7, #FF7A45, #02BCB3) → đổi theme có chỗ không đổi theo.
+   Cách làm: MỌI theme (6 cũ + 9 gói) khai báo cùng một bộ token ngữ nghĩa, rồi các thành phần chỉ đọc token:
+     --accent / --accent-2 / --accent-rgb   màu nhấn (chip đang chọn, tab dưới, vòng tiến độ, toggle, tick, slider)
+     --on-accent                             chữ/icon đặt TRÊN nền accent (≥ 4,5:1)
+     --accent-soft / --accent-glow           nền nhạt (badge, hàng đã xong) / quầng sáng
+     --cta-bg (có thể là gradient) / --cta-solid / --cta-fg / --cta-shadow   nút chính (kể cả coral cũ) — chữ ≥ 4,5:1
+     --link                                  chữ nhấn / link trên nền theme (≥ 4,5:1 với nền + thẻ)
+     --logo-mark / --logo-text               "Easy" + biểu tượng / chữ "Tap" (SVG nội tuyến do theme-accent.js chèn)
+     --gauge-a / --gauge-b · --ring-1/2/3    gauge nửa vòng · 3 màu chỉ số (Tím Đêm Pro: tím/vàng/xanh)
+   Nạp: SAU theme-packs.css / ui-signature.css, TRƯỚC press-feel.css → brand.css → themes-modules.css (2 file luôn cuối).
+   Thắng nhờ độ ưu tiên: token ở :root[data-theme=…] (0,2,0); thành phần ở html[data-theme] … (≥ 0,2,1) — bằng luật
+   của gói nhưng nạp sau; cao hơn :where(html.fk-themed) của lớp sinh tự động và :root của brand.css.
+   Đổi theme = đổi data-theme → mọi thứ đổi TỨC THÌ (chỉ biến CSS, không tải lại).
+   Cấu trúc: 1. token 15 theme  2. "đảo tối" của theme sáng + sheet kem Sanctuary  3. token dẫn xuất
+             4. thành phần  5. logo SVG nội tuyến  6. màn chào (CTA + chữ display tiếng Việt)  7. máy yếu / giảm chuyển động
+   ========================================================================= */
+
+/* ---------- 1. Token accent của từng theme ---------- */
+:root, :root[data-theme="navy"]{
+  --accent:#33D6C9; --accent-2:#A3F0E8; --accent-rgb:51,214,201; --on-accent:#061A24;            /* 9,8:1 */
+  --cta-bg:#FF7A45; --cta-solid:#FF7A45; --cta-rgb:255,122,69; --cta-fg:#061A24;                  /* 6,9:1 — coral thương hiệu giữ làm CTA */
+  --cta-shadow:0 8px 22px rgba(255,122,69,.26);
+  --link:#A3F0E8; --logo-mark:#02BCB3; --logo-text:#F5F7F3;
+  --gauge-a:#A3F0E8; --gauge-b:#33D6C9; --ring-1:#33D6C9; --ring-2:#FF7A45; --ring-3:#A3F0E8;
+}
+:root[data-theme="ocean"]{
+  --accent:#4CC9F0; --accent-2:#A6E6FA; --accent-rgb:76,201,240; --on-accent:#03142B;
+  --cta-bg:#FFB547; --cta-solid:#FFB547; --cta-rgb:255,181,71; --cta-fg:#2A1600; --cta-shadow:0 8px 22px rgba(255,181,71,.24);
+  --link:#A6E6FA; --logo-mark:#4CC9F0; --logo-text:#F5F7F3;
+  --gauge-a:#A6E6FA; --gauge-b:#4CC9F0; --ring-1:#4CC9F0; --ring-2:#FFB547; --ring-3:#A6E6FA;
+}
+:root[data-theme="sunset"]{
+  --accent:#FFC46B; --accent-2:#FFE0AE; --accent-rgb:255,196,107; --on-accent:#1A0C1C;
+  --cta-bg:#FF5C8A; --cta-solid:#FF5C8A; --cta-rgb:255,92,138; --cta-fg:#1A0C1C; --cta-shadow:0 8px 22px rgba(255,92,138,.28);
+  --link:#FFE0AE; --logo-mark:#FFC46B; --logo-text:#F5F7F3;
+  --gauge-a:#FFE0AE; --gauge-b:#FFC46B; --ring-1:#FFC46B; --ring-2:#FF5C8A; --ring-3:#FFE0AE;
+}
+:root[data-theme="forest"]{
+  --accent:#8BE07A; --accent-2:#C4F2B8; --accent-rgb:139,224,122; --on-accent:#071A12;
+  --cta-bg:#FF6B6B; --cta-solid:#FF6B6B; --cta-rgb:255,107,107; --cta-fg:#1F0707; --cta-shadow:0 8px 22px rgba(255,107,107,.26);
+  --link:#C4F2B8; --logo-mark:#8BE07A; --logo-text:#F5F7F3;
+  --gauge-a:#C4F2B8; --gauge-b:#8BE07A; --ring-1:#8BE07A; --ring-2:#FF6B6B; --ring-3:#C4F2B8;
+}
+:root[data-theme="midnight"]{
+  --accent:#B49CFF; --accent-2:#DCD0FF; --accent-rgb:180,156,255; --on-accent:#0E0A26;
+  --cta-bg:#4FE3D6; --cta-solid:#4FE3D6; --cta-rgb:79,227,214; --cta-fg:#0E0A26; --cta-shadow:0 8px 22px rgba(79,227,214,.24);
+  --link:#DCD0FF; --logo-mark:#B49CFF; --logo-text:#F5F7F3;
+  --gauge-a:#DCD0FF; --gauge-b:#B49CFF; --ring-1:#B49CFF; --ring-2:#4FE3D6; --ring-3:#DCD0FF;
+}
+:root[data-theme="light"]{
+  --accent:#00756F; --accent-2:#02958D; --accent-rgb:0,117,111; --on-accent:#FFFFFF;                /* 5,6:1 */
+  --cta-bg:#B83D0B; --cta-solid:#B83D0B; --cta-rgb:184,61,11; --cta-fg:#FFFFFF; --cta-shadow:0 6px 18px rgba(184,61,11,.20);
+  --link:#00756F; --logo-mark:#00756F; --logo-text:#242D33;
+  --gauge-a:#02958D; --gauge-b:#00756F; --ring-1:#00756F; --ring-2:#B83D0B; --ring-3:#02958D;
+}
+:root[data-theme="aurora"]{
+  --accent:#C8F25A; --accent-2:#E2F9A8; --accent-rgb:200,242,90; --on-accent:#0A0A0A;
+  --cta-bg:#FFFFFF; --cta-solid:#FFFFFF; --cta-rgb:255,255,255; --cta-fg:#000000; --cta-shadow:none;
+  --link:#E2F9A8; --logo-mark:#C8F25A; --logo-text:#FFFFFF;
+  --gauge-a:#E2F9A8; --gauge-b:#C8F25A; --ring-1:#C8F25A; --ring-2:#FFFFFF; --ring-3:#E2F9A8;
+}
+:root[data-theme="espresso"]{
+  --accent:#F2BC85; --accent-2:#F8D9B6; --accent-rgb:242,188,133; --on-accent:#180A06;
+  --cta-bg:linear-gradient(180deg, #FFA36C 0%, #F27A3B 100%); --cta-solid:#FF9A5C; --cta-rgb:255,154,92; --cta-fg:#1A0A04;
+  --cta-shadow:inset 0 1px 0 rgba(255,255,255,.45), inset 0 -2px 6px rgba(120,40,10,.25), 0 10px 28px rgba(240,122,58,.28);
+  --link:#F8D9B6; --logo-mark:#FF9A5C; --logo-text:#EDE4D8;
+  --gauge-a:#FFC6A3; --gauge-b:#FF8C4E; --ring-1:#F2BC85; --ring-2:#FF9A5C; --ring-3:#F8D9B6;
+}
+:root[data-theme="alpine"]{
+  --accent:#5A49CF; --accent-2:#7C6CF2; --accent-rgb:90,73,207; --on-accent:#FFFFFF;
+  --cta-bg:linear-gradient(180deg, #FBD06A, #F6B733); --cta-solid:#F6B733; --cta-rgb:246,183,51; --cta-fg:#2E2D2A; --cta-shadow:none;
+  --link:#5A49CF; --logo-mark:#A9520A; --logo-text:#2E2D2A;
+  --gauge-a:#FBD06A; --gauge-b:#F59E0B; --ring-1:#5A49CF; --ring-2:#F6B733; --ring-3:#F59E0B;
+}
+:root[data-theme="wellness"]{
+  --accent:#F6D873; --accent-2:#FBE8AE; --accent-rgb:246,216,115; --on-accent:#26313C;
+  --cta-bg:#F6F3EC; --cta-solid:#F6F3EC; --cta-rgb:246,243,236; --cta-fg:#26313C; --cta-shadow:0 8px 24px rgba(20,28,36,.25);
+  --link:#FBE8AE; --logo-mark:#F6D873; --logo-text:#FFFFFF;
+  --gauge-a:#FBE8AE; --gauge-b:#F6D873; --ring-1:#F6D873; --ring-2:#F6F3EC; --ring-3:#FBE8AE;
+}
+:root[data-theme="sanctuary"]{
+  --accent:#F1E5C6; --accent-2:#F8F0DC; --accent-rgb:241,229,198; --on-accent:#1D191A;
+  --cta-bg:#F1E5C6; --cta-solid:#F1E5C6; --cta-rgb:241,229,198; --cta-fg:#1D191A; --cta-shadow:none;
+  --link:#F8F0DC; --logo-mark:#F4BC9C; --logo-text:#F5F0E8;
+  --gauge-a:#F8F0DC; --gauge-b:#D9C79B; --ring-1:#F1E5C6; --ring-2:#F4BC9C; --ring-3:#D9C79B;
+}
+/* 4 gói mới (học phong cách từ 4 ảnh mẫu chủ app gửi — xem theme-packs.css §1f–1i, §9–12) */
+:root[data-theme="ember"]{                                       /* Cam năng lượng — nền sáng */
+  --accent:#FF6A2B; --accent-2:#FF8A3D; --accent-rgb:255,106,43; --on-accent:#1B0F0A;               /* 6,6:1 */
+  --cta-bg:linear-gradient(135deg, #FF6A2B 0%, #FF8A3D 100%); --cta-solid:#FF7433; --cta-rgb:255,116,51; --cta-fg:#1B0F0A;
+  --cta-shadow:0 10px 24px rgba(255,106,43,.32), 0 2px 6px rgba(255,106,43,.18);
+  --link:#C2410C; --logo-mark:#E8501A; --logo-text:#1B1B1F;                                         /* link 5,2:1 trắng · 4,7:1 nền */
+  --gauge-a:#FFB07A; --gauge-b:#FF6A2B; --ring-1:#FF6A2B; --ring-2:#FF8A3D; --ring-3:#FFC9A6;
+}
+:root[data-theme="volt"]{                                        /* Volt — đen + chanh */
+  --accent:#D4FF3A; --accent-2:#E6FF8A; --accent-rgb:212,255,58; --on-accent:#0B0B0C;               /* 17:1 */
+  --cta-bg:#D4FF3A; --cta-solid:#D4FF3A; --cta-rgb:212,255,58; --cta-fg:#0B0B0C; --cta-shadow:0 10px 28px rgba(212,255,58,.18);
+  --link:#D4FF3A; --logo-mark:#D4FF3A; --logo-text:#FFFFFF;
+  --gauge-a:#E6FF8A; --gauge-b:#D4FF3A; --ring-1:#D4FF3A; --ring-2:#FFFFFF; --ring-3:#9DB82A;
+}
+:root[data-theme="violet"]{                                      /* Tím Đêm Pro — tím + chỉ số nhiều màu */
+  --accent:#7254FA; --accent-2:#7C5CFF; --accent-rgb:114,84,250; --on-accent:#FFFFFF;               /* 4,8:1 (#7C5CFF của mẫu chỉ 4,35:1 với chữ trắng → dùng làm accent-2/gradient) */
+  --cta-bg:#6C4CF5; --cta-solid:#6C4CF5; --cta-rgb:108,76,245; --cta-fg:#FFFFFF; --cta-shadow:0 10px 28px rgba(108,76,245,.40);  /* 5,3:1 */
+  --link:#A893FF; --logo-mark:#8E72FF; --logo-text:#FFFFFF;                                         /* link 6,4:1 trên thẻ #1F2029 */
+  --gauge-a:#A893FF; --gauge-b:#7C5CFF; --ring-1:#7C5CFF; --ring-2:#FFC83D; --ring-3:#3DD6F5;
+}
+:root[data-theme="lime"]{                                        /* Chanh sáng — nền trắng, chip chanh chữ đen */
+  --accent:#DFFF4F; --accent-2:#ECFF94; --accent-rgb:223,255,79; --on-accent:#0B0B0C;               /* 17:1 */
+  --cta-bg:#DFFF4F; --cta-solid:#DFFF4F; --cta-rgb:223,255,79; --cta-fg:#0B0B0C;
+  --cta-shadow:inset 0 0 0 1px rgba(11,11,12,.10), 0 8px 20px rgba(120,150,0,.20);
+  --link:#4D6600; --logo-mark:#4D6600; --logo-text:#0B0B0C;                                         /* 6,5:1 trắng */
+  --gauge-a:#ECFF94; --gauge-b:#B8E000; --ring-1:#0B0B0C; --ring-2:#B8E000; --ring-3:#7A8A99;
+}
+
+/* ---------- 2. "Đảo tối" của theme SÁNG (phần tử nằm trên ảnh/video, màn chào) + sheet kem Sanctuary ---------- */
+html.fk-light :is(.hero, #screen-workout > .topbar.transparent, .mg-card, .wl, #auth.wl-mode, .auth-hero,
+  #screen-ptprofile, .vplayer, .clip-thumb, .vthumb, .vp-item, .ld-media, .fk-dark-island){
+  --accent:#33D6C9; --accent-2:#A3F0E8; --accent-rgb:51,214,201; --on-accent:#061A24;
+  --cta-bg:#FF7A45; --cta-solid:#FF7A45; --cta-rgb:255,122,69; --cta-fg:#061A24; --cta-shadow:0 8px 22px rgba(255,122,69,.26);
+  --link:#A3F0E8; --logo-mark:#02BCB3; --logo-text:#F5F7F3;
+}
+html.fk-light[data-theme="alpine"] :is(.hero, #screen-workout > .topbar.transparent, .mg-card, .wl, #auth.wl-mode, .auth-hero,
+  #screen-ptprofile, .vplayer, .clip-thumb, .vthumb, .vp-item, .ld-media, .fk-dark-island){
+  --accent:#FBD06A; --accent-2:#FDE3A0; --accent-rgb:251,208,106; --on-accent:#2E2D2A;
+  --cta-bg:linear-gradient(180deg, #FBD06A, #F6B733); --cta-solid:#F6B733; --cta-rgb:246,183,51; --cta-fg:#2E2D2A; --cta-shadow:none;
+  --link:#FDE3A0; --logo-mark:#FBD06A; --logo-text:#F5F7F3;
+}
+html.fk-light[data-theme="ember"] :is(.hero, #screen-workout > .topbar.transparent, .mg-card, .wl, #auth.wl-mode, .auth-hero,
+  #screen-ptprofile, .vplayer, .clip-thumb, .vthumb, .vp-item, .ld-media, .fk-dark-island){
+  --accent:#FF8A3D; --accent-2:#FFB38A; --accent-rgb:255,138,61; --on-accent:#1B0F0A;
+  --cta-bg:linear-gradient(135deg, #FF6A2B 0%, #FF8A3D 100%); --cta-solid:#FF7433; --cta-rgb:255,116,51; --cta-fg:#1B0F0A;
+  --cta-shadow:0 10px 24px rgba(255,106,43,.36);
+  --link:#FFB38A; --logo-mark:#FF8A3D; --logo-text:#FFFFFF;
+}
+html.fk-light[data-theme="lime"] :is(.hero, #screen-workout > .topbar.transparent, .mg-card, .wl, #auth.wl-mode, .auth-hero,
+  #screen-ptprofile, .vplayer, .clip-thumb, .vthumb, .vp-item, .ld-media, .fk-dark-island){
+  --accent:#DFFF4F; --accent-2:#ECFF94; --accent-rgb:223,255,79; --on-accent:#0B0B0C;
+  --cta-bg:#DFFF4F; --cta-solid:#DFFF4F; --cta-rgb:223,255,79; --cta-fg:#0B0B0C; --cta-shadow:none;
+  --link:#DFFF4F; --logo-mark:#DFFF4F; --logo-text:#FFFFFF;
+}
+/* Sanctuary: sheet = thẻ kem sáng → token kiểu nền sáng (khớp theme-packs.css §7) */
+html[data-theme="sanctuary"] .sheet{
+  --accent:#7A5B1F; --accent-2:#9C7A35; --accent-rgb:122,91,31; --on-accent:#FFFFFF;
+  --cta-bg:#1D191A; --cta-solid:#1D191A; --cta-rgb:29,25,26; --cta-fg:#F5F0E8; --cta-shadow:none;
+  --link:#7A5B1F; --logo-mark:#A4512B; --logo-text:#1D191A;
+}
+
+/* ---------- 3. Token dẫn xuất (khai báo cả ở đảo tối để tính lại theo accent cục bộ) ---------- */
+:root, html.fk-light :is(.hero, #screen-workout > .topbar.transparent, .mg-card, .wl, #auth.wl-mode, .auth-hero,
+  #screen-ptprofile, .vplayer, .clip-thumb, .vthumb, .vp-item, .ld-media, .fk-dark-island), html[data-theme="sanctuary"] .sheet{
+  --accent-soft:rgba(var(--accent-rgb), .16);
+  --accent-line:rgba(var(--accent-rgb), .42);
+  --accent-glow:rgba(var(--accent-rgb), .45);
+  --pf-busy-c:var(--accent);
+}
+
+/* ---------- 4. Thành phần dùng token ---------- */
+html[data-theme]{ accent-color:var(--accent); }                       /* checkbox, radio, slider gốc */
+html[data-theme] input[type="range"]{ accent-color:var(--accent); }
+
+/* 4a. Nút chính / CTA (kể cả coral cũ) */
+html[data-theme] .btn-primary{ background:var(--cta-bg) !important; color:var(--cta-fg) !important; }
+html[data-theme] .btn-primary:not(.is-pressed){ box-shadow:var(--cta-shadow) !important; }
+html[data-theme] .btn-primary :is(.material-symbols-rounded, svg){ color:var(--cta-fg); }
+html[data-theme] :is(.nu-mini, i.cnt, .nav-dot){ background-color:var(--cta-solid); color:var(--cta-fg); }
+html[data-theme] .nu-add .material-symbols-rounded{ background:var(--cta-solid); color:var(--cta-fg); }
+html[data-theme] .btn-soft{ background:var(--accent-soft) !important; color:var(--link) !important; }
+html[data-theme] .btn-primary .pf-rpl > i{ --pf-ripple:var(--cta-fg); }   /* gợn sóng press-feel trên nút chính */
+
+/* 4b. Chip / pill / segment / thẻ chọn đang chọn */
+html[data-theme] :is(.pill.active, .pill.hot, .seg button.active, .choice-card.selected, .pb-opt.on,
+  .fk-seg button[aria-checked="true"], .nu-pick button.on, .nu-plan-days button.on){
+  background:var(--accent) !important; color:var(--on-accent) !important; border-color:var(--accent) !important; }
+html[data-theme] :is(.choice-card.selected, .pb-opt.on, .pill.active, .pill.hot) :is(small, .material-symbols-rounded, b, span){ color:var(--on-accent) !important; }
+html[data-theme] .seg button.active i.cnt{ background:var(--on-accent); color:var(--accent); }
+html[data-theme] .fk-theme-opt[aria-checked="true"]{ border-color:var(--accent); background:var(--accent-soft); }
+html[data-theme] .fk-theme-opt .fk-theme-check{ background:var(--accent); color:var(--on-accent); }
+html[data-theme] .fk-pack-h .material-symbols-rounded{ color:var(--link); }
+
+/* 4c. Thanh điều hướng dưới: tab đang chọn */
+html[data-theme] .nav-item.active{ color:var(--text, var(--fk-ink)); }
+html[data-theme] .nav-item.active .material-symbols-rounded{ background:var(--accent); color:var(--on-accent); box-shadow:0 4px 14px var(--accent-soft); }
+html[data-theme] .day-tab.active::after{ background:var(--accent); }
+
+/* 4d. Tiến độ: thanh, onboarding, stepper, gauge, vòng */
+html[data-theme] .progress-fill{ background:linear-gradient(90deg, var(--accent-2), var(--accent)); }
+html[data-theme] .onboard-progress div.done{ background:var(--accent); }
+html[data-theme] .sig-stepper{ --sig-step-on-bg:var(--accent); --sig-step-on-ink:var(--on-accent); }
+html[data-theme] .sig-gauge .s1{ stop-color:var(--gauge-a); }
+html[data-theme] .sig-gauge .s2{ stop-color:var(--gauge-b); }
+html[data-theme] .sig-gauge .dot{ stroke:var(--gauge-b); }
+html[data-theme] .sig-gauge-c em{ color:var(--link); }
+html[data-theme] [stroke="#5EE6C7" i]{ stroke:var(--accent); }        /* ringSVG / biểu đồ: màu dữ liệu */
+html[data-theme] [stroke="#FF7A45" i]{ stroke:var(--ring-2); }
+html[data-theme] [fill="#5EE6C7" i]{ fill:var(--accent); }
+html[data-theme] .home-hero-ring circle[stroke="#fff" i]{ stroke:var(--accent); }
+html[data-theme] .sig-mac.m-p s{ background:var(--ring-1); }
+html[data-theme] .sig-mac.m-c s{ background:var(--ring-2); }
+html[data-theme] .sig-mac.m-f s{ background:var(--ring-3); }
+
+/* 4e. Toggle, tick hiệp, việc đã xong, lịch tuần */
+html[data-theme] .toggle.on{ background:var(--accent); border-color:var(--accent); }
+html[data-theme] .toggle.on::after{ background:var(--on-accent); }
+html[data-theme] .set-row.done{ background:var(--accent-soft); border-color:var(--accent-line); }
+html[data-theme] .set-row.done .set-check{ background:var(--accent); color:var(--on-accent); border-color:transparent; }
+html[data-theme] .list-item .check.checked{ background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
+html[data-theme] .wd.done i{ background:var(--accent); color:var(--on-accent); }
+
+/* 4f. Chữ nhấn, link "Xem tất cả", badge, icon tiêu đề thẻ */
+html[data-theme] .section-title a{ color:var(--link) !important; }
+html[data-theme] :is(.card-title .material-symbols-rounded, .link-row .left .material-symbols-rounded){ color:var(--link); }
+html[data-theme] :is(.join-code, .ach-near-pct, .te-my-pct){ color:var(--link); }
+html[data-theme] .st-up{ background:var(--accent-soft); color:var(--link); }
+html[data-theme] .st-done{ background:var(--accent); color:var(--on-accent); }
+html[data-theme] .soon-badge{ background:var(--accent-soft); color:var(--link); }
+html[data-theme] .brand-name > span{ color:var(--link); }
+html[data-theme] .list-item .pf-rpl > i{ --pf-ripple:var(--accent); }
+html[data-theme] :is(button, a, [role="button"], input, select, textarea):focus-visible{ outline-color:var(--accent); }
+
+/* ---------- 5. Logo: SVG nội tuyến (theme-accent.js) — "Tap" = --logo-text, "Easy" + biểu tượng = --logo-mark ---------- */
+.ta-logo{ display:block; height:28px; width:auto; max-width:100%; overflow:visible; }
+.ta-logo .ta-tap{ fill:var(--logo-text, #F5F7F3); transition:fill .3s ease; }
+.ta-logo :is(.ta-easy, .ta-mark){ fill:var(--logo-mark, #02BCB3); transition:fill .3s ease; }
+svg.wl-tag-mark.ta-logo{ display:inline-block; height:.75em; vertical-align:-.04em; }
+svg.splash-logo.ta-logo{ width:min(220px, 60vw); height:auto; }
+svg.auth-logo.ta-logo{ display:inline-block; }
+/* chữ dự phòng khi ảnh logo lỗi: "Tap<b>Easy</b>" */
+html[data-theme] .brand-text{ color:var(--logo-text); }
+html[data-theme] .brand-text b{ color:var(--logo-mark); }
+html[data-theme] .brand-mark:not(img){ background-color:var(--logo-mark); }    /* lớp mask của brand.css */
+
+/* ---------- 6. Màn chào: CTA viên dài + nút tròn mũi tên, chữ display tiếng Việt ---------- */
+html[data-theme] .wl{ --y:var(--accent); }
+html[data-theme] .wl-cta rect{ fill:var(--cta-solid); }
+html[data-theme] .wl-cta circle{ fill:var(--cta-fg); }
+html[data-theme] .wl-cta .wl-arrow path{ stroke:var(--cta-solid); }
+html[data-theme] .wl-cta span{ color:var(--cta-fg); }
+html[data-theme] .wl-pill.gold{ background:var(--accent); color:var(--on-accent); }
+html[data-theme] .wl-pill.gold:hover{ background:var(--accent-2); }
+html[data-theme] .wl-route{ stroke:var(--accent); }
+html[data-theme] .wl-stop circle:first-child{ fill:var(--accent); }
+html[data-theme] .wl-speed i{ background:linear-gradient(90deg, transparent, rgba(var(--accent-rgb), .8)); }
+html[data-theme] .wl-speed i:nth-child(4){ background:linear-gradient(90deg, transparent, rgba(var(--cta-rgb), .9)); }
+html[data-theme] .wl [style*="color:#5EE6C7" i]{ color:var(--accent) !important; }
+html[data-theme] .wl-bubble .material-symbols-rounded{ color:var(--navy-4, #1B6A68); }
+/* Chữ display IN HOA có dấu chồng (Ậ Ế Ộ Ự): font có đủ glyph tiếng Việt, 1 độ đậm đã nạp (800, không tổng hợp giả),
+   line-height ≥ 1,06 + đệm trên cho dấu mũ+sắc; khoá lại để gói (Alpine 300 / −.045em, Sanctuary…) không làm dính dấu. */
+html[data-theme] .wl :is(.wl-head, .wl-tag){
+  font-family:var(--cond, 'Barlow Condensed', 'Inter Tight', 'Segoe UI', Arial, sans-serif); font-weight:800; font-synthesis:none;
+  letter-spacing:.005em; line-height:1.06; }
+html[data-theme] .wl .wl-head{ padding-top:.12em; }
+html[data-theme] .wl .wl-stat b{ font-weight:800; font-synthesis:none; letter-spacing:0; }
+
+/* ---------- 7. Máy yếu / giảm chuyển động ---------- */
+html.lowfx[data-theme] .btn-primary:not(.is-pressed){ box-shadow:none !important; }
+html.lowfx[data-theme] .nav-item.active .material-symbols-rounded{ box-shadow:none; }
+@media (prefers-reduced-motion: reduce){
+  .ta-logo :is(.ta-tap, .ta-easy, .ta-mark){ transition:none; }
+}

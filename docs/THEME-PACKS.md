@@ -1,8 +1,8 @@
-# THEME-PACKS — 5 gói theme "học phong cách" (Aurora · Espresso · Thu Alpine · Sương Wellness · Sanctuary)
+# THEME-PACKS — 9 gói theme "học phong cách" (Aurora · Espresso · Thu Alpine · Sương Wellness · Sanctuary · Cam năng lượng · Volt · Tím Đêm Pro · Chanh sáng) + token accent theo theme
 
-> Chủ sở hữu: design-system lead. File liên quan: `theme-packs.css/.js`, `ui-signature.css/.js`,
+> Chủ sở hữu: design-system lead. File liên quan: `theme-packs.css/.js`, `theme-accent.css/.js` (vòng accent), `ui-signature.css/.js`,
 > `themes.js`, `themes.css`, `themes-modules.css`, `scripts/gen_themes_layer.py`,
-> `tests/suites/50-theme-packs.test.js`.
+> `tests/suites/50-theme-packs.test.js`, `tests/suites/72-theme-accent.test.js`.
 
 ## Trạng thái (nhật ký tiến độ — cập nhật sau mỗi bước)
 
@@ -41,8 +41,14 @@ Inter, Inter Tight, JetBrains Mono, Manrope.
 | `alpine` | Thu Alpine | **sáng** | kính kem `rgba(244,240,233,.94)` blur 14, panel `#EAE6DE`, mực `#2E2D2A`; hổ phách `#F6B733/#FBD06A`, cam `#F59E0B`, tím `#7C6CF2`; tiêu đề Inter Tight 300 tracking −.045em; nhãn JetBrains Mono 500 IN HOA tiền tố "::"; chip đào; gauge nửa vòng ở Trang chủ; **không đổ bóng**; dãy núi SVG nội tuyến ở nền |
 | `wellness` | Sương Wellness | tối (sương) | xanh xám sương (gốc `#8A9AAA`, phủ tối để chữ trắng đạt AA); kính viền gradient bằng `::before` + `mask-composite: exclude`; thẻ chọn bo 32 cao 100 có số 01/02; nút tròn quầng vàng (nhịp thở 3,2 s); trượt để xác nhận chốt 85 % |
 | `sanctuary` | Sanctuary | tối | nâu `#5A4C41` → tối `rgb(29,25,26)`, kem `#F1E5C6`, off-white `#F5F0E8`; Manrope Light; tiêu đề lớn mảnh (−.048em); sheet = thẻ kem ở đáy; thẻ ngày 68×90 ở Sự kiện; chữ dọc xoay; **typewriter** tiêu đề Sự kiện/Kho kiến thức |
+| `ember` | Cam năng lượng | **sáng** | nền `#F4F4F2`/thẻ trắng bo 26, cam `#FF6A2B → #FF8A3D`; CTA viên thuốc gradient cam, chữ `#1B0F0A` (6,6:1), bóng cam mềm; số liệu Inter Tight 800, đơn vị/dòng 2 lời chào cam đậm `#C2410C` (5,2:1); ngày hôm nay = viên cam |
+| `volt` | Volt | tối | nền `#0B0B0C`, thẻ `#1A1A1C` phẳng, chanh `#D4FF3A` (chữ trên chanh đen 17:1); tiêu đề IN HOA Inter Tight 800 (line-height 1,08 cho dấu), dòng 2 lời chào màu chanh; CTA khối = viên dài + nút tròn đen 44 px có mũi tên chanh |
+| `violet` | Tím Đêm Pro | tối | nền `#15161C`, thẻ `#1F2029`, nút `#6C4CF5` chữ trắng (5,3:1), accent `#7254FA` (≈ `#7C5CFF` của mẫu, chỉnh để chữ trắng đạt AA); 3 màu chỉ số tím `#7C5CFF` / vàng `#FFC83D` / xanh `#3DD6F5` (thanh macro, số liệu thẻ) |
+| `lime` | Chanh sáng | **sáng** | nền trắng, thẻ `#F3F4EF` bo 28, chip/CTA chanh `#DFFF4F` chữ đen; dock đen; thẻ ảnh bo lớn có nút tròn chanh 44 px mũi tên; CTA khối có nút tròn đen; chữ/link ô-liu `#4D6600` (6,5:1) |
 
 6 theme cũ (Mặc định, Đại dương, Hoàng hôn, Rừng, Tím đêm, Sáng) + "Tự động" giữ nguyên id, tên, màu.
+4 gói cuối học phong cách từ 4 ảnh mẫu chủ app gửi (vòng accent 12/11) — chỉ học bảng màu/bố cục/hình khối, không dùng ảnh, logo, tên thương hiệu của mẫu;
+tên "Tím Đêm Pro" để khỏi trùng theme cũ "Tím đêm" (`midnight`).
 
 ### Sai khác có chủ đích so với mẫu (vì AA / hiệu năng)
 
@@ -157,6 +163,61 @@ cd ../../FitKit && python3 scripts/build-single-html.py    # tạo lại ../FitK
 - Font gói nạp từ Google Fonts khi có mạng; offline dùng font dự phòng hệ thống (Inter/Inter Tight/JetBrains Mono đã nạp sẵn ở index.html; Manrope chỉ nạp khi chọn Sanctuary).
 - Màu viết cứng trong JS của module (style="") chỉ theo gói khi đã dùng `var(--…)` hoặc có bản vá ở themes.css §3.
 - Cửa hàng (`.tsx`) và Bảng quản trị (`.adm`) giữ bảng màu riêng ở mọi theme (chủ đích).
+## 8. Token accent theo theme (`theme-accent.css/.js`) — nút, chữ nhấn, logo đổi màu ăn khớp
+
+**Vì sao:** trước vòng này nút chính/chip/tab/vòng/link/logo lấy `--mint`/`--coral` hoặc màu cứng (`#5EE6C7`, `#FF7A45`, logo teal
+`#02BCB3` trong file SVG) → đổi theme vẫn còn teal/coral, logo luôn teal, mũi tên CTA màn chào biến mất (navy trên navy).
+
+**Token (mỗi theme khai báo trong `:root[data-theme="…"]`, 15 theme):**
+
+| Token | Dùng cho | Ràng buộc AA (kiểm ở suite 72) |
+|---|---|---|
+| `--accent` / `--accent-2` / `--accent-rgb` | chip/pill/segment đang chọn, tab dưới đang chọn, toggle, slider/checkbox (`accent-color`), thanh tiến độ, progress onboarding, stepper, tick hiệp, việc đã xong, vòng `ringSVG`, gạch dưới tab ngày | đồ hoạ ≥ 3:1 với nền (trừ 2 gói sáng dùng accent làm mảng nền) |
+| `--on-accent` | chữ/icon trên nền accent | ≥ 4,5:1 với `--accent` |
+| `--accent-soft` · `--accent-line` · `--accent-glow` | badge, hàng hiệp đã xong, nền nhạt, quầng (dẫn xuất từ `--accent-rgb`, tính lại ở "đảo tối") | — |
+| `--cta-bg` (có thể gradient) · `--cta-solid` · `--cta-rgb` · `--cta-fg` · `--cta-shadow` | `.btn-primary` (kể cả coral cũ), `.nu-mini`, nút "+", số đếm `i.cnt`, chấm nav, CTA viên dài màn chào (SVG) | `--cta-fg` ≥ 4,5:1 với **cả 2 đầu** gradient |
+| `--link` | "Xem tất cả" (`.section-title a`), icon tiêu đề thẻ, `.btn-soft`, số liệu nhấn (gauge, % thành tích), `.brand-name > span` | ≥ 4,5:1 với nền **và** thẻ |
+| `--logo-mark` · `--logo-text` | "Easy" + biểu tượng · chữ "Tap" | biểu tượng ≥ 3:1, chữ ≥ 4,5:1 |
+| `--gauge-a/-b` · `--ring-1/2/3` | gauge nửa vòng Trang chủ · 3 thanh macro (Tím Đêm Pro: tím/vàng/xanh) | — |
+
+- **"Đảo tối"** (ảnh/video, màn chào) của theme sáng và **sheet kem Sanctuary** khai báo lại bộ token (mục 2 của file).
+- Thành phần nằm ở mục 4–6 của `theme-accent.css`, chỉ đọc token (suite 72 cấm màu hex trong phần này). Bộ chọn
+  `html[data-theme] …` = cùng độ ưu tiên với luật gói nhưng nạp **sau** `theme-packs.css` → thắng; nút trong sheet Sanctuary
+  (`html[data-theme="sanctuary"] .sheet .btn-primary`, cao hơn) vẫn giữ nút mực.
+- **Logo:** `theme-accent.js` thay `<img>` logo (thanh trên, màn chào, onboarding, menu, splash, trang đăng nhập, nhãn "TapEasy")
+  bằng **SVG nội tuyến** cùng path của file gốc: nhóm `.ta-tap` → `fill:var(--logo-text)`, `.ta-easy`/`.ta-mark` →
+  `fill:var(--logo-mark)`. File `assets/brand/*.svg` **không sửa**; JS lỗi/tắt → `<img>` gốc vẫn hiện (fallback).
+  MutationObserver thay cả logo vẽ lại sau này; nhận diện theo tên file **và** theo lớp (`brand-wm`, `wl-brand-img`,
+  `splash-logo`, `auth-logo`, `wl-tag-mark`) vì bản 1 file nhúng ảnh thành `data:` URI. Cửa hàng (`.tsx`), Quản trị (`.adm`),
+  `[data-ta-keep]` giữ logo riêng. `.brand-mark` (mask CSS của brand.css) cũng đổi qua `--logo-mark`.
+- **Đổi theme áp tức thì:** chỉ đổi `data-theme` → biến CSS → mọi thứ (kể cả logo) đổi ngay, không tải lại, không vẽ lại DOM.
+- API: `window.teAccent = { logoSVG(kind, cls, label), swapLogos(root), tokens(), kindOf(src), kindOfImg(img) }`;
+  tắt thử: `window.TE_ACCENT_OFF = { logo:1 }`.
+- Thêm gói mới: ngoài mục 5, chép một khối `:root[data-theme="…"]` ở `theme-accent.css` §1 (đủ 17 token) + thêm id vào `THEMES`
+  & `SURF` (nền + thẻ) của suite 72; gói sáng thêm khối "đảo tối" ở §2.
+
+### Lỗi font slogan "Tập đúng, tiến bộ thật sự" (màn chào `.wl-head`)
+
+Nguyên nhân (chụp trước: `_test/shots/slogan-before.jpg`): tiêu đề **IN HOA** dùng `line-height:.82` → dấu nặng của "TẬP"/"BỘ"
+chạm dấu mũ+sắc của "TIẾN"/"THẬT" dòng dưới (dính/cắt dấu); gói Alpine/Sanctuary còn ép `h1` sang độ đậm 300 + `letter-spacing`
+âm (Barlow Condensed chỉ nạp 800 → trình duyệt tổng hợp/đổi font, vỡ dấu); chuỗi dự phòng có `Arial Narrow` (thiếu dấu chồng trên
+nhiều máy). Barlow Condensed **có** subset vietnamese (đã xác minh unicode-range U+0102-0103, U+1EA0-1EF9).
+Sửa: `line-height:1.06` + `padding-top:.12em`, `font-synthesis:none`, `letter-spacing:.005em`, cỡ chữ `clamp(52px,15.5vw,80px)`;
+chuỗi font `'Barlow Condensed','Inter Tight','Roboto Condensed','Segoe UI',Arial` (đều có tiếng Việt); áp cho mọi tiêu đề display
+dùng `--cond` (`.wl-head`, `.wl-tag`, `.wl-brand`, `.wl-stat b`) và khoá lại ở `theme-accent.css §6` cho cả 15 theme; URL Google
+Fonts (index.html, landing.html, font gói nạp lười trong themes.js) thêm `&subset=vietnamese`. Tiêu đề in hoa của gói Volt dùng
+`line-height:1.08`. Chụp sau: `_test/shots/slogan-after.jpg`.
+
+### Kiểm
+
+```bash
+node tests/run.js --only theme-accent      # suite 72: token 15 theme, AA, luật, logo SVG, slogan, 4 gói mới
+node tests/run.js --only theme-packs       # suite 50 (đã nâng lên 9 gói / 16 lựa chọn)
+# Playwright (context riêng "accent", 390 px): 15 theme × (màn chào, Trang chủ, Tập luyện) + window.__accent() đo computed style
+cd ../_test/accent-harness && python3 build2.py ../accent-test.html --preset preset.json --test t_accent.js
+#   chạy kịch bản trong shoot.tpl.js → _test/shots/acc/final-<màn>-<theme>.jpg ; python3 sheet.py → FitKit/_test/shots/accent-sheet-*.jpg
+```
+
 - [14:42] Suite 50: **17/17 xanh**. Doc mục 1–7 xong. Tiếp: Playwright 11 theme × 4 màn (context `tapeasy-themes-4`).
 - [14:43] Playwright (Chromium 157, context mới `tapeasy-themes-4`, 390×844): harness `_test/themes4-test.html`
   (build2.py + t_themes4.js) — **53/53 kiểm thử chức năng PASS, 0 lỗi JS** (bộ chọn, gauge, stepper, thẻ chọn số, trượt 60 %/90 %/Enter,
@@ -177,3 +238,10 @@ cd ../../FitKit && python3 scripts/build-single-html.py    # tạo lại ../FitK
   5 gói áp đúng `--bg`, Espresso bật khúc xạ, 0 lỗi JS.
 - **HOÀN TẤT.** Việc còn lại (ngoài phạm vi): 6 theme cũ còn lỗi tương phản/vùng chạm cũ (xem dòng 14:54); thử trên máy thật
   (khúc xạ Android WebView, hiệu năng blur máy yếu); Manrope cần mạng lần đầu.
+- [12/11 · vòng accent] Slogan màn chào: line-height .82 + chữ IN HOA làm dính/cắt dấu chồng (Ậ Ế Ộ Ự), gói ép h1 300/tracking âm,
+  chuỗi dự phòng có Arial Narrow → sửa (mục 8). Thêm `theme-accent.css/.js` (17 token × 15 theme, logo SVG nội tuyến đổi màu) và
+  4 gói `ember`/`volt`/`violet`/`lime`. Suite 72 (8 test) + suite 50 nâng lên 9 gói — **toàn bộ suite xanh** (chạy từng `--only`).
+  Playwright (context riêng "accent", 390 px): 15 theme × 3 màn → `_test/shots/accent-sheet-{welcome,home,workout}.jpg`,
+  `window.__accent()` = 0 sai lệch CTA/pill/tab/toggle/logo so với token ở cả 45 lượt, 0 lỗi JS, 0 vùng chạm < 44 (nút menu màn chào
+  40 → 44). AA: 9 gói 0 chữ < AA (cảnh báo duy nhất ở màn chào là chữ CTA nằm trên SVG — công cụ không đọc được nền, đã kiểm token
+  5,3–17:1); 6 theme cũ còn lỗi cũ (nhãn ngày .58/.68, ghi ở 14:54). Bản dùng thử `../FitKit-dung-thu.html` đã build lại.

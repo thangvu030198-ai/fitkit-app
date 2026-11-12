@@ -303,7 +303,7 @@ def modules_layer(files):
     return head + "\n".join(parts) + "\n", total
 
 # file KHÔNG sinh lớp màu: lõi (đã có lớp riêng trong themes.css) + các lớp theme/thương hiệu tự dùng token
-SKIP_CSS = {"style.css", "themes.css", "themes-modules.css", "ui-kit.css", "brand.css", "theme-packs.css", "ui-signature.css"}
+SKIP_CSS = {"style.css", "themes.css", "themes-modules.css", "ui-kit.css", "brand.css", "theme-packs.css", "ui-signature.css", "theme-accent.css"}  # theme-accent.css: đã chỉ dùng token
 # selector bỏ qua theo file: vùng có bảng màu riêng có chủ đích
 SKIP_SEL = {
     "shop.css": re.compile(r'(^|[\s>+~(,])(?:html)?\.tsx(?:-[\w-]+)?\b'),   # cửa hàng: lớp phủ toàn màn nền sáng riêng (giữ ở mọi theme)

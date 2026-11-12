@@ -1,7 +1,7 @@
 /* TapEasy — themes-modules.css (SINH TỰ ĐỘNG, đừng sửa tay)
    Lớp màu theo theme cho CSS của các module. Nạp SAU CÙNG (sau mọi file .css module).
    Tạo lại: python3 scripts/gen_themes_layer.py --modules [a.css,b.css]
-   Nguồn: achievements.css, admin.css, community.css, events.css, findpt.css, health-safety.css, kb.css, nutrition-pro.css, program-builder.css, pt-connect.css, pt-pro.css, shop.css, training-pro.css — tổng 1622 luật. */
+   Nguồn: achievements.css, admin.css, community.css, events.css, findpt.css, health-safety.css, kb.css, nutrition-pro.css, press-feel.css, program-builder.css, pt-connect.css, pt-pro.css, shop.css, training-pro.css — tổng 1633 luật. */
 /* ===== achievements.css: 109 luật ===== */
 :where(html.fk-themed) .ach-bar{ background:rgba(var(--fk-ov-rgb),calc(.14 * var(--fk-ov-k))); } /*L7*/
 :where(html.fk-themed) .ach-bar > i{ background:linear-gradient(90deg, var(--mint-2), var(--mint) 60%, var(--coral)); } /*L8*/
@@ -1181,6 +1181,20 @@ html:where(.fk-themed).lowfx .kb-topbar{ background:rgb(var(--fk-veil-rgb, 6,26,
 :where(html.fk-themed) .np-why li{ color:var(--text-muted); } /*L228*/
 :where(html.fk-themed) .np-why li b{ color:var(--fk-ink); } /*L229*/
 :where(html.fk-themed) .np-why li small{ color:var(--text-muted); } /*L230*/
+/* ===== press-feel.css: 11 luật ===== */
+html:where(.fk-themed) .is-pressed.is-pressed{ box-shadow:inset 0 0 0 999px rgba(var(--fk-ink-rgb, 255,255,255), .07), inset 0 1px 2px rgba(0,0,0,.16) !important; } /*L53*/
+html:where(.fk-themed) .is-pressed.pf-big{ box-shadow:inset 0 0 0 999px rgba(var(--fk-ink-rgb, 255,255,255), .05), inset 0 1px 3px rgba(0,0,0,.14) !important; } /*L55*/
+html:where(.fk-themed) .is-pressed.pf-glass{ border-color:rgba(var(--fk-ink-rgb, 255,255,255), .32) !important; } /*L57*/
+html:where(.fk-themed) .is-pressed.pf-solid:not(.pf-glass){ filter:brightness(.92) saturate(1.04); box-shadow:0 1px 2px rgba(0,0,0,.22), inset 0 1px 2px rgba(0,0,0,.12) !important; } /*L59*/
+:where(html.fk-themed) .pf-rpl > i{ background:radial-gradient(closest-side, var(--pf-ripple, currentColor) 62%, transparent 100%); } /*L64*/
+html:where(.fk-themed) .pf-busy.pf-busy{ color:transparent !important; } /*L82*/
+:where(html.fk-themed) .pf-spin{ border:2px solid var(--pf-busy-c, var(--mint)); border-right-color:transparent; border-bottom-color:transparent; } /*L84*/
+:where(html.fk-themed) .pf-row{ background:none; border:none; color:var(--text); } /*L91*/
+:where(html.fk-themed) .pf-row .t small{ color:var(--text-muted); } /*L96*/
+html:where(.fk-themed) .pf-row.is-pressed.is-pressed{ box-shadow:none !important; } /*L98*/
+@media (prefers-reduced-motion: reduce){
+  html:where(.fk-themed) .is-pressed:not(.pf-still), html:where(.fk-themed) .pf-armed:not(.pf-still){ filter:none !important; } /*L102*/
+}
 /* ===== program-builder.css: 58 luật ===== */
 :where(html.fk-themed) .pb-root{ color:var(--fk-ink); } /*L5*/
 :where(html.fk-themed) .pb-prog{ background:rgba(var(--fk-ov-rgb),calc(.12 * var(--fk-ov-k))); } /*L10*/

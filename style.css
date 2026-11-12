@@ -734,7 +734,7 @@ i.cnt{ font-style:normal; display:inline-block; min-width:18px; padding:1px 6px;
    ========================================================================= */
 #auth.wl-mode{ background:#061A24; scrollbar-width:none; }
 #auth.wl-mode::-webkit-scrollbar{ display:none; }
-.wl{ position:relative; --y:#5EE6C7; --cond:'Barlow Condensed','Arial Narrow',sans-serif-condensed,'Segoe UI',Arial,sans-serif; --ease:cubic-bezier(.16,1,.3,1); font-family:Helvetica,Arial,sans-serif; color:#fff; width:100%; }
+.wl{ position:relative; --y:#5EE6C7; --cond:'Barlow Condensed','Inter Tight','Roboto Condensed','Segoe UI',Arial,sans-serif; /* mọi font trong chuỗi đều có đủ glyph tiếng Việt (bỏ 'Arial Narrow' — thiếu dấu chồng trên nhiều máy) */ --ease:cubic-bezier(.16,1,.3,1); font-family:Helvetica,Arial,sans-serif; color:#fff; width:100%; }
 .wl-hero{ position:relative; height:100vh; height:100dvh; min-height:560px; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end; }
 @media (min-width:520px){ .wl-hero{ height:94vh; } }
 .wl-hero-bg{ position:absolute; inset:-4%; background:#0B2A33 center/cover no-repeat; animation:wlKen 18s ease-in-out infinite alternate; }
@@ -749,12 +749,14 @@ i.cnt{ font-style:normal; display:inline-block; min-width:18px; padding:1px 6px;
 .wl-speed i:nth-child(5){ top:30%; animation-delay:2.4s; width:14%; }
 @keyframes wlStreak{ to{ left:120%; } }
 .wl-nav{ position:absolute; top:0; left:0; right:0; z-index:5; display:flex; justify-content:space-between; align-items:center; padding:calc(18px + env(safe-area-inset-top)) 20px 0; }
-.wl-brand{ font-family:var(--cond); font-weight:800; text-transform:uppercase; font-size:clamp(24px,6vw,32px); letter-spacing:.5px; }
+.wl-brand{ font-family:var(--cond); font-weight:800; font-synthesis:none; text-transform:uppercase; font-size:clamp(24px,6vw,32px); letter-spacing:.5px; }
 .wl-brand b{ color:var(--y); }
-.wl-burger{ width:40px; height:40px; background:none; border:none; display:flex; flex-direction:column; justify-content:center; align-items:flex-end; gap:6px; }
+.wl-burger{ width:44px; height:44px; background:none; border:none; display:flex; flex-direction:column; justify-content:center; align-items:flex-end; gap:6px; }
 .wl-burger i{ display:block; width:28px; height:2.5px; background:#fff; border-radius:2px; } .wl-burger i:nth-child(2){ width:20px; }
 .wl-hero-body{ position:relative; z-index:3; padding:0 20px 34px; }
-.wl-head{ font-family:var(--cond); font-weight:800; text-transform:uppercase; font-size:clamp(56px,17vw,84px); line-height:.82; letter-spacing:0; display:flex; flex-direction:column; }
+/* Slogan IN HOA tiếng Việt có dấu chồng (Ậ Ế Ộ Ự): line-height .82 làm dấu dưới dòng trên chạm dấu mũ+sắc dòng dưới → 1.06 + đệm trên .12em;
+   chỉ nạp 1 độ đậm (800) → tắt font-synthesis để trình duyệt không tự làm đậm/nghiêng giả làm vỡ dấu */
+.wl-head{ font-family:var(--cond); font-weight:800; font-synthesis:none; text-transform:uppercase; font-size:clamp(52px,15.5vw,80px); line-height:1.06; padding-top:.12em; letter-spacing:.005em; display:flex; flex-direction:column; }
 .wl-head span{ display:block; }
 .wl-head .l2{ color:var(--y); text-align:right; }
 .wl-sub{ margin-top:16px; font-size:15px; line-height:1.45; color:rgba(255,255,255,.75); max-width:330px; }
@@ -791,7 +793,7 @@ i.cnt{ font-style:normal; display:inline-block; min-width:18px; padding:1px 6px;
 
 /* 2. Giới thiệu */
 .wl-info{ position:relative; overflow:hidden; padding:clamp(60px,12vh,110px) 20px; background:linear-gradient(180deg,#0B2A33 0%,#114650 50%,#1B6A68 100%); }
-.wl-tag{ font-family:var(--cond); font-weight:800; text-transform:uppercase; font-size:clamp(46px,13vw,64px); line-height:.9; color:#fff; }
+.wl-tag{ font-family:var(--cond); font-weight:800; font-synthesis:none; text-transform:uppercase; font-size:clamp(46px,13vw,64px); line-height:1.08; letter-spacing:.005em; color:#fff; }
 .wl-tag-sub{ font-size:clamp(19px,5vw,26px); line-height:1.15; color:#D6ECEA; margin-top:4px; }
 .wl-map{ position:relative; margin:28px -20px 10px; aspect-ratio:300/170; }
 .wl-routes{ position:absolute; inset:0 4%; width:92%; height:100%; overflow:visible; }
@@ -812,7 +814,7 @@ i.cnt{ font-style:normal; display:inline-block; min-width:18px; padding:1px 6px;
 @keyframes wlFloat{ 0%,100%{ transform:translateY(0) scale(1); } 50%{ transform:translateY(-8px) scale(1); } }
 .wl-stats{ display:flex; flex-direction:column; gap:22px; margin-top:24px; }
 .wl-stat{ display:flex; align-items:center; gap:14px; }
-.wl-stat b{ font-family:var(--cond); font-weight:800; font-size:clamp(56px,15vw,76px); line-height:.85; color:#fff; }
+.wl-stat b{ font-family:var(--cond); font-weight:800; font-synthesis:none; font-size:clamp(56px,15vw,76px); line-height:.85; color:#fff; }
 .wl-stat span{ font-size:clamp(14px,3.8vw,17px); line-height:1.2; color:#D6ECEA; }
 
 /* 3. Bắt đầu */

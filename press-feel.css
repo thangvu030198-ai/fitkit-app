@@ -1,0 +1,107 @@
+/* =========================================================================
+   TapEasy — press-feel.css: cảm giác bấm (đi kèm press-feel.js · docs/PRESS-FEEL.md)
+   Nạp NGAY TRƯỚC brand.css (brand.css → themes-modules.css luôn là 2 stylesheet cuối). Chỉ dùng token theme.
+   Lớp do JS gắn: .pf-armed (đang nhấn/đang lò xo) · .is-pressed (đang giữ) · .pf-big (thẻ lớn) · .pf-solid (nút nền đặc)
+                  .pf-glass (có kính → KHÔNG transform) · .pf-noblur (nút nhỏ có kính: tạm tắt blur để scale an toàn)
+                  .pf-still (giảm chuyển động / phần tử tự dùng transform → không scale)
+   ========================================================================= */
+:root{
+  --pf-spring: cubic-bezier(.34, 1.56, .64, 1);    /* thả: vượt nhẹ rồi về — "lò xo" */
+  --pf-in: cubic-bezier(.2, 0, 0, 1);              /* nhấn: lún nhanh, dừng mềm */
+  --pf-dur-in: 70ms;
+  --pf-dur-out: 220ms;
+}
+
+/* ---------- 4. Bỏ trễ chạm · bỏ ô xanh mặc định · không bôi chọn chữ trên nút ---------- */
+:where(button, a[href], a[onclick], [role=button], [role=tab], [role=switch], [role=radio], [onclick], .btn, .icon-btn, .pill, .chip,
+  .choice-card, .role-card, .list-item, .card[onclick], .metric, .nav-item, .entry-tile, .toggle, .set-check, summary, label,
+  input[type=checkbox], input[type=radio]){
+  touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+:where(button, [role=button], [role=tab], [role=switch], .btn, .icon-btn, .pill, .chip, .nav-item, .seg button, .choice-card,
+  .role-card, .entry-tile, .toggle, .set-check){
+  -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+:where(button, [role=button], [role=tab], [role=switch], [onclick], .btn, .icon-btn, .pill, .chip, .choice-card, .role-card,
+  .list-item[onclick], .card[onclick], .nav-item, .entry-tile, .toggle, summary){ cursor:pointer; }
+:where(button:disabled, [aria-disabled="true"]){ cursor:default; }
+
+/* ---------- 1. Nhấn lún + lò xo ---------- */
+/* thả: lò xo 220 ms (transform) — các thuộc tính màu vẫn mượt như cũ */
+html .pf-armed{
+  transition:transform var(--pf-dur-out) var(--pf-spring), box-shadow 180ms ease-out, filter 180ms ease-out,
+    background-color .18s ease, border-color .18s ease, color .18s ease !important; }
+/* giữ: lún nhanh */
+html .pf-armed.is-pressed{
+  transition:transform var(--pf-dur-in) var(--pf-in), box-shadow var(--pf-dur-in) var(--pf-in), filter var(--pf-dur-in) var(--pf-in),
+    background-color .12s ease, border-color .12s ease, color .12s ease !important; }
+/* onboarding đặt transition riêng (!important, id) → phải ghi lại cùng độ ưu tiên */
+html #onboarding .choice-card.pf-armed{
+  transition:transform var(--pf-dur-out) var(--pf-spring), box-shadow 180ms ease-out, background-color .18s ease, border-color .18s ease, color .18s ease !important; }
+html #onboarding .choice-card.pf-armed.is-pressed{
+  transition:transform var(--pf-dur-in) var(--pf-in), box-shadow var(--pf-dur-in) var(--pf-in), background-color .12s ease, border-color .12s ease !important; }
+
+/* Lún: CHỈ phần tử không có kính (hoặc kính đã tạm tắt bằng .pf-noblur) */
+html .is-pressed:not(.pf-glass):not(.pf-still){ transform:translateY(1px) scale(var(--pf-s, .96)) !important; }
+/* Thẻ onboarding: nền đặc bán trong suốt, không blur (ui-signature.css 12/11) → lún 0,98 an toàn, không nháy */
+html #onboarding .choice-card.is-pressed:not(.pf-glass):not(.pf-still){ transform:translateY(1px) scale(var(--pf-s, .98)) !important; }
+/* Có kính → KHÔNG transform (kể cả :active cũ như .btn:active / .fk-theme-opt:active) */
+html .pf-glass.is-pressed, html .pf-glass.pf-armed{ transform:none !important; }
+
+/* Nút nhỏ có kính: tạm tắt blur trong lúc nhấn + lò xo (JS gỡ lớp sau 280 ms, khi đã đứng yên) */
+html .pf-noblur.pf-noblur.pf-noblur{ -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+
+/* Sáng/tối nhẹ + bóng thu lại (lớp phủ inset: theme tối → sáng lên, theme sáng → tối đi; luôn dưới chữ) */
+html .is-pressed.is-pressed{
+  box-shadow:inset 0 0 0 999px rgba(var(--fk-ink-rgb, 255,255,255), .07), inset 0 1px 2px rgba(0,0,0,.16) !important; }
+html .is-pressed.pf-big{
+  box-shadow:inset 0 0 0 999px rgba(var(--fk-ink-rgb, 255,255,255), .05), inset 0 1px 3px rgba(0,0,0,.14) !important; }
+html .is-pressed.pf-glass{ border-color:rgba(var(--fk-ink-rgb, 255,255,255), .32) !important; }
+/* nút nền đặc (CTA): tối nhẹ, bóng đổ co lại sát nút */
+html .is-pressed.pf-solid:not(.pf-glass){
+  filter:brightness(.92) saturate(1.04); box-shadow:0 1px 2px rgba(0,0,0,.22), inset 0 1px 2px rgba(0,0,0,.12) !important; }
+
+/* ---------- 2. Gợn sóng mảnh (CTA + item danh sách) ---------- */
+.pf-rpl{ position:absolute; inset:0; border-radius:inherit; overflow:hidden; pointer-events:none; contain:strict; }
+.pf-rpl > i{ position:absolute; left:var(--x, 50%); top:var(--y, 50%); width:var(--d, 40px); height:var(--d, 40px);
+  margin:calc(var(--d, 40px) / -2) 0 0 calc(var(--d, 40px) / -2); border-radius:50%;
+  background:radial-gradient(closest-side, var(--pf-ripple, currentColor) 62%, transparent 100%); opacity:.14; transform:scale(.06);
+  animation:pfRipple 460ms var(--pf-in) forwards; }
+.list-item .pf-rpl > i{ --pf-ripple:var(--mint); opacity:.14; }
+.pf-rpl.out > i{ opacity:0; transition:opacity 300ms ease-out; }
+@keyframes pfRipple{ to{ transform:scale(1); } }
+
+/* ---------- 6. Nảy nhẹ cho công tắc / tick / tim (phối hợp morph-icons: icon biến hình bên trong, nút nảy bên ngoài) ---------- */
+@keyframes pfPop{ 0%{ transform:scale(1); } 30%{ transform:scale(.86); } 65%{ transform:scale(1.08); } 100%{ transform:scale(1); } }
+@keyframes pfKnob{ 0%{ transform:scaleX(1); } 40%{ transform:scaleX(1.3); } 100%{ transform:scaleX(1); } }
+html .pf-pop:not(.toggle){ animation:pfPop 340ms var(--pf-spring) both; }
+html .toggle.pf-pop::after{ animation:pfKnob 300ms var(--pf-spring); }
+html .toggle.on.pf-pop::after{ transform-origin:right center; }
+html .toggle:not(.on).pf-pop::after{ transform-origin:left center; }
+
+/* ---------- 5. Trạng thái chờ (fkBusy) ---------- */
+.pf-busy-lock{ cursor:progress !important; }
+html .pf-busy.pf-busy{ color:transparent !important; }
+html .pf-busy > :not(.pf-spin):not(.pf-rpl){ opacity:0 !important; transition:opacity .12s; }
+.pf-spin{ position:absolute; left:50%; top:50%; width:18px; height:18px; margin:-9px 0 0 -9px; box-sizing:border-box;
+  border-radius:50%; border:2px solid var(--pf-busy-c, var(--mint)); border-right-color:transparent; border-bottom-color:transparent;
+  animation:pfSpin .7s linear infinite; pointer-events:none; }
+.btn-sm .pf-spin, .pill .pf-spin, .icon-btn .pf-spin{ width:14px; height:14px; margin:-7px 0 0 -7px; }
+@keyframes pfSpin{ to{ transform:rotate(1turn); } }
+
+/* ---------- Thẻ cài đặt "Cảm giác chạm" (Hồ sơ) ---------- */
+.pf-row{ display:flex; align-items:center; justify-content:space-between; gap:var(--fk-s-3, 12px); width:100%; min-height:var(--fk-tap, 44px);
+  margin-top:var(--fk-s-2, 8px); padding:var(--fk-s-2, 8px) 0; background:none; border:none; color:var(--text); text-align:left;
+  font-family:inherit; font-size:inherit; border-radius:var(--fk-r-2, 16px); }
+.pf-row .t{ display:flex; flex-direction:column; min-width:0; gap:2px; }
+.pf-row .t b{ font-size:var(--fk-fs-3, 15px); font-weight:600; }
+.pf-row .t small{ font-size:var(--fk-fs-1, 12px); color:var(--text-muted); line-height:1.4; }
+.pf-row .toggle{ flex:none; }
+html .pf-row.is-pressed.is-pressed{ box-shadow:none !important; }
+
+/* ---------- Giảm chuyển động: không scale, không sóng, không nảy — chỉ đổi màu nền nhẹ ---------- */
+@media (prefers-reduced-motion: reduce){
+  html .is-pressed:not(.pf-still), html .pf-armed:not(.pf-still){ transform:none !important; filter:none !important; }
+  html .pf-armed, html .pf-armed.is-pressed{ transition:background-color .12s ease, box-shadow .12s ease, border-color .12s ease !important; }
+  .pf-rpl{ display:none !important; }
+  html .pf-pop, html .toggle.pf-pop::after{ animation:none !important; }
+  .pf-spin{ animation-duration:1.6s; }
+}

@@ -3,7 +3,8 @@
    6 bảng màu + 5 GÓI GIAO DIỆN (theme pack = màu + chất liệu kính + font + bo góc + nền + chuyển động)
    + "Tự động" (theo cài đặt sáng/tối của máy).
    - Màu bảng cũ nằm ở themes.css; token của gói nằm ở theme-packs.css (+ hiệu ứng ở theme-packs.js).
-   - Lưu: state.theme ("auto"|"navy"|"ocean"|"sunset"|"forest"|"midnight"|"light"|"aurora"|"espresso"|"alpine"|"wellness"|"sanctuary")
+   - Lưu: state.theme ("auto"|"navy"|"ocean"|"sunset"|"forest"|"midnight"|"light"|"aurora"|"espresso"|"alpine"|"wellness"|"sanctuary"
+            |"ember"|"volt"|"violet"|"lime") — 9 gói; token accent (nút/chip/tab/logo) ở theme-accent.css
    - Áp dụng: <html data-theme data-theme-pref class="fk-themed fk-light|fk-dark [tp-pack]">,
      <meta name="theme-color">, thanh trạng thái Capacitor (nếu có plugin StatusBar), font Google của gói (nạp lười).
    - Bộ chọn giao diện: thẻ "Giao diện" trong màn Hồ sơ (ghi đè renderProfileScreen), gói có ảnh xem trước nhỏ.
@@ -44,6 +45,21 @@
       fonts:["Manrope:wght@300;400;500;600;700"],
       pv:{ bg:"linear-gradient(180deg,#5A4C41,#2A2322 55%,#1D191A)", card:"#F5F0E8", ink:"#F5F0E8", cardInk:"#1D191A",
            acc:"#F1E5C6", cta:"#F1E5C6", ctaInk:"#1D191A", r:"12px", font:"'Manrope',sans-serif", w:300 } },
+    /* ---- 4 gói học phong cách từ ảnh mẫu chủ app (vòng accent 12/11) — token accent ở theme-accent.css ---- */
+    { id:"ember",    name:"Cam năng lượng", desc:"Sáng · cam rực · thẻ trắng bo lớn", meta:"#F4F4F2", pack:true, mode:"light",
+      fonts:["Inter:wght@400;500;600;700","Inter+Tight:wght@600;700;800"],
+      pv:{ bg:"radial-gradient(80% 50% at 100% 0%, rgba(255,138,61,.30), transparent 70%), #F4F4F2", card:"#FFFFFF", ink:"#1B1B1F",
+           acc:"#FF6A2B", cta:"linear-gradient(135deg,#FF6A2B,#FF8A3D)", ctaInk:"#1B0F0A", r:"14px", font:"'Inter Tight',sans-serif", w:800 } },
+    { id:"volt",     name:"Volt",           desc:"Đen · chanh điện · chữ in hoa đậm", meta:"#0B0B0C", pack:true,
+      fonts:["Inter:wght@400;500;600;700","Inter+Tight:wght@700;800"],
+      pv:{ bg:"#0B0B0C", card:"#1A1A1C", ink:"#FFFFFF", acc:"#D4FF3A", cta:"#D4FF3A", ctaInk:"#0B0B0C", r:"12px", font:"'Inter Tight',sans-serif", w:800 } },
+    { id:"violet",   name:"Tím Đêm Pro",    desc:"Tối · tím · chỉ số nhiều màu", meta:"#15161C", pack:true,
+      fonts:["Inter:wght@400;500;600;700"],
+      pv:{ bg:"radial-gradient(80% 50% at 100% 0%, rgba(124,92,255,.35), transparent 70%), #15161C", card:"#1F2029", ink:"#FFFFFF",
+           acc:"#FFC83D", cta:"#6C4CF5", ctaInk:"#FFFFFF", r:"12px", font:"'Inter',sans-serif", w:600 } },
+    { id:"lime",     name:"Chanh sáng",     desc:"Trắng · chip chanh · thẻ ảnh bo lớn", meta:"#FFFFFF", pack:true, mode:"light",
+      fonts:["Inter:wght@400;500;600;700","Inter+Tight:wght@600;700"],
+      pv:{ bg:"#FFFFFF", card:"#F3F4EF", ink:"#0B0B0C", acc:"#4D6600", cta:"#DFFF4F", ctaInk:"#0B0B0C", r:"16px", font:"'Inter Tight',sans-serif", w:700 } },
   ];
   let IDS = THEMES.map(t=>t.id);
   const DEFAULT = "navy";
@@ -75,7 +91,7 @@
       const fams = def.fonts.filter(f=> !fontLoaded[f]); if(!fams.length) return;
       fams.forEach(f=> fontLoaded[f] = 1);
       const l = document.createElement("link");
-      l.rel = "stylesheet"; l.href = GF + fams.map(f=> "family=" + f).join("&") + "&display=swap";
+      l.rel = "stylesheet"; l.href = GF + fams.map(f=> "family=" + f).join("&") + "&subset=vietnamese&display=swap";   // subset tiếng Việt (dấu chồng Ấ Ặ Ự…) — css2 tự chia unicode-range, tham số này giữ cho API cũ/proxy
       l.setAttribute("data-tp-fonts", def.id);
       (document.head || root).appendChild(l);
     }catch(e){}

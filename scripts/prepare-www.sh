@@ -40,11 +40,16 @@ cp ui-kit.js exdb-vi-1.js exdb-vi-2.js exdb-vi-3.js exdb-vi.js nutrition-pro.js 
    cloud-events.js events-media.js events.js shop-data.js shop.js \
    kb-data-1.js kb-data-2.js kb-data-3.js kb-data-4.js kb-data-5.js kb-data-6.js kb.js \
    cloud-admin.js admin.js \
+   press-feel.js \
    morph-icons.js \
    health-safety.js \
    www/
 # Gói giao diện + thành phần chữ ký (nạp sau health-safety.js / sau themes-modules.css — docs/THEME-PACKS.md)
 cp theme-packs.css ui-signature.css theme-packs.js ui-signature.js www/
+# Cảm giác bấm (docs/PRESS-FEEL.md): CSS ngay trước brand.css, JS ngay trước morph-icons.js
+cp press-feel.css www/
+# Token accent theo theme + logo đổi màu (docs/THEME-PACKS.md §8): CSS ngay trước brand.css, JS ngay sau theme-packs.js
+cp theme-accent.css theme-accent.js www/
 
 # morphicons (MIT) — icon biến hình, tự host (tạo bằng .github/workflows/vendor-morphicons.yml); chưa có → app đổi icon tức thì
 if [ -f vendor/morphicons.min.js ]; then cp vendor/morphicons.min.js www/vendor/; cp vendor/morphicons.LICENSE vendor/morphicons.VERSION www/vendor/ 2>/dev/null || true
@@ -178,7 +183,7 @@ const refs = [...html.matchAll(/(?:src|href)="([^"]+)"/g)].map(m => m[1].replace
   .filter(h => LOCAL.test(h) && /\.(js|css|png|jpe?g|svg|ico|webp|json)$/i.test(h));
 const old = (sw.match(/const ASSETS = \[([\s\S]*?)\];/) || [, ""])[1];
 const oldAssets = [...old.matchAll(/"\.\/([^"]+)"/g)].map(m => m[1]).filter(h => /^assets\//.test(h));
-const extra = ["manifest.json", "theme-packs.js", "ui-signature.js", "vendor/morphicons.min.js"];      // + icon biến hình (nạp lười, nếu đã vendor) · tài nguyên phụ luôn có
+const extra = ["manifest.json", "theme-packs.js", "theme-accent.js", "ui-signature.js", "vendor/morphicons.min.js"];      // + icon biến hình (nạp lười, nếu đã vendor) · tài nguyên phụ luôn có
 const all = [...new Set(["index.html", ...refs, ...extra, ...oldAssets])].filter(f => fs.existsSync(path.join(W, f)));
 const ver = hash(all.map(f => f + ":" + crypto.createHash("sha1").update(fs.readFileSync(path.join(W, f))).digest("hex")).join("|"));
 sw = sw.replace(/const ASSETS = \[[\s\S]*?\];/, "const ASSETS = [  // SINH TỰ ĐỘNG bởi scripts/prepare-www.sh từ www/index.html\n  " +

@@ -424,3 +424,269 @@ html.tp-pack .kb-hero{ background:var(--tp-hero-grad); }
 
 /* Lớp phủ "Sức khoẻ & an toàn" (health-safety.css đặt cứng ảnh nền bão) → nền của gói */
 html.tp-pack #hs-overlay{ background:var(--fk-shell-bg); }
+
+/* #########################################################################
+   GÓI MỚI (vòng accent, 12/11) — học PHONG CÁCH từ 4 ảnh mẫu chủ app gửi; không dùng ảnh/logo/tên/font trả phí của mẫu.
+     ember  — "Cam năng lượng": nền trắng/xám rất nhạt, cam #FF6A2B → #FF8A3D, thẻ trắng bo 26, CTA viên thuốc cam đổ bóng cam
+     volt   — "Volt": nền #0B0B0C, thẻ #1A1A1C, chanh #D4FF3A (chữ trên chanh màu đen), tiêu đề IN HOA đậm 2 dòng (dòng 2 chanh),
+              CTA viên dài có nút tròn mũi tên
+     violet — "Tím Đêm Pro": nền #15161C, thẻ #1F2029, tím #6C4CF5/#7C5CFF, chỉ số nhiều màu (tím/vàng/xanh)
+     lime   — "Chanh sáng": nền trắng, chip/CTA chanh #DFFF4F chữ đen, thẻ ảnh bo lớn có nút mũi tên tròn
+   Token accent (--accent, --cta-*, --link, --logo-*) của 4 gói nằm ở theme-accent.css §1.
+   ######################################################################### */
+
+/* ---------- 1f. CAM NĂNG LƯỢNG (sáng) ---------- */
+:root[data-theme="ember"]{
+  --bg:#F4F4F2;
+  --navy:#1B1B1F; --navy-2:#2A2A30; --navy-3:#3A3A42; --navy-4:#5A5A64;
+  --mint:#C2410C; --mint-2:#9A3412; --mint-3:#FF6A2B;                 /* cam đậm cho CHỮ dữ liệu (5,2:1 trắng · 4,7:1 nền) */
+  --coral:#FF6A2B; --coral-2:#B23A0A; --coral-3:#E8501A; --coral-4:#FF8A3D; --coral-hot:#D92D20;   /* cam tươi: mảng CTA */
+  --navy-rgb:27,27,31; --mint-rgb:194,65,12; --coral-rgb:255,106,43; --coral-2-rgb:178,58,10;
+  --on-mint:#FFFFFF; --on-coral:#1B0F0A;                               /* 5,2:1 · 6,6:1 */
+  --fk-ink:#1B1B1F; --fk-ink-rgb:27,27,31;
+  --fk-ov-rgb:27,27,31; --fk-ov-k:.5; --fk-line-k:.7; --fk-text-boost:.25;
+  --fk-veil-rgb:244,244,242; --fk-scrim-rgb:27,20,16;
+  --fk-sheet-1-rgb:255,255,255; --fk-sheet-2-rgb:248,248,246;
+  --fk-toast-rgb:27,27,31; --fk-toast-ink:#FFFFFF; --fk-toast-accent:#FF8A3D;
+  --fk-dock-bg:rgba(255,255,255,.96); --fk-chip-bg:#FFFFFF;
+  --text:#1B1B1F; --text-muted:rgba(27,27,31,.74); --text-dim:rgba(27,27,31,.66);   /* 6,6:1 · 5,3:1 trên nền */
+  --surface:rgba(27,27,31,.04); --surface-2:rgba(27,27,31,.06); --surface-3:rgba(27,27,31,.09);
+  --border:rgba(27,27,31,.10); --border-strong:rgba(27,27,31,.18);
+  --glass:linear-gradient(#FFFFFF, #FFFFFF); --glass-blur:none; --glass-solid:#FFFFFF;
+  --shadow-card:0 1px 2px rgba(27,27,31,.04), 0 10px 30px rgba(27,27,31,.06);
+  --fk-shell-bg:radial-gradient(80% 26% at 104% -4%, rgba(255,138,61,.20), transparent 64%), linear-gradient(180deg, #F8F8F6 0%, #F2F2F0 100%);
+  --fk-shell-blend:normal; --fk-theme-color:#F4F4F2;
+  --font-ui:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-head:'Inter Tight', 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --tp-r-card:26px; --tp-r-tile:20px; --tp-r-btn:999px; --tp-r-input:16px; --tp-r-dock:28px; --tp-btn-h:54px;
+  --tp-head-w:700; --tp-head-track:-.03em;
+  --tp-ease:cubic-bezier(.22,1,.36,1); --tp-stagger:.08s; --tp-rise:14px; --tp-rise-dur:.7s;
+  --tp-gauge-a:#FFB07A; --tp-gauge-b:#FF6A2B;
+  --sig-step-on-bg:#FF6A2B; --sig-step-on-ink:#1B0F0A; --sig-step-off-bg:#EDEDEA;
+  --tp-hero-grad:radial-gradient(90% 80% at 100% 0%, rgba(255,138,61,.55), transparent 60%), linear-gradient(150deg, #3A2418, #1B1410);
+}
+
+/* ---------- 1g. VOLT (tối) ---------- */
+:root[data-theme="volt"]{
+  --bg:#0B0B0C;
+  --navy:#0B0B0C; --navy-2:#141416; --navy-3:#1A1A1C; --navy-4:#2A2A2E;
+  --mint:#D4FF3A; --mint-2:#E6FF8A; --mint-3:#B8E61A;
+  --coral:#D4FF3A; --coral-2:#E6FF8A; --coral-3:#B8E61A; --coral-4:#E0FF66; --coral-hot:#FF5A4E;
+  --navy-rgb:11,11,12; --mint-rgb:212,255,58; --coral-rgb:212,255,58; --coral-2-rgb:230,255,138;
+  --on-mint:#0B0B0C; --on-coral:#0B0B0C;                               /* 17:1 */
+  --text-muted:rgba(255,255,255,.76); --text-dim:rgba(255,255,255,.62);
+  --fk-line-k:.6;
+  --fk-veil-rgb:11,11,12; --fk-scrim-rgb:0,0,0;
+  --fk-sheet-1-rgb:26,26,28; --fk-sheet-2-rgb:14,14,16;
+  --fk-toast-rgb:255,255,255; --fk-toast-ink:#0B0B0C; --fk-toast-accent:#4D6600;
+  --fk-dock-bg:rgba(20,20,22,.94); --fk-chip-bg:#1A1A1C;
+  --glass:linear-gradient(#1A1A1C, #1A1A1C); --glass-blur:none; --glass-solid:#1A1A1C;
+  --fk-shell-bg:radial-gradient(90% 30% at 104% -6%, rgba(212,255,58,.10), transparent 62%), #0B0B0C;
+  --fk-shell-blend:normal; --fk-theme-color:#0B0B0C;
+  --font-ui:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-head:'Inter Tight', 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --tp-r-card:24px; --tp-r-tile:18px; --tp-r-btn:999px; --tp-r-input:14px; --tp-r-dock:28px; --tp-btn-h:56px;
+  --tp-head-w:800; --tp-head-track:-.01em;
+  --tp-ease:cubic-bezier(.2,.9,.25,1); --tp-stagger:.07s; --tp-rise:12px; --tp-rise-dur:.6s;
+  --tp-gauge-a:#E6FF8A; --tp-gauge-b:#D4FF3A;
+  --sig-step-on-bg:#D4FF3A; --sig-step-on-ink:#0B0B0C; --sig-step-off-bg:#1A1A1C;
+  --tp-hero-grad:radial-gradient(90% 80% at 100% 0%, rgba(212,255,58,.16), transparent 60%), linear-gradient(160deg, #1E1E21, #0B0B0C);
+}
+
+/* ---------- 1h. TÍM ĐÊM PRO (tối) ---------- */
+:root[data-theme="violet"]{
+  --bg:#15161C;
+  --navy:#15161C; --navy-2:#1B1C24; --navy-3:#1F2029; --navy-4:#2E3040;
+  --mint:#A893FF; --mint-2:#C9BCFF; --mint-3:#7C5CFF;                 /* tím sáng cho chữ dữ liệu (7,1:1) */
+  --coral:#6C4CF5; --coral-2:#C9BCFF; --coral-3:#5A3BE0; --coral-4:#7C5CFF; --coral-hot:#FF5C7A;
+  --navy-rgb:21,22,28; --mint-rgb:168,147,255; --coral-rgb:108,76,245; --coral-2-rgb:201,188,255;
+  --on-mint:#15161C; --on-coral:#FFFFFF;                               /* 7,1:1 · 5,3:1 */
+  --text-muted:rgba(255,255,255,.78); --text-dim:rgba(255,255,255,.64);
+  --fk-line-k:.7;
+  --fk-veil-rgb:21,22,28; --fk-scrim-rgb:10,10,14;
+  --fk-sheet-1-rgb:31,32,41; --fk-sheet-2-rgb:21,22,28;
+  --fk-toast-rgb:255,255,255; --fk-toast-ink:#15161C; --fk-toast-accent:#5A3BE0;
+  --fk-dock-bg:rgba(31,32,41,.94); --fk-chip-bg:#1F2029;
+  --glass:linear-gradient(#1F2029, #1F2029); --glass-blur:none; --glass-solid:#1F2029;
+  --fk-shell-bg:radial-gradient(70% 28% at 104% -6%, rgba(124,92,255,.24), transparent 62%),
+                radial-gradient(60% 24% at -10% 72%, rgba(61,214,245,.06), transparent 66%), #15161C;
+  --fk-shell-blend:normal; --fk-theme-color:#15161C;
+  --font-ui:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-head:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --tp-r-card:22px; --tp-r-tile:16px; --tp-r-btn:16px; --tp-r-input:14px; --tp-r-dock:24px; --tp-btn-h:54px;
+  --tp-head-w:600; --tp-head-track:-.025em;
+  --tp-ease:cubic-bezier(.22,1,.36,1); --tp-stagger:.09s; --tp-rise:12px; --tp-rise-dur:.7s;
+  --tp-gauge-a:#A893FF; --tp-gauge-b:#7C5CFF;
+  --sig-step-on-bg:#6C4CF5; --sig-step-on-ink:#FFFFFF; --sig-step-off-bg:#1F2029;
+  --tp-hero-grad:radial-gradient(90% 80% at 100% 0%, rgba(124,92,255,.40), transparent 60%), linear-gradient(160deg, #262842, #15161C);
+}
+
+/* ---------- 1i. CHANH SÁNG (sáng) ---------- */
+:root[data-theme="lime"]{
+  --bg:#FFFFFF;
+  --navy:#0B0B0C; --navy-2:#1C1C1F; --navy-3:#2C2C31; --navy-4:#4A4A52;
+  --mint:#4D6600; --mint-2:#3D5200; --mint-3:#8DB000;                 /* ô-liu cho CHỮ dữ liệu (6,5:1 trắng) */
+  --coral:#DFFF4F; --coral-2:#4D6600; --coral-3:#C8EB2A; --coral-4:#ECFF94; --coral-hot:#D92D20;   /* chanh: mảng CTA/chip (chữ đen) */
+  --navy-rgb:11,11,12; --mint-rgb:77,102,0; --coral-rgb:223,255,79; --coral-2-rgb:77,102,0;
+  --on-mint:#FFFFFF; --on-coral:#0B0B0C;                               /* 6,5:1 · 17:1 */
+  --fk-ink:#0B0B0C; --fk-ink-rgb:11,11,12;
+  --fk-ov-rgb:11,11,12; --fk-ov-k:.5; --fk-line-k:.7; --fk-text-boost:.25;
+  --fk-veil-rgb:255,255,255; --fk-scrim-rgb:11,11,12;
+  --fk-sheet-1-rgb:255,255,255; --fk-sheet-2-rgb:245,246,242;
+  --fk-toast-rgb:11,11,12; --fk-toast-ink:#FFFFFF; --fk-toast-accent:#DFFF4F;
+  --fk-dock-bg:rgba(11,11,12,.94); --fk-chip-bg:#F3F4EF;
+  --text:#0B0B0C; --text-muted:rgba(11,11,12,.72); --text-dim:rgba(11,11,12,.64);   /* 7,3:1 · 5,6:1 trên thẻ #F3F4EF */
+  --surface:rgba(11,11,12,.04); --surface-2:rgba(11,11,12,.06); --surface-3:rgba(11,11,12,.09);
+  --border:rgba(11,11,12,.10); --border-strong:rgba(11,11,12,.18);
+  --glass:linear-gradient(#F3F4EF, #F3F4EF); --glass-blur:none; --glass-solid:#F3F4EF; --shadow-card:none;
+  --fk-shell-bg:radial-gradient(70% 22% at 104% -4%, rgba(223,255,79,.40), transparent 62%), #FFFFFF;
+  --fk-shell-blend:normal; --fk-theme-color:#FFFFFF;
+  --font-ui:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-head:'Inter Tight', 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --tp-r-card:28px; --tp-r-tile:22px; --tp-r-btn:999px; --tp-r-input:16px; --tp-r-dock:30px; --tp-btn-h:56px;
+  --tp-head-w:700; --tp-head-track:-.035em;
+  --tp-ease:cubic-bezier(.22,1,.36,1); --tp-stagger:.08s; --tp-rise:14px; --tp-rise-dur:.7s;
+  --tp-gauge-a:#ECFF94; --tp-gauge-b:#B8E000;
+  --sig-step-on-bg:#DFFF4F; --sig-step-on-ink:#0B0B0C; --sig-step-off-bg:#F3F4EF;
+  --tp-hero-grad:radial-gradient(90% 80% at 100% 0%, rgba(223,255,79,.30), transparent 60%), linear-gradient(160deg, #2C2C31, #0B0B0C);
+}
+
+/* "Đảo tối" (ảnh/video, màn chào) của 2 gói sáng mới → bảng màu của gói thay vì teal/coral mặc định (themes.css §4) */
+html.fk-light[data-theme="ember"] :is(.hero, #screen-workout > .topbar.transparent, .mg-card, .wl, #auth.wl-mode, .auth-hero,
+  #screen-ptprofile, .vplayer, .clip-thumb, .vthumb, .vp-item, .ld-media, .fk-dark-island){
+  --mint:#FF8A3D; --mint-2:#FFB38A; --mint-3:#FF6A2B; --mint-rgb:255,138,61; --success:#FF8A3D; --gold:#FF8A3D;
+  --coral:#FF6A2B; --coral-rgb:255,106,43; --coral-2:#FFB38A; --coral-2-rgb:255,179,138; --coral-4:#FF8A3D;
+  --primary:#FF6A2B; --primary-soft:#FFB38A; --warn:#FFB38A;
+  --on-mint:#1B0F0A; --on-coral:#1B0F0A; --fk-veil-rgb:27,20,16; --fk-scrim-rgb:27,20,16;
+}
+html.fk-light[data-theme="lime"] :is(.hero, #screen-workout > .topbar.transparent, .mg-card, .wl, #auth.wl-mode, .auth-hero,
+  #screen-ptprofile, .vplayer, .clip-thumb, .vthumb, .vp-item, .ld-media, .fk-dark-island){
+  --mint:#DFFF4F; --mint-2:#ECFF94; --mint-3:#C8EB2A; --mint-rgb:223,255,79; --success:#DFFF4F; --gold:#DFFF4F;
+  --coral:#DFFF4F; --coral-rgb:223,255,79; --coral-2:#ECFF94; --coral-2-rgb:236,255,148; --coral-4:#ECFF94;
+  --primary:#DFFF4F; --primary-soft:#ECFF94; --warn:#ECFF94;
+  --on-mint:#0B0B0C; --on-coral:#0B0B0C; --fk-veil-rgb:11,11,12; --fk-scrim-rgb:11,11,12;
+}
+html.fk-light[data-theme="ember"] .hero{ background-color:#2A1D16; }
+html.fk-light[data-theme="lime"] .hero{ background-color:#1C1C1F; }
+html.fk-light[data-theme="ember"] :is(#screen-ptprofile, #auth.wl-mode){ background:#1B1410; }
+html.fk-light[data-theme="lime"] :is(#screen-ptprofile, #auth.wl-mode){ background:#0B0B0C; }
+
+/* =========================================================================
+   9. CAM NĂNG LƯỢNG — thẻ trắng bo lớn, CTA viên thuốc cam đổ bóng cam mềm, số liệu lớn đậm có phần nhấn cam
+   ========================================================================= */
+html[data-theme="ember"] #app-shell::before{ opacity:0; }
+html[data-theme="ember"] :is(.card, .stat-box, .list-item, .metric, .entry-tile, .quick-row button, .nu-gauge-card, .nu-meal, .nu-water,
+  .nu-recipe, .plan-card, .role-card, .choice-card, .pb-opt, .sig-gauge-card){
+  -webkit-backdrop-filter:none; backdrop-filter:none; border-color:transparent !important; }
+html.fk-light[data-theme="ember"] :is(.card, .nu-gauge-card, .nu-meal, .nu-water, .home-hero, .nu-plan, .plan-card, .role-card, .sig-gauge-card){ box-shadow:var(--shadow-card) !important; }
+html[data-theme="ember"] .card::after{ display:none; }
+html[data-theme="ember"] .card :is(.stat-box, .metric, .list-item, .link-row){ background:#F6F6F4 !important; }
+html[data-theme="ember"] .bottom-nav{ border:1px solid rgba(27,27,31,.06) !important; box-shadow:0 10px 30px rgba(27,27,31,.10); }
+html[data-theme="ember"] .btn-block.btn-primary{ font-weight:700; letter-spacing:-.005em; }
+html[data-theme="ember"] :is(.stat-box .num, .ring-center .num, .metric b, .sig-gauge-c b, .sig-mac b){ font-family:var(--font-head); font-weight:800; letter-spacing:-.035em; }
+html[data-theme="ember"] :is(.stat-box .num, .metric b, .sig-mac b) :is(small, span){ color:var(--mint) !important; font-weight:700; }   /* đơn vị = phần nhấn cam */
+html[data-theme="ember"] .home-greet h2 span{ color:var(--mint) !important; font-weight:800; }
+html[data-theme="ember"] .pill:not(.active):not(.hot){ background:#FFFFFF !important; border-color:rgba(27,27,31,.08) !important; color:var(--text) !important; }
+html[data-theme="ember"] .wd.today{ background:linear-gradient(135deg, #FF6A2B, #FF8A3D) !important; border-color:transparent !important; box-shadow:0 8px 18px rgba(255,106,43,.28) !important; }
+html[data-theme="ember"] .wd.today :is(small, b){ color:#1B0F0A !important; }
+html[data-theme="ember"] .streak-chip{ background:#FFF1E8 !important; border-color:rgba(255,106,43,.25) !important; }
+html[data-theme="ember"] .streak-chip .material-symbols-rounded{ color:#E8501A; }
+
+/* =========================================================================
+   10. VOLT — thẻ #1A1A1C phẳng, tiêu đề IN HOA đậm 2 dòng (dòng 2 chanh), CTA viên dài có nút tròn mũi tên
+   ========================================================================= */
+html[data-theme="volt"] #app-shell::before{ opacity:0; }
+html[data-theme="volt"] .topbar{ background:linear-gradient(180deg, #0B0B0C 34%, rgba(11,11,12,0)) !important; }
+html[data-theme="volt"] :is(.card, .stat-box, .list-item, .metric, .entry-tile, .quick-row button, .wd, .nu-gauge-card, .nu-meal,
+  .nu-water, .nu-recipe, .plan-card, .role-card, .streak-chip, .date-chip, .choice-card, .pb-opt, .sig-gauge-card){
+  -webkit-backdrop-filter:none; backdrop-filter:none; }
+html[data-theme="volt"] .card::after{ display:none; }
+html[data-theme="volt"] :is(.card, .nu-gauge-card, .nu-meal, .nu-water, .sig-gauge-card){ background:#1A1A1C !important; border-color:rgba(255,255,255,.06) !important; }
+html[data-theme="volt"] .home-hero{ background-color:#141416 !important; }
+/* Tiêu đề in hoa đậm (tiếng Việt: line-height ≥ 1,08 để dấu chồng không chạm dòng trên) */
+html[data-theme="volt"] :is(h1, h2, .headline, .hero-title){ font-family:var(--font-head); font-weight:800; text-transform:uppercase; letter-spacing:-.01em; line-height:1.08; }
+html[data-theme="volt"] #home-content .home-greet h2{ font-size:30px !important; }
+html[data-theme="volt"] .home-greet h2 span{ color:#D4FF3A !important; }                       /* dòng 2 màu chanh */
+html[data-theme="volt"] .hero-title :is(span, em, b):last-child{ color:#D4FF3A; }
+html[data-theme="volt"] .pill:not(.active):not(.hot){ background:#1A1A1C !important; border-color:rgba(255,255,255,.10) !important; -webkit-backdrop-filter:none; backdrop-filter:none; }
+html[data-theme="volt"] .btn-outline{ background:#1A1A1C !important; border-color:rgba(255,255,255,.14) !important; -webkit-backdrop-filter:none; backdrop-filter:none; }
+html[data-theme="volt"] :is(.field input, .field select, .field textarea, .search-box, .fb-input){ background:#1A1A1C !important; border:1px solid rgba(255,255,255,.10) !important; }
+html[data-theme="volt"] .sheet{ background:#111113 !important; -webkit-backdrop-filter:none; backdrop-filter:none; border-top:1px solid rgba(255,255,255,.08); }
+html[data-theme="volt"] .wd.today{ background:#D4FF3A !important; border-color:#D4FF3A !important; }
+html[data-theme="volt"] .wd.today :is(small, b){ color:#0B0B0C !important; }
+
+/* CTA viên dài + nút tròn mũi tên (Volt, Chanh sáng): nút khối chính có ô tròn tối 44 px bên phải */
+html:is([data-theme="volt"], [data-theme="lime"]) .btn-block.btn-primary{ position:relative; padding-right:62px; justify-content:flex-start; padding-left:24px; min-height:56px; }
+html:is([data-theme="volt"], [data-theme="lime"]) .btn-block.btn-primary::after{
+  content:""; position:absolute; right:6px; top:50%; width:44px; height:44px; margin-top:-22px; border-radius:50%; pointer-events:none;
+  background:#0B0B0C url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 17L17 7M9 7h8v8' fill='none' stroke='%23DFFF4F' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 20px no-repeat;
+  transition:transform .35s var(--tp-ease, ease); }
+html[data-theme="volt"] .btn-block.btn-primary::after{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 17L17 7M9 7h8v8' fill='none' stroke='%23D4FF3A' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>"); }
+html:is([data-theme="volt"], [data-theme="lime"]) .btn-block.btn-primary:is(:hover, :focus-visible)::after{ transform:rotate(45deg); }
+
+/* =========================================================================
+   11. TÍM ĐÊM PRO — thẻ #1F2029 phẳng, nút tím, vòng/thanh chỉ số nhiều màu (tím · vàng · xanh)
+   ========================================================================= */
+html[data-theme="violet"] #app-shell::before{ opacity:0; }
+html[data-theme="violet"] :is(.card, .stat-box, .list-item, .metric, .entry-tile, .quick-row button, .wd, .nu-gauge-card, .nu-meal,
+  .nu-water, .nu-recipe, .plan-card, .role-card, .streak-chip, .choice-card, .pb-opt, .sig-gauge-card){
+  -webkit-backdrop-filter:none; backdrop-filter:none; }
+html[data-theme="violet"] .card::after{ display:none; }
+html[data-theme="violet"] :is(.card, .nu-gauge-card, .nu-meal, .nu-water, .sig-gauge-card){ background:#1F2029 !important; border-color:rgba(255,255,255,.06) !important; }
+html[data-theme="violet"] .card :is(.stat-box, .metric, .list-item){ background:#262735 !important; border-color:transparent !important; }
+html[data-theme="violet"] .home-hero{ background-color:#1F2029 !important; }
+html[data-theme="violet"] .pill:not(.active):not(.hot){ background:#1F2029 !important; border-color:rgba(255,255,255,.08) !important; -webkit-backdrop-filter:none; backdrop-filter:none; }
+html[data-theme="violet"] .sheet{ background:#1B1C24 !important; -webkit-backdrop-filter:none; backdrop-filter:none; border-top:1px solid rgba(255,255,255,.08); }
+html[data-theme="violet"] .wd.today{ background:#6C4CF5 !important; border-color:#6C4CF5 !important; }
+html[data-theme="violet"] .wd.today :is(small, b){ color:#FFFFFF !important; }
+/* 3 màu chỉ số: thanh macro / thẻ chỉ số / vòng trong Dinh dưỡng */
+html[data-theme="violet"] .metric:nth-of-type(3n+1) b{ color:#A893FF; }
+html[data-theme="violet"] .metric:nth-of-type(3n+2) b{ color:#FFC83D; }
+html[data-theme="violet"] .metric:nth-of-type(3n) b{ color:#3DD6F5; }
+html[data-theme="violet"] .nu-bar i:nth-child(1){ background:#7C5CFF !important; }
+html[data-theme="violet"] .nu-bar i:nth-child(2){ background:#FFC83D !important; }
+html[data-theme="violet"] .nu-bar i:nth-child(3){ background:#3DD6F5 !important; }
+html[data-theme="violet"] .sig-gauge-card{ background:radial-gradient(80% 60% at 100% 0%, rgba(124,92,255,.18), transparent 60%), #1F2029 !important; }
+
+/* =========================================================================
+   12. CHANH SÁNG — nền trắng, thẻ xám rất nhạt bo 28, chip/CTA chanh chữ đen, thẻ ảnh bo lớn có nút mũi tên tròn, dock đen
+   ========================================================================= */
+html[data-theme="lime"] #app-shell::before{ opacity:0; }
+html[data-theme="lime"] :is(.card, .stat-box, .list-item, .metric, .entry-tile, .quick-row button, .nu-gauge-card, .nu-meal, .nu-water,
+  .nu-recipe, .plan-card, .role-card, .choice-card, .pb-opt, .sig-gauge-card){
+  -webkit-backdrop-filter:none; backdrop-filter:none; border-color:transparent !important; }
+html.fk-light[data-theme="lime"] :is(.card, .nu-gauge-card, .nu-meal, .nu-water, .home-hero, .nu-plan, .plan-card, .role-card,
+  .metric, .entry-tile, .stat-box, .list-item, .wd, .quick-row button, .streak-chip, .nu-recipe, .tpl-card, .atp-day, .icon-btn){ box-shadow:none !important; }
+html[data-theme="lime"] .card::after{ display:none; }
+html[data-theme="lime"] .card :is(.stat-box, .metric, .list-item, .link-row){ background:#FFFFFF !important; }
+/* dock đen chữ trắng, tab đang chọn = chấm chanh chữ đen */
+html[data-theme="lime"] .bottom-nav{ border:none !important; box-shadow:0 12px 30px rgba(11,11,12,.22); }
+html[data-theme="lime"] .bottom-nav .nav-item{ color:rgba(255,255,255,.74); }
+html[data-theme="lime"] .bottom-nav .nav-item.active{ color:#FFFFFF; }
+/* thẻ ảnh bo lớn + nút mũi tên tròn */
+html[data-theme="lime"] :is(.home-hero, .hero, .mg-card, .tpl-card){ border-radius:28px; }
+html[data-theme="lime"] .home-hero{ position:relative; }
+html[data-theme="lime"] .home-hero::after{
+  content:""; position:absolute; right:14px; top:14px; left:auto; bottom:auto; width:44px; height:44px; border-radius:50%; pointer-events:none; z-index:2;
+  animation:none !important; transform:none; opacity:1;   /* thay vệt sáng (sheen) của style.css bằng nút mũi tên tròn */
+  background:#DFFF4F url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 17L17 7M9 7h8v8' fill='none' stroke='%230B0B0C' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 20px no-repeat; }
+html[data-theme="lime"] .home-hero .home-hero-ring{ margin-top:52px; }
+html[data-theme="lime"] .pill:not(.active):not(.hot){ background:#F3F4EF !important; border-color:transparent !important; color:#0B0B0C !important; }
+html[data-theme="lime"] .wd.today{ background:#0B0B0C !important; border-color:#0B0B0C !important; }
+html[data-theme="lime"] .wd.today :is(small, b){ color:#FFFFFF !important; }
+html[data-theme="lime"] .wd.done i{ background:#0B0B0C !important; color:#DFFF4F !important; }
+html[data-theme="lime"] .streak-chip{ background:#DFFF4F !important; border-color:transparent !important; color:#0B0B0C !important; }
+html[data-theme="lime"] .streak-chip :is(.material-symbols-rounded, b, small){ color:#0B0B0C !important; }
+html[data-theme="lime"] .btn-outline{ background:#FFFFFF !important; border-color:rgba(11,11,12,.16) !important; }
+
+/* =========================================================================
+   13. 4 GÓI MỚI — máy yếu / giảm chuyển động
+   ========================================================================= */
+html.lowfx:is([data-theme="ember"], [data-theme="volt"], [data-theme="violet"], [data-theme="lime"]) :is(.card, .nu-gauge-card, .sig-gauge-card, .home-hero, .bottom-nav){
+  box-shadow:none !important; }
+html.lowfx[data-theme="ember"] .wd.today{ box-shadow:none !important; }
+html.lowfx[data-theme="violet"] .sig-gauge-card{ background:#1F2029 !important; }
+@media (prefers-reduced-motion: reduce){
+  html:is([data-theme="volt"], [data-theme="lime"]) .btn-block.btn-primary::after{ transition:none; }
+  html:is([data-theme="volt"], [data-theme="lime"]) .btn-block.btn-primary:is(:hover, :focus-visible)::after{ transform:none; }
+}

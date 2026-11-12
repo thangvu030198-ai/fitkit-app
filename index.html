@@ -23,8 +23,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- QU-08: chỉ 4 họ font đang dùng (Inter · Inter Tight · JetBrains Mono cho ui-signature · Barlow Condensed 800 cho tiêu đề màn chào);
      nạp KHÔNG chặn vẽ (media=print → all), display=swap; mất mạng thì dùng font hệ thống -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@500&family=Barlow+Condensed:wght@800&display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@500&family=Barlow+Condensed:wght@800&display=swap"></noscript>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@500&family=Barlow+Condensed:wght@800&subset=vietnamese&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@500&family=Barlow+Condensed:wght@800&subset=vietnamese&display=swap"></noscript>
 <link rel="preload" href="assets/bg-storm.jpg" as="image" fetchpriority="high">  <!-- nền app (CSS biến --fk-shell-bg → phát hiện muộn) -->
 <link rel="preload" href="assets/brand/logo-lockup-light.svg" as="image">        <!-- logo màn khởi động -->
 <link rel="stylesheet" href="style.css">
@@ -45,6 +45,8 @@
 <link rel="stylesheet" href="admin.css">         <!-- vòng 3: Bảng quản trị (luôn tối, tiền tố .adm) — trước brand.css / themes-modules.css -->
 <link rel="stylesheet" href="theme-packs.css">     <!-- 5 gói giao diện (docs/THEME-PACKS.md): sau mọi CSS module, trước brand.css; thắng nhờ độ ưu tiên html[data-theme=…] -->
 <link rel="stylesheet" href="ui-signature.css">    <!-- thành phần chữ ký (trượt xác nhận, stepper, gauge, thẻ chọn số…) — chỉ dùng token -->
+<link rel="stylesheet" href="theme-accent.css">     <!-- token accent theo theme (nút/chip/tab/vòng/logo) — docs/THEME-PACKS.md §8 — sau ui-signature.css, ngay trước press-feel.css -->
+<link rel="stylesheet" href="press-feel.css">      <!-- cảm giác bấm: nhấn lún/lò xo, gợn sóng, chờ (docs/PRESS-FEEL.md) — ngay trước brand.css -->
 <link rel="stylesheet" href="brand.css">           <!-- thương hiệu TapEasy: sau themes.css + CSS module (theo docs brand.css), trước themes-modules.css -->
 <link rel="stylesheet" href="themes-modules.css">  <!-- SAU CÙNG trong các stylesheet -->
 <script src="themes.js"></script>                  <!-- trong <head>: áp theme trước khi vẽ → không nháy màu -->
@@ -552,7 +554,9 @@
 <script src="cloud-admin.js"></script>    <!-- vòng 3: SAU cloud-events/events/shop/cloud-social/community/findpt/kb — bọc quyền các API đó -->
 <script src="admin.js"></script>          <!-- vòng 3: Bảng quản trị -->
 <script src="theme-packs.js"></script>     <!-- gói giao diện: khúc xạ kính lỏng Espresso (chỉ hiệu ứng, không đổi DOM app) -->
+<script src="theme-accent.js"></script>     <!-- logo SVG nội tuyến đổi màu theo theme (fallback: <img> gốc) — ngay sau theme-packs.js -->
 <script src="ui-signature.js"></script>    <!-- thành phần chữ ký: trượt xác nhận, stepper, gauge, hồ sơ, typewriter — trước health-safety.js -->
+<script src="press-feel.js"></script>       <!-- cảm giác bấm + rung xúc giác + fkBusy (docs/PRESS-FEEL.md) — ngay trước morph-icons.js -->
 <script src="morph-icons.js" defer></script>     <!-- icon biến hình (morphicons, MIT): tự nạp lười thư viện tự host lúc rảnh; thiếu thư viện → đổi icon tức thì (docs/MORPH-ICONS.md) -->
 <script src="health-safety.js"></script>   <!-- LUÔN CUỐI: lớp an toàn bọc mọi hàm render/startSession -->
 </body>

@@ -117,6 +117,12 @@ def build(out, test=None, offline=False, no_sw=True, embed_shop=False):
     if lazy:
         print(f"Nhúng {len(lazy)} file dữ liệu nạp lười (fkLazy, đăng ký sẵn): {', '.join(lazy)}")
     html = inline_assets(html)
+    # Cảm giác bấm (docs/PRESS-FEEL.md): CSS ngay trước brand.css, JS ngay trước morph-icons.js — nhúng như mọi file khác
+    pf = [f for f in ("press-feel.css", "press-feel.js") if f'data-src="{f}"' not in html]
+    print("Cảm giác bấm: đã nhúng press-feel.css + press-feel.js" if not pf else f"⚠️ Thiếu {', '.join(pf)} (index.html chưa gắn?) — nút vẫn bấm được, không có hiệu ứng nhấn/rung")
+    # Token accent theo theme + logo SVG nội tuyến (docs/THEME-PACKS.md §8)
+    ta = [f for f in ("theme-accent.css", "theme-accent.js") if f'data-src="{f}"' not in html]
+    print("Accent theo theme: đã nhúng theme-accent.css + theme-accent.js" if not ta else f"⚠️ Thiếu {', '.join(ta)} (index.html chưa gắn?) — nút/logo giữ màu cũ khi đổi theme")
 
     pre = ""
     if no_sw:
