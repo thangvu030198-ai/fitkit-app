@@ -1,28 +1,764 @@
 {
  "model": "gpt-image-2.5",
  "base": "https://apivn.vn/v1",
- "started": "2026-11-12T00:08:55.812512Z",
+ "started": "2026-11-12T00:13:46.827957Z",
  "items": {
-  "goi-cuon": {
+  "bun-pho": {
    "ok": true,
    "via": "images",
-   "sec": 72.5
+   "sec": 71.6
   },
-  "ca-ngu-com": {
+  "khoai-lang": {
    "ok": true,
    "via": "images",
-   "sec": 28.9
+   "sec": 25.3
   },
-  "dau-hu-trung-hap": {
+  "ca-basa": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.5
+  },
+  "banh-mi": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.6
+  },
+  "sua-tuoi-co-duong": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.9
+  },
+  "trung-ga": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.3
+  },
+  "dau-den": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.1
+  },
+  "pho-mai": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.4
+  },
+  "sua-chua-hy-lap": {
+   "ok": true,
+   "via": "images",
+   "sec": 50.8
+  },
+  "oc-cho": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.6
+  },
+  "muc": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.3
+  },
+  "duong-trang": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.6
+  },
+  "banh-trang": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.2
+  },
+  "trung-trang": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.6
+  },
+  "quinoa": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.1
+  },
+  "hat-chia": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.7
+  },
+  "whey": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.2
+  },
+  "nam": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.4
+  },
+  "viet-quat": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.6
+  },
+  "dau-tay": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.1
+  },
+  "rau-thom": {
+   "ok": true,
+   "via": "images",
+   "sec": 30.7
+  },
+  "xoai": {
+   "ok": true,
+   "via": "images",
+   "sec": 31.4
+  },
+  "dua-hau": {
+   "ok": true,
+   "via": "images",
+   "sec": 29.2
+  },
+  "bun-bo-hue-to": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.8
+  },
+  "bun-cha-suat": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.2
+  },
+  "mi-quang-to": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.0
+  },
+  "hu-tieu-to": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.0
+  },
+  "com-van-phong": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.7
+  },
+  "banh-mi-thit": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.8
+  },
+  "com-tam-suon": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.8
+  },
+  "xoi-man": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.0
+  },
+  "chao-ga-to": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.8
+  },
+  "tra-sua": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.5
+  },
+  "banh-cuon-dia": {
+   "ok": true,
+   "via": "images",
+   "sec": 57.5
+  },
+  "nuoc-ngot": {
    "ok": true,
    "via": "images",
    "sec": 29.6
+  },
+  "bia": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.4
+  },
+  "dau-lang": {
+   "ok": true,
+   "via": "images",
+   "sec": 29.7
+  },
+  "tempeh": {
+   "ok": true,
+   "via": "images",
+   "sec": 31.5
+  },
+  "dau-ga": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.6
+  },
+  "dau-hu-ky": {
+   "ok": true,
+   "via": "images",
+   "sec": 29.5
+  },
+  "mi-can": {
+   "ok": true,
+   "via": "images",
+   "sec": 31.6
+  },
+  "dau-hu-non": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.1
+  },
+  "tvp": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.2
+  },
+  "dau-xanh": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.9
+  },
+  "dau-do": {
+   "ok": true,
+   "via": "images",
+   "sec": 30.3
+  },
+  "dau-phong": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.0
+  },
+  "hat-dieu": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.9
+  },
+  "hat-bi": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.7
+  },
+  "me-vung": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.9
+  },
+  "hat-lanh": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.2
+  },
+  "protein-thuc-vat": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.2
+  },
+  "hummus": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.9
+  },
+  "sua-hanh-nhan": {
+   "ok": true,
+   "via": "images",
+   "sec": 37.2
+  },
+  "dau-ha-lan": {
+   "ok": true,
+   "via": "images",
+   "sec": 31.1
+  },
+  "ca-ro-phi": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.3
+  },
+  "trung-cut": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.6
+  },
+  "ca-nuc": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.6
+  },
+  "gio-lua": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.8
+  },
+  "pho-mai-tuoi": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.0
+  },
+  "sua-tach-beo": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.9
+  },
+  "ngheu": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.7
+  },
+  "mien-dong": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.8
+  },
+  "xoi-trang": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.3
+  },
+  "khoai-mi": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.5
+  },
+  "bap-cai": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.7
+  },
+  "banh-gao-lut": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.7
+  },
+  "cai-ngot": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.3
+  },
+  "mong-toi": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.3
+  },
+  "bi-dao": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.1
+  },
+  "muop": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.8
+  },
+  "ca-tim": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.6
+  },
+  "kho-qua": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.1
+  },
+  "dau-bap": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.2
+  },
+  "sup-lo": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.1
+  },
+  "nam-dong-co": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.2
+  },
+  "su-su": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.6
+  },
+  "oi": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.8
+  },
+  "kim-chi": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.8
+  },
+  "du-du": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.0
+  },
+  "thanh-long": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.1
+  },
+  "buoi": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.7
+  },
+  "dua-thom": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.2
+  },
+  "nuoc-dua": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.7
+  },
+  "dau-an": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.5
+  },
+  "kiwi": {
+   "ok": true,
+   "via": "images",
+   "sec": 35.0
+  },
+  "dau-me": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.9
+  },
+  "bun-ga-xe": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.3
+  },
+  "ca-basa-kho": {
+   "ok": true,
+   "via": "images",
+   "sec": 31.6
+  },
+  "dau-hu-sot-ca": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.5
+  },
+  "chao-yen-mach-ga": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.6
+  },
+  "banh-mi-trung": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.7
+  },
+  "muc-hap-gung": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.8
+  },
+  "dui-ga-mat-ong-af": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.2
+  },
+  "tom-bap": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.6
+  },
+  "dau-hu-hap-nam": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.4
+  },
+  "bun-chay-dau-hu": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.2
+  },
+  "dau-hu-nam-af": {
+   "ok": true,
+   "via": "images",
+   "sec": 31.8
+  },
+  "quinoa-edamame": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.3
+  },
+  "dau-den-bowl": {
+   "ok": true,
+   "via": "images",
+   "sec": 29.4
+  },
+  "com-trung-rau": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.3
+  },
+  "mi-trung-rau": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.2
+  },
+  "chao-yen-mach-dau-hu": {
+   "ok": true,
+   "via": "images",
+   "sec": 37.8
+  },
+  "sua-dau-chuoi-hat": {
+   "ok": true,
+   "via": "images",
+   "sec": 36.8
+  },
+  "wrap-ga": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.5
+  },
+  "ca-hoi-khoai": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.9
+  },
+  "tempeh-sa-ot-af": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.9
+  },
+  "ca-ri-dau-ga": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.7
+  },
+  "dau-lang-ham": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.7
+  },
+  "mi-can-xao-sa": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.9
+  },
+  "tau-hu-ky-cuon-nam": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.1
+  },
+  "bun-tron-tvp": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.8
+  },
+  "yen-mach-protein-chay": {
+   "ok": true,
+   "via": "images",
+   "sec": 30.7
+  },
+  "bowl-dau-ga-quinoa": {
+   "ok": true,
+   "via": "images",
+   "sec": 31.9
+  },
+  "banh-mi-dau-hu-chay": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.2
+  },
+  "smoothie-dam-thuc-vat": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.9
+  },
+  "edamame-hat-bi": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.8
+  },
+  "dau-hu-kho-nam-dong-co": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.5
+  },
+  "chili-dau-do-tvp": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.1
+  },
+  "salad-tempeh-xoai": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.8
+  },
+  "com-dau-hu-sa-mong-toi": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.8
+  },
+  "sua-chua-oi": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.6
+  },
+  "pho-chay-nam-dau-hu": {
+   "ok": true,
+   "via": "images",
+   "sec": 29.7
+  },
+  "banh-gao-bo-dau-chuoi": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120032475881082838268d9d62XUq3RXY)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120032480759119858268d9d6glruVQnA)\",\"t"
+  },
+  "pho-mai-tuoi-dua": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120032516532414968268d9d64XUkRqoJ)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120032571291202178268d9d6C3umV0Sp)\",\"t"
+  },
+  "trung-luoc-rau": {
+   "ok": true,
+   "via": "images",
+   "sec": 30.9
+  },
+  "shake-whey-chuoi": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120032516534786638268d9d6oOoUlY48)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033021343184818268d9d6Cz9IZPHo)\",\"t"
+  },
+  "khoai-lang-trung": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033021840876048268d9d6sLHUitmH)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033029829688888268d9d6ayBQLSWj)\",\"t"
+  },
+  "banh-gao-ca-ngu": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033029818929518268d9d6TC4XTEEV)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033034623654498268d9d6NG2q72IY)\",\"t"
+  },
+  "sinh-to-bo-yen-mach": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033029759609018268d9d6zTXy2Uv5)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033034625720388268d9d6fUbxxi4E)\",\"t"
+  },
+  "sua-dau-banh-mi-bo-dau": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033051323392168268d9d6x0le9npr)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033094891756438268d9d6cZ9AViqu)\",\"t"
+  },
+  "xoi-dau-xanh-trung": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033051376269918268d9d688ABEtrG)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033094921695608268d9d6jXXp7RhV)\",\"t"
+  },
+  "hat-mix-tao": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033051318765308268d9d6HAfNPxju)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033094919003248268d9d6wknUv9j7)\",\"t"
+  },
+  "banh-cuon-cha-lua": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033121125915278268d9d627i4JNuK)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033132638123008268d9d6Ti03JJpB)\",\"t"
+  },
+  "banh-mi-ga-xe": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033121114838538268d9d6y1R52fZu)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033132664925328268d9d6Zc9yUUBS)\",\"t"
+  },
+  "chao-ca-ro-phi": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033121134551648268d9d61TsPMoav)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033132664238548268d9d6lNpPHBuf)\",\"t"
+  },
+  "hu-tieu-tom-thit": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033137449150458268d9d6MUZ2ZZr6)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033142241532858268d9d6JShqXJDH)\",\"t"
+  },
+  "khoai-lang-trung-sua-dau": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033137448938978268d9d6rewa87Ca)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033142257124928268d9d66UDA0ADe)\",\"t"
+  },
+  "pho-ga-nac": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033137565528368268d9d6wz5oJauv)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033142429901478268d9d6joZvPyCx)\",\"t"
+  },
+  "com-ca-nuc-kho": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033147086196568268d9d6LpTbqv2z)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033152155699608268d9d6PacFnV3c)\",\"t"
+  },
+  "canh-bi-dao-thit-trung": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033147036849678268d9d6xJFwlObh)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033152154284278268d9d6dAMHMQMx)\",\"t"
+  },
+  "dau-hu-nhoi-thit": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033152210457268268d9d6veUZX9H4)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033161788434508268d9d6mov0c9JD)\",\"t"
+  },
+  "ca-basa-ap-chao-nghe": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033161773601788268d9d6mLgihLSz)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033166838067888268d9d6oBxwnWly)\",\"t"
+  },
+  "trung-cut-kho-thit": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033161751805738268d9d6fD8HgG4q)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033166847933758268d9d6n5MI0CCK)\",\"t"
+  },
+  "mien-ga-nam": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033166839682168268d9d6Piw02SFD)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033171702051958268d9d6PIpi4XB7)\",\"t"
+  },
+  "ngheu-hap-sa-bun": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033171668492858268d9d6En8aDCn3)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033185310915928268d9d6BtL7xR2c)\",\"t"
+  },
+  "ca-ro-phi-hap": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033171726400288268d9d6hxL30YMY)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033185313479618268d9d6FcMMWqQp)\",\"t"
+  },
+  "bo-luc-lac-salad": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033185215319968268d9d6YtCXMW1f)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033190058880818268d9d6tXiTm9Sh)\",\"t"
+  },
+  "canh-chua-ca-basa": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033190108582888268d9d6KP8dcaNZ)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033195130189868268d9d6d9PJRyyi)\",\"t"
+  },
+  "ga-kho-gung": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033190109167498268d9d6Qt7bDFUs)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033195134992538268d9d6fzw4E72H)\",\"t"
+  },
+  "kho-qua-nhoi-thit": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033195184716158268d9d6iZA2dbM4)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033199958194418268d9d6LnduS3Yg)\",\"t"
+  },
+  "trai-cay-banh-gao": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033199959839148268d9d6CWgQ1GzN)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033204715922158268d9d6aQAlRnXp)\",\"t"
+  },
+  "bap-luoc-du-du": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033199960787188268d9d6v5BoQiWO)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033220374121678268d9d6J1UeJN0K)\",\"t"
+  },
+  "khoai-mon-hap-thanh-long": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033220332082668268d9d6l5Ab8wyY)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033225140551448268d9d67w6O8MXu)\",\"t"
+  },
+  "xoi-bap-me": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033220308458448268d9d6hXbuiJeG)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033225138679888268d9d6MOvsANMV)\",\"t"
+  },
+  "chao-khoai-lang": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033239519037998268d9d6lBM4xTy1)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033244290939238268d9d6LAjmyNnc)\",\"t"
+  },
+  "banh-mi-bo-ca-chua": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033239529404928268d9d6RXxp3G27)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120033244298594438268d9d604Bo4qj6)\",\"t"
   }
  },
- "finished": "2026-11-12T00:10:37.866071Z",
- "ok": 3,
- "fail": 0,
+ "finished": "2026-11-12T00:33:24.510520Z",
+ "ok": 123,
+ "fail": 33,
  "sheets": [
-  "contact-01.jpg"
+  "contact-01.jpg",
+  "contact-02.jpg",
+  "contact-03.jpg",
+  "contact-04.jpg",
+  "contact-05.jpg"
  ]
 }

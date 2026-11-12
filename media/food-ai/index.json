@@ -25,5 +25,1112 @@
   "at": "2026-11-12",
   "kind": "recipe",
   "name": "Trứng hấp đậu hũ, cơm, rau luộc"
+ },
+ "bun-pho": {
+  "file": "bun-pho.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "f0450979de7f",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Bún / Bánh phở"
+ },
+ "khoai-lang": {
+  "file": "khoai-lang.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "6cf4b3053fd4",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Khoai lang (luộc)"
+ },
+ "ca-basa": {
+  "file": "ca-basa.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "da112aff47c7",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Cá basa / Cá tra"
+ },
+ "banh-mi": {
+  "file": "banh-mi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "ed6dd48935a6",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Bánh mì trắng"
+ },
+ "sua-tuoi-co-duong": {
+  "file": "sua-tuoi-co-duong.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "abbde5fee6ff",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Sữa tươi có đường"
+ },
+ "trung-ga": {
+  "file": "trung-ga.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "efdfc39a2fcc",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Trứng gà (luộc)"
+ },
+ "dau-den": {
+  "file": "dau-den.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "0fb0251370d6",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Đậu đen (đã nấu)"
+ },
+ "pho-mai": {
+  "file": "pho-mai.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "30655500e332",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Phô mai (Cheddar)"
+ },
+ "sua-chua-hy-lap": {
+  "file": "sua-chua-hy-lap.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "3b6de68244a4",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Sữa chua Hy Lạp"
+ },
+ "oc-cho": {
+  "file": "oc-cho.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "902880339c1d",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Hạt óc chó"
+ },
+ "muc": {
+  "file": "muc.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "a08d8da634ee",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Mực (hấp)"
+ },
+ "duong-trang": {
+  "file": "duong-trang.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "c3e86005b363",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Đường trắng"
+ },
+ "banh-trang": {
+  "file": "banh-trang.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "a2de16f448b8",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Bánh tráng (khô)"
+ },
+ "trung-trang": {
+  "file": "trung-trang.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "970dbb9e9182",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Lòng trắng trứng"
+ },
+ "quinoa": {
+  "file": "quinoa.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "b218c430bcbf",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Hạt diêm mạch Quinoa (đã nấu)"
+ },
+ "hat-chia": {
+  "file": "hat-chia.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "2d9752f22319",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Hạt chia"
+ },
+ "whey": {
+  "file": "whey.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "3ebb599da472",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Whey protein (bột)"
+ },
+ "nam": {
+  "file": "nam.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "14126b0791ea",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Nấm (rơm, đùi gà, kim châm)"
+ },
+ "viet-quat": {
+  "file": "viet-quat.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "daf1bf14d4ba",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Việt quất"
+ },
+ "dau-tay": {
+  "file": "dau-tay.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "0eba59306cbf",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Dâu tây"
+ },
+ "rau-thom": {
+  "file": "rau-thom.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "b4d0591c660f",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Rau thơm các loại"
+ },
+ "xoai": {
+  "file": "xoai.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "df06dd6a5c92",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Xoài"
+ },
+ "dua-hau": {
+  "file": "dua-hau.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "02e6172494c2",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Dưa hấu"
+ },
+ "bun-bo-hue-to": {
+  "file": "bun-bo-hue-to.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "60eaf0a2c172",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Bún bò Huế (tô)"
+ },
+ "bun-cha-suat": {
+  "file": "bun-cha-suat.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "02abc65294cc",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Bún chả (suất)"
+ },
+ "mi-quang-to": {
+  "file": "mi-quang-to.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "6c7a2a21c579",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Mì Quảng (tô)"
+ },
+ "hu-tieu-to": {
+  "file": "hu-tieu-to.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "73e6c01a0c27",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Hủ tiếu (tô)"
+ },
+ "com-van-phong": {
+  "file": "com-van-phong.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "0cc5e4e0121a",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Cơm văn phòng gà/thịt (hộp)"
+ },
+ "banh-mi-thit": {
+  "file": "banh-mi-thit.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "a4f274707b73",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Bánh mì thịt (ổ)"
+ },
+ "com-tam-suon": {
+  "file": "com-tam-suon.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "6bdd4267c494",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Cơm tấm sườn bì chả (đĩa)"
+ },
+ "xoi-man": {
+  "file": "xoi-man.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "d9470586b825",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Xôi mặn / xôi gà (gói)"
+ },
+ "chao-ga-to": {
+  "file": "chao-ga-to.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "0e7dcaa8ffe5",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Cháo gà (tô)"
+ },
+ "tra-sua": {
+  "file": "tra-sua.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "9451717cc4f2",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Trà sữa trân châu (ly)"
+ },
+ "banh-cuon-dia": {
+  "file": "banh-cuon-dia.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "68e9d487b401",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Bánh cuốn (đĩa)"
+ },
+ "nuoc-ngot": {
+  "file": "nuoc-ngot.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "459dc11ead09",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Nước ngọt có ga (lon)"
+ },
+ "bia": {
+  "file": "bia.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "5eed4e71b734",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Bia (lon)"
+ },
+ "dau-lang": {
+  "file": "dau-lang.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "cbd0184e8555",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Đậu lăng (đã nấu)"
+ },
+ "tempeh": {
+  "file": "tempeh.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "7f0db734ecf2",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Tempeh (đậu nành lên men)"
+ },
+ "dau-ga": {
+  "file": "dau-ga.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "10d9fa97db2b",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Đậu gà (đã nấu)"
+ },
+ "dau-hu-ky": {
+  "file": "dau-hu-ky.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "798f62d4d5bd",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Tàu hũ ky (váng đậu, khô)"
+ },
+ "mi-can": {
+  "file": "mi-can.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "58e32d5f4534",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Mì căn (seitan, đạm lúa mì)"
+ },
+ "dau-hu-non": {
+  "file": "dau-hu-non.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "4ca64a85b59e",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Đậu hũ non (tàu hũ)"
+ },
+ "tvp": {
+  "file": "tvp.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "c3058094fa99",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Đạm đậu nành khô (TVP / thịt chay)"
+ },
+ "dau-xanh": {
+  "file": "dau-xanh.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "6beca9f3d138",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Đậu xanh (đã nấu)"
+ },
+ "dau-do": {
+  "file": "dau-do.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "39b3ece3ebac",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Đậu đỏ (đã nấu)"
+ },
+ "dau-phong": {
+  "file": "dau-phong.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "7618abec9037",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Đậu phộng rang"
+ },
+ "hat-dieu": {
+  "file": "hat-dieu.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "28b21f82533a",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Hạt điều"
+ },
+ "hat-bi": {
+  "file": "hat-bi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "53167ef6c232",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Hạt bí xanh (bóc vỏ)"
+ },
+ "me-vung": {
+  "file": "me-vung.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "bfc673ceeabf",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Mè (vừng) rang"
+ },
+ "hat-lanh": {
+  "file": "hat-lanh.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "12a4919df599",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Hạt lanh"
+ },
+ "protein-thuc-vat": {
+  "file": "protein-thuc-vat.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "d69a0ac1442a",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Bột đạm thực vật (đậu Hà Lan)"
+ },
+ "hummus": {
+  "file": "hummus.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "a233672a8cda",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Hummus (sốt đậu gà)"
+ },
+ "sua-hanh-nhan": {
+  "file": "sua-hanh-nhan.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "66c6360b5a55",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Sữa hạnh nhân không đường"
+ },
+ "dau-ha-lan": {
+  "file": "dau-ha-lan.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "ce92e79caf4a",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Đậu Hà Lan (luộc)"
+ },
+ "ca-ro-phi": {
+  "file": "ca-ro-phi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "e05928515e84",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Cá rô phi (hấp/nướng)"
+ },
+ "trung-cut": {
+  "file": "trung-cut.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "74612b2db4d7",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Trứng cút (luộc)"
+ },
+ "ca-nuc": {
+  "file": "ca-nuc.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "8012048c3fce",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Cá nục (kho/hấp)"
+ },
+ "gio-lua": {
+  "file": "gio-lua.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "9d477a310eca",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Giò lụa (chả lụa)"
+ },
+ "pho-mai-tuoi": {
+  "file": "pho-mai-tuoi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "30d02b1d04bf",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Phô mai tươi ít béo (cottage)"
+ },
+ "sua-tach-beo": {
+  "file": "sua-tach-beo.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "4ea8032114c2",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Sữa tươi tách béo"
+ },
+ "ngheu": {
+  "file": "ngheu.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "940eea9efa21",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Nghêu / ngao (ruột, đã hấp)"
+ },
+ "mien-dong": {
+  "file": "mien-dong.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "4e7a9cc4a68a",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Miến dong (khô)"
+ },
+ "xoi-trang": {
+  "file": "xoi-trang.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "fdd2bb548f12",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Xôi trắng (nếp đã đồ)"
+ },
+ "khoai-mi": {
+  "file": "khoai-mi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "cea935c7c5fa",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Khoai mì / sắn (luộc)"
+ },
+ "bap-cai": {
+  "file": "bap-cai.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "f25cc759a631",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Bắp cải"
+ },
+ "banh-gao-lut": {
+  "file": "banh-gao-lut.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "c567dfc085d1",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Bánh gạo lứt (rice cake)"
+ },
+ "cai-ngot": {
+  "file": "cai-ngot.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "54b6d0ac8349",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Cải ngọt / cải xanh"
+ },
+ "mong-toi": {
+  "file": "mong-toi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "5b77a931ac47",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Mồng tơi"
+ },
+ "bi-dao": {
+  "file": "bi-dao.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "544a4f0299e4",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Bí đao (bí xanh)"
+ },
+ "muop": {
+  "file": "muop.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "cba035a83cf1",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Mướp"
+ },
+ "ca-tim": {
+  "file": "ca-tim.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "9e95744dd6b8",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Cà tím"
+ },
+ "kho-qua": {
+  "file": "kho-qua.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "bb37d0aa05f9",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Khổ qua (mướp đắng)"
+ },
+ "dau-bap": {
+  "file": "dau-bap.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "d17af5066c13",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Đậu bắp"
+ },
+ "sup-lo": {
+  "file": "sup-lo.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "768821be8437",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Súp lơ trắng"
+ },
+ "nam-dong-co": {
+  "file": "nam-dong-co.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "3ce5b9087b8c",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Nấm đông cô tươi (shiitake)"
+ },
+ "su-su": {
+  "file": "su-su.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "f5021618c89c",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Su su"
+ },
+ "oi": {
+  "file": "oi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "994c04b4b916",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Ổi"
+ },
+ "kim-chi": {
+  "file": "kim-chi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "5457884dc06b",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Kim chi cải thảo"
+ },
+ "du-du": {
+  "file": "du-du.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "97c5ca100ee6",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Đu đủ chín"
+ },
+ "thanh-long": {
+  "file": "thanh-long.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "9f6848e2d956",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Thanh long"
+ },
+ "buoi": {
+  "file": "buoi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "48ba8e99fb85",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Bưởi"
+ },
+ "dua-thom": {
+  "file": "dua-thom.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "8a9cfadc038e",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Dứa (thơm)"
+ },
+ "nuoc-dua": {
+  "file": "nuoc-dua.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "c7c772bb3033",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Nước dừa tươi"
+ },
+ "dau-an": {
+  "file": "dau-an.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "f3b5597dce2f",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Dầu ăn (đậu nành / hướng dương)"
+ },
+ "kiwi": {
+  "file": "kiwi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "fa47cdd23e8e",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Kiwi"
+ },
+ "dau-me": {
+  "file": "dau-me.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "d5b710df5d5e",
+  "at": "2026-11-12",
+  "kind": "food",
+  "name": "Dầu mè"
+ },
+ "bun-ga-xe": {
+  "file": "bun-ga-xe.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "268ed52b6449",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Bún gà xé rau thơm"
+ },
+ "ca-basa-kho": {
+  "file": "ca-basa-kho.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "e75105aeef61",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Cá basa kho tộ ít dầu, cơm lứt, rau muống"
+ },
+ "dau-hu-sot-ca": {
+  "file": "dau-hu-sot-ca.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "e3be462465d3",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Đậu hũ sốt cà, cơm lứt, rau muống"
+ },
+ "chao-yen-mach-ga": {
+  "file": "chao-yen-mach-ga.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "ae8a092d170f",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Cháo yến mạch ức gà nấm"
+ },
+ "banh-mi-trung": {
+  "file": "banh-mi-trung.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "a9eb5074a204",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Bánh mì trứng & dưa leo"
+ },
+ "muc-hap-gung": {
+  "file": "muc-hap-gung.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "7a3887098270",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Mực hấp gừng hành, rau luộc"
+ },
+ "dui-ga-mat-ong-af": {
+  "file": "dui-ga-mat-ong-af.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "4a60db006daa",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Đùi gà nướng mật ong nồi chiên không dầu, cơm, salad"
+ },
+ "tom-bap": {
+  "file": "tom-bap.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "516c431c4841",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Tôm luộc & bắp"
+ },
+ "dau-hu-hap-nam": {
+  "file": "dau-hu-hap-nam.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "91cd502087de",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Đậu hũ non hấp nấm, cơm lứt, cải thìa"
+ },
+ "bun-chay-dau-hu": {
+  "file": "bun-chay-dau-hu.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "7718e1fa122b",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Bún chay đậu hũ chiên không dầu"
+ },
+ "dau-hu-nam-af": {
+  "file": "dau-hu-nam-af.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "fa3680c6ada7",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Đậu hũ sốt nấm nồi chiên, cơm lứt, bông cải (tăng cơ chay)"
+ },
+ "quinoa-edamame": {
+  "file": "quinoa-edamame.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "912cd560f621",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Salad quinoa edamame"
+ },
+ "dau-den-bowl": {
+  "file": "dau-den-bowl.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "d7b002c432b0",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Bowl đậu đen, cơm lứt, bơ & salsa"
+ },
+ "com-trung-rau": {
+  "file": "com-trung-rau.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "2de474ff5a8a",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Cơm trứng rau muống (rẻ – sinh viên)"
+ },
+ "mi-trung-rau": {
+  "file": "mi-trung-rau.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "a011f4a92f0d",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Mì gói nâng cấp: trứng + rau"
+ },
+ "chao-yen-mach-dau-hu": {
+  "file": "chao-yen-mach-dau-hu.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "fbf348357fc1",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Cháo yến mạch đậu hũ nấm (chay)"
+ },
+ "sua-dau-chuoi-hat": {
+  "file": "sua-dau-chuoi-hat.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "77eb16177b0e",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Sữa đậu nành, chuối & hạnh nhân"
+ },
+ "wrap-ga": {
+  "file": "wrap-ga.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "5dd203c945c2",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Wrap gà nguyên cám rau củ"
+ },
+ "ca-hoi-khoai": {
+  "file": "ca-hoi-khoai.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "8a737bd3c840",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Cá hồi áp chảo & khoai lang"
+ },
+ "tempeh-sa-ot-af": {
+  "file": "tempeh-sa-ot-af.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "0952e42a8402",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Tempeh sả ớt nồi chiên, cơm lứt, cải ngọt"
+ },
+ "ca-ri-dau-ga": {
+  "file": "ca-ri-dau-ga.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "b3ed9766af17",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Cà ri đậu gà & đậu hũ, rau bina, cơm lứt"
+ },
+ "dau-lang-ham": {
+  "file": "dau-lang-ham.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "ce508dbcd228",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Đậu lăng hầm cà chua cà rốt, bánh mì nguyên cám"
+ },
+ "mi-can-xao-sa": {
+  "file": "mi-can-xao-sa.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "1677cf3c13a6",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Mì căn xào sả ớt, đậu que, cơm trắng"
+ },
+ "tau-hu-ky-cuon-nam": {
+  "file": "tau-hu-ky-cuon-nam.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "b56d22171949",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Tàu hũ ky cuộn nấm hấp, cơm lứt, cải ngọt"
+ },
+ "bun-tron-tvp": {
+  "file": "bun-tron-tvp.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "c93701e87620",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Bún trộn 'thịt' chay đậu nành sả ớt"
+ },
+ "yen-mach-protein-chay": {
+  "file": "yen-mach-protein-chay.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "c3a5fd117f12",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Yến mạch sữa đậu nành, đạm thực vật, chuối & hạt bí"
+ },
+ "bowl-dau-ga-quinoa": {
+  "file": "bowl-dau-ga-quinoa.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "7060cf5694df",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Bowl đậu gà, quinoa, edamame & hummus"
+ },
+ "banh-mi-dau-hu-chay": {
+  "file": "banh-mi-dau-hu-chay.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "8a279d2dfcc7",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Bánh mì đậu hũ sả & đồ chua (chay)"
+ },
+ "smoothie-dam-thuc-vat": {
+  "file": "smoothie-dam-thuc-vat.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "0067a314a637",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Sinh tố chuối bơ đậu phộng & đạm thực vật"
+ },
+ "edamame-hat-bi": {
+  "file": "edamame-hat-bi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "73d65b5faafe",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Edamame luộc muối & hạt bí"
+ },
+ "dau-hu-kho-nam-dong-co": {
+  "file": "dau-hu-kho-nam-dong-co.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "394b97f9a340",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Đậu hũ kho nấm đông cô, cơm lứt, cải ngọt"
+ },
+ "chili-dau-do-tvp": {
+  "file": "chili-dau-do-tvp.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "b43e3f0de75a",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Đậu đỏ hầm kiểu chili với 'thịt' đậu nành, cơm lứt"
+ },
+ "salad-tempeh-xoai": {
+  "file": "salad-tempeh-xoai.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "00f58657f38c",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Salad tempeh áp chảo, xoài & mè rang"
+ },
+ "com-dau-hu-sa-mong-toi": {
+  "file": "com-dau-hu-sa-mong-toi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "23227702da39",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Cơm đậu hũ chiên sả (không dầu), canh mồng tơi"
+ },
+ "sua-chua-oi": {
+  "file": "sua-chua-oi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "305117fdfdb6",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Sữa chua Hy Lạp & ổi"
+ },
+ "pho-chay-nam-dau-hu": {
+  "file": "pho-chay-nam-dau-hu.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "3f27cec8659d",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Phở chay nấm & đậu hũ"
+ },
+ "trung-luoc-rau": {
+  "file": "trung-luoc-rau.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "39bd2b9c17a9",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "2 trứng luộc, dưa leo & cà chua"
  }
 }
