@@ -120,7 +120,8 @@ def main():
     tries = []
     for k in range(6):
         sidechain(tmp_m, tmp_v, tmp_d, thr, ratio)
-        d = read_wav(tmp_d)[:, :n]
+        d = read_wav(tmp_d)
+        d = np.pad(d, ((0, 0), (0, max(0, n - d.shape[1]))))[:, :n]   # ffmpeg có thể trả thiếu vài trăm ms → đệm về đúng n mẫu
         L_under = level_in(d, mask); tries.append((round(thr, 4), round(ratio, 2), round(L_under, 1)))
         if DUCK_LO <= L_under <= DUCK_HI: ducked = d; break
         if L_under > DUCK_HI: ratio = min(20, ratio * 1.6); thr = max(0.002, thr * 0.6)
