@@ -1,0 +1,64 @@
+name: Media — ảnh món ăn tạo bằng AI (API ảnh)
+
+# Khoá API đặt ở Settings → Secrets and variables → Actions → New repository secret:
+#   IMG_API_KEY  = khoá của nhà cung cấp ảnh (bắt buộc)
+#   IMG_API_BASE = (tuỳ chọn) ghi đè địa chỉ API mặc định bên dưới
+# Chạy: Actions → "Media — ảnh món ăn tạo bằng AI" → Run workflow.
+on:
+  workflow_dispatch:
+    inputs:
+      model:   { description: "Model ảnh", default: "gpt-image-2.5", required: false }
+      base_url: { description: "Địa chỉ API (OpenAI-compatible)", default: "https://apivn.vn/v1", required: false }
+      ids:     { description: "Chỉ tạo các id (cách nhau dấu phẩy) — để trống = tất cả", default: "", required: false }
+      reasons: { description: "Lọc theo lý do: missing,wrong,questionable — để trống = tất cả", default: "", required: false }
+      limit:   { description: "Tối đa số ảnh lần này (0 = không giới hạn)", default: "0", required: false }
+      quality: { description: "Chất lượng: low | medium | high | (trống = mặc định của API)", default: "medium", required: false }
+      force:   { description: "Tạo lại cả ảnh đã có (1 = có)", default: "0", required: false }
+      mode:    { description: "Kiểu API: auto | images | chat", default: "auto", required: false }
+
+permissions:
+  contents: write
+
+concurrency:
+  group: media-food-ai
+  cancel-in-progress: false
+
+jobs:
+  gen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Cài thư viện
+        run: pip install -q requests pillow numpy "rembg[cpu]"
+      - name: Tạo ảnh
+        env:
+          IMG_API_KEY: ${{ secrets.IMG_API_KEY }}
+          IMG_API_BASE: ${{ secrets.IMG_API_BASE || inputs.base_url }}
+          IMG_MODEL: ${{ inputs.model }}
+          IMG_IDS: ${{ inputs.ids }}
+          IMG_REASONS: ${{ inputs.reasons }}
+          IMG_LIMIT: ${{ inputs.limit }}
+          IMG_QUALITY: ${{ inputs.quality }}
+          IMG_FORCE: ${{ inputs.force }}
+          IMG_MODE: ${{ inputs.mode }}
+          IMG_WORKERS: "3"
+        run: python scripts/gen_ai_food_images.py
+      - name: Lưu bảng duyệt (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: food-ai-review
+          path: media/food-ai/_review/
+          if-no-files-found: ignore
+      - name: Lưu vào repo
+        if: always()
+        run: |
+          git config user.name "tapeasy-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add media/food-ai
+          if git diff --cached --quiet; then echo "Không có gì mới"; exit 0; fi
+          git commit -m "media: ảnh món ăn tạo bằng AI (${{ inputs.model }})"
+          git pull --rebase && git push
