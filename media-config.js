@@ -19,6 +19,9 @@ const MEDIA_CONFIG = {
   pixabayKey: "",
   // Video nền màn mở app (QU-04): "auto" = KHÔNG tìm video lúc chạy (không gọi API), chỉ dùng ảnh nền tĩnh.
   // Muốn có video nền: dán thẳng link .mp4 cố định (CDN của app) lúc build.
-  welcomeVideo: "auto",
+  welcomeVideo: (typeof innerWidth !== "undefined" && innerWidth * (typeof devicePixelRatio !== "undefined" ? devicePixelRatio : 1) > 900)
+    ? "https://thangvu030198-ai.github.io/fitkit-app/media/welcome/welcome-bw-1080.mp4"
+    : "https://thangvu030198-ai.github.io/fitkit-app/media/welcome/welcome-bw-720.mp4",   // clip Pexels 36184742, đen trắng (workflow media-welcome.yml)
+  welcomePoster: "https://thangvu030198-ai.github.io/fitkit-app/media/welcome/welcome-bw-poster.jpg",
   welcomeQuery: "gym workout training",
 };

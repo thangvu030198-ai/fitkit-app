@@ -355,6 +355,7 @@ function hideAuth(){ $("#auth").classList.remove("open"); stopAuthVideos(); }
    (MEDIA_CONFIG.welcomeVideo = link .mp4 hoặc file cục bộ, không phải "auto") và chỉ sau khi màn chào vẽ xong (lúc rảnh);
    video.js vẫn tự bỏ qua khi giảm chuyển động / tiết kiệm dữ liệu (QU-34). */
 function welcomePoster(){
+  try{ const p = typeof MEDIA_CONFIG !== "undefined" && MEDIA_CONFIG && MEDIA_CONFIG.welcomePoster; if(p) return p; }catch(e){}
   const u = (typeof IMG !== "undefined" && IMG && IMG.heroWorkout3) || "";
   return /images\.pexels\.com/.test(u) ? u.replace(/([?&]w=)\d+/, "$1720") : u;
 }

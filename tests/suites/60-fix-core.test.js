@@ -628,7 +628,7 @@ module.exports = {
       assert.equal(app.ev("__mw"), 0, "không có URL cố định thì không gắn video");
       assert.ok(!app.fetchLog.slice(n0).some(u=> /pixabay\.com\/api|api\.pexels\.com/.test(u)), "có request API video");
       const h = app.lastHtml("auth-body");
-      assert.ok(/wl-hero-bg" style="background-image:url\('https:\/\/images\.pexels\.com[^']*w=720/.test(h), "nền màn chào chưa dùng ảnh tĩnh nhỏ");
+      assert.ok(/wl-hero-bg" style="background-image:url\('(https:\/\/images\.pexels\.com[^']*w=720|[^']*media\/welcome\/welcome-bw-poster\.jpg)/.test(h), "nền màn chào chưa dùng ảnh tĩnh nhỏ");   // 12/11: poster đen trắng tự host
       app.run(`MEDIA_CONFIG.welcomeVideo = "https://cdn.example.com/welcome.mp4"; document.getElementById("auth").classList.add("open");`);
       app.call("showAuth", "welcome"); await app.settle(40);
       assert.equal(app.ev("__mw"), 1, "có URL cố định → gắn video (lúc rảnh) đúng 1 lần");

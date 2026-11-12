@@ -243,3 +243,14 @@ html[data-theme] .tsx .sig-slide-label, .tsx .sig-slide-label{ font-size:12px; l
 @media (prefers-reduced-motion: reduce){
   .sig-slide *, .sig-gauge-card *, .onboard-step.sig-reveal > *, .sig-tw-caret, .sig-pf-hero::before{ animation:none !important; transition:none !important; }
 }
+
+
+/* 12/11 — Màn chào đen trắng + sửa nháy "blur" khi bấm thẻ chọn onboarding.
+   Nguyên nhân nháy: thẻ có backdrop-filter + transform:scale khi :active + transition nền → Chrome dựng lại lớp kính, khung hình
+   lúc bấm mất nội dung/viền mờ ngang dọc. Onboarding dùng nền đặc bán trong suốt (không backdrop-filter), không scale. */
+.wl-hero-bg, .wl-hero-video{ filter:grayscale(1) contrast(1.08); }
+#onboarding .choice-card{ -webkit-backdrop-filter:none !important; backdrop-filter:none !important; background:rgba(255,255,255,.07);
+  transition:background-color .18s ease, border-color .18s ease, color .18s ease !important; transform:none !important; will-change:auto; }
+#onboarding .choice-card:active{ transform:none !important; }
+#onboarding .choice-card.selected{ background:var(--mint); }
+#onboarding .onboard-step.sig-reveal > *{ animation-fill-mode:backwards; }
