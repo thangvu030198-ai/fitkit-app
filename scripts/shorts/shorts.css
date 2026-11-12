@@ -130,7 +130,8 @@ html,body{ background:#000; overflow:hidden; -webkit-font-smoothing:antialiased;
 .head .acc .w{ color:var(--mint); }
 .cap{ position:absolute; text-align:center; }
 .cap .cl{ display:block; white-space:nowrap; }
-.cap .pl{ display:inline-block; padding:4px 18px 8px; border-radius:18px; background:rgba(3,8,11,.62); }
+.cap .cl + .cl{ margin-top:8px; }   /* 2 dòng không chạm nhau khi chữ “nảy” (scale 1,07) */
+.cap .pl{ display:inline-block; padding:3px 18px 6px; border-radius:18px; background:rgba(3,8,11,.62); }
 .cap .cw{ display:inline-block; font:800 58px/1.2 var(--f-head); color:#fff; letter-spacing:-.01em; transform-origin:50% 70%; text-shadow:0 3px 14px rgba(0,0,0,.6); }
 .cap .cw.now{ color:var(--mint); }
 .cap .cw.fut{ color:rgba(255,255,255,.5); }

@@ -240,7 +240,7 @@ function build(p, b){
     const a0 = tq(put(el("div", "row kv", root), 80, 590), "card"); el("small", "", a0, "TUẦN 0"); const av = el("span", "", a0, num(pts[0], p.dec));
     const a1 = tq(put(el("div", "row kv", root), 520, 590, 320), "card"); a1.style.textAlign = "right"; el("small", "", a1, "TUẦN 12"); const bv = el("span", "", a1, num(pts[0], p.dec));
     if(p.unit) [a0, a1].forEach(a => el("span", "", a, " " + p.unit));
-    const bd = tq(put(el("div", "badge" + (p.color === "coral" ? " cor" : ""), root, p.badge || "Số liệu minh hoạ"), 0, 0), "card"); bd.style.right = "64px"; bd.style.left = "auto"; bd.style.top = "52px";
+    const bd = tq(put(el("div", "badge" + (p.color === "coral" ? " cor" : ""), root, p.badge || "Số liệu minh hoạ"), 0, 0), "card"); bd.style.right = "64px"; bd.style.left = "auto"; bd.style.top = "686px";   // góc dưới-phải: không chung hàng với tiêu đề dài (QA chữ chồng)
     N.upd = (lt, t) => {
       const q = eIO(prog(t, p.steps[0], Math.max(0.6, p.steps[1] - p.steps[0] + 0.3)));
       ln.setAttribute("stroke-dashoffset", (len * (1 - q)).toFixed(1)); area.setAttribute("opacity", (0.12 * q).toFixed(3));
@@ -310,17 +310,18 @@ function build(p, b){
 }
 
 function watchFace(scr, mode){
-  const L = (y, cls, txt) => { const e = tq(put(el("div", "wl " + cls, scr, txt), 0, y), "card"); e.style.width = "324px"; return e; };
+  // Khoảng cách dòng tính theo hộp chữ thật (~1,3 × cỡ chữ) — mỗi dòng cách nhau ≥ 6 px (QA chữ chồng)
+  const L = (y, cls, txt, fs) => { const e = tq(put(el("div", "wl " + cls, scr, txt), 0, y), "card"); e.style.width = "324px"; if(fs) e.style.fontSize = fs + "px"; return e; };
   if(mode === "logo"){ const a = L(140, "w2", ""); a.innerHTML = "Tap<span style=\"color:#02BCB3\">Easy</span>"; a.style.fontSize = "74px"; L(240, "w3", "SẮP RA MẮT"); return (lt) => op(a, prog(lt, 0.2, 0.4)); }
   if(mode === "run"){
-    const map = el("div", "", scr); map.innerHTML = `<svg width="324" height="170" viewBox="0 0 324 170"><path class="rt" d="M40 140 C 80 40, 140 160, 180 80 S 270 30, 290 60" fill="none" stroke="#33D6C9" stroke-width="8" stroke-linecap="round" stroke-dasharray="420" stroke-dashoffset="420"/></svg>`;
-    put(map, 0, 40); const rt = map.querySelector(".rt");
-    L(214, "w1", "CHẠY BỘ · KM 3"); const d = L(256, "w2", "3,42"); L(350, "w3", "5:12 /km");
+    const map = el("div", "", scr); map.innerHTML = `<svg width="324" height="140" viewBox="0 0 324 170"><path class="rt" d="M40 140 C 80 40, 140 160, 180 80 S 270 30, 290 60" fill="none" stroke="#33D6C9" stroke-width="8" stroke-linecap="round" stroke-dasharray="420" stroke-dashoffset="420"/></svg>`;
+    put(map, 0, 24); const rt = map.querySelector(".rt");
+    L(176, "w1", "CHẠY BỘ · KM 3"); const d = L(234, "w2", "3,42", 80); L(338, "w3", "5:12 /km");
     return (lt) => { rt.setAttribute("stroke-dashoffset", (420 * (1 - eIO(prog(lt, 0.2, 1.8)))).toFixed(1)); d.textContent = num(2.6 + 0.82 * eOutCubic(prog(lt, 0.2, 2)), 2); };
   }
-  if(mode === "hyrox"){ L(70, "w1", "HYROX · TRẠM 3/8"); const tm = L(120, "w2", "04:12"); L(230, "w3", "CHẶNG CHẠY 4/8"); L(280, "w3", "1 KM × 8");
+  if(mode === "hyrox"){ L(58, "w1", "HYROX · TRẠM 3/8"); const tm = L(118, "w2", "04:12", 86); L(236, "w3", "CHẶNG CHẠY 4/8"); L(288, "w3", "1 KM × 8");
     return (lt) => { const s = 252 + Math.floor(lt * 3); tm.textContent = String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); }; }
-  if(mode === "health"){ L(70, "w1", "NHỊP TIM · VÙNG 3"); const hr = L(120, "w2", "128"); L(220, "w3", "bpm"); L(280, "w1", "GIẤC NGỦ 7 GIỜ 20");
+  if(mode === "health"){ L(58, "w1", "NHỊP TIM · VÙNG 3"); const hr = L(118, "w2", "128", 86); L(236, "w3", "bpm"); L(290, "w1", "GIẤC NGỦ 7 GIỜ 20");
     return (lt) => { hr.textContent = String(124 + Math.round(4 * Math.sin(lt * 2.2))); }; }
   L(110, "w1", "ĐÃ LƯU VÀO"); const a = L(160, "w2", ""); a.innerHTML = "Tap<span style=\"color:#02BCB3\">Easy</span>"; a.style.fontSize = "70px"; L(260, "w3", "45 phút · 6,1 km");
   return () => {};

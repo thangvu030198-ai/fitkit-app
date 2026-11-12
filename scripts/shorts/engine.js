@@ -20,9 +20,9 @@ const ZONES = {
   kicker: { x:X0, y:236, w:X1 - X0, h:40 },
   head:   { x:X0, y:286, w:X1 - X0, h:214 },
   vis:    { x:X0 - 20, y:516, w:X1 - X0 + 40, h:756 },     // khung hình ảnh (thẻ/phone) — chữ trong thẻ vẫn ≥ 60 px mép
-  card:   { x:X0, y:530, w:X1 - X0, h:728 },               // nội dung chữ của thẻ
-  cap:    { x:X0, y:1288, w:X1 - X0, h:152 },
-  src:    { x:X0, y:1450, w:X1 - X0, h:50 },
+  card:   { x:X0 + 4, y:530, w:X1 - X0 - 8, h:728 },       // nội dung chữ của thẻ (chừa 4 px mỗi bên: viền/bóng không lấn vùng an toàn)
+  cap:    { x:X0, y:1270, w:X1 - X0, h:170 },              // 2 dòng × (58×1,2 + đệm 12) ≈ 164 px → kết thúc ≤ 1440
+  src:    { x:X0, y:1452, w:X1 - X0, h:48 },               // nguồn ≤ 2 dòng 24 px → ≤ 1500 (đáy vùng an toàn), cách phụ đề ≥ 12 px
 };
 const CAP = { size:58, line:1.2, maxChars:24, maxLines:2, maxWords:9 };
 const HEAD = { maxSize:94, minSize:60, charW:0.56, maxLines:2 };
