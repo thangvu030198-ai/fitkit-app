@@ -159,6 +159,9 @@
       .toast, #toast, .fk-toast, .toast-wrap{ opacity:0!important; visibility:hidden!important; }
       body.__ti-notrans *{ transition:none!important; }
       html:not(.__ti-pop) .ach-pop{ display:none!important; }
+      /* lớp phủ mới (13/11): màn "Kế hoạch đã sẵn sàng", banner thống kê, nút góp ý nổi → không bao giờ lọt vào khung chụp */
+      html:not(.__ti-ready) #ob-ready, html:not(.__ti-ready) .ob-ready{ display:none!important; }
+      #fk-consent, .fk-consent, .fk-fab, #fk-feedback-fab, [class*="feedback-fab"]{ display:none!important; }
       html:not(.__ti-pop) canvas.ach-confetti, html:not(.__ti-pop) .ach-confetti{ display:none!important; }
       /* màn chào: bản app cũ còn mũi tên SMIL chạy trên bản đồ (trước giờ begin nằm ở góc 0,0 = "chấm lạ") → ẩn khi chụp */
       .wl-runner{ display:none!important; }
@@ -617,6 +620,8 @@
       if(s.whatsNewSeen !== latest || !s.npsLastAt){ s.whatsNewSeen = latest; s.npsLastAt = Date.now(); localStorage.setItem(k, JSON.stringify(s)); }
       if(F && typeof F.hideFab === "function") F.hideFab();
     }catch(e){}
+    try{ if(typeof W.showPlanReady === "function" && !W.showPlanReady.__ti){ const f = function(){ try{ if(typeof W.afterFirstOnboarding === "function") W.afterFirstOnboarding(); else if(typeof W.goto === "function") W.goto("home"); }catch(e){} }; f.__ti = 1; W.showPlanReady = f; } }catch(e){}
+    try{ $a("[inert]").forEach(n => { if(!n.closest || !n.closest("#ob-ready")) n.removeAttribute("inert"); }); }catch(e){}
     try{ const r = $q("#ob-ready"); if(r && !r.hidden){ const hp = G("hidePlanReady"); if(typeof hp === "function") hp(); else { r.classList.remove("open"); r.hidden = true; } } }catch(e){}
   };
 

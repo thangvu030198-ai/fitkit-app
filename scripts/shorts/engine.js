@@ -25,7 +25,7 @@ const ZONES = {
   src:    { x:X0, y:1452, w:X1 - X0, h:48 },               // nguồn ≤ 2 dòng 24 px → ≤ 1500 (đáy vùng an toàn), cách phụ đề ≥ 12 px
 };
 const CAP = { size:58, line:1.2, maxChars:24, maxLines:2, maxWords:9 };
-const HEAD = { maxSize:94, minSize:60, charW:0.56, maxLines:2 };
+const HEAD = { maxSize:94, minSize:60, charW:0.6, maxLines:2 };   // 0,6: tính cả lề .2em giữa các từ
 const MAX_GAP = 2.5;            // giây tối đa giữa 2 "điều mới" trên hình
 const LEAD = 0.14, TAIL = 0.26; // đệm trước/sau lời trong mỗi nhịp
 
