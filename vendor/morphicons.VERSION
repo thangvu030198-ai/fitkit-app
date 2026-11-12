@@ -1,0 +1,5 @@
+morphicons 2.0.2
+npm: https://www.npmjs.com/package/morphicons/v/2.0.2
+bundle: esbuild --bundle --format=iife --global-name=Morphicons --minify (entry: export * from "morphicons/dom")
+sha256: fae06494e864f96b14bd4228d521a8447140eb750adc2ea56c755c7f7ae4e4bb
+built: 2026-11-12T05:13:15Z
