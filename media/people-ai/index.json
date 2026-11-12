@@ -1294,5 +1294,113 @@
   "size": "1024x1024",
   "at": "2026-11-12",
   "name": "Album PT Lý Thanh Tâm #4"
+ },
+ "hero-m-1": {
+  "file": "hero-m-1.webp",
+  "sm": "hero-m-1-sm.webp",
+  "w": 853,
+  "h": 1280,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "4c70b92943af",
+  "size": "1024x1536",
+  "at": "2026-11-12",
+  "name": "Hero Tập luyện nam 1"
+ },
+ "hero-m-4": {
+  "file": "hero-m-4.webp",
+  "sm": "hero-m-4-sm.webp",
+  "w": 853,
+  "h": 1280,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "6191524feb90",
+  "size": "1024x1536",
+  "at": "2026-11-12",
+  "name": "Hero Tập luyện nam 4"
+ },
+ "hero-m-2": {
+  "file": "hero-m-2.webp",
+  "sm": "hero-m-2-sm.webp",
+  "w": 853,
+  "h": 1280,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "02bd37788f19",
+  "size": "1024x1536",
+  "at": "2026-11-12",
+  "name": "Hero Tập luyện nam 2"
+ },
+ "hero-m-3": {
+  "file": "hero-m-3.webp",
+  "sm": "hero-m-3-sm.webp",
+  "w": 853,
+  "h": 1280,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "21df249ee5b9",
+  "size": "1024x1536",
+  "at": "2026-11-12",
+  "name": "Hero Tập luyện nam 3"
+ },
+ "hero-f-1": {
+  "file": "hero-f-1.webp",
+  "sm": "hero-f-1-sm.webp",
+  "w": 853,
+  "h": 1280,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "1b2d07416a75",
+  "size": "1024x1536",
+  "at": "2026-11-12",
+  "name": "Hero Tập luyện nữ 1"
+ },
+ "hero-f-2": {
+  "file": "hero-f-2.webp",
+  "sm": "hero-f-2-sm.webp",
+  "w": 853,
+  "h": 1280,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "00a6afdaa27c",
+  "size": "1024x1536",
+  "at": "2026-11-12",
+  "name": "Hero Tập luyện nữ 2"
+ },
+ "hero-f-3": {
+  "file": "hero-f-3.webp",
+  "sm": "hero-f-3-sm.webp",
+  "w": 853,
+  "h": 1280,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "d08ccde72f0b",
+  "size": "1024x1536",
+  "at": "2026-11-12",
+  "name": "Hero Tập luyện nữ 3"
+ },
+ "ob-gym-empty": {
+  "file": "ob-gym-empty.webp",
+  "sm": "ob-gym-empty-sm.webp",
+  "w": 1280,
+  "h": 853,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "4bb53ea36635",
+  "size": "1536x1024",
+  "at": "2026-11-12",
+  "name": "Phòng tập trống tông đen (onboarding)"
+ },
+ "hero-f-4": {
+  "file": "hero-f-4.webp",
+  "sm": "hero-f-4-sm.webp",
+  "w": 853,
+  "h": 1280,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "9fa6cde9c840",
+  "size": "1024x1536",
+  "at": "2026-11-12",
+  "name": "Hero Tập luyện nữ 4"
  }
 }

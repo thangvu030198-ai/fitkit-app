@@ -2,16 +2,57 @@
  "model": "gpt-image-2.5",
  "base": "https://apivn.vn/v1",
  "manifest": "scripts/ai_people_prompts.json",
- "started": "2026-11-12T08:35:50.054095Z",
+ "started": "2026-11-12T09:18:02.985091Z",
  "items": {
   "hero-m-1": {
-   "ok": false,
-   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120835569829977408268d9d6OzHa3wHx)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120836024311871028268d9d6XjCswO7H)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | chat: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lạ"
+   "ok": true,
+   "via": "images",
+   "sec": 37.6
+  },
+  "hero-m-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 16.6
+  },
+  "hero-m-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 17.0
+  },
+  "hero-m-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 17.6
+  },
+  "hero-f-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 15.4
+  },
+  "hero-f-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 17.1
+  },
+  "hero-f-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.6
+  },
+  "ob-gym-empty": {
+   "ok": true,
+   "via": "images",
+   "sec": 18.7
+  },
+  "hero-f-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.8
   }
  },
- "finished": "2026-11-12T08:36:04.836269Z",
- "ok": 0,
- "fail": 1,
+ "finished": "2026-11-12T09:19:35.487567Z",
+ "ok": 9,
+ "fail": 0,
  "sheets": [
   "contact-01.jpg",
   "contact-02.jpg",
