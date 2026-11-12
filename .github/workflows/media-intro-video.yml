@@ -1,9 +1,12 @@
 name: Media — video giới thiệu TapEasy (intro dọc + ngang)
 
-# Dựng video giới thiệu ~3:50 từ app THẬT (chụp bằng Playwright, dữ liệu demo cục bộ, không đăng nhập tài khoản thật).
-# 1) capture  : chụp 70+ màn app 390×844 @3x + tải ảnh nền/clip màn chào  → artifact intro-build
+# Dựng video giới thiệu ~4:31 từ app THẬT (+ chương "Sắp ra mắt" tự vẽ: đồng hồ thông minh, chạy bộ, HYROX) (chụp bằng Playwright, dữ liệu demo cục bộ, không đăng nhập tài khoản thật).
+# 1) capture  : giọng đọc TTS (minimax-speech-2.8-turbo qua apivn, khớp timeline) + chụp 70+ màn app 390×844 @3x
+#               (giả lập vùng an toàn iPhone 59/34 px + QA chữ/nút không lọt dải trạng thái/thanh home) + ảnh nền  → artifact intro-build
 # 2) render   : 2 khổ × 3 phần chạy song song (compose.html → render(t) → H.264)  → artifact intro-chunks-*
-# 3) publish  : ghép + nhạc tự tổng hợp + chuẩn hoá -14 LUFS + poster + QA (+ QR nhóm Zalo quét được) → media/intro/ (commit) + artifact tapeasy-intro
+# 3) publish  : ghép + nhạc tự tổng hợp + giọng đọc (nhạc tự hạ khi có lời) + chuẩn hoá -14 LUFS + poster + QA (+ QR nhóm Zalo quét được)
+#               → media/intro/ (commit) + artifact tapeasy-intro. TTS lỗi → video vẫn xuất bản với nhạc không lời (cảnh báo).
+# Khoá TTS: secret TTS_API_KEY nếu có, không thì dùng IMG_API_KEY (cùng nhà cung cấp apivn).
 # app_url CHỈ dùng để chụp app — video không hiện URL/tên miền nào; đoạn kết là QR nhóm Zalo "TapEasy Cộng Đồng"
 # (scripts/intro-video/assets/zalo-community-qr.jpg).
 # Tài liệu: docs/INTRO-VIDEO.md
@@ -14,6 +17,9 @@ on:
       fps:      { description: "Khung/giây (30 hoặc 60)", default: "30", required: false }
       scale:    { description: "deviceScaleFactor khi chụp app", default: "3", required: false }
       commit:   { description: "Commit media/intro vào repo (true/false)", default: "true", required: false }
+      voice:    { description: "Giọng đọc giới thiệu TTS (true/false)", default: "true", required: false }
+      tts_voice: { description: "Ép voice id TTS (trống = tự dò giọng nam trầm)", default: "", required: false }
+      safe_strict: { description: "QA vùng an toàn chặn workflow khi có chữ/nút dưới dynamic island/thanh home (true/false)", default: "true", required: false }
 
 permissions:
   contents: write
@@ -41,10 +47,27 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-noto-core fonts-noto-color-emoji
       - name: Storyboard → mốc thời gian
         run: python scripts/intro-video/prep.py
+      - name: Giọng đọc (TTS minimax-speech-2.8-turbo, nam trầm ấm) — kéo dài chương nếu lời dài hơn
+        if: ${{ (inputs.voice || 'true') == 'true' }}
+        continue-on-error: true
+        env:
+          TTS_API_KEY: ${{ secrets.TTS_API_KEY || secrets.IMG_API_KEY }}
+          TTS_API_BASE: https://apivn.vn/v1
+          TTS_MODEL: minimax-speech-2.8-turbo
+          TTS_VOICE: ${{ inputs.tts_voice || '' }}
+        run: |
+          python scripts/intro-video/tts.py --fit-timeline
+          cat scripts/intro-video/build/qa/voice/report.txt || true
+          if [ ! -f scripts/intro-video/build/voice/voice.wav ]; then echo "::warning::Không có giọng đọc — video sẽ chỉ có nhạc. Log (đã che khoá): build/qa/voice/tts-log.json trong artifact tapeasy-intro"; fi
+      - name: Kiểm logic bộ dựng (không cần trình duyệt) — render(t) mọi khung, phụ đề không mồ côi, QR ≥ 6 s
+        run: node scripts/intro-video/smoke_node.js --step 0.25
       - name: Ảnh nền + clip màn chào
         run: python scripts/intro-video/fetch_assets.py
       - name: Chụp app thật (390×844 @${{ inputs.scale || '3' }}x)
-        run: python scripts/intro-video/capture_app.py --url "${{ inputs.app_url || 'https://thangvu030198-ai.github.io/fitkit-app/' }}" --scale "${{ inputs.scale || '3' }}"
+        run: python scripts/intro-video/capture_app.py --url "${{ inputs.app_url || 'https://thangvu030198-ai.github.io/fitkit-app/' }}" --scale "${{ inputs.scale || '3' }}" ${{ (inputs.safe_strict || 'true') == 'true' && ' ' || '--safe-warn' }}
+      - name: Báo cáo vùng an toàn (cảnh có sheet mở, chữ/nút dưới dynamic island / thanh home)
+        if: always()
+        run: cat scripts/intro-video/build/qa/safe/report.txt || true
       - name: Contact sheet các màn đã chụp
         run: |
           cd scripts/intro-video/build
@@ -52,7 +75,7 @@ jobs:
       - name: Không hiện URL/GitHub trên video
         run: |
           if grep -niE "github|https?://" scripts/intro-video/timeline.json scripts/intro-video/build/timeline.js; then echo "::error::timeline còn URL"; exit 1; fi
-      - name: QA khít ảnh app ↔ màn mockup (dọc + ngang, ≤ 1 px)
+      - name: QA khít ảnh app ↔ màn mockup (dọc + ngang, ≤ 1 px) + QA chữ (phụ đề mồ côi, chữ đè nhau)
         run: |
           python scripts/intro-video/qa_fit.py --fmt v
           python scripts/intro-video/qa_fit.py --fmt h
@@ -61,6 +84,13 @@ jobs:
           name: intro-build
           path: scripts/intro-video/build
           retention-days: 5
+      - name: Lưu ảnh QA khi lỗi (vùng an toàn / khít / giọng đọc)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: intro-qa-failed
+          path: scripts/intro-video/build/qa
+          retention-days: 7
 
   render:
     needs: capture
@@ -109,6 +139,10 @@ jobs:
         with: { pattern: intro-chunks-h-*, merge-multiple: true, path: scripts/intro-video/build/out/h/chunks }
       - name: Nhạc tự tổng hợp (116 BPM, không bản quyền)
         run: python scripts/intro-video/music.py
+      - name: Trộn giọng đọc (lời −16 LUFS, nhạc dưới lời −22…−26 LUFS, ducking sidechain) — không có lời thì giữ nhạc
+        run: |
+          python scripts/intro-video/mix_audio.py --mp3
+          cat scripts/intro-video/build/qa/voice/mix-report.txt || true
       - name: Ghép + chuẩn hoá âm lượng + poster
         run: python scripts/intro-video/finalize.py --fmt v --fmt h --dest media/intro
       - name: QA (contact sheet, dải quanh chuyển cảnh, nháy sáng, QR cuối phim quét được + đứng yên)
