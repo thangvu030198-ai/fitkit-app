@@ -1,0 +1,55 @@
+{
+ "series": "TapEasy Shorts",
+ "generated": "2026-11-12 18:52",
+ "count": 2,
+ "format": "1080x1920 H.264 30fps, AAC -14 LUFS",
+ "cta": "Tải miễn phí trong cộng đồng TapEasy (QR nhóm Zalo)",
+ "items": [
+  {
+   "id": "demo-thuc-don",
+   "n": 7,
+   "title": "Thực đơn món Việt + công thức",
+   "pillar": "app-demo",
+   "hook": "Ăn kiêng vẫn toàn món Việt",
+   "cover_title": "Ăn kiêng toàn món Việt",
+   "caption": "Thực đơn theo calo & mục tiêu, toàn món Việt quen thuộc, công thức từng bước (có món nồi chiên không dầu, món chay), đổi món 1 chạm, danh sách đi chợ cả tuần.",
+   "hashtags": [
+    "#TapEasy",
+    "#thucdon",
+    "#monviet",
+    "#ankieng",
+    "#eatclean",
+    "#giammo"
+   ],
+   "duration": 25.6,
+   "voice": true,
+   "video": "demo-thuc-don.mp4",
+   "cover": "demo-thuc-don.jpg",
+   "srt": "demo-thuc-don.srt",
+   "mb": 14.46
+  },
+  {
+   "id": "demo-tim-pt",
+   "n": 8,
+   "title": "Tìm PT phù hợp & hồ sơ PT",
+   "pillar": "app-demo",
+   "hook": "Tìm PT đúng người",
+   "cover_title": "Tìm PT đúng người, không sợ chọn sai",
+   "caption": "Lọc PT theo khu vực, chuyên môn, mức giá; hồ sơ minh bạch (số học viên, số buổi, năm kinh nghiệm); đánh giá chỉ từ người đã tập thật. PT cũng quản lý học viên & lịch dạy ngay trong app.",
+   "hashtags": [
+    "#TapEasy",
+    "#timPT",
+    "#personaltrainer",
+    "#huanluyenvien",
+    "#gymvietnam",
+    "#PT"
+   ],
+   "duration": 21.0,
+   "voice": true,
+   "video": "demo-tim-pt.mp4",
+   "cover": "demo-tim-pt.jpg",
+   "srt": "demo-tim-pt.srt",
+   "mb": 11.35
+  }
+ ]
+}
