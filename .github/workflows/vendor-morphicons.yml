@@ -1,0 +1,102 @@
+name: Vendor — morphicons (icon biến hình, MIT)
+
+# Tải thư viện morphicons (https://www.morphicons.com, npm "morphicons", MIT, zero deps) và đóng gói thành
+# 1 file IIFE tự host: vendor/morphicons.min.js (global `Morphicons` — createMorph, setRegionLoader, …).
+# morph-icons.js nạp lười file này; chưa có file → app đổi icon tức thì như cũ. Xem docs/MORPH-ICONS.md.
+# Chạy: Actions → "Vendor — morphicons" → Run workflow (tuỳ chọn phiên bản). Tự chạy lại khi sửa chính file này.
+#
+# Ghi chú chunk "region": dist/dom.js nạp ĐỘNG bộ chuẩn hoá vùng tô (import("./region-….js")) — chỉ cần cho icon
+# TÔ ĐẶC. esbuild (--format=iife, không chia chunk) gộp luôn import động đó vào bundle ⇒ không có file rời nào
+# phải tải thêm, setRegionLoader KHÔNG bắt buộc. TapEasy chỉ dùng icon nét (FK_LINE) nên chunk đó không bao giờ chạy.
+on:
+  workflow_dispatch:
+    inputs:
+      version: { description: "Phiên bản morphicons (vd 2.0.2) — để trống = latest", default: "", required: false }
+  push:
+    paths:
+      - ".github/workflows/vendor-morphicons.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vendor-morphicons
+  cancel-in-progress: false
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+
+      - name: Cài morphicons + esbuild (thư mục tạm, không đụng package.json của app)
+        working-directory: ${{ runner.temp }}
+        env:
+          MI_VERSION: ${{ inputs.version }}
+        run: |
+          mkdir -p mi && cd mi
+          npm init -y >/dev/null
+          V="${MI_VERSION:-latest}"
+          case "$V" in latest|[0-9]*) ;; *) echo "Phiên bản lạ: $V"; exit 1;; esac
+          npm i --no-audit --no-fund "morphicons@$V" esbuild
+          node -p "require('./node_modules/morphicons/package.json').version" > version.txt
+          echo "morphicons $(cat version.txt)"
+
+      - name: Đóng gói IIFE (global Morphicons)
+        working-directory: ${{ runner.temp }}/mi
+        run: |
+          printf 'export * from "morphicons/dom";\n' > entry.mjs
+          VER="$(cat version.txt)"
+          npx esbuild entry.mjs --bundle --format=iife --global-name=Morphicons --minify \
+            --target=es2019 --legal-comments=none --charset=utf8 \
+            --banner:js="/*! morphicons v${VER} | MIT License | https://www.morphicons.com | xem vendor/morphicons.LICENSE */" \
+            --outfile=morphicons.min.js
+          ls -la morphicons.min.js
+
+      - name: Kiểm tra bundle (chạy được, có createMorph, morph 1 path giả)
+        working-directory: ${{ runner.temp }}/mi
+        run: |
+          node -e '
+            const vm = require("vm"), fs = require("fs");
+            const ctx = { console, setTimeout, clearTimeout, performance, requestAnimationFrame: f => setTimeout(() => f(performance.now()), 16), cancelAnimationFrame: clearTimeout };
+            ctx.window = ctx; ctx.globalThis = ctx; vm.createContext(ctx);
+            vm.runInContext(fs.readFileSync("morphicons.min.js", "utf8"), ctx);
+            const M = ctx.Morphicons;
+            if(!M || typeof M.createMorph !== "function") { console.error("thiếu Morphicons.createMorph"); process.exit(1); }
+            const el = { a: {}, setAttribute(k, v){ this.a[k] = v; } };
+            const m = M.createMorph(el, "M4 7h16M4 12h16M4 17h10", { reducedMotion: "always", strokeWidth: 1.8 });
+            m.morphTo("M18 6 6 18M6 6l12 12", "snappy");
+            if(!el.a.d) { console.error("không ghi d"); process.exit(1); }
+            m.destroy();
+            console.log("OK — exports:", Object.keys(M).join(", "));
+          '
+
+      - name: Ghi vendor/ (bundle + LICENSE + phiên bản)
+        run: |
+          MI="${{ runner.temp }}/mi"
+          mkdir -p vendor
+          cp "$MI/morphicons.min.js" vendor/morphicons.min.js
+          LIC="$(ls "$MI"/node_modules/morphicons/LICENSE* "$MI"/node_modules/morphicons/license* 2>/dev/null | head -n1 || true)"
+          if [ -n "$LIC" ]; then cp "$LIC" vendor/morphicons.LICENSE
+          else
+            AUTHOR="$(node -p "require('$MI/node_modules/morphicons/package.json').author || 'morphicons authors'")"
+            printf 'MIT License\n\nCopyright (c) %s\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n' "$AUTHOR" > vendor/morphicons.LICENSE
+          fi
+          VER="$(cat "$MI/version.txt")"
+          SHA="$(sha256sum vendor/morphicons.min.js | cut -d' ' -f1)"
+          printf 'morphicons %s\nnpm: https://www.npmjs.com/package/morphicons/v/%s\nbundle: esbuild --bundle --format=iife --global-name=Morphicons --minify (entry: export * from "morphicons/dom")\nsha256: %s\nbuilt: %s\n' \
+            "$VER" "$VER" "$SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > vendor/morphicons.VERSION
+          cat vendor/morphicons.VERSION
+          ls -la vendor/
+
+      - name: Commit vendor/
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add vendor/morphicons.min.js vendor/morphicons.LICENSE vendor/morphicons.VERSION
+          if git diff --cached --quiet; then echo "Không có thay đổi"; exit 0; fi
+          git commit -m "vendor: morphicons $(head -n1 vendor/morphicons.VERSION | cut -d' ' -f2) (IIFE tự host cho icon biến hình)"
+          git push
