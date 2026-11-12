@@ -601,12 +601,33 @@
     targets: { del: () => $a("#screen-profile button, #screen-profile a").filter(vis).find(b => /Xoá tài khoản|Xóa tài khoản/.test(b.textContent)) } });
   shot("menu", { setup: async () => { await go("home", 700); click($q("#screen-home .btn-menu-trigger")); await TI.settle(1000); } });
 
+  /* ---------- dọn lớp phủ của app trước mỗi shot ----------
+     Bản app 13/11 thêm: màn "Kế hoạch đã sẵn sàng" (#ob-ready) sau onboarding, banner đồng ý thống kê (#fk-consent),
+     hộp "Có gì mới" / NPS (feedback.js), nút góp ý nổi. Không dọn → che MỌI màn chụp sau onboarding (lỗi intro v3 lần 4).
+     Shot muốn chụp chính lớp phủ đó đặt def.keepOverlays = true. */
+  TI.clearOverlays = function(){
+    try{
+      const A = W.FKAnalytics; if(A && typeof A.shouldAsk === "function" && A.shouldAsk()) A.setConsent(false, "capture");
+      if(A && typeof A.hideBanner === "function") A.hideBanner();
+      const cb = $q("#fk-consent"); if(cb){ cb.classList.remove("open"); cb.hidden = true; }
+    }catch(e){}
+    try{
+      const k = "fk_feedback_v1"; const s = JSON.parse(localStorage.getItem(k) || "{}") || {};
+      const F = W.FKFeedback, latest = F && F.CHANGELOG && F.CHANGELOG[0] ? F.CHANGELOG[0].id : "9999-12-31";
+      if(s.whatsNewSeen !== latest || !s.npsLastAt){ s.whatsNewSeen = latest; s.npsLastAt = Date.now(); localStorage.setItem(k, JSON.stringify(s)); }
+      if(F && typeof F.hideFab === "function") F.hideFab();
+    }catch(e){}
+    try{ const r = $q("#ob-ready"); if(r && !r.hidden){ const hp = G("hidePlanReady"); if(typeof hp === "function") hp(); else { r.classList.remove("open"); r.hidden = true; } } }catch(e){}
+  };
+
   /* ---------- chạy 1 shot ---------- */
   TI.run = async function(id){
     const def = S[id]; if(!def) return { error: "không có shot " + id };
     TI.log = [];
+    if(!def.keepOverlays){ TI.clearOverlays(); }
     try{ TI.applySafeArea(); }catch(e){}
     try{ await def.setup(); }catch(e){ say("setup " + id + ": " + (e && e.message)); }
+    if(!def.keepOverlays){ TI.clearOverlays(); }
     try{ if(TI.applySafeArea()) await sleep(120); }catch(e){}
     const sc = typeof def.scroller === "function" ? (() => { try{ return def.scroller(); }catch(e){ return null; } })() : def.scroller;
     const m = TI.measure({ scroller: sc, targets: def.targets });
