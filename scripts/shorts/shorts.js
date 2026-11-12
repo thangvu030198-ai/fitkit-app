@@ -134,9 +134,9 @@ function build(p, b){
   }
   else if(k === "duo"){
     const tiles = [p.a, p.b].map((d, j) => {
-      const t = put(el("div", "glass", root), 20 + j * 452, 150, 428, 460);
-      const a = tq(put(el("div", "big", t, d.t), 0, 120, 428), "card"); a.style.textAlign = "center"; a.style.fontSize = "150px"; if(j) a.style.color = "#FF7A45";
-      const s = tq(put(el("div", "lbl", t, d.s), 0, 300, 428), "card"); s.style.textAlign = "center"; s.style.fontSize = "40px";
+      const t = put(el("div", "glass", root), 20 + j * 448, 150, 424, 460);   // ô phải kết thúc ở x 932 (< 940 kể cả viền 1 px)
+      const a = tq(put(el("div", "big", t, d.t), 0, 120, 424), "card"); a.style.textAlign = "center"; a.style.fontSize = "150px"; if(j) a.style.color = "#FF7A45";
+      const s = tq(put(el("div", "lbl", t, d.s), 0, 300, 424), "card"); s.style.textAlign = "center"; s.style.fontSize = "40px";
       return t;
     });
     N.upd = (lt, t) => tiles.forEach((tl, j) => { const q = spring(t - p.steps[j], 170, 18); op(tl, clamp(q * 1.5, 0, 1)); tf(tl, `translateY(${((1 - q) * 120).toFixed(1)}px) scale(${(0.9 + 0.1 * q).toFixed(4)})`); });
@@ -240,7 +240,7 @@ function build(p, b){
     const a0 = tq(put(el("div", "row kv", root), 80, 590), "card"); el("small", "", a0, "TUẦN 0"); const av = el("span", "", a0, num(pts[0], p.dec));
     const a1 = tq(put(el("div", "row kv", root), 520, 590, 320), "card"); a1.style.textAlign = "right"; el("small", "", a1, "TUẦN 12"); const bv = el("span", "", a1, num(pts[0], p.dec));
     if(p.unit) [a0, a1].forEach(a => el("span", "", a, " " + p.unit));
-    const bd = tq(put(el("div", "badge" + (p.color === "coral" ? " cor" : ""), root, p.badge || "Số liệu minh hoạ"), 0, 0), "card"); bd.style.right = "64px"; bd.style.left = "auto"; bd.style.top = "686px";   // góc dưới-phải: không chung hàng với tiêu đề dài (QA chữ chồng)
+    const bd = tq(put(el("div", "badge" + (p.color === "coral" ? " cor" : ""), root, p.badge || "Số liệu minh hoạ"), 0, 0), "card"); bd.style.left = "72px"; bd.style.top = "112px";   // dưới tiêu đề, trên lưới biểu đồ: không chung hàng tiêu đề dài, không đè số TUẦN 12 (QA chữ chồng)
     N.upd = (lt, t) => {
       const q = eIO(prog(t, p.steps[0], Math.max(0.6, p.steps[1] - p.steps[0] + 0.3)));
       ln.setAttribute("stroke-dashoffset", (len * (1 - q)).toFixed(1)); area.setAttribute("opacity", (0.12 * q).toFixed(3));
