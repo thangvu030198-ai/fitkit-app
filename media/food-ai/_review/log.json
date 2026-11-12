@@ -1,21 +1,183 @@
 {
  "model": "gpt-image-2.5",
  "base": "https://apivn.vn/v1",
- "started": "2026-11-12T00:54:25.440496Z",
+ "started": "2026-11-12T01:31:30.497253Z",
  "items": {
   "banh-gao-bo-dau-chuoi": {
-   "ok": false,
-   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120054280252089958268d9d6i4dmhnw4)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫309,50, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120054288485253338268d9d6AvtD8h8L)\",\"t"
+   "ok": true,
+   "via": "images",
+   "sec": 73.6
+  },
+  "shake-whey-chuoi": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.9
+  },
+  "pho-mai-tuoi-dua": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.7
+  },
+  "khoai-lang-trung": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.8
+  },
+  "sinh-to-bo-yen-mach": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.7
+  },
+  "hat-mix-tao": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.1
+  },
+  "banh-gao-ca-ngu": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.7
+  },
+  "xoi-dau-xanh-trung": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.0
+  },
+  "sua-dau-banh-mi-bo-dau": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.6
+  },
+  "banh-cuon-cha-lua": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.0
+  },
+  "banh-mi-ga-xe": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.7
+  },
+  "chao-ca-ro-phi": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.9
+  },
+  "pho-ga-nac": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.3
+  },
+  "khoai-lang-trung-sua-dau": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.8
+  },
+  "hu-tieu-tom-thit": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.0
+  },
+  "com-ca-nuc-kho": {
+   "ok": true,
+   "via": "images",
+   "sec": 38.7
+  },
+  "canh-bi-dao-thit-trung": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.5
+  },
+  "dau-hu-nhoi-thit": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.2
+  },
+  "trung-cut-kho-thit": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.1
+  },
+  "ca-basa-ap-chao-nghe": {
+   "ok": true,
+   "via": "images",
+   "sec": 35.5
+  },
+  "mien-ga-nam": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.5
+  },
+  "ca-ro-phi-hap": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.1
+  },
+  "ngheu-hap-sa-bun": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.3
+  },
+  "ga-kho-gung": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.9
+  },
+  "canh-chua-ca-basa": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.6
+  },
+  "bo-luc-lac-salad": {
+   "ok": true,
+   "via": "images",
+   "sec": 59.3
+  },
+  "kho-qua-nhoi-thit": {
+   "ok": true,
+   "via": "images",
+   "sec": 31.7
+  },
+  "trai-cay-banh-gao": {
+   "ok": true,
+   "via": "images",
+   "sec": 31.9
+  },
+  "bap-luoc-du-du": {
+   "ok": true,
+   "via": "images",
+   "sec": 31.3
+  },
+  "khoai-mon-hap-thanh-long": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.7
+  },
+  "xoi-bap-me": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.9
+  },
+  "chao-khoai-lang": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.1
+  },
+  "banh-mi-bo-ca-chua": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.0
   }
  },
- "finished": "2026-11-12T00:54:31.383485Z",
- "ok": 0,
- "fail": 1,
+ "finished": "2026-11-12T01:37:59.611527Z",
+ "ok": 33,
+ "fail": 0,
  "sheets": [
   "contact-01.jpg",
   "contact-02.jpg",
   "contact-03.jpg",
   "contact-04.jpg",
-  "contact-05.jpg"
+  "contact-05.jpg",
+  "contact-06.jpg"
  ]
 }

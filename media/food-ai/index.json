@@ -1132,5 +1132,302 @@
   "at": "2026-11-12",
   "kind": "recipe",
   "name": "2 trứng luộc, dưa leo & cà chua"
+ },
+ "banh-gao-bo-dau-chuoi": {
+  "file": "banh-gao-bo-dau-chuoi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "922a2573f511",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Bánh gạo lứt bơ đậu phộng, chuối & sữa"
+ },
+ "shake-whey-chuoi": {
+  "file": "shake-whey-chuoi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "bbc2d912affa",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Shake whey chuối sữa tách béo (sau tập)"
+ },
+ "pho-mai-tuoi-dua": {
+  "file": "pho-mai-tuoi-dua.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "36a07d38df84",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Phô mai tươi (cottage) với dứa"
+ },
+ "khoai-lang-trung": {
+  "file": "khoai-lang-trung.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "c7db29aa6f84",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Khoai lang luộc & trứng luộc"
+ },
+ "sinh-to-bo-yen-mach": {
+  "file": "sinh-to-bo-yen-mach.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "2ee5f9005144",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Sinh tố bơ sữa yến mạch (tăng cân)"
+ },
+ "hat-mix-tao": {
+  "file": "hat-mix-tao.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "039529637b26",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Mix hạt (hạnh nhân, điều, bí) & táo"
+ },
+ "banh-gao-ca-ngu": {
+  "file": "banh-gao-ca-ngu.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "2ed61942aea2",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Bánh gạo lứt phết cá ngừ sữa chua"
+ },
+ "xoi-dau-xanh-trung": {
+  "file": "xoi-dau-xanh-trung.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "3435b5ed5e05",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Xôi đậu xanh & 2 trứng luộc"
+ },
+ "sua-dau-banh-mi-bo-dau": {
+  "file": "sua-dau-banh-mi-bo-dau.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "9b5826cf26fe",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Sữa đậu nành & bánh mì nguyên cám bơ đậu phộng"
+ },
+ "banh-cuon-cha-lua": {
+  "file": "banh-cuon-cha-lua.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "69b881a0ec8c",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Bánh cuốn chả lụa (gọi ít nước mắm, nhiều rau)"
+ },
+ "banh-mi-ga-xe": {
+  "file": "banh-mi-ga-xe.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "1ac7a88bc3fd",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Bánh mì nguyên cám gà xé, dưa leo, đồ chua"
+ },
+ "chao-ca-ro-phi": {
+  "file": "chao-ca-ro-phi.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "dac777aaf333",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Cháo cá rô phi gừng hành"
+ },
+ "pho-ga-nac": {
+  "file": "pho-ga-nac.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "55d4931801a8",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Phở gà nạc nhiều rau (bỏ da)"
+ },
+ "khoai-lang-trung-sua-dau": {
+  "file": "khoai-lang-trung-sua-dau.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "99f3ab2e7b5d",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Khoai lang luộc, 2 trứng & sữa đậu nành"
+ },
+ "hu-tieu-tom-thit": {
+  "file": "hu-tieu-tom-thit.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "bb946c117c89",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Hủ tiếu tôm thịt nạc nước trong"
+ },
+ "com-ca-nuc-kho": {
+  "file": "com-ca-nuc-kho.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "86cdf6f94882",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Cơm cá nục kho cà chua, bắp cải luộc"
+ },
+ "canh-bi-dao-thit-trung": {
+  "file": "canh-bi-dao-thit-trung.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "9f517fc402bf",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Cơm, canh bí đao thịt bằm & trứng chiên"
+ },
+ "dau-hu-nhoi-thit": {
+  "file": "dau-hu-nhoi-thit.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "9fbef6e41284",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Đậu hũ nhồi thịt sốt cà, cơm, rau muống"
+ },
+ "trung-cut-kho-thit": {
+  "file": "trung-cut-kho-thit.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "fbdb846332dd",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Trứng cút kho thịt nạc, cơm, dưa leo"
+ },
+ "ca-basa-ap-chao-nghe": {
+  "file": "ca-basa-ap-chao-nghe.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "ab0f3eca81f9",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Cá basa áp chảo nghệ, cơm, cải ngọt"
+ },
+ "mien-ga-nam": {
+  "file": "mien-ga-nam.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "0cd2a451ae0d",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Miến gà nấm (nấu nhanh)"
+ },
+ "ca-ro-phi-hap": {
+  "file": "ca-ro-phi-hap.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "8b756d15ae50",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Cá rô phi hấp xì dầu, bông cải, khoai lang"
+ },
+ "ngheu-hap-sa-bun": {
+  "file": "ngheu-hap-sa-bun.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "56cf1b0a543e",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Nghêu hấp sả, bún & rau thơm"
+ },
+ "ga-kho-gung": {
+  "file": "ga-kho-gung.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "ab84534d1a0e",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Gà kho gừng (bỏ da), cơm, bí đao luộc"
+ },
+ "canh-chua-ca-basa": {
+  "file": "canh-chua-ca-basa.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "fc42e9e9fec3",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Canh chua cá basa, cơm lứt"
+ },
+ "bo-luc-lac-salad": {
+  "file": "bo-luc-lac-salad.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "71d083f9dbcd",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Bò lúc lắc nồi chiên, salad xà lách, cơm lứt"
+ },
+ "kho-qua-nhoi-thit": {
+  "file": "kho-qua-nhoi-thit.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "99e0575f6545",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Canh khổ qua nhồi thịt, cơm"
+ },
+ "trai-cay-banh-gao": {
+  "file": "trai-cay-banh-gao.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "7b18e8e633b4",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Táo, chuối & bánh gạo lứt"
+ },
+ "bap-luoc-du-du": {
+  "file": "bap-luoc-du-du.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "4b8787773dc5",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Bắp luộc & đu đủ chín"
+ },
+ "khoai-mon-hap-thanh-long": {
+  "file": "khoai-mon-hap-thanh-long.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "65c945bfe0aa",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Khoai môn hấp & thanh long"
+ },
+ "xoi-bap-me": {
+  "file": "xoi-bap-me.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "b0003c6aebf9",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Xôi bắp rắc mè (ít đường)"
+ },
+ "chao-khoai-lang": {
+  "file": "chao-khoai-lang.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "b515c86c97c8",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Cháo trắng nấu khoai lang, rắc mè"
+ },
+ "banh-mi-bo-ca-chua": {
+  "file": "banh-mi-bo-ca-chua.webp",
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "005ce83c163e",
+  "at": "2026-11-12",
+  "kind": "recipe",
+  "name": "Bánh mì bơ dầm & cà chua"
  }
 }
