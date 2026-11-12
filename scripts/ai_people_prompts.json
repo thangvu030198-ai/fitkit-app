@@ -4855,5 +4855,241 @@
   "replaces_pexels": [
    "4428991"
   ]
+ },
+ {
+  "group": "Ảnh hero Tập luyện theo giới tính",
+  "size": "1024x1536",
+  "cutout": false,
+  "must_have": [
+   "single attractive fit person, waist-up to full body",
+   "dark moody gym with rim light",
+   "free space in the upper third"
+  ],
+  "must_not": [
+   "no logos, brand marks or text",
+   "no watermark",
+   "no celebrity or famous-person likeness",
+   "no deformed, extra or fused fingers; no extra limbs",
+   "no tattoos with letters or words",
+   "no nudity"
+  ],
+  "id": "hero-m-1",
+  "name": "Hero Tập luyện nam 1",
+  "used_in": [
+   "app.js HERO_CYCLE theo giới tính"
+  ],
+  "prompt": "Vertical hero photo of a handsome Caucasian American man around 28 with a classic-physique bodybuilder build (broad shoulders, small waist, full chest), short neat hair, light stubble, standing confidently in a dark industrial gym after a set, plain black fitted t-shirt, rim light, empty space at the top for headline text. Cinematic, realistic sports photography, high contrast, cool teal and deep navy color grade that suits a dark app interface, 50mm lens look, shallow depth of field, authentic skin texture, anatomically correct hands with five fingers. Ordinary non-famous person, original face, not resembling any real celebrity or athlete. Plain solid-color sportswear with no logos, no text, no prints. No text, no watermark, no logos anywhere in the image.",
+  "extra": true,
+  "replaces_pexels": []
+ },
+ {
+  "group": "Ảnh hero Tập luyện theo giới tính",
+  "size": "1024x1536",
+  "cutout": false,
+  "must_have": [
+   "single attractive fit person, waist-up to full body",
+   "dark moody gym with rim light",
+   "free space in the upper third"
+  ],
+  "must_not": [
+   "no logos, brand marks or text",
+   "no watermark",
+   "no celebrity or famous-person likeness",
+   "no deformed, extra or fused fingers; no extra limbs",
+   "no tattoos with letters or words",
+   "no nudity"
+  ],
+  "id": "hero-m-2",
+  "name": "Hero Tập luyện nam 2",
+  "used_in": [
+   "app.js HERO_CYCLE theo giới tính"
+  ],
+  "prompt": "Vertical hero photo of a handsome Caucasian American man around 30 with a lean men's-physique competitor build and visible abs, short styled hair, doing a seated dumbbell shoulder press in a dark gym, plain grey tank top, dramatic side light, empty space at the top for headline text. Cinematic, realistic sports photography, high contrast, cool teal and deep navy color grade that suits a dark app interface, 50mm lens look, shallow depth of field, authentic skin texture, anatomically correct hands with five fingers. Ordinary non-famous person, original face, not resembling any real celebrity or athlete. Plain solid-color sportswear with no logos, no text, no prints. No text, no watermark, no logos anywhere in the image.",
+  "extra": true,
+  "replaces_pexels": []
+ },
+ {
+  "group": "Ảnh hero Tập luyện theo giới tính",
+  "size": "1024x1536",
+  "cutout": false,
+  "must_have": [
+   "single attractive fit person, waist-up to full body",
+   "dark moody gym with rim light",
+   "free space in the upper third"
+  ],
+  "must_not": [
+   "no logos, brand marks or text",
+   "no watermark",
+   "no celebrity or famous-person likeness",
+   "no deformed, extra or fused fingers; no extra limbs",
+   "no tattoos with letters or words",
+   "no nudity"
+  ],
+  "id": "hero-m-3",
+  "name": "Hero Tập luyện nam 3",
+  "used_in": [
+   "app.js HERO_CYCLE theo giới tính"
+  ],
+  "prompt": "Vertical hero photo of a handsome Caucasian American man around 32 with a big muscular classic-physique build, holding a barbell in the rack position before a squat in a dark gym, plain navy t-shirt, intense focused look, chalk in the air, empty space at the top for headline text. Cinematic, realistic sports photography, high contrast, cool teal and deep navy color grade that suits a dark app interface, 50mm lens look, shallow depth of field, authentic skin texture, anatomically correct hands with five fingers. Ordinary non-famous person, original face, not resembling any real celebrity or athlete. Plain solid-color sportswear with no logos, no text, no prints. No text, no watermark, no logos anywhere in the image.",
+  "extra": true,
+  "replaces_pexels": []
+ },
+ {
+  "group": "Ảnh hero Tập luyện theo giới tính",
+  "size": "1024x1536",
+  "cutout": false,
+  "must_have": [
+   "single attractive fit person, waist-up to full body",
+   "dark moody gym with rim light",
+   "free space in the upper third"
+  ],
+  "must_not": [
+   "no logos, brand marks or text",
+   "no watermark",
+   "no celebrity or famous-person likeness",
+   "no deformed, extra or fused fingers; no extra limbs",
+   "no tattoos with letters or words",
+   "no nudity"
+  ],
+  "id": "hero-m-4",
+  "name": "Hero Tập luyện nam 4",
+  "used_in": [
+   "app.js HERO_CYCLE theo giới tính"
+  ],
+  "prompt": "Vertical hero photo of a handsome Caucasian American man around 27 with a lean athletic physique doing a weighted pull-up in a dark gym, back muscles visible, plain black tank top, moody overhead light, empty space at the top for headline text. Cinematic, realistic sports photography, high contrast, cool teal and deep navy color grade that suits a dark app interface, 50mm lens look, shallow depth of field, authentic skin texture, anatomically correct hands with five fingers. Ordinary non-famous person, original face, not resembling any real celebrity or athlete. Plain solid-color sportswear with no logos, no text, no prints. No text, no watermark, no logos anywhere in the image.",
+  "extra": true,
+  "replaces_pexels": []
+ },
+ {
+  "group": "Ảnh hero Tập luyện theo giới tính",
+  "size": "1024x1536",
+  "cutout": false,
+  "must_have": [
+   "single attractive fit person, waist-up to full body",
+   "dark moody gym with rim light",
+   "free space in the upper third"
+  ],
+  "must_not": [
+   "no logos, brand marks or text",
+   "no watermark",
+   "no celebrity or famous-person likeness",
+   "no deformed, extra or fused fingers; no extra limbs",
+   "no tattoos with letters or words",
+   "no nudity"
+  ],
+  "id": "hero-f-1",
+  "name": "Hero Tập luyện nữ 1",
+  "used_in": [
+   "app.js HERO_CYCLE theo giới tính"
+  ],
+  "prompt": "Vertical hero photo of a beautiful Caucasian American woman around 27 with a toned athletic fitness-model physique, ponytail, standing confidently in a dark gym after a set, plain black sports bra and leggings, rim light, empty space at the top for headline text. Cinematic, realistic sports photography, high contrast, cool teal and deep navy color grade that suits a dark app interface, 50mm lens look, shallow depth of field, authentic skin texture, anatomically correct hands with five fingers. Ordinary non-famous person, original face, not resembling any real celebrity or athlete. Plain solid-color sportswear with no logos, no text, no prints. No text, no watermark, no logos anywhere in the image.",
+  "extra": true,
+  "replaces_pexels": []
+ },
+ {
+  "group": "Ảnh hero Tập luyện theo giới tính",
+  "size": "1024x1536",
+  "cutout": false,
+  "must_have": [
+   "single attractive fit person, waist-up to full body",
+   "dark moody gym with rim light",
+   "free space in the upper third"
+  ],
+  "must_not": [
+   "no logos, brand marks or text",
+   "no watermark",
+   "no celebrity or famous-person likeness",
+   "no deformed, extra or fused fingers; no extra limbs",
+   "no tattoos with letters or words",
+   "no nudity"
+  ],
+  "id": "hero-f-2",
+  "name": "Hero Tập luyện nữ 2",
+  "used_in": [
+   "app.js HERO_CYCLE theo giới tính"
+  ],
+  "prompt": "Vertical hero photo of a beautiful Caucasian American woman around 29 with a fit toned physique doing a dumbbell shoulder press on a bench in a dark gym, plain grey sports top, dramatic side light, empty space at the top for headline text. Cinematic, realistic sports photography, high contrast, cool teal and deep navy color grade that suits a dark app interface, 50mm lens look, shallow depth of field, authentic skin texture, anatomically correct hands with five fingers. Ordinary non-famous person, original face, not resembling any real celebrity or athlete. Plain solid-color sportswear with no logos, no text, no prints. No text, no watermark, no logos anywhere in the image.",
+  "extra": true,
+  "replaces_pexels": []
+ },
+ {
+  "group": "Ảnh hero Tập luyện theo giới tính",
+  "size": "1024x1536",
+  "cutout": false,
+  "must_have": [
+   "single attractive fit person, waist-up to full body",
+   "dark moody gym with rim light",
+   "free space in the upper third"
+  ],
+  "must_not": [
+   "no logos, brand marks or text",
+   "no watermark",
+   "no celebrity or famous-person likeness",
+   "no deformed, extra or fused fingers; no extra limbs",
+   "no tattoos with letters or words",
+   "no nudity"
+  ],
+  "id": "hero-f-3",
+  "name": "Hero Tập luyện nữ 3",
+  "used_in": [
+   "app.js HERO_CYCLE theo giới tính"
+  ],
+  "prompt": "Vertical hero photo of a beautiful Caucasian American woman around 30 with strong toned legs doing a barbell hip thrust in a dark gym, plain navy sports set, focused expression, empty space at the top for headline text. Cinematic, realistic sports photography, high contrast, cool teal and deep navy color grade that suits a dark app interface, 50mm lens look, shallow depth of field, authentic skin texture, anatomically correct hands with five fingers. Ordinary non-famous person, original face, not resembling any real celebrity or athlete. Plain solid-color sportswear with no logos, no text, no prints. No text, no watermark, no logos anywhere in the image.",
+  "extra": true,
+  "replaces_pexels": []
+ },
+ {
+  "group": "Ảnh hero Tập luyện theo giới tính",
+  "size": "1024x1536",
+  "cutout": false,
+  "must_have": [
+   "single attractive fit person, waist-up to full body",
+   "dark moody gym with rim light",
+   "free space in the upper third"
+  ],
+  "must_not": [
+   "no logos, brand marks or text",
+   "no watermark",
+   "no celebrity or famous-person likeness",
+   "no deformed, extra or fused fingers; no extra limbs",
+   "no tattoos with letters or words",
+   "no nudity"
+  ],
+  "id": "hero-f-4",
+  "name": "Hero Tập luyện nữ 4",
+  "used_in": [
+   "app.js HERO_CYCLE theo giới tính"
+  ],
+  "prompt": "Vertical hero photo of a beautiful Caucasian American woman around 26 with an athletic physique doing a cable row in a dark gym, toned back visible, plain black crop top and leggings, moody overhead light, empty space at the top for headline text. Cinematic, realistic sports photography, high contrast, cool teal and deep navy color grade that suits a dark app interface, 50mm lens look, shallow depth of field, authentic skin texture, anatomically correct hands with five fingers. Ordinary non-famous person, original face, not resembling any real celebrity or athlete. Plain solid-color sportswear with no logos, no text, no prints. No text, no watermark, no logos anywhere in the image.",
+  "extra": true,
+  "replaces_pexels": []
+ },
+ {
+  "group": "Ảnh hero Tập luyện theo giới tính",
+  "size": "1536x1024",
+  "cutout": false,
+  "must_have": [
+   "empty dark gym interior, no people",
+   "racks, barbells, dumbbells neatly arranged",
+   "black and charcoal tones"
+  ],
+  "must_not": [
+   "no logos, brand marks or text",
+   "no watermark",
+   "no celebrity or famous-person likeness",
+   "no deformed, extra or fused fingers; no extra limbs",
+   "no tattoos with letters or words",
+   "no nudity",
+   "no people"
+  ],
+  "id": "ob-gym-empty",
+  "name": "Phòng tập trống tông đen (onboarding)",
+  "used_in": [
+   "index.html onboarding bước 0",
+   "app.js"
+  ],
+  "prompt": "Wide photo of an empty premium dark gym interior at night, no people at all, black and charcoal tones, power racks, barbells and neat dumbbell rows, subtle cool rim lighting from strip lights, polished rubber floor reflections, symmetrical composition with the center of interest in the middle. Cinematic architectural photography, high contrast, realistic. No people. Plain unbranded equipment, no logos. No text, no watermark.",
+  "extra": true,
+  "replaces_pexels": []
  }
 ]

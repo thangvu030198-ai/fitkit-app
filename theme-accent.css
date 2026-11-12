@@ -272,3 +272,15 @@ html[data-theme] .wl-speed i, .wl-speed i{ background:linear-gradient(90deg, tra
 html[data-theme] .wl-hero-shade, .wl-hero-shade{ background:linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.12) 32%, rgba(0,0,0,.78) 72%, #000 100%) !important; }
 .wl-hero{ background:#000; }
 .wl-hero-bg, .wl-hero-video{ filter:grayscale(1) contrast(1.12) brightness(.95) !important; }
+
+/* 12/11 — clip màn chào zoom vào chủ thể; bản đồ: icon nằm ngay tại điểm dừng (không đè lên đường) */
+.wl-hero-video, .wl-hero-bg{ transform:scale(1.4) !important; transform-origin:46% 64% !important; animation:none !important; }
+.wl-bubble{ display:none !important; }
+.wl-node{ position:absolute; width:clamp(30px,8.5vw,40px); aspect-ratio:1; border-radius:50%; transform:translate(-50%,-50%) scale(0);
+  background:var(--accent, #5EE6C7); color:var(--on-accent, #061A24); display:grid; place-items:center; box-shadow:0 0 0 4px rgba(0,0,0,.35), 0 6px 18px rgba(0,0,0,.35); z-index:2; }
+.wl-node .material-symbols-rounded{ font-size:clamp(16px,4.6vw,21px); color:inherit; }
+.wl-map.in .wl-node{ animation:wlNodePop .5s cubic-bezier(.34,1.56,.64,1) calc(.5s + var(--i)*.15s) forwards; }
+.wl-map.done .wl-node{ transform:translate(-50%,-50%) scale(1); }
+@keyframes wlNodePop{ to{ transform:translate(-50%,-50%) scale(1); } }
+@media (prefers-reduced-motion: reduce){ .wl-node{ transform:translate(-50%,-50%) scale(1); animation:none !important; } }
+

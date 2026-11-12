@@ -228,3 +228,18 @@ Phong cách chung (chuỗi cuối mỗi prompt): ảnh thể thao chân thực k
 
 Kiểm kê bằng: grep `pexels|pixabay|unsplash|wikimedia|randomuser|pravatar|picsum` trong `*.js|*.html|*.css` (trừ `www/`, `_test/`, `tests/`) + xem từng ảnh cục bộ trong `assets/**` (contact sheet). `community.js`, `kb-data-*.js`, `shop-data.js`, `landing.html`, `templates.js` (chỉ dùng `IMG.*`), `ptprofile.js`, `pt.js`, `app.js` không có URL ảnh người riêng — chúng dùng `IMG.*` hoặc dữ liệu seed ở trên.
 
+
+
+## Bổ sung 12/11 — hero Tập luyện theo giới tính & phòng tập trống
+
+| id | dùng ở |
+|---|---|
+| `hero-m-1` | app.js HERO_CYCLE theo giới tính |
+| `hero-m-2` | app.js HERO_CYCLE theo giới tính |
+| `hero-m-3` | app.js HERO_CYCLE theo giới tính |
+| `hero-m-4` | app.js HERO_CYCLE theo giới tính |
+| `hero-f-1` | app.js HERO_CYCLE theo giới tính |
+| `hero-f-2` | app.js HERO_CYCLE theo giới tính |
+| `hero-f-3` | app.js HERO_CYCLE theo giới tính |
+| `hero-f-4` | app.js HERO_CYCLE theo giới tính |
+| `ob-gym-empty` | index.html onboarding bước 0, app.js |

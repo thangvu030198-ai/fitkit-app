@@ -980,8 +980,8 @@ function openOnboarding(prefill){
   mark("gender", tempProfile.gender); mark("activity", tempProfile.activity); mark("goal", tempProfile.goal); mark("level", tempProfile.level);
   { // 12/11: ảnh NGANG (chủ thể ở giữa) cho khung ngang — ảnh dọc bị cắt mất người
     const im = document.querySelector('.onboard-step[data-step="0"] .ob-hero-img') || $('.onboard-step[data-step="0"]').querySelector("img:not(.brand-wm)");
-    if(im){ im.onerror = function(){ this.onerror = null; this.src = IMG.heroWorkout2; this.style.objectPosition = "center 18%"; };
-      im.src = "https://thangvu030198-ai.github.io/fitkit-app/media/people-ai/muscle-chest.webp"; im.style.objectPosition = "center 50%"; }
+    if(im){ im.onerror = function(){ this.onerror = null; this.src = "https://thangvu030198-ai.github.io/fitkit-app/media/welcome/welcome-bw-poster.jpg"; this.style.objectPosition = "center 30%"; };
+      im.src = "https://thangvu030198-ai.github.io/fitkit-app/media/people-ai/ob-gym-empty.webp"; im.style.objectPosition = "center 50%"; }
   }
   showObStep(0);
   $("#onboarding").classList.add("open");
@@ -1010,7 +1010,11 @@ function renderWorkoutScreen(){
   if(!DAY_KEYS.includes(state.selectedDay)) state.selectedDay = todayDayKey();
   $("#workout-tagline").textContent = plan.tagline || "";
   const idx = DAY_KEYS.indexOf(state.selectedDay);
-  $("#workout-hero").style.backgroundImage = `url('${HERO_CYCLE[idx % HERO_CYCLE.length]}')`;
+  { // 12/11: ảnh hero theo giới tính (AI: hero-m-* / hero-f-*); lớp dưới = ảnh cũ nếu ảnh mới chưa có
+    const g = (state.profile && state.profile.gender) === "female" ? "f" : "m";
+    const ai = `https://thangvu030198-ai.github.io/fitkit-app/media/people-ai/hero-${g}-${(idx % 4) + 1}.webp`;
+    $("#workout-hero").style.backgroundImage = `url('${ai}'), url('${HERO_CYCLE[idx % HERO_CYCLE.length]}')`;
+  }
 
   // day tabs
   $("#day-tabs").innerHTML = DAY_KEYS.map(k=>{

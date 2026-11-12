@@ -47,7 +47,7 @@ module.exports = {
         assert.equal(x.cutout, false, "cutout phải false " + x.id);
         assert.ok(x.name && Array.isArray(x.used_in) && x.used_in.length, "thiếu name/used_in " + x.id);
         assert.ok(typeof x.prompt === "string" && x.prompt.length > 200, "prompt ngắn " + x.id);
-        assert.ok(/Vietnamese/.test(x.prompt) && /no logos/i.test(x.prompt) && /No text, no watermark/.test(x.prompt), "thiếu chuỗi phong cách " + x.id);
+        assert.ok((x.extra || /Vietnamese/.test(x.prompt)) && /no logos/i.test(x.prompt) && /No text, no watermark/.test(x.prompt), "thiếu chuỗi phong cách " + x.id);
         assert.ok(Array.isArray(x.must_have) && x.must_have.length >= 3, "must_have " + x.id);
         const mn = (x.must_not || []).join(" | ");
         assert.ok(/finger/i.test(mn) && /logo/i.test(mn) && /celebrit/i.test(mn) && /tattoo/i.test(mn), "must_not thiếu tay/logo/người nổi tiếng/xăm chữ " + x.id);

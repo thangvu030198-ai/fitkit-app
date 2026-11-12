@@ -164,11 +164,9 @@ function showAuth(view){
           <svg viewBox="0 0 300 160" class="wl-routes" aria-hidden="true">
             ${routes.map((d,i)=>`<path id="wlr${i}" d="${d}" class="wl-route" style="--i:${i}"/>`).join("")}
             ${routes.map((d,i)=>`<polygon points="0,-4 8,0 0,4" class="wl-runner"><animateMotion dur="${3.2+i*0.4}s" repeatCount="indefinite" rotate="auto" begin="${1.2+i*0.3}s"><mpath href="#wlr${i}"/></animateMotion></polygon>`).join("")}
-            ${stops.map(([x,y,t],i)=>`<g class="wl-stop" style="--i:${i}"><circle cx="${x}" cy="${y}" r="8" fill="#5EE6C7"/><circle cx="${x}" cy="${y}" r="3" fill="#061A24"/><text x="${x}" y="${y+ (y>100?20:-13)}" text-anchor="middle">${t}</text></g>`).join("")}
+            ${stops.map(([x,y,t],i)=>`<g class="wl-stop" style="--i:${i}"><text x="${x}" y="${y+ (y>100?24:-17)}" text-anchor="middle">${t}</text></g>`).join("")}
           </svg>
-          <div class="wl-bubble" style="left:30%;top:46%;--d:2.6s"><span class="material-symbols-rounded">fitness_center</span></div>
-          <div class="wl-bubble" style="left:63%;top:36%;--d:3.1s"><span class="material-symbols-rounded">restaurant</span></div>
-          <div class="wl-bubble" style="left:6%;top:56%;--d:2.9s"><span class="material-symbols-rounded">bedtime</span></div>
+          ${stops.map(([x,y,t],i)=>`<div class="wl-node" style="left:${(x/300*100).toFixed(2)}%;top:${((y+5)/170*100).toFixed(2)}%;--i:${i}" aria-hidden="true"><span class="material-symbols-rounded">${["menu_book","calendar_month","restaurant","bedtime","trending_up"][i]}</span></div>`).join("")}
         </div>
         <div class="wl-stats">
           <div class="wl-stat wl-rev wl-from-left"><b>800+</b><span>bài tập có<br>hình minh hoạ<br>và hướng dẫn</span></div>
