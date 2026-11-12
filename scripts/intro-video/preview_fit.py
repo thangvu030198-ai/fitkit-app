@@ -4,6 +4,8 @@ HTML + bảng đo khít (window probe) + góc màn phóng to. Dùng khi máy kh�
 
   python3 scripts/intro-video/preview_fit.py --fmt v --times 18.9,31.13,32.9 --out build/preview/v.html
   python3 scripts/intro-video/preview_fit.py --fmt v --corners 31.13,45.6 --out build/preview/corners.html
+  python3 scripts/intro-video/preview_fit.py --fmt v --play 215.2,252.4 --times 216,224,234,247 --out ../../preview/watch.html
+      (--play A,B: thêm khung phát thời gian thực + thanh tua cho đoạn A–B giây, vd chương "Sắp ra mắt")
 Ảnh app nhúng data-URI (thu về 1x, JPEG q72) chỉ cho các chương có mặt ở các mốc đã chọn; nền ảnh/clip bỏ qua.
 """
 import argparse, base64, io, json, os
@@ -36,6 +38,7 @@ def main():
     ap.add_argument("--corners", default="", help="mốc cần phóng 4 góc màn")
     ap.add_argument("--cols", type=int, default=4)
     ap.add_argument("--thumb", type=float, default=0)
+    ap.add_argument("--play", default="", help="A,B: khung phát/tua thời gian thực cho đoạn A–B giây")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
     W, H = (540, 960) if a.fmt == "v" else (960, 540)
@@ -43,7 +46,8 @@ def main():
     man = json.load(open(os.path.join(BUILD, "manifest.json"), encoding="utf-8"))
     times = [float(x) for x in a.times.split(",") if x]
     corners = [float(x) for x in a.corners.split(",") if x]
-    allt = times + corners
+    play = [float(x) for x in a.play.split(",") if x][:2]
+    allt = times + corners + ([play[0], (play[0] + play[1]) / 2, play[1]] if len(play) == 2 else [])
     chs = set()
     for t in allt:
         for i, c in enumerate(tl["chapters"]):
@@ -55,6 +59,10 @@ def main():
     for sid, d in man["shots"].items():
         if sid not in need: continue
         shots[sid] = d
+        if d.get("seq"):
+            for k in range(d["seq"]["count"]):
+                f = d["seq"]["pattern"].replace("%03d", f"{k:03d}")
+                if os.path.exists(os.path.join(BUILD, f)): D["build/" + f] = data_uri(os.path.join(BUILD, f), 390)
         D["build/" + d["base"]] = data_uri(os.path.join(BUILD, d["base"]), 390)
         for st in d.get("strips", []):
             D["build/" + st["src"]] = data_uri(os.path.join(BUILD, st["src"]), 390)
@@ -75,13 +83,31 @@ html,body{{overflow:auto;background:#111;color:#eee;font:12px/1.35 system-ui,san
 .cell{{position:relative;overflow:hidden;background:#000;outline:1px solid #333}}
 .cell .lab{{position:absolute;left:3px;top:2px;z-index:99;color:#ffd25a;font:600 11px system-ui;text-shadow:0 1px 2px #000}}
 .cell .inner{{position:absolute;left:0;top:0;transform-origin:0 0}}
-</style></head><body><div id="rep">đang dựng…</div><div id="grid"></div>
+#play{{padding:8px;display:{"block" if len(play) == 2 else "none"}}}
+#play .bar{{display:flex;gap:10px;align-items:center;margin:6px 0;font:600 13px system-ui}}
+#play input[type=range]{{flex:1}} #play button{{font:700 13px system-ui;padding:6px 14px;border-radius:999px;border:0;background:#5EE6C7;color:#061A24;cursor:pointer}}
+#pbox{{position:relative;overflow:hidden;background:#000;outline:1px solid #333}}
+</style></head><body><div id="play"><div class="bar"><button id="pb">▶ Phát</button><span id="pt">0.00s</span><input id="pr" type="range" step="0.01"></div><div id="pbox"><div class="inner" style="position:absolute;left:0;top:0;transform-origin:0 0"><div id="pst"></div></div></div></div>
+<div id="rep">đang dựng…</div><div id="grid"></div>
 <script>window.__NO_AUTO=true;window.__TIMELINE__={json.dumps(tl, ensure_ascii=False)};window.__MANIFEST__={json.dumps(man2, ensure_ascii=False)};
 const DATA={json.dumps(D)};</script>
 <script>{js}</script>
 <script>
 (async()=>{{
-const W={W},H={H},SC={sc},CELLS={json.dumps(cells)};
+const W={W},H={H},SC={sc},CELLS={json.dumps(cells)},PLAY={json.dumps(play)};
+if(PLAY.length===2){{
+  const PS=Math.min(1,(innerHeight-90)/H,(innerWidth-30)/W), box=document.getElementById("pbox"), pst=document.getElementById("pst");
+  box.style.width=(W*PS)+"px"; box.style.height=(H*PS)+"px"; box.firstChild.style.transform="scale("+PS+")";
+  const pc=window.__makeComposer({{stage:pst,w:W,h:H,resolve:p=>DATA[p]||p}}); await pc.ready;
+  const r=document.getElementById("pr"), lab=document.getElementById("pt"), btn=document.getElementById("pb");
+  r.min=PLAY[0]; r.max=PLAY[1]; r.value=PLAY[0];
+  let playing=false, t0=0, from=PLAY[0];
+  const draw=t=>{{ pc.render(t); lab.textContent=t.toFixed(2)+"s"; r.value=t; }};
+  r.oninput=()=>{{ playing=false; btn.textContent="▶ Phát"; draw(+r.value); }};
+  btn.onclick=()=>{{ playing=!playing; btn.textContent=playing?"❚❚ Dừng":"▶ Phát"; from=+r.value>=PLAY[1]-.05?PLAY[0]:+r.value; t0=performance.now(); if(playing) loop(); }};
+  const loop=()=>{{ if(!playing) return; const t=from+(performance.now()-t0)/1000; if(t>=PLAY[1]){{ draw(PLAY[1]); playing=false; btn.textContent="▶ Phát"; return; }} draw(t); requestAnimationFrame(loop); }};
+  draw(PLAY[0]);
+}}
 const grid=document.getElementById("grid"),rep=document.getElementById("rep");
 const rows=[];let worst=0;
 for(const c of CELLS){{

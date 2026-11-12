@@ -162,8 +162,7 @@ function showAuth(view){
         </div>
         <div class="wl-map wl-rev">
           <svg viewBox="0 0 300 160" class="wl-routes" aria-hidden="true">
-            ${routes.map((d,i)=>`<path id="wlr${i}" d="${d}" class="wl-route" style="--i:${i}"/>`).join("")}
-            ${routes.map((d,i)=>`<polygon points="0,-4 8,0 0,4" class="wl-runner"><animateMotion dur="${3.2+i*0.4}s" repeatCount="indefinite" rotate="auto" begin="${1.2+i*0.3}s"><mpath href="#wlr${i}"/></animateMotion></polygon>`).join("")}
+            ${routes.map((d,i)=>`<path id="wlr${i}" d="${d}" pathLength="1" class="wl-route" style="--i:${i}"/>`).join("")}
             ${stops.map(([x,y,t],i)=>`<g class="wl-stop" style="--i:${i}"><text x="${x}" y="${y+ (y>100?24:-17)}" text-anchor="middle">${t}</text></g>`).join("")}
           </svg>
           ${stops.map(([x,y,t],i)=>`<div class="wl-node" style="left:${(x/300*100).toFixed(2)}%;top:${((y+5)/170*100).toFixed(2)}%;--i:${i}" aria-hidden="true"><span class="material-symbols-rounded">${["menu_book","calendar_month","restaurant","bedtime","trending_up"][i]}</span></div>`).join("")}
@@ -216,14 +215,18 @@ function showAuth(view){
     $("#wl-credits").addEventListener("click", openCreditsSheet);
     $("#wl-top").addEventListener("click", ()=> $("#auth").scrollTo({ top:0, behavior:"smooth" }));
     // Hiệu ứng xuất hiện khi cuộn tới (chạy 1 lần), có hẹn giờ an toàn
+    // 12/11 v2: bản đồ vẽ trọn ~1,5 s rồi khoá .done; giảm chuyển động → hiện đủ ngay. Bỏ mũi tên chạy SMIL (.wl-runner):
+    // trước giờ begin nó nằm ở góc (0,0) thành "chấm lạ" và bị dừng giữa đường sau 14 s. wlMapFinish() = hiện đủ tức thì (chụp màn hình tự động).
+    const reduce = (()=>{ try{ return matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } })();
     const reveal = ()=>{
       const box = $("#auth"); if(!box) return;
       const h = box.clientHeight;
       $$("#wl .wl-rev:not(.in)").forEach(el=>{
         const r = el.getBoundingClientRect(), top = r.top - box.getBoundingClientRect().top;
-        if(top < h - 50){ el.classList.add("in"); setTimeout(()=> el.classList.add("done"), 2000); }
+        if(top < h - 50){ el.classList.add("in"); if(reduce) el.classList.add("done"); else setTimeout(()=> el.classList.add("done"), el.classList.contains("wl-map") ? 1700 : 2000); }
       });
     };
+    window.wlMapFinish = ()=>{ $$("#wl .wl-rev").forEach(el=> el.classList.add("in", "done")); return !!$("#wl .wl-map.done"); };
     $("#auth").onscroll = ()=> requestAnimationFrame(reveal);
     $("#auth").scrollTop = 0;
     setTimeout(reveal, 60);

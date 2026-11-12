@@ -2,7 +2,8 @@
 """TapEasy intro — ghép đoạn hình + nhạc, chuẩn hoá âm lượng, poster.
 
 - Nối build/out/<fmt>/chunks/chunk_*.mp4 (cùng thông số → -c copy)
-- Ghép build/music.wav (AAC 192k), chuẩn hoá trên MP4 cuối: loudnorm 2 lượt → -14 LUFS, đỉnh thật ≤ -1 dBTP
+- Ghép build/mix.wav (nhạc + giọng đọc đã hạ nhạc khi có lời — mix_audio.py) hoặc build/music.wav nếu chưa trộn/không có lời
+  (AAC 192k), chuẩn hoá trên MP4 cuối: loudnorm 2 lượt → -14 LUFS, đỉnh thật ≤ -1 dBTP
 - Poster JPG từ khung đẹp (mặc định: chương kết, sau CTA 1,2 s)
 - Nếu file > --max-mb (mặc định 95 MB, giới hạn 100 MB của GitHub) → mã hoá lại CRF cao hơn
 
@@ -41,6 +42,11 @@ def main():
     music = os.path.join(BUILD, "music.wav")
     if not os.path.exists(music):
         run([sys.executable, os.path.join(HERE, "music.py")])
+    mix = os.path.join(BUILD, "mix.wav")              # mix_audio.py: nhạc + lời (ducking); cũ hơn music.wav = bỏ qua
+    if os.path.exists(mix) and os.path.getmtime(mix) >= os.path.getmtime(music) - 1:
+        print("âm thanh: build/mix.wav (nhạc + giọng đọc)"); music = mix
+    else:
+        print("âm thanh: build/music.wav (nhạc không lời)")
     os.makedirs(args.dest, exist_ok=True)
     poster_t = args.poster_at if args.poster_at >= 0 else (tl["chapters"][-1].get("cta_at", tl["duration"] - 4) + 1.6)
     for f in fmts:

@@ -756,8 +756,10 @@ i.cnt{ font-style:normal; display:inline-block; min-width:18px; padding:1px 6px;
 .wl-hero-body{ position:relative; z-index:3; padding:0 20px 34px; }
 /* Slogan IN HOA tiếng Việt có dấu chồng (Ậ Ế Ộ Ự): line-height .82 làm dấu dưới dòng trên chạm dấu mũ+sắc dòng dưới → 1.06 + đệm trên .12em;
    chỉ nạp 1 độ đậm (800) → tắt font-synthesis để trình duyệt không tự làm đậm/nghiêng giả làm vỡ dấu */
-.wl-head{ font-family:var(--cond); font-weight:800; font-synthesis:none; text-transform:uppercase; font-size:clamp(52px,15.5vw,80px); line-height:1.06; padding-top:.12em; letter-spacing:.005em; display:flex; flex-direction:column; }
-.wl-head span{ display:block; }
+.wl-head{ font-family:var(--cond); font-weight:800; font-synthesis:none; text-transform:uppercase; font-size:clamp(52px,15.5vw,80px); line-height:1.12; padding-top:.16em; letter-spacing:.005em; display:flex; flex-direction:column; }
+/* 12/11 v2: dòng vẫn sát → 1.12 + đệm trên từng dòng (.05em) + khe .06em giữa các dòng: dấu dưới (Ậ Ự) không chạm dấu mũ+sắc (Ế Ộ) dòng kế */
+.wl-head span{ display:block; padding-top:.05em; }
+.wl-head span + span{ margin-top:.06em; }
 .wl-head .l2{ color:var(--y); text-align:right; }
 .wl-sub{ margin-top:16px; font-size:15px; line-height:1.45; color:rgba(255,255,255,.75); max-width:330px; }
 .wl-cta{ position:relative; margin-top:22px; width:264px; height:64px; padding:0; border:none; background:none; display:block; transition:transform .35s var(--ease); }
@@ -797,13 +799,14 @@ i.cnt{ font-style:normal; display:inline-block; min-width:18px; padding:1px 6px;
 .wl-tag-sub{ font-size:clamp(19px,5vw,26px); line-height:1.15; color:#D6ECEA; margin-top:4px; }
 .wl-map{ position:relative; margin:28px -20px 10px; aspect-ratio:300/170; }
 .wl-routes{ position:absolute; inset:0 4%; width:92%; height:100%; overflow:visible; }
-.wl-route{ fill:none; stroke:#5EE6C7; stroke-width:2.6; stroke-linecap:round; stroke-dasharray:400; stroke-dashoffset:400; filter:drop-shadow(0 1px 2px rgba(0,0,0,.15)); }
-.wl-map.in .wl-route{ animation:wlDraw 1.4s var(--ease) calc(.2s + var(--i)*.25s) forwards; }
+/* pathLength="1" (pt.js) → dasharray 1 luôn phủ trọn đường dù dài bao nhiêu (trước: 400 cố định); vẽ xong trong ~1,5 s */
+.wl-route{ fill:none; stroke:#5EE6C7; stroke-width:2.6; stroke-linecap:round; stroke-dasharray:1 1; stroke-dashoffset:1; filter:drop-shadow(0 1px 2px rgba(0,0,0,.15)); }
+.wl-map.in .wl-route{ animation:wlDraw .62s cubic-bezier(.45,0,.25,1) calc(.1s + var(--i)*.24s) forwards; }
 .wl-map.done .wl-route{ stroke-dashoffset:0; }
 @keyframes wlDraw{ to{ stroke-dashoffset:0; } }
 .wl-runner{ fill:#061A24; }
 .wl-stop{ transform-box:fill-box; transform-origin:center; transform:scale(0); }
-.wl-map.in .wl-stop{ animation:wlPop .5s var(--ease) calc(.5s + var(--i)*.15s) forwards; }
+.wl-map.in .wl-stop{ animation:wlPop .45s var(--ease) calc(.15s + var(--i)*.24s) forwards; }
 .wl-map.done .wl-stop{ transform:none; }
 .wl-stop text{ font:700 9px Helvetica,Arial,sans-serif; fill:#061A24; }
 @keyframes wlPop{ to{ transform:scale(1); } }
@@ -856,6 +859,9 @@ i.cnt{ font-style:normal; display:inline-block; min-width:18px; padding:1px 6px;
 .wl-menu-close .material-symbols-rounded{ font-size:30px; }
 @media (min-width:520px){ .wl-menu{ height:94vh; } }
 @media (prefers-reduced-motion: reduce){ .wl *{ animation:none !important; opacity:1 !important; transform:none !important; } .wl-route{ stroke-dashoffset:0; } }
+/* bản đồ đã xong (.done / wlMapFinish()): mọi phần hiện đủ, không phụ thuộc animation còn chạy */
+.wl-map.done .wl-route{ animation:none !important; stroke-dashoffset:0; }
+.wl-map.done .wl-stop{ animation:none !important; transform:none; }
 
 /* =========================================================================
    DINH DƯỠNG v2
@@ -1551,3 +1557,57 @@ html.lowfx .wl-speed{ display:none; }
    (content-visibility) nên lần đổi theme chỉ tính phần đang thấy; thẻ hiện lại khi cuộn tới. */
 #screen-profile .content > .card{ content-visibility:auto; contain-intrinsic-size:auto 240px; }
 #screen-profile .content > .card.fk-theme-card{ contain-intrinsic-size:auto 520px; }
+
+/* =========================================================================
+   FIT MÀN HÌNH ĐIỆN THOẠI (13/11/2026) — vùng an toàn tai thỏ / dynamic island / thanh home.
+   Một nguồn: --sat/--sab/--sal/--sar = env(safe-area-inset-*) (+ fallback 0px); meta viewport có viewport-fit=cover.
+   Mọi lớp cố định (topbar trong #app-shell, sheet + header + nút đóng, bottom nav, toast, onboarding, sàng lọc,
+   màn chào, đăng nhập) chừa đúng vùng này; chữ cách mép ngang ≥ 16 px. Kiểm: tests/suites/73-safe-area.test.js,
+   scripts/intro-video (director.js giả lập iPhone 59 px trên / 34 px dưới + QA SAFE).
+   ========================================================================= */
+:root{
+  --fk-safe: 1;                                   /* dấu hiệu "app đã fit vùng an toàn" (director.js đọc) */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --fk-gutter: 16px;                              /* lề chữ tối thiểu tới mép màn */
+}
+#app-shell{ padding-top:var(--sat); padding-left:var(--sal); padding-right:var(--sar); box-sizing:border-box; }
+.topbar{ padding-left:max(var(--fk-gutter), 16px); padding-right:max(var(--fk-gutter), 16px); }
+/* nội dung cuộn: khi ẩn dock, chừa thanh home; khi có dock, dock nằm trong luồng nên nội dung không bị che */
+#app-scroll{ scroll-padding-top:var(--topbar-h); scroll-padding-bottom:16px; }
+#app-shell:has(> .bottom-nav.hidden) #app-scroll{ padding-bottom:var(--sab); }
+.bottom-nav{ margin-left:max(12px, calc(var(--sal) + 8px)); margin-right:max(12px, calc(var(--sar) + 8px)); margin-bottom:max(10px, var(--sab)); }
+
+/* sheet đáy: không bao giờ chui dưới dynamic island, header luôn thấy khi cuộn, đáy chừa thanh home */
+.sheet-backdrop{ padding-left:var(--sal); padding-right:var(--sar); box-sizing:border-box; }
+.sheet{
+  box-sizing:border-box;
+  max-height:min(88%, calc(100% - var(--sat) - 12px));
+  max-height:min(88%, calc(100% - var(--sat) - 12px), calc(100dvh - var(--sat) - 12px));
+  padding:20px max(20px, var(--fk-gutter)) calc(20px + var(--sab));
+  overscroll-behavior:contain;
+  scroll-padding-top:64px;
+}
+.sheet > .sheet-header{
+  position:sticky; top:0; z-index:5;
+  margin:-10px calc(-1 * max(20px, var(--fk-gutter))) 6px;
+  padding:10px max(20px, var(--fk-gutter));
+  background:inherit; background-attachment:scroll;
+  -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
+  min-height:44px;
+}
+.sheet > .sheet-header h3{ min-width:0; overflow-wrap:anywhere; padding-right:8px; }
+.sheet .sheet-header .icon-btn{ flex-shrink:0; min-width:44px; min-height:44px; }
+
+/* toast: trên dock + thanh home */
+#toast{ bottom:calc(var(--nav-h) + 16px + var(--sab)); max-width:calc(100% - 2 * var(--fk-gutter) - var(--sal) - var(--sar)); }
+
+/* onboarding + đăng nhập (không phải màn chào) — lớp phủ toàn màn tự chừa vùng an toàn */
+#onboarding{ padding:var(--sat) var(--sar) var(--sab) var(--sal); box-sizing:border-box; }
+#onboarding .onboard-progress{ padding:16px 20px 0; }
+#onboarding .onboard-footer{ padding:16px 20px max(16px, calc(24px - var(--sab))); }
+#auth:not(.wl-mode){ padding:var(--sat) var(--sar) var(--sab) var(--sal); box-sizing:border-box; }
+#auth.wl-mode{ padding-left:var(--sal); padding-right:var(--sar); box-sizing:border-box; }
+.splash{ min-height:calc(100dvh - var(--sat) - var(--sab)); }

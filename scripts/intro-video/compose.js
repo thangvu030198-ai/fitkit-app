@@ -41,6 +41,30 @@ const sp = (t, n) => spring(t, SP[n][0], SP[n][1]);
 const px = v => v.toFixed(2) + "px";
 const el = (tag, cls, parent, html) => { const e = document.createElement(tag); if(cls) e.className = cls; if(html != null) e.innerHTML = html; if(parent) parent.appendChild(e); return e; };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+/* Phụ đề không mồ côi: dấu "·", "—", "–", ":" không đứng đầu dòng (dính vào chữ trước bằng &nbsp;), từ ngắn ≤ 2 ký tự
+   (1, PT, &, km, Zone 1–5…) dính vào chữ sau/trước, 2 từ cuối luôn đi cùng nhau; trình duyệt chia dòng cân (text-wrap:balance). */
+const NB = "\u00A0";
+function typo(s){
+  // "~" trong timeline = khoảng trắng không ngắt (vd "Kết~nối")
+  const w = String(s).trim().split(/\s+/);
+  let out = [];
+  for(const x of w){
+    if(out.length && /^[·—–:;,.!?)»]/.test(x)){ out[out.length - 1] += NB + x; continue; }          // dấu không mở đầu dòng
+    if(out.length && /^\d[\d–.,×]*$/.test(x) && /^\p{L}/u.test(out[out.length - 1])){ out[out.length - 1] += NB + x; continue; }   // "Zone 1–5", "kỳ 4–16"
+    out.push(x);
+  }
+  // cụm giữa hai dấu "·" ngắn (≤ 3 từ) không bị ngắt giữa chừng
+  const segs = []; let cur = [];
+  out.forEach(x => { cur.push(x); if(/[·]$/.test(x)){ segs.push(cur); cur = []; } }); if(cur.length) segs.push(cur);
+  out = []; segs.forEach(g => { if(g.length <= 3 && segs.length > 1) out.push(g.join(NB)); else out.push(...g); });
+  for(let i = out.length - 2; i >= 0; i--){                                                             // từ rất ngắn dính chữ sau
+    const last = out[i].split(NB).pop();
+    if(last.length <= 2 && /[\p{L}\d&]/u.test(last)){ out[i] += NB + out[i + 1]; out.splice(i + 1, 1); }
+  }
+  if(out.length >= 3){ const a = out.pop(); out[out.length - 1] += NB + a; }                          // 2 từ cuối đi cùng
+  return out.join(" ").replace(/~/g, NB);
+}
+const escT = s => esc(typo(s)).replace(/\u00A0/g, "&nbsp;");
 
 /* ---------------- bảng màu theme (chương 12) ---------------- */
 const THEME = {
@@ -59,8 +83,8 @@ if(QA) stage.classList.add("qa-fit"); if(QA === "scr") stage.classList.add("qa-s
 /* Số đo điện thoại — MỘT nguồn. Màn = khung chụp app (390×844 CSS px) đặt nguyên, không co giãn. */
 const PH_W = 424, PH_H = 878, SCR_X = 17, SCR_Y = 17, SCR_W = 390, SCR_H = 844;
 const R_OUT = 72, R_SCR = R_OUT - SCR_X;                 // bo góc đồng tâm: màn = khung − 17
-/* vùng an toàn lúc chụp (capture_app.py ghi vào manifest); manifest cũ chưa ghi = 50/22 */
-const SAFE = Object.assign({ top:47, bottom:34 }, MAN.safe || ((MAN.shots && Object.keys(MAN.shots).length) ? { top:50, bottom:22 } : {}));
+/* vùng an toàn lúc chụp (capture_app.py ghi vào manifest; iPhone 14/15 Pro: 59 trên / 34 dưới); manifest cũ chưa ghi = 50/22 */
+const SAFE = Object.assign({ top:59, bottom:34 }, MAN.safe || ((MAN.shots && Object.keys(MAN.shots).length) ? { top:50, bottom:22 } : {}));
 const ISL = { w:120, h:34, y:11 };                       // dynamic island (toạ độ màn) — nằm gọn trong dải trạng thái
 const HOME = { w:134, h:5, bottom:8 };
 const QR_AR = (TL.qr && TL.qr.ar) || (1284 / 1020);     // thẻ QR: cao/rộng sau khi cắt (prep.py ghi)
@@ -70,6 +94,15 @@ function sideOf(ci){
 }
 function L(ci){
   const side = sideOf(ci);
+  /* chương "Sắp ra mắt": điện thoại + đồng hồ đứng cạnh nhau (duo) */
+  if(C[ci].kind === "soon"){
+    if(V) return { side:"center", duo:true, phoneH: H*0.50, cx: W*0.36, cy: H*0.565, tx: W*0.075, tw: W*0.85,
+      kickY: H*0.052, kickSize: W*0.025, titleY: H*0.072, titleSize: W*0.092, capY: H*0.902, capSize: W*0.037, capW: W*0.85,
+      statX: W*0.04, statY: H*0.36, statSize: W*0.075, tilt: 1, watch: { cx: W*0.765, cy: H*0.585, h: H*0.36 } };
+    return { side:"right", duo:true, phoneH: H*0.80, cx: W*0.60, cy: H*0.52, tx: W*0.06, tw: W*0.40,
+      kickY: H*0.235, kickSize: H*0.024, titleY: H*0.275, titleSize: H*0.095, capY: H*0.6, capSize: H*0.036, capW: W*0.38,
+      statX: W*0.06, statY: H*0.76, statSize: H*0.07, tilt: -1, watch: { cx: W*0.835, cy: H*0.53, h: H*0.70 } };
+  }
   if(V) return { side, phoneH: H*0.64, cx: W/2, cy: H*0.567, tx: W*0.075, tw: W*0.85,
     kickY: H*0.052, kickSize: W*0.025, titleY: H*0.072, titleSize: W*0.092, capY: H*0.902, capSize: W*0.037, capW: W*0.85,
     statX: W*0.04, statY: H*0.40, statSize: W*0.075, tilt: (ci % 2 ? -1 : 1) };
@@ -126,6 +159,339 @@ function splitTitle(lines, accent, style){
   }).join("");
 }
 
+/* =====================================================================================================
+   CHƯƠNG "SẮP RA MẮT" (kind:"soon") — tính năng cập nhật sau, KHÔNG phải ảnh chụp app:
+   - màn điện thoại tự vẽ (mock:run | mock:hyrox | mock:rest | mock:health | mock:summary) theo nhận diện TapEasy (navy/mint/coral)
+   - đồng hồ thông minh tự vẽ (CSS/SVG, kiểu chung: mặt tròn, vành chia vạch, 3 nút, dây silicon — không logo/thiết kế hãng nào)
+     với giao diện TapEasy trên đồng hồ: chạy (nhịp tim + vùng tim), HYROX, nghỉ giữa hiệp, sức khoẻ/đồng bộ, tổng kết
+   - dữ liệu "bay" từ đồng hồ sang điện thoại ở các mốc ch.sync.  Mọi thứ là hàm thuần của t.
+   Nội dung: vùng tim 5 mức theo % nhịp tim tối đa (Z1 50–60 · Z2 60–70 · Z3 70–80 · Z4 80–90 · Z5 90–100 %), HYROX = 8 × (1 km chạy
+   + 1 trạm): SkiErg 1000 m · Sled Push 50 m · Sled Pull 50 m · Burpee Broad Jump 80 m · Row 1000 m · Farmers Carry 200 m ·
+   Sandbag Lunges 100 m · Wall Balls 100 lần; Roxzone = vùng chuyển giữa chạy và trạm (tính vào tổng thời gian).
+   ===================================================================================================== */
+const ZC = ["#9AA4AE", "#38BDF8", "#34D399", "#FF9F43", "#FF4D5E"];           // màu vùng tim Z1…Z5
+const HRMAX = 190;
+const mmss = s => { s = Math.max(0, Math.floor(s)); return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); };
+const vnum = (x, d) => x.toFixed(d).replace(".", ",");
+const pace = s => `${Math.floor(s / 60)}'${String(Math.round(s % 60)).padStart(2, "0")}"`;
+/* nhịp tim "nhảy" theo từng nhịp đập (đổi số mỗi ~0,4 s), tất định */
+function hrAt(t, base){ const k = Math.floor(t * 2.5); return Math.round((base || 160) + 4 * Math.sin(k * 1.7) + 3 * Math.sin(k * .61) + 2 * Math.sin(k * 2.9)); }
+const zoneOf = hr => clamp(Math.floor((hr / HRMAX - .5) / .1), 0, 4);
+const HYROX = [["Chạy 1", "1 km", 281], ["SkiErg", "1000 m", 252], ["Chạy 2", "1 km", 295], ["Sled Push", "50 m", 188], ["Chạy 3", "1 km", 302],
+  ["Sled Pull", "50 m", 260], ["Chạy 4", "1 km", 310], ["Burpee Broad Jump", "80 m", 0], ["Chạy 5", "1 km", 0], ["Row", "1000 m", 0], ["Chạy 6", "1 km", 0],
+  ["Farmers Carry", "200 m", 0], ["Chạy 7", "1 km", 0], ["Sandbag Lunges", "100 m", 0], ["Chạy 8", "1 km", 0], ["Wall Balls", "100 lần", 0]];
+const HY_SWITCH = 3.4;                                                         // giây: xong Burpee Broad Jump → sang Chạy 5
+function hyState(lt){
+  if(lt < HY_SWITCH) return { cur: 7, st: 151 + lt, total: 2282 + lt, rox: 0 };
+  return { cur: 8, st: lt - HY_SWITCH, total: 2282 + lt, rox: Math.min(lt - HY_SWITCH, 1e9) };
+}
+/* lộ trình GPS (toạ độ bản đồ 358×300) */
+const ROUTE = [[38,252],[52,214],[64,176],[82,148],[112,128],[148,118],[176,98],[204,76],[240,66],[276,78],[302,104],[312,140],[304,176],[282,200],[252,214],[222,230],[192,246],[160,258],[124,266],[88,266],[60,262]];
+const RLEN = (() => { const a = [0]; for(let i = 1; i < ROUTE.length; i++) a.push(a[i-1] + Math.hypot(ROUTE[i][0]-ROUTE[i-1][0], ROUTE[i][1]-ROUTE[i-1][1])); return a; })();
+function routeAt(p){ const L = RLEN[RLEN.length-1] * clamp(p); let i = 1; while(i < RLEN.length - 1 && RLEN[i] < L) i++; const a = ROUTE[i-1], b = ROUTE[i], q = (L - RLEN[i-1]) / Math.max(1e-6, RLEN[i] - RLEN[i-1]); return [lerp(a[0], b[0], q), lerp(a[1], b[1], q)]; }
+const SPLITS = [324, 315, 309, 312, 303, 310];
+const SOON_TAG = `<span class="mk-soon">Sắp ra mắt</span>`;
+const ICON = {
+  heart: `<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z" fill="currentColor"/></svg>`,
+  run: `<svg viewBox="0 0 24 24"><circle cx="14.5" cy="4.5" r="2.2" fill="currentColor"/><path d="M9 21l2.4-5.6 2.6 2.4V22M7 12.5l2.8-3.6 4 .8 2.2 3.3 3 .6M11.4 15.4l1.4-5.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  watch: `<svg viewBox="0 0 24 24"><rect x="8" y="1.5" width="8" height="4" rx="1.5" fill="currentColor" opacity=".55"/><rect x="8" y="18.5" width="8" height="4" rx="1.5" fill="currentColor" opacity=".55"/><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 8.5V12l2.4 1.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+  sync: `<svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-14.3 4.9M4 12a8 8 0 0 1 14.3-4.9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M18.6 3.2v4.2h-4.2M5.4 20.8v-4.2h4.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  check: `<svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  warn: `<svg viewBox="0 0 24 24"><path d="M12 3l10 18H2z" fill="currentColor"/><path d="M12 10v5M12 17.6v.4" stroke="#1B0F0A" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+};
+/* cung tròn SVG (độ, 0 = 12 giờ, theo chiều kim đồng hồ) */
+function arcD(cx, cy, r, a0, a1){ const P = a => [cx + r * Math.sin(a * Math.PI / 180), cy - r * Math.cos(a * Math.PI / 180)]; const [x0, y0] = P(a0), [x1, y1] = P(a1);
+  return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`; }
+
+/* ---------- màn điện thoại tự vẽ ---------- */
+function buildMock(kind, root){
+  root.classList.add("mk-root");
+  const m = { kind, root, q: {} };
+  const box = el("div", "mk mk-" + kind, root);
+  const top = (title, sub) => `<div class="mk-top"><span class="mk-back">‹</span><div><b>${title}</b>${sub ? `<small>${sub}</small>` : ""}</div>${SOON_TAG}</div>`;
+  if(kind === "run"){
+    const streets = [[0,40,358,70],[0,150,358,128],[0,230,358,262],[70,0,96,300],[180,0,170,300],[290,0,262,300],[0,300,120,0]].map(([a,b,c,d]) => `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}"/>`).join("");
+    box.innerHTML = top("Chạy bộ", "Buổi sáng · GPS") + `
+      <div class="mk-map"><svg viewBox="0 0 358 300">
+        <path class="mk-park" d="M118 150 C140 128,200 122,236 140 C268 158,262 196,226 206 C186 220,130 206,116 184 Z"/>
+        <path class="mk-river" d="M-10 292 C80 270,160 300,240 282 S330 250,370 262"/>
+        <g class="mk-street">${streets}</g>
+        <polyline class="mk-route-ghost" points="${ROUTE.map(p => p.join(",")).join(" ")}"/>
+        <polyline class="mk-route" points="${ROUTE.map(p => p.join(",")).join(" ")}" stroke-dasharray="${RLEN[RLEN.length-1].toFixed(1)}"/>
+        <g class="mk-kms"></g>
+        <circle class="mk-start" cx="${ROUTE[0][0]}" cy="${ROUTE[0][1]}" r="6"/>
+        <circle class="mk-me-halo" r="15"/><circle class="mk-me" r="6.5"/>
+      </svg><div class="mk-gps"><i></i>GPS mạnh</div></div>
+      <div class="mk-stats"><div><b class="q-km">0</b><small>km</small></div><div><b class="q-pace">–</b><small>pace /km</small></div><div><b class="q-time">–</b><small>thời gian</small></div><div><b class="q-hr">–</b><small>bpm</small></div></div>
+      <div class="mk-zone"><div class="mk-lab">Thời gian trong vùng tim</div><div class="mk-zbar">${ZC.map((c, i) => `<i style="background:${c}"></i>`).join("")}</div>
+        <div class="mk-zleg">${ZC.map((c, i) => `<span><i style="background:${c}"></i>Z${i+1}</span>`).join("")}</div></div>
+      <div class="mk-splits"><div class="mk-lab">Splits từng km</div>${SPLITS.map((s, i) => `<div class="mk-split"><span>${i+1}</span><div class="mk-sbar"><i style="width:${(100 * (1 - (s - 290) / 60)).toFixed(1)}%"></i></div><b>${pace(s)}</b></div>`).join("")}</div>`;
+    m.q.route = box.querySelector(".mk-route"); m.q.me = box.querySelector(".mk-me"); m.q.halo = box.querySelector(".mk-me-halo"); m.q.kms = box.querySelector(".mk-kms");
+    m.q.zb = Array.from(box.querySelectorAll(".mk-zbar i")); m.q.sp = Array.from(box.querySelectorAll(".mk-split"));
+    ["km", "pace", "time", "hr"].forEach(k => m.q[k] = box.querySelector(".q-" + k));
+  } else if(kind === "hyrox"){
+    box.innerHTML = top("HYROX", "Mô phỏng thi đấu · Open") + `
+      <div class="mk-hyhead"><div><small>Tổng thời gian</small><b class="q-total">00:00</b></div><div><small>Roxzone</small><b class="q-rox">03:46</b></div></div>
+      <div class="mk-hylist">${HYROX.map(([nm, ds, tm], i) => `<div class="mk-hy ${i % 2 ? "st" : "rn"}"><span class="ix">${i % 2 ? (i + 1) / 2 : ICON.run}</span><div><b>${esc(nm)}</b><small>${ds}</small></div><em>${tm ? mmss(tm) : "—"}</em></div>`).join("")}</div>`;
+    m.q.rows = Array.from(box.querySelectorAll(".mk-hy")); m.q.total = box.querySelector(".q-total"); m.q.rox = box.querySelector(".q-rox");
+  } else if(kind === "rest"){
+    box.innerHTML = top("Buổi tập hôm nay", "Thân trên · Sức mạnh") + `
+      <div class="mk-card mk-ex"><b>Đẩy ngực tạ đòn</b><small>4 hiệp · nghỉ 1:00</small>
+        <div class="mk-sets">${[["1","60 kg","8",1],["2","60 kg","8",1],["3","62,5 kg","6",0],["4","62,5 kg","6",0]].map(([k,kg,r,d]) => `<div class="${d ? "done" : ""}"><span>${k}</span><span>${kg}</span><span>× ${r}</span><i>${d ? ICON.check : ""}</i></div>`).join("")}</div></div>
+      <div class="mk-card mk-rest"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="84" class="bg"/><circle cx="100" cy="100" r="84" class="fg" transform="rotate(-90 100 100)" stroke-dasharray="${(2 * Math.PI * 84).toFixed(2)}"/></svg>
+        <div class="mk-restc"><small>Nghỉ giữa hiệp</small><b class="q-rest">0:24</b><small>Tiếp: hiệp 3 · 62,5 kg × 6</small></div></div>
+      <div class="mk-btns"><span>−15 s</span><span>+15 s</span><span class="pri">Bỏ qua</span></div>
+      <div class="mk-wchip">${ICON.watch}Đồng hồ rung khi hết giờ nghỉ</div>`;
+    m.q.ring = box.querySelector(".mk-rest .fg"); m.q.rest = box.querySelector(".q-rest");
+  } else if(kind === "health"){
+    box.innerHTML = top("Sức khoẻ", "Đồng bộ từ đồng hồ") + `
+      <div class="mk-card mk-sync"><span class="ic">${ICON.watch}</span><div><b>Đồng hồ thông minh</b><small class="q-sync">Đang đồng bộ…</small></div><span class="sp">${ICON.sync}</span></div>
+      <div class="mk-grid">
+        <div class="mk-card mk-hr"><div class="mk-lab">${ICON.heart} Nhịp tim</div><b class="q-hr">64</b><small>bpm lúc nghỉ</small>
+          <svg viewBox="0 0 160 46" class="mk-spark"><polyline class="q-line" points=""/></svg></div>
+        <div class="mk-card"><div class="mk-lab">HRV</div><b class="q-hrv">0</b><small>ms · ổn định</small></div>
+        <div class="mk-card"><div class="mk-lab">SpO₂</div><b class="q-spo">0</b><small>% oxy trong máu</small></div>
+        <div class="mk-card"><div class="mk-lab">VO₂max</div><b class="q-vo">0</b><small>ước tính · Tốt</small></div>
+        <div class="mk-card mk-sleep"><div class="mk-lab">Giấc ngủ</div><b>7 g 24 ph</b>
+          <div class="mk-stage">${[[8,"#5b6b75"],[22,"#38BDF8"],[46,"#7C9CF5"],[24,"#5EE6C7"]].map(([w, c]) => `<i style="flex:${w};background:${c}"></i>`).join("")}</div><small>Thức · REM · Nông · Sâu</small></div>
+      </div>
+      <div class="mk-alert">${ICON.warn}<div><b>Cảnh báo nhịp tim cao</b><small>186 bpm lúc đang nghỉ · ngưỡng bạn đặt 180</small></div></div>`;
+    m.q.cards = Array.from(box.querySelectorAll(".mk-grid .mk-card")); m.q.alert = box.querySelector(".mk-alert");
+    ["hr", "hrv", "spo", "vo", "sync", "line"].forEach(k => m.q[k] = box.querySelector(".q-" + k)); m.q.sp = box.querySelector(".mk-sync .sp");
+  } else {
+    box.innerHTML = top("Nhật ký tập", "Tự ghi từ đồng hồ") + `
+      <div class="mk-card mk-sum"><div class="mk-lab">${ICON.run} Chạy bộ buổi sáng · 06:10</div><b class="q-km">10,02</b><small>km</small>
+        <div class="mk-sumg"><div><b>52:40</b><small>thời gian</small></div><div><b>5'15"</b><small>pace TB</small></div><div><b>148</b><small>bpm TB</small></div>
+          <div><b>176</b><small>bpm tối đa</small></div><div><b>612</b><small>kcal</small></div><div><b>49</b><small>VO₂max</small></div></div>
+        <div class="mk-zbar">${[6, 24, 41, 23, 6].map((w, i) => `<i style="flex:${w};background:${ZC[i]}"></i>`).join("")}</div></div>
+      <div class="mk-saved">${ICON.check}<div><b>Đã lưu vào Nhật ký tập</b><small>Tự ghi từ đồng hồ · không cần nhập tay</small></div></div>`;
+    m.q.card = box.querySelector(".mk-sum"); m.q.saved = box.querySelector(".mk-saved"); m.q.km = box.querySelector(".q-km");
+  }
+  m.render = (lt, t) => renderMock(m, lt, t);
+  return m;
+}
+function renderMock(m, lt){
+  const q = m.q;
+  if(m.kind === "run"){
+    const p = inOut((lt - .4) / 7.6), L = RLEN[RLEN.length - 1];
+    q.route.setAttribute("stroke-dashoffset", (L * (1 - p)).toFixed(1));
+    const [x, y] = routeAt(p); q.me.setAttribute("cx", x.toFixed(1)); q.me.setAttribute("cy", y.toFixed(1));
+    q.halo.setAttribute("cx", x.toFixed(1)); q.halo.setAttribute("cy", y.toFixed(1)); q.halo.setAttribute("r", (10 + 8 * ((lt * 1.2) % 1)).toFixed(2)); q.halo.style.opacity = (.55 * (1 - (lt * 1.2) % 1)).toFixed(3);
+    const kmTot = 6.42, km = kmTot * p, nk = Math.floor(km + 1e-6);
+    if(q.kms.childElementCount !== nk){ let h = ""; for(let i = 1; i <= nk; i++){ const [a, b] = routeAt(i / kmTot); h += `<g><circle cx="${a.toFixed(1)}" cy="${b.toFixed(1)}" r="8.5"/><text x="${a.toFixed(1)}" y="${(b + 3.4).toFixed(1)}">${i}</text></g>`; } q.kms.innerHTML = h; }
+    q.km.textContent = vnum(km, 2); q.pace.textContent = p > .02 ? `5'12"` : "–"; q.time.textContent = mmss(1928 * p + lt * 0);
+    q.hr.textContent = p > .02 ? String(hrAt(lt)) : "–";
+    const zw = [6, 22, 38, 27, 7], g = outCubic((lt - 1.2) / 1.4);
+    q.zb.forEach((e, i) => e.style.flex = String(Math.max(.001, zw[i] * g)));
+    q.sp.forEach((e, i) => { const a = sp(lt - 2.2 - i * .28, "ui"); e.style.opacity = clamp(a * 1.5).toFixed(3); e.style.transform = `translate3d(${px(18 * (1 - a))},0,0)`; e.querySelector(".mk-sbar i").style.transform = `scaleX(${clamp(a).toFixed(3)})`; });
+  } else if(m.kind === "hyrox"){
+    const S = hyState(lt);
+    q.total.textContent = mmss(S.total); q.rox.textContent = mmss(226 + (S.cur === 8 ? Math.min(S.rox, 14) : 0));
+    q.rows.forEach((r, i) => {
+      r.classList.toggle("done", i < S.cur); r.classList.toggle("cur", i === S.cur);
+      const em = r.querySelector("em");
+      if(i === S.cur) em.textContent = mmss(S.st);
+      else if(i === 7 && S.cur > 7) em.textContent = mmss(151 + HY_SWITCH);
+      else if(!HYROX[i][2]) em.textContent = "—";
+      const a = sp(lt - .1 - i * .035, "ui"); r.style.opacity = (clamp(a * 1.4) * (i > S.cur ? .45 : 1)).toFixed(3); r.style.transform = `translate3d(0,${px(10 * (1 - a))},0)`;
+    });
+  } else if(m.kind === "rest"){
+    const rem = 24.4 - lt, C0 = 2 * Math.PI * 84;
+    q.ring.setAttribute("stroke-dashoffset", (C0 * (1 - clamp(rem / 60))).toFixed(2));
+    q.rest.textContent = "0:" + String(Math.max(0, Math.ceil(rem))).padStart(2, "0");
+  } else if(m.kind === "health"){
+    const sy = clamp((lt - .3) / 1.6);
+    q.sync.textContent = sy < 1 ? "Đang đồng bộ… " + Math.round(sy * 100) + " %" : "Đã đồng bộ · vừa xong";
+    q.sp.style.transform = `rotate(${(sy < 1 ? lt * 300 : 0).toFixed(1)}deg)`; q.sp.style.color = sy < 1 ? "" : "var(--mint)";
+    q.cards.forEach((c, i) => { const a = sp(lt - 1.2 - i * .16, "ui"); c.style.opacity = clamp(a * 1.4).toFixed(3); c.style.transform = `translate3d(0,${px(16 * (1 - a))},0) scale(${(.96 + .04 * clamp(a)).toFixed(4)})`; });
+    const v = k => outExpo((lt - 1.4 - k * .16) / 1.2);
+    q.hr.textContent = String(Math.round(64 * v(0))); q.hrv.textContent = String(Math.round(62 * v(1))); q.spo.textContent = String(Math.round(97 * v(2))); q.vo.textContent = String(Math.round(49 * v(3)));
+    const pts = []; for(let i = 0; i <= 40; i++){ const x = i * 4, ph = (i + lt * 6); pts.push(`${x},${(30 - 10 * Math.max(0, Math.sin(ph * .9)) ** 6 * 2.2 + 3 * Math.sin(ph * .31)).toFixed(1)}`); }
+    q.line.setAttribute("points", pts.join(" "));
+    const al = sp(lt - 5.0, "play"); q.alert.style.opacity = clamp(al * 2).toFixed(3); q.alert.style.transform = `translate3d(0,${px(30 * (1 - al))},0) scale(${(.9 + .1 * al).toFixed(4)})`;
+  } else {
+    const a = sp(lt - .3, "ui"), b = sp(lt - 1.6, "play");
+    q.card.style.opacity = clamp(a * 1.5).toFixed(3); q.card.style.transform = `translate3d(0,${px(24 * (1 - a))},0)`;
+    q.km.textContent = vnum(10.02 * outExpo((lt - .4) / 1.4), 2);
+    q.saved.style.opacity = clamp(b * 2).toFixed(3); q.saved.style.transform = `scale(${(.85 + .15 * b).toFixed(4)})`;
+  }
+}
+
+/* ---------- đồng hồ thông minh tự vẽ ---------- */
+const WW = 300, WH = 600, WF = 236;                       // khung đồng hồ (px nội bộ) · đường kính mặt hiển thị
+function buildSoon(n){
+  const w = n.watch = el("div", "watch", n.fg);
+  w.style.width = WW + "px"; w.style.height = WH + "px";
+  const ticks = Array.from({ length: 60 }, (_, i) => { const a = i * 6, l = i % 5 ? 6 : 12; return `<line x1="150" y1="${10}" x2="150" y2="${10 + l}" transform="rotate(${a} 150 150)" stroke-width="${i % 5 ? 1.4 : 2.6}"/>`; }).join("");
+  w.innerHTML = `
+    <div class="w-strap top"></div><div class="w-strap bot">${Array.from({ length: 6 }, (_, i) => `<i style="top:${54 + i * 26}px"></i>`).join("")}</div>
+    <div class="w-btn" style="right:-9px;top:205px;height:46px"></div><div class="w-btn crown" style="right:-13px;top:278px;height:42px"></div>
+    <div class="w-btn" style="right:-9px;top:347px;height:46px"></div><div class="w-btn" style="left:-9px;top:262px;height:74px"></div>
+    <div class="w-case"><svg class="w-bezel" viewBox="0 0 300 300"><circle cx="150" cy="150" r="146" class="ring"/><g class="tk">${ticks}</g></svg>
+      <div class="w-face"><div class="w-scr"></div><div class="w-glare"></div></div></div>`;
+  n.wFace = w.querySelector(".w-face"); n.wScrBox = w.querySelector(".w-scr");
+  n.wScr = {};
+  ["run", "hyrox", "rest", "health", "summary"].forEach(k => { const d = el("div", "ws ws-" + k, n.wScrBox); d.innerHTML = watchHTML(k); n.wScr[k] = d; });
+  n.soonChip = el("div", "soonchip", n.txt, "Sắp ra mắt");
+  n.fly = el("div", "flylayer", n.fg);
+  n.flyDots = Array.from({ length: 8 }, (_, i) => el("div", "fly" + (i % 3 === 0 ? " hrt" : ""), n.fly, i % 3 === 0 ? ICON.heart : ""));
+  n.landRing = el("div", "landring", n.fly);
+}
+function watchHTML(k){
+  const c = WF / 2;
+  if(k === "run"){
+    const segs = ZC.map((col, i) => { const a0 = -135 + i * 54 + 2, a1 = a0 + 50; return `<path d="${arcD(c, c, 108, a0, a1)}" stroke="${col}" class="zs"/>`; }).join("");
+    return `<svg class="wz" viewBox="0 0 ${WF} ${WF}">${segs}<circle class="zm" r="6"/></svg>
+      <div class="wr-top"><i class="gps"></i><span class="q-time">32:08</span></div>
+      <div class="wr-hr"><span class="hb">${ICON.heart}</span><b class="q-hr">160</b></div>
+      <div class="wr-zone q-zone">VÙNG 4</div>
+      <div class="wr-row"><div><b class="q-pace">5'12"</b><small>/km</small></div><div><b class="q-km">6,18</b><small>km</small></div></div>
+      <div class="wr-brand">TapEasy</div>`;
+  }
+  if(k === "hyrox"){
+    const segs = Array.from({ length: 16 }, (_, i) => { const a0 = -150 + i * 18.75 + 1.6, a1 = a0 + 15.5; return `<path d="${arcD(c, c, 108, a0, a1)}" class="hs ${i % 2 ? "st" : "rn"}"/>`; }).join("");
+    return `<svg class="wz" viewBox="0 0 ${WF} ${WF}">${segs}</svg>
+      <div class="wh-top">HYROX · <span class="q-total">38:02</span></div>
+      <div class="wh-lab q-lab">TRẠM 4/8</div><div class="wh-name q-name">BURPEE<br>BROAD JUMP</div>
+      <b class="wh-time q-st">02:31</b><div class="wh-sub q-sub">80 m</div>`;
+  }
+  if(k === "rest"){
+    const C0 = (2 * Math.PI * 96).toFixed(2);
+    return `<svg class="wz" viewBox="0 0 ${WF} ${WF}"><circle cx="${c}" cy="${c}" r="96" class="rbg"/><circle cx="${c}" cy="${c}" r="96" class="rfg" stroke-dasharray="${C0}" transform="rotate(-90 ${c} ${c})"/></svg>
+      <div class="wt-lab">NGHỈ</div><b class="wt-time q-rest">0:24</b><div class="wt-next">Tiếp: hiệp 3<br>62,5 kg × 6</div>`;
+  }
+  if(k === "health"){
+    return `<svg class="wz" viewBox="0 0 ${WF} ${WF}"><path d="${arcD(c, c, 108, -120, 120)}" class="hb0"/><path d="${arcD(c, c, 108, -120, 120)}" class="hb1" pathLength="1"/></svg>
+      <div class="wk-top"><span class="sp">${ICON.sync}</span><span class="q-sy">Đồng bộ</span></div>
+      <div class="wk-vals">${[["64", "bpm · nghỉ"], ["62", "ms · HRV"], ["97", "% SpO₂"], ["7:24", "giờ ngủ"]].map(([v, l]) => `<div class="wk-v"><b>${v}</b><small>${l}</small></div>`).join("")}</div>
+      <div class="wk-alert">${ICON.warn}<b>NHỊP TIM CAO</b><span>186 bpm</span></div>`;
+  }
+  return `<div class="wd-ok">${ICON.check}</div><div class="wd-lab">HOÀN THÀNH</div><b class="wd-km">10,02 km</b><div class="wd-sub">52:40 · 148 bpm</div>
+    <div class="wd-send">${ICON.sync} Đã gửi tới TapEasy</div>`;
+}
+function watchAt(ch, t){ let k = 0; (ch.watch || []).forEach((w, i) => { if(w[0] <= t) k = i; }); return k; }
+function renderWatchScreen(n, key, lt, t){
+  const S = n.wScr[key], q = s => S.querySelector(s);
+  if(key === "run"){
+    const hr = hrAt(t), z = zoneOf(hr);
+    q(".q-hr").textContent = String(hr); q(".q-time").textContent = mmss(1928 + lt); q(".q-km").textContent = vnum(6.18 + lt / 312, 2);
+    const zEl = q(".q-zone"); zEl.textContent = "VÙNG " + (z + 1); zEl.style.color = ZC[z];
+    const beat = (t * hr / 60) % 1; q(".hb").style.transform = `scale(${(1 + .22 * Math.exp(-beat * 9)).toFixed(4)})`;
+    const dr = outCubic((lt - .15) / .9);
+    S.querySelectorAll(".zs").forEach((p, i) => { p.style.opacity = (i === z ? 1 : .32).toFixed(2); p.style.strokeWidth = i === z ? "11" : "7"; p.style.strokeDasharray = "200"; p.style.strokeDashoffset = (200 * (1 - clamp(dr * 5 - i))).toFixed(1); });
+    const f = clamp((hr / HRMAX - .5) / .5), a = -135 + f * 270, m = q(".zm");
+    m.setAttribute("cx", (WF / 2 + 108 * Math.sin(a * Math.PI / 180)).toFixed(2)); m.setAttribute("cy", (WF / 2 - 108 * Math.cos(a * Math.PI / 180)).toFixed(2)); m.style.opacity = dr.toFixed(3);
+  } else if(key === "hyrox"){
+    const S2 = hyState(lt);
+    q(".q-total").textContent = mmss(S2.total); q(".q-st").textContent = mmss(S2.st);
+    if(S2.cur === 7){ q(".q-lab").textContent = "TRẠM 4/8"; q(".q-name").innerHTML = "BURPEE<br>BROAD JUMP"; q(".q-sub").textContent = "80 m"; }
+    else { q(".q-lab").textContent = "CHẠY 5/8"; q(".q-name").innerHTML = "1 KM<br>SAU ROXZONE"; q(".q-sub").textContent = "pace 4'48\"/km"; }
+    S.querySelectorAll(".hs").forEach((p, i) => { p.classList.toggle("done", i < S2.cur); p.style.opacity = i === S2.cur ? (.55 + .45 * Math.abs(Math.sin(t * 4))).toFixed(3) : ""; });
+  } else if(key === "rest"){
+    const rem = 24.4 - lt, C0 = 2 * Math.PI * 96;
+    q(".rfg").setAttribute("stroke-dashoffset", (C0 * (1 - clamp(rem / 60))).toFixed(2)); q(".q-rest").textContent = "0:" + String(Math.max(0, Math.ceil(rem))).padStart(2, "0");
+  } else if(key === "health"){
+    const sy = clamp((lt - .1) / 1.8);
+    q(".sp").style.transform = `rotate(${(sy < 1 ? lt * 300 : 0).toFixed(1)}deg)`; q(".q-sy").textContent = sy < 1 ? "Đang đo…" : "Đã đồng bộ";
+    const hb = q(".hb1"); hb.style.strokeDasharray = "1"; hb.style.strokeDashoffset = (1 - sy).toFixed(4);
+    const per = 2.0, k = Math.floor(Math.max(0, lt - .3) / per) % 4;
+    S.querySelectorAll(".wk-v").forEach((v, i) => { const u = (Math.max(0, lt - .3) % per) / per; const on = i === k; v.style.opacity = on ? (clamp(u / .12) * clamp((1 - u) / .12)).toFixed(3) : "0"; v.style.transform = on ? `translate3d(0,${px(10 * (1 - outCubic(u / .15)))},0)` : ""; });
+    const al = clamp((lt - 5.0) / .2) * clamp((7.6 - lt) / .2), alr = q(".wk-alert");
+    alr.style.opacity = al.toFixed(3); alr.style.transform = `scale(${(.9 + .1 * outCubic(al)).toFixed(4)})`;
+  } else {
+    const a = sp(lt - .1, "play"); q(".wd-ok").style.transform = `scale(${clamp(a, 0, 1.4).toFixed(4)})`;
+  }
+}
+function renderSoon(n, t, kn){
+  const ch = n.ch, lt = t - ch.t0, Ld = n.L, wl = Ld.watch, w = n.watch;
+  // đồng hồ vào: trượt từ phải + xoay nhẹ (lò xo camera), trôi nhẹ khi đứng
+  const e = sp(lt - .45, "cam"), k = wl.h / WH;
+  const x = wl.cx + (1 - e) * W * .3, y = wl.cy + H * .004 * Math.sin(2 * Math.PI * t / 4.7);
+  const rot = lerp(14, -4, e) + .8 * Math.sin(2 * Math.PI * t / 6.3);
+  w.style.transform = `translate3d(${px(x - WW / 2)},${px(y - WH / 2)},0) rotate(${rot.toFixed(3)}deg) scale(${k.toFixed(5)})`;
+  w.style.opacity = clamp((lt - .45) / .25).toFixed(3);
+  // chip "Sắp ra mắt" trên đồng hồ
+  const cq = sp(lt - .9, "ui");
+  Object.assign(n.soonChip.style, { left: px(wl.cx), top: px(wl.cy - wl.h / 2 - (V ? H * .045 : H * .075)), fontSize: px(V ? W * .03 : H * .03),
+    opacity: clamp((lt - .9) / .2).toFixed(3), transform: `translate(-50%,0) scale(${(.85 + .15 * cq).toFixed(4)})` });
+  // màn đồng hồ: trượt ngang khi đổi
+  const ws = ch.watch, wi = watchAt(ch, t), keys = Object.keys(n.wScr);
+  keys.forEach(kk => n.wScr[kk].style.display = "none");
+  const cur = ws[wi], prev = wi > 0 ? ws[wi - 1] : null, p = (t - cur[0]) / .38;
+  const show = (key, xoff, op, ltk) => { const S = n.wScr[key]; S.style.display = ""; S.style.transform = xoff ? `translate3d(${px(xoff)},0,0)` : ""; S.style.opacity = op.toFixed(3); renderWatchScreen(n, key, ltk, t); };
+  if(prev && p < 1){ const q = outExpo(p); show(prev[1], -WF * .6 * q, 1 - q, t - prev[0]); show(cur[1], WF * .6 * (1 - q), q, t - cur[0]); }
+  else show(cur[1], 0, 1, t - cur[0]);
+  // rung khi hết giờ nghỉ / cảnh báo: rung nhẹ đồng hồ
+  const buzz = (cur[1] === "health" && t - cur[0] > 5.0 && t - cur[0] < 5.6) ? Math.sin(t * 160) * 2.2 * Math.exp(-(t - cur[0] - 5.0) * 4) : 0;
+  if(buzz) w.style.transform += ` translate3d(${px(buzz)},0,0)`;
+  // dữ liệu bay từ đồng hồ → điện thoại
+  const wf = { x: wl.cx + 0, y: wl.cy }, ph = screenToStage(n, 195, 330);
+  let anyR = false;
+  n.flyDots.forEach(d => d.style.opacity = "0");
+  (ch.sync || []).forEach(ts => {
+    const u0 = t - ts; if(u0 < -.05 || u0 > 1.4) return;
+    n.flyDots.forEach((d, i) => {
+      const u = clamp((u0 - i * .055) / .62); if(u <= 0 || u >= 1) return;
+      const q = inOut(u), mx = (wf.x + ph.x) / 2, my = Math.min(wf.y, ph.y) - H * (V ? .10 : .18) - i * 6;
+      const bx = (1 - q) * (1 - q) * wf.x + 2 * (1 - q) * q * mx + q * q * ph.x, by = (1 - q) * (1 - q) * wf.y + 2 * (1 - q) * q * my + q * q * ph.y;
+      const sz = (V ? W : H) * (d.classList.contains("hrt") ? .03 : .016);
+      Object.assign(d.style, { opacity: (Math.sin(Math.PI * u) * 1.2).toFixed(3), width: px(sz), height: px(sz), transform: `translate3d(${px(bx - sz / 2)},${px(by - sz / 2)},0)` });
+    });
+    const r = (u0 - .62 - 7 * .055) / .45;
+    if(r > 0 && r < 1){ anyR = true; const R = (V ? W : H) * (.03 + .09 * outCubic(r)); Object.assign(n.landRing.style, { opacity: ((1 - r) * .9).toFixed(3), width: px(R * 2), height: px(R * 2), transform: `translate3d(${px(ph.x - R)},${px(ph.y - R)},0)` }); }
+  });
+  if(!anyR) n.landRing.style.opacity = "0";
+}
+
+/* ---------- QA chữ: phụ đề không mồ côi / không dấu đầu dòng; chữ không đè nhau; không sát mép ---------- */
+function capCheck(){
+  const bad = [], rows = [];
+  NODES.forEach(n => {
+    if(!n.caps.length) return;
+    stage.appendChild(n.root);
+    n.caps.forEach(o => {
+      const c = o.c.cloneNode(true); c.style.opacity = "1"; c.style.transform = ""; c.style.filter = ""; c.style.visibility = "hidden";
+      // tách theo khoảng trắng THƯỜNG (nbsp giữ nguyên = cụm không ngắt)
+      const dot = c.querySelector(".dot"); const text = c.textContent;
+      c.innerHTML = ""; if(dot) c.appendChild(dot);
+      text.split(" ").forEach((tok, i) => { if(i) c.appendChild(document.createTextNode(" ")); el("span", "tok", c).textContent = tok; });
+      o.c.parentNode.appendChild(c);
+      const toks = Array.from(c.querySelectorAll(".tok")); const lines = [];
+      toks.forEach(s => { const y = Math.round(s.offsetTop); let L0 = lines.find(l => Math.abs(l.y - y) < 4); if(!L0){ L0 = { y, t: [] }; lines.push(L0); } L0.t.push(s.textContent); });
+      const over = c.scrollWidth > parseFloat(o.c.style.width) + 1;
+      const issues = [];
+      if(lines.length > 1){ const last = lines[lines.length - 1].t; if(last.length === 1 && !/ /.test(last[0])) issues.push("mồ côi: “" + last[0] + "”"); }
+      lines.forEach((l, i) => { if(i && /^[·—–:,;.]/.test(l.t[0])) issues.push("dấu đầu dòng: " + l.t[0]); });
+      if(lines.length > 2) issues.push(lines.length + " dòng");
+      if(over) issues.push("tràn ngang");
+      const txt = lines.map(l => l.t.join(" ").replace(/ /g, " ")).join(" ⏎ ");
+      rows.push((issues.length ? "LỖI " : "ok   ") + n.ch.id + ": " + txt + (issues.length ? "  ← " + issues.join(", ") : ""));
+      if(issues.length) bad.push(n.ch.id + ": " + issues.join(", "));
+      c.remove();
+    });
+    stage.removeChild(n.root);
+  });
+  return { bad, rows };
+}
+function textQA(){
+  const sr = stage.getBoundingClientRect(), f = W / sr.width, issues = [];
+  const R = e => { const r = e.getBoundingClientRect(); return { x: (r.left - sr.left) * f, y: (r.top - sr.top) * f, w: r.width * f, h: r.height * f }; };
+  const opa = e => { let o = 1; for(let x = e; x && x !== stage; x = x.parentElement){ const v = parseFloat(x.style.opacity); if(!isNaN(v)) o *= v; if(x.style.display === "none") return 0; } return o; };
+  mounted.forEach(n => {
+    const items = [];
+    const add = (e, name) => { if(e && e.isConnected && opa(e) > .5){ const r = R(e); if(r.w > 2 && r.h > 2) items.push({ name, r }); } };
+    add(n.kick, "kicker"); add(n.title, "tiêu đề"); n.caps.forEach((o, i) => add(o.c, "phụ đề " + (i + 1))); add(n.stat, "thẻ số"); add(n.chip, "chip theme"); add(n.soonChip, "chip sắp ra mắt");
+    if(n.cta) add(n.cta, "CTA"); if(n.qrCap) add(n.qrCap, "chú thích QR"); if(n.slogan) add(n.slogan, "khẩu hiệu");
+    for(let i = 0; i < items.length; i++) for(let j = i + 1; j < items.length; j++){
+      const a = items[i].r, b = items[j].r;
+      const ox = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x), oy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+      if(ox > 2 && oy > 2) issues.push(`${n.ch.id}: ${items[i].name} đè ${items[j].name} (${ox.toFixed(0)}×${oy.toFixed(0)} px)`);
+    }
+    items.forEach(it => { const r = it.r, m = Math.min(r.x, r.y, W - r.x - r.w, H - r.y - r.h); if(m < 12 && it.name !== "tiêu đề") issues.push(`${n.ch.id}: ${it.name} sát mép (${m.toFixed(0)} px)`); });
+  });
+  return issues;
+}
+
 const NODES = C.map((ch, ci) => {
   const n = { ci, ch, L: L(ci) };
   const root = n.root = el("div", "slot");
@@ -149,7 +515,7 @@ const NODES = C.map((ch, ci) => {
   if(V){ el("div", "capbg", tx); }
   const Ld = n.L;
   if(ch.num){
-    n.kick = el("div", "kicker", tx, `<span class="n">00</span><span class="bar"></span><span>${esc(ch.id === "themes" ? "Giao diện" : "Tính năng")}</span>`);
+    n.kick = el("div", "kicker" + (ch.kind === "soon" ? " soon" : ""), tx, `<span class="n">00</span><span class="bar"></span><span>${esc(ch.kicker || (ch.id === "themes" ? "Giao diện" : "Tính năng"))}</span>`);
     n.kick.style.fontSize = px(Ld.kickSize); n.kick.style.left = px(Ld.tx); n.kick.style.top = px(Ld.kickY);
     n.kickN = n.kick.querySelector(".n"); n.kickBar = n.kick.querySelector(".bar");
   }
@@ -158,12 +524,13 @@ const NODES = C.map((ch, ci) => {
     n.title.style.left = px(Ld.tx); n.title.style.top = px(Ld.titleY); n.title.style.fontSize = px(Ld.titleSize);
     if(ch.kind === "outro"){ const O = outroLayout(); n.L.tw = O.titleW; n.title.style.fontSize = px(O.titleSize); }
   }
-  n.caps = (ch.captions || []).map(([t, s]) => { const c = el("div", "cap", tx, `<span class="dot"></span>${esc(s)}`); c.style.left = px(Ld.tx); c.style.top = px(Ld.capY); c.style.width = px(Ld.capW); c.style.fontSize = px(Ld.capSize); return { t, c }; });
+  n.caps = (ch.captions || []).map(([t, s]) => { const c = el("div", "cap", tx, `<span class="dot"></span>${escT(s)}`); c.style.left = px(Ld.tx); c.style.top = px(Ld.capY); c.style.width = px(Ld.capW); c.style.fontSize = px(Ld.capSize); return { t, c }; });
   if(ch.stat){ n.stat = el("div", "stat", tx, `<div class="v">0</div><div class="l">${esc(ch.stat.label)}</div>`); n.stat.style.fontSize = px(Ld.statSize * 0.42); n.statV = n.stat.querySelector(".v"); n.statV.style.fontSize = px(Ld.statSize); }
   if(ch.kind === "themes"){ n.chip = el("div", "chip", tx); n.chip.style.fontSize = px(V ? W*0.03 : H*0.03); }
   // phần riêng
   if(ch.kind === "intro") buildIntro(n);
   if(ch.kind === "outro") buildOutro(n);
+  if(ch.kind === "soon") buildSoon(n);
   n.shotNodes = {};
   return n;
 });
@@ -192,6 +559,7 @@ function shotNode(n, key, id){
   if(n.shotNodes[key]) return n.shotNodes[key];
   const d = shotData(id);
   const s = { id, d, root: el("div", "shotl") };
+  if(/^mock:/.test(id)){ s.mock = buildMock(id.slice(5), s.root); n.shotNodes[key] = s; return s; }
   if(d){
     s.base = img(BUILD + d.base, "base", s.root);
     if(d.strips && d.strips.length && !d.noStrips){
@@ -200,7 +568,12 @@ function shotNode(n, key, id){
       Object.assign(s.clip.style, { left: px(sc.x), top: px(sc.y), width: px(sc.w), height: px(sc.h) });
       s.strips = el("div", "strips", s.clip);
       d.strips.forEach(st => { const i = img(BUILD + st.src, "", s.strips); i.style.left = "0px"; i.style.top = px(st.y); i.style.width = px(sc.w); i.style.height = px(sc.h); });
+      /* lớp phủ tràn viền (vùng cuộn bắt đầu trong dải trạng thái): dải cuộn bị cắt từ SAFE.top; khi cuộn, nền thanh trạng thái
+         (màu nền app lúc chụp) hiện dần để nội dung không bao giờ đè 9:41 / dynamic island — như thanh trạng thái iOS */
+      if(d.bandColor){ s.band = el("div", "band", s.root); Object.assign(s.band.style, { left: "0px", top: "0px", width: "390px", height: px(Math.min(SAFE.top, sc.y)), background: d.bandColor, opacity: "0" }); }
     }
+    /* chuỗi khung (seq): ảnh toàn màn đổi theo t, phủ trên base/dải cuộn trong cửa sổ shot.seq */
+    if(d.seq && d.seq.count){ s.seqImg = img(BUILD + d.seq.pattern.replace("%03d", "000"), "seqf", s.root); s.seqImg.style.display = "none"; s.seqK = 0; }
   } else {
     el("div", "ph", s.root, `<div style="font-size:15px;opacity:.6;font-family:JetBrains Mono">SHOT</div><div>${esc(id)}</div><div style="font-size:13px;opacity:.55">chưa chụp — chạy capture_app.py</div>`);
   }
@@ -208,7 +581,8 @@ function shotNode(n, key, id){
   return s;
 }
 function scrollAt(shot, t){
-  let y = 0;
+  const d0 = shotData(shot.id);
+  let y = shot.from_capture && d0 ? (d0.scrollTop || 0) : 0;
   for(const [a, b, to] of shot.scroll){ if(t <= a) break; y = t >= b ? to : lerp(y, to, inOut((t - a) / (b - a))); }
   const d = shotData(shot.id);
   if(d){
@@ -216,6 +590,14 @@ function scrollAt(shot, t){
     const cover = Math.max(...d.strips.map(s => s.y)); y = Math.min(y, d.scrollMax || 0, cover);
   }
   return Math.max(0, y);
+}
+/* khung của chuỗi seq tại t: trước cửa sổ → ẩn (base), trong → khung floor((t−t0)·fps), sau → giữ khung cuối */
+function setSeq(s, shot, t){
+  const q = s.d.seq, w = shot.seq || { t0: shot.t0, t1: shot.t1 };
+  if(t < w.t0){ s.seqImg.style.display = "none"; return; }
+  const k = clamp(Math.floor((t - w.t0) * q.fps + 1e-6), 0, q.count - 1);
+  s.seqImg.style.display = "";
+  if(k !== s.seqK || !s.seqImg.getAttribute("src")){ s.seqK = k; s.seqImg.src = RES(BUILD + q.pattern.replace("%03d", String(k).padStart(3, "0"))); pending.add(s.seqImg); }
 }
 /* điểm chạm → toạ độ màn hình (390×844) */
 function tapPoint(shot, target, t){
@@ -257,8 +639,9 @@ function renderScreen(n, t){
   want.forEach(s => { if(s.root.parentNode !== P.layers) { P.layers.appendChild(s.root); s.root.querySelectorAll("img").forEach(i => pending.add(i)); } else P.layers.appendChild(s.root); });
   P.mounted = want;
   // cuộn
-  const setScroll = (s, shot) => { if(s.strips) s.strips.style.transform = `translate3d(0,${px(-scrollAt(shot, t))},0)`; };
+  const setScroll = (s, shot) => { if(s.strips){ const y = scrollAt(shot, t); s.strips.style.transform = `translate3d(0,${px(-y)},0)`; if(s.band) s.band.style.opacity = clamp(y / 60).toFixed(3); } };
   setScroll(curNode, cur); if(prevNode) setScroll(prevNode, prev);
+  [[curNode, cur], [prevNode, prev]].forEach(([s, shot]) => { if(!s) return; if(s.seqImg) setSeq(s, shot, t); if(s.mock) s.mock.render(t - shot.t0, t, shot); });
   // chuyển màn trong điện thoại
   curNode.root.style.cssText = ""; if(prevNode) prevNode.root.style.cssText = "";
   if(prevNode){
@@ -301,9 +684,9 @@ function renderTouch(n, t, k){
     G.style.width = G.style.height = "120px"; G.style.transform = `translate3d(${px(pt.x - 60)},${px(pt.y - 60)},0)`;
     return;
   }
-  // ngón tay kéo khi cuộn dài
+  // ngón tay kéo khi cuộn dài (shot "drag": false → không vẽ, vd màn chào: chấm trắng trôi qua bản đồ trông như lỗi)
   const cur = shots[k];
-  for(const [a, b, to] of cur.scroll){
+  for(const [a, b, to] of (cur.drag === false ? [] : cur.scroll)){
     if(t >= a - .18 && t <= b + .12){
       const from = (() => { let y = 0; for(const s of cur.scroll){ if(s[0] >= a) break; y = s[2]; } return y; })();
       if(Math.abs(to - from) < 150) break;
@@ -425,7 +808,7 @@ function renderText(n, t, kn){
   if(n.stat){
     const s = ch.stat, a = t - s.t;
     const q = sp(a, "ui");
-    n.stat.style.opacity = clamp(a / .2).toFixed(3);
+    n.stat.style.opacity = (clamp(a / .2) * (s.until ? 1 - clamp((t - s.until) / .3) : 1)).toFixed(3);
     n.stat.style.transform = `translate3d(0,${px(20 * (1 - q))},0) scale(${(.9 + .1 * q).toFixed(4)})`;
     n.statV.textContent = Math.round(s.value * outExpo(a / 1.3)).toLocaleString("vi-VN") + (s.suffix || "");
     // vị trí: cạnh điện thoại
@@ -523,7 +906,7 @@ function renderIntro(n, t){
   const fs = V ? W * .19 : H * .2;
   n.slogan.style.fontSize = px(fs);
   const pin = sp(t - ch.phone_in + .25, "cam");
-  const sx = V ? W / 2 : lerp(W / 2, W * .075, pin), sy = V ? lerp(H * .30, H * .035, pin) : lerp(H * .30, H * .2, pin);
+  const sx = V ? W / 2 : lerp(W / 2, W * .075, pin), sy = V ? lerp(H * .27, H * .035, pin) : lerp(H * .17, H * .17, pin);
   const sc = V ? lerp(1, .42, pin) : lerp(1, .55, pin);
   n.slogan.style.left = px(sx); n.slogan.style.top = px(sy);
   n.slogan.style.textAlign = V || pin < .5 ? "center" : "left";
@@ -723,6 +1106,7 @@ function renderChapter(n, t, kn){
   if(ch.kind === "intro") renderIntro(n, t);
   if(ch.kind === "outro") renderOutro(n, t);
   if(ch.kind === "themes") sheen(n, t, ch.t0 + .5);
+  if(ch.kind === "soon") renderSoon(n, t, kn);
   renderText(n, t, kn);
   // biến đổi cả slot
   const tf = [];
@@ -813,7 +1197,7 @@ const ready = (async () => {
   render(0); await settle();
   return { W, H, duration: TL.duration, shots: Object.keys(MAN.shots || {}).length, safe: SAFE };
 })();
-return { render, settle, ready, probe, blurSamples, cutPoints, duration: TL.duration, W, H };
+return { render, settle, ready, probe, blurSamples, cutPoints, capCheck, textQA, duration: TL.duration, W, H };
 }
 
 window.__makeComposer = makeComposer;
@@ -824,6 +1208,8 @@ window.__render = async function(t){ comp.render(t); await comp.settle(); return
 window.__blurSamples = comp.blurSamples;
 window.__cuts = comp.cutPoints;
 window.__probe = comp.probe;
+window.__capCheck = comp.capCheck;    // phụ đề: mồ côi / dấu đầu dòng / tràn (qa_fit.py)
+window.__textQA = comp.textQA;        // chữ đè nhau / sát mép ở khung hiện tại
 window.__duration = comp.duration;
 window.__ready = comp.ready;
 

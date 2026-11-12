@@ -196,7 +196,13 @@ module.exports = {
       for(const sel of [".wl-tag{", ".wl-brand{", ".wl-stat b{"]){ const r = STYLE.slice(STYLE.indexOf(sel), STYLE.indexOf("}", STYLE.indexOf(sel))); assert.match(r, /font-synthesis:none/, sel); }
       assert.ok(parseFloat((/\.wl-tag\{[^}]*line-height:([\d.]+)/.exec(STYLE) || [])[1]) >= 1.0, ".wl-tag line-height ≥ 1");
       // khoá lại ở MỌI theme (gói đặt h1 300 / tracking âm)
-      assert.match(ACSS_, /html\[data-theme\] \.wl :is\(\.wl-head, \.wl-tag\)\{[^}]*font-weight:800; font-synthesis:none;[^}]*letter-spacing:\.005em; line-height:1\.06/);
+      assert.match(ACSS_, /html\[data-theme\] \.wl :is\(\.wl-head, \.wl-tag\)\{[^}]*font-weight:800; font-synthesis:none;[^}]*letter-spacing:\.005em; line-height:1\.(0[6-9]|1\d)/);
+      assert.ok(parseFloat((/\.wl-head\{([^}]*)\}/.exec(STYLE) || [])[1].match(/line-height:([\d.]+)/)[1]) >= 1.08, "slogan: line-height ≥ 1,08 (v2: dấu chạm dòng)");
+      // v2: bản đồ màn chào vẽ trọn (pathLength chuẩn hoá), có wlMapFinish(), không còn mũi tên SMIL; tiêu đề buổi không đè vòng tiến độ
+      assert.match(pt, /class="wl-route"/); assert.match(pt, /pathLength="1"/); assert.doesNotMatch(pt, /class="wl-runner"/);
+      assert.match(pt, /window\.wlMapFinish = /); assert.match(STYLE, /\.wl-route\{[^}]*stroke-dasharray:1 1; stroke-dashoffset:1;/);
+      assert.match(ACSS_, /\.home-hero:has\(\.home-hero-ring\) \.home-hero-body > :is\(\.hero-eyebrow, \.headline\)\{ max-width:calc\(100% - 82px\); \}/);
+      assert.match(ACSS_, /\.headline\{ overflow-wrap:anywhere; text-wrap:balance;/);
       const gf = (/<link rel="stylesheet" href="(https:\/\/fonts\.googleapis\.com\/css2\?[^"]+)"/.exec(html) || [])[1] || "";
       assert.match(gf, /family=Barlow\+Condensed:wght@800/); assert.match(gf, /subset=vietnamese/); assert.match(gf, /display=swap/);
       assert.match(read("themes.js"), /"&subset=vietnamese&display=swap"/, "font gói nạp lười cũng có subset vietnamese");

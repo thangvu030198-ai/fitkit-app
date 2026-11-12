@@ -1,0 +1,183 @@
+{
+ "_doc": "Kịch bản lời đọc (voiceover) TapEasy intro — tiếng Việt, giọng nam trầm ấm, tốc độ vừa, tự tin truyền cảm hứng. start/end = giây theo timeline hiện tại (để đọc); tts.py neo lại theo chương: start = t0 chương + at; end = t1 chương − tail (hoặc t0 + until). Mật độ mục tiêu 2,3–2,6 từ/giây. Sửa lời ở đây rồi chạy: python3 scripts/intro-video/tts.py --check (đếm từ) / tts.py (gọi API). Xem docs/INTRO-VIDEO.md §6.",
+ "model": "minimax-speech-2.8-turbo",
+ "language": "vi",
+ "style": "nam trầm ấm · tốc độ vừa · tự tin, truyền cảm hứng",
+ "wps": [
+  2.3,
+  2.6
+ ],
+ "lines": [
+  {
+   "chapter": "intro",
+   "num": "",
+   "start": 0.9,
+   "end": 16.05,
+   "at": 0.9,
+   "tail": 0.5,
+   "words": 36,
+   "text": "Bạn muốn tập đúng, và thấy mình tiến bộ thật sự? Đây là TapEasy. Giáo án, dinh dưỡng và huấn luyện viên riêng, gói gọn trong một ứng dụng tiếng Việt, và hoàn toàn miễn phí."
+  },
+  {
+   "chapter": "profile",
+   "num": "01",
+   "start": 17.05,
+   "end": 30.63,
+   "at": 0.5,
+   "tail": 0.4,
+   "words": 33,
+   "text": "Chỉ một phút để bắt đầu. Nhập vài thông tin cơ bản và mục tiêu, TapEasy tự tính lượng calo cho bạn, rồi sàng lọc sức khoẻ để buổi tập luôn an toàn."
+  },
+  {
+   "chapter": "home",
+   "num": "02",
+   "start": 31.53,
+   "end": 45.12,
+   "at": 0.5,
+   "tail": 0.4,
+   "words": 34,
+   "text": "Mở app là biết hôm nay tập gì, ăn bao nhiêu. Lịch tuần, chuỗi ngày tập giữ lửa cho bạn. Cân nặng, chỉ số cơ thể, ảnh trước sau, tất cả ở một nơi."
+  },
+  {
+   "chapter": "plans",
+   "num": "03",
+   "start": 46.02,
+   "end": 59.6,
+   "at": 0.5,
+   "tail": 0.4,
+   "words": 35,
+   "text": "Chưa biết tập gì? Chọn giáo án mẫu theo giới tính và cấp độ, một chạm là có lịch tuần, kèm video từng bài. Hoặc tự tạo giáo án riêng, đúng mục tiêu của bạn."
+  },
+  {
+   "chapter": "session",
+   "num": "04",
+   "start": 60.5,
+   "end": 80.19,
+   "at": 0.5,
+   "tail": 0.5,
+   "words": 51,
+   "text": "Vào buổi tập, bạn ghi từng hiệp: mức tạ, số lần, độ khó. Số liệu buổi trước đã điền sẵn. Đồng hồ nghỉ báo cả khi tắt màn hình. Đủ sức là app gợi ý tăng tạ, tính sẵn hiệp khởi động. Hơn tám trăm bài tập có video hướng dẫn."
+  },
+  {
+   "chapter": "cycle",
+   "num": "05",
+   "start": 81.19,
+   "end": 92.7,
+   "at": 0.5,
+   "tail": 0.4,
+   "words": 29,
+   "text": "Muốn tiến bộ lâu dài? Lên chu kỳ nhiều tuần, tự xếp tuần giảm tải. Ghép siêu hiệp cho gọn thời gian, theo dõi khối lượng từng nhóm cơ."
+  },
+  {
+   "chapter": "achieve",
+   "num": "06",
+   "start": 93.6,
+   "end": 105.12,
+   "at": 0.5,
+   "tail": 0.4,
+   "words": 29,
+   "text": "Mỗi thói quen tốt đều được ghi nhận. Huy hiệu, cấp độ, kỷ lục cá nhân, và bản tổng kết tuần cho thấy bạn đã tiến xa đến đâu."
+  },
+  {
+   "chapter": "nutrition",
+   "num": "07",
+   "start": 106.02,
+   "end": 125.71,
+   "at": 0.5,
+   "tail": 0.5,
+   "words": 49,
+   "text": "Dinh dưỡng kiểu Việt, món quen thuộc, hình ảnh thật. Thực đơn theo đúng mục tiêu, công thức chi tiết, có cả nồi chiên không dầu và món chay. Đổi món chỉ một chạm, danh sách đi chợ sẵn cho cả tuần. Không muốn đếm calo? Cứ ẩn đi."
+  },
+  {
+   "chapter": "pt",
+   "num": "08",
+   "start": 126.71,
+   "end": 142.36,
+   "at": 0.5,
+   "tail": 0.4,
+   "words": 37,
+   "text": "Bạn là huấn luyện viên? TapEasy PT giúp bạn quản lý học viên và lịch dạy, giao giáo án chỉ vài chạm, ghi buổi tập thay học viên, và theo dõi gói tập, doanh thu từng tháng."
+  },
+  {
+   "chapter": "findpt",
+   "num": "09",
+   "start": 143.26,
+   "end": 160.88,
+   "at": 0.5,
+   "tail": 0.5,
+   "words": 43,
+   "text": "Đang tìm huấn luyện viên? Lọc theo khu vực, chuyên môn và mức giá. Hồ sơ cho thấy số học viên, số buổi đã dạy, năm kinh nghiệm. Đánh giá chỉ đến từ người đã tập thật, nên bạn dễ chọn đúng người."
+  },
+  {
+   "chapter": "social",
+   "num": "10",
+   "start": 161.88,
+   "end": 177.53,
+   "at": 0.5,
+   "tail": 0.4,
+   "words": 38,
+   "text": "Bạn không bao giờ tập một mình. Cộng đồng chia sẻ giáo án thật, sự kiện thi đua mỗi tháng, điểm danh bằng mã QR. Tích điểm để đổi quà, và sắm đồ tập ngay trong ứng dụng."
+  },
+  {
+   "chapter": "kb",
+   "num": "11",
+   "start": 178.33,
+   "end": 187.53,
+   "at": 0.4,
+   "until": 9.6,
+   "words": 22,
+   "text": "Kho kiến thức do chuyên gia viết: kỹ thuật tập, dinh dưỡng, phục hồi. Lưu lại và đọc bất cứ lúc nào.",
+   "hard_until": 9.85
+  },
+  {
+   "chapter": "themes",
+   "num": "12",
+   "start": 188.98,
+   "end": 204.33,
+   "at": 0.7,
+   "tail": 0.5,
+   "words": 36,
+   "text": "Và đây chính là điểm nhấn. Mười sáu giao diện, đổi màu chỉ bằng một chạm. Icon biến hình mượt mà, nút bấm có rung phản hồi. Hãy chọn phong cách thật sự là chính bạn."
+  },
+  {
+   "chapter": "privacy",
+   "num": "13",
+   "start": 205.33,
+   "end": 214.77,
+   "at": 0.5,
+   "tail": 0.4,
+   "words": 23,
+   "text": "Dữ liệu sức khoẻ chỉ lưu trên máy bạn. Không quảng cáo, không bán dữ liệu. Xoá tài khoản bất cứ lúc nào."
+  },
+  {
+   "chapter": "soon",
+   "num": "14",
+   "start": 215.67,
+   "end": 251.81,
+   "at": 0.5,
+   "tail": 0.6,
+   "words": 90,
+   "text": "Và sắp tới, TapEasy còn làm được nhiều hơn thế. Chạy bộ với bản đồ GPS, tốc độ và từng cây số. Vùng nhịp tim hiện ngay trên cổ tay. Chế độ HYROX, tám chặng chạy, tám trạm, bấm giờ từng trạm. Đếm ngược giờ nghỉ, rung báo khi hết giờ. Đồng bộ với đồng hồ thông minh phổ biến: nhịp tim, giấc ngủ, nồng độ ô xy trong máu, cảnh báo khi nhịp tim cao bất thường. Và mỗi buổi tập trên đồng hồ sẽ tự ghi vào TapEasy."
+  },
+  {
+   "chapter": "outro",
+   "num": "",
+   "start": 252.91,
+   "end": 258.01,
+   "at": 0.5,
+   "until": 5.6,
+   "words": 13,
+   "text": "Thêm TapEasy vào màn hình chính, mở nhanh như một ứng dụng thật."
+  },
+  {
+   "chapter": "outro",
+   "num": "",
+   "start": 261.91,
+   "end": 270.23,
+   "at": 9.5,
+   "tail": 0.8,
+   "words": 21,
+   "text": "Tham gia TapEasy Cộng Đồng trên Zalo để nhận bản tải miễn phí. Quét mã, và bắt đầu ngay hôm nay."
+  }
+ ]
+}

@@ -10,7 +10,9 @@ zoom xuyên / whip / xoay 3D / match / sweep / flood, mỗi đoạn soi cận) d
   2) điểm xanh lộ ra bên trong màn ở ?qa=fit (viền đen/hở = ảnh không phủ kín màn) — 0 điểm cách mép > 2 px
   3) window.__probe(): khung bao DOM của lớp ảnh/ảnh gốc vs .screen, tỉ lệ ảnh 390:844, island/thanh trạng thái/home
 Vì ảnh app nằm TRONG cây transform của điện thoại nên sai lệch phải ~0 cả khi xoay 3D/zoom/whip (không trễ khung).
-Ra build/qa/fit-<fmt>/report.txt (+ fit_corners.jpg: 4 góc màn phóng ×4 ở các mốc khó). Mã thoát 1 nếu trượt.
+  4) CHỮ (v2): window.__capCheck() — mọi phụ đề dựng thật ở đúng bề rộng: không từ mồ côi ở dòng cuối, không dấu "·/—/:" mở đầu
+     dòng, ≤ 2 dòng, không tràn; window.__textQA() ở từng mốc — kicker/tiêu đề/phụ đề/thẻ số/chip/CTA không đè nhau (sát mép < 12 px: cảnh báo)
+Ra build/qa/fit-<fmt>/report.txt (+ fit_corners.jpg: 4 góc màn phóng ×4 ở các mốc khó). Mã thoát 1 nếu trượt hoặc lỗi chữ.
 
   python3 scripts/intro-video/qa_fit.py --fmt v --draft
   python3 scripts/intro-video/qa_fit.py --fmt h
@@ -34,6 +36,8 @@ def sample_times(tl):
                 ts += [a + .3, min(b, a + .9)]
         if c.get("kind") == "outro":
             ts += [c["a2hs"] + 1.0, c["a2hs"] + 2.2, c["cta_at"] - .2, c["cta_at"] + .3]
+        if c.get("kind") == "soon":
+            ts += [c["t0"] + 1.5] + [w[0] + .5 for w in c.get("watch", [])] + [x + .5 for x in c.get("sync", [])]
         if c.get("kind") == "intro" and c.get("phone_in"):
             ts += [c["phone_in"] + .15, c["phone_in"] + .4]
     for c in tl["chapters"][:-1]:
@@ -76,6 +80,7 @@ async def main():
     ap.add_argument("--tol", type=float, default=1.0)
     ap.add_argument("--port", type=int, default=8771)
     ap.add_argument("--times", default="", help="danh sách giây, phân cách bằng dấu phẩy (mặc định: tự chọn)")
+    ap.add_argument("--text-warn", action="store_true", help="lỗi chữ chỉ cảnh báo, không làm mã thoát 1")
     args = ap.parse_args()
     import numpy as np
     from PIL import Image, ImageDraw
@@ -99,6 +104,8 @@ async def main():
             await pg.evaluate("window.__ready")
             pages[mode] = pg
         worst = 0.0
+        cap = await pages[""].evaluate("window.__capCheck ? window.__capCheck() : {bad:[], rows:[]}")
+        text_bad = list(cap["bad"]); text_lines = ["— phụ đề (dựng thật, đúng bề rộng) —"] + cap["rows"]
         for t in times:
             for pg in pages.values(): await pg.evaluate(f"window.__render({t})")
             fit_png = await pages["fit"].screenshot(type="png")
@@ -121,6 +128,13 @@ async def main():
             fails += bad
             isl = "; ".join(f"{p['ch']}: island {p['islandTop']:.1f}–{p['islandBottom']:.1f} lệch tâm {p['islandCx']:.2f} · trạng thái {p['statusH']} · home cách đáy {p['homeGap']:.1f} · kính {p['glassErr']:.2f}px" for p in probe[:1])
             lines.append(f"{t:8.3f}s  {'TRƯỢT' if bad else 'ok   '}  bbox ảnh {bm} màn {bs} lệch {d}px · DOM {dom:.2f}px · hở {gaps} điểm · tỉ lệ ảnh {ar:.4f} · {isl}")
+        # chữ đè nhau / sát mép — trên khung thường ở mọi mốc (kể cả mốc không có điện thoại)
+        for t in times:
+            await pages[""].evaluate(f"window.__render({t})")
+            for it in await pages[""].evaluate("window.__textQA ? window.__textQA() : []"):
+                warn = "sát mép" in it
+                text_lines.append(f"{t:8.3f}s  {'cảnh báo' if warn else 'LỖI CHỮ'}  {it}")
+                if not warn: text_bad.append(f"{t:.3f}s {it}")
         # góc phóng to: các mốc khó (sau chuyển cảnh + soi cận) trên khung thường
         hard = [t for t in times if any(abs(t - c["t1"] - .1) < 1e-3 or abs(t - c["t1"] + .1) < 1e-3 for c in tl["chapters"][:-1])][:12]
         for t in hard:
@@ -142,11 +156,12 @@ async def main():
             dr.text((4, i * 220 + 3), lab, fill=(255, 210, 90))
             for j, c in enumerate(cs): S.paste(c, (j * 204, i * 220 + 18))
         S.save(os.path.join(out, "fit_corners.jpg"), quality=88)
-    head = [f"QA khít {W}×{H} · {len(times)} thời điểm · dung sai {args.tol}px · lệch lớn nhất {worst:.2f}px · trượt {fails}"]
-    open(os.path.join(out, "report.txt"), "w", encoding="utf-8").write("\n".join(head + lines) + "\n")
-    print("\n".join(head + [l for l in lines if "TRƯỢT" in l or "!" in l][:40]))
+    head = [f"QA khít {W}×{H} · {len(times)} thời điểm · dung sai {args.tol}px · lệch lớn nhất {worst:.2f}px · trượt {fails}",
+            f"QA chữ: {len(text_bad)} lỗi (phụ đề mồ côi/dấu đầu dòng/tràn, chữ đè nhau)"]
+    open(os.path.join(out, "report.txt"), "w", encoding="utf-8").write("\n".join(head + lines + [""] + text_lines) + "\n")
+    print("\n".join(head + [l for l in lines if "TRƯỢT" in l or "!" in l][:40] + text_bad[:40]))
     print("→", out)
-    sys.exit(1 if fails else 0)
+    sys.exit(1 if fails or (text_bad and not args.text_warn) else 0)
 
 
 if __name__ == "__main__":

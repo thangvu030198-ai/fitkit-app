@@ -39,20 +39,31 @@ def resolve(tl):
             r["scroll"] = [[round(st + a * beat, 4), round(st + bb * beat, 4), y] for a, bb, y in s.get("scroll", [])]
             r["taps"] = [[round(st + a * beat, 4), tg] for a, tg in s.get("taps", [])]
             r["focus"] = [[round(st + a * beat, 4), round(st + bb * beat, 4), rect, sc] for a, bb, rect, sc in s.get("focus", [])]
+            if s.get("seq"):      # chuỗi khung chụp theo thời gian thực của animation app (director.js → capture_app.py)
+                q = s["seq"]; r["seq"] = {"t0": round(st + q.get("at", 0) * beat, 4), "t1": round(st + (q.get("at", 0) + q["beats"]) * beat, 4)}
+            if "drag" in s: r["drag"] = bool(s["drag"])                  # false: không vẽ ngón tay kéo khi cuộn
+            if s.get("from_capture"): r["from_capture"] = True           # cuộn bắt đầu từ vị trí lúc chụp (không phải 0)
             for tap in r["taps"]:
                 events.append({"t": tap[0], "type": "tap"})
             if k and r["enter"] in ("push", "sheet", "theme"):
                 events.append({"t": r["t0"], "type": "swish" if r["enter"] != "theme" else "pop"})
             mx = max([y for _, _, y in r["scroll"]] + [0])
-            needs[s["id"]] = max(needs.get(s["id"], 0), mx)
+            if not s["id"].startswith("mock:"):                         # mock:* = màn tự vẽ trong compose.js (tính năng sắp ra mắt)
+                needs[s["id"]] = max(needs.get(s["id"], 0), mx)
             shots.append(r); st += b * beat
         c["shots"] = shots
         c["captions"] = [[T(a) + c0, txt] for a, txt in ch.get("captions", [])]
         if "slogan" in ch: c["slogan"] = [[txt, T(a) + c0] for txt, a in ch["slogan"]]
         for key in ("phone_in", "a2hs", "cta_at"):
             if key in ch: c[key] = round(c0 + T(ch[key]), 4)
+        if "watch" in ch: c["watch"] = [[round(c0 + T(a), 4), scr] for a, scr in ch["watch"]]
+        if "sync" in ch:
+            c["sync"] = [round(c0 + T(a), 4) for a in ch["sync"]]
+            events.extend({"t": round(x + .55, 4), "type": "tap"} for x in c["sync"])      # "tách" nhẹ khi dữ liệu tới điện thoại
         if "stat" in ch:
-            s = dict(ch["stat"]); s["t"] = round(c0 + T(s.pop("at")), 4); c["stat"] = s
+            s = dict(ch["stat"]); s["t"] = round(c0 + T(s.pop("at")), 4)
+            if "until" in s: s["until"] = round(c0 + T(s["until"]), 4)
+            c["stat"] = s
         chapters.append(c)
         t = c1
     duration = round(t + 0.0, 4)

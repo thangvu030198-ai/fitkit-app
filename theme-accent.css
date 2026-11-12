@@ -251,8 +251,9 @@ html[data-theme] .wl-bubble .material-symbols-rounded{ color:var(--navy-4, #1B6A
    line-height ≥ 1,06 + đệm trên cho dấu mũ+sắc; khoá lại để gói (Alpine 300 / −.045em, Sanctuary…) không làm dính dấu. */
 html[data-theme] .wl :is(.wl-head, .wl-tag){
   font-family:var(--cond, 'Barlow Condensed', 'Inter Tight', 'Segoe UI', Arial, sans-serif); font-weight:800; font-synthesis:none;
-  letter-spacing:.005em; line-height:1.06; }
-html[data-theme] .wl .wl-head{ padding-top:.12em; }
+  letter-spacing:.005em; line-height:1.12; }
+html[data-theme] .wl .wl-head{ padding-top:.16em; }
+html[data-theme] .wl .wl-head span{ padding-top:.05em; } html[data-theme] .wl .wl-head span + span{ margin-top:.06em; }
 html[data-theme] .wl .wl-stat b{ font-weight:800; font-synthesis:none; letter-spacing:0; }
 
 /* ---------- 7. Máy yếu / giảm chuyển động ---------- */
@@ -279,8 +280,14 @@ html[data-theme] .wl-hero-shade, .wl-hero-shade{ background:linear-gradient(180d
 .wl-node{ position:absolute; width:clamp(30px,8.5vw,40px); aspect-ratio:1; border-radius:50%; transform:translate(-50%,-50%) scale(0);
   background:var(--accent, #5EE6C7); color:var(--on-accent, #061A24); display:grid; place-items:center; box-shadow:0 0 0 4px rgba(0,0,0,.35), 0 6px 18px rgba(0,0,0,.35); z-index:2; }
 .wl-node .material-symbols-rounded{ font-size:clamp(16px,4.6vw,21px); color:inherit; }
-.wl-map.in .wl-node{ animation:wlNodePop .5s cubic-bezier(.34,1.56,.64,1) calc(.5s + var(--i)*.15s) forwards; }
-.wl-map.done .wl-node{ transform:translate(-50%,-50%) scale(1); }
+.wl-map.in .wl-node{ animation:wlNodePop .45s cubic-bezier(.34,1.56,.64,1) calc(.12s + var(--i)*.24s) forwards; }
+.wl-map.done .wl-node{ animation:none !important; transform:translate(-50%,-50%) scale(1); }
 @keyframes wlNodePop{ to{ transform:translate(-50%,-50%) scale(1); } }
 @media (prefers-reduced-motion: reduce){ .wl-node{ transform:translate(-50%,-50%) scale(1); animation:none !important; } }
 
+
+/* 12/11 v2 — Trang chủ: tiêu đề buổi (IN HOA ở Volt…) không đè vòng tiến độ 78 px góc phải (ring 16+78 px − đệm thân 18 px → chừa 82 px);
+   xuống dòng cân, thu nhỏ theo clamp, ngắt được chuỗi dài không dấu cách. */
+.home-hero:has(.home-hero-ring) .home-hero-body > :is(.hero-eyebrow, .headline){ max-width:calc(100% - 82px); }
+.home-hero .home-hero-body > .headline{ overflow-wrap:anywhere; text-wrap:balance; hyphens:auto; }
+html[data-theme] .home-hero .home-hero-body > .headline{ font-size:clamp(20px, 6.4vw, 26px) !important; line-height:1.1 !important; }

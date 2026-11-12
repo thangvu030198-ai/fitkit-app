@@ -28,11 +28,13 @@
   let seed = 20261112;
   const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
 
-  /* ---------- CSS chụp: vùng an toàn giả lập iPhone (trên 47 px / dưới 34 px), ẩn thanh cuộn/toast/caret ----------
-     Chromium không cho đặt env(safe-area-inset-*) → viết lại MỌI env(safe-area-inset-*) trong CSS của app thành px
-     (TI.applySafeArea, chạy lại trước mỗi shot vì có CSS nạp muộn). Dải 0…47 px để trống cho thanh trạng thái 9:41 +
-     dynamic island do compose.js vẽ; dải 34 px dưới cho thanh home. Số đo ghi vào manifest.safe để bộ dựng khớp. */
-  const SAFE_TOP = 47, SAFE_BOT = 34;
+  /* ---------- CSS chụp: vùng an toàn giả lập iPhone 14/15 Pro (trên 59 px / dưới 34 px), ẩn thanh cuộn/toast/caret ----------
+     Chromium (Playwright 1.48) không cho đặt env(safe-area-inset-*) → "polyfill": viết lại MỌI env(safe-area-inset-*) trong CSS
+     của app thành px (TI.applySafeArea, chạy lại trước mỗi shot vì có CSS nạp muộn) + ép biến --sat/--sab của app (style.css).
+     Dải 0…59 px để trống cho thanh trạng thái 9:41 + dynamic island do compose.js vẽ; dải 34 px dưới cho thanh home.
+     Số đo ghi vào manifest.safe để bộ dựng khớp. TI.safeAudit() = QA: không chữ/nút nào của app lọt vào 2 dải (capture_app.py
+     ghi build/qa/safe/ và báo lỗi). */
+  const SAFE_TOP = 59, SAFE_BOT = 34;
   TI.SAFE_TOP = SAFE_TOP; TI.SAFE_BOT = SAFE_BOT;
   const ENV_RE = /env\(\s*safe-area-inset-(top|bottom|left|right)\s*(?:,(?:[^()]|\([^()]*\))*)?\)/g;
   const envFix = v => v.replace(ENV_RE, (m, k) => k === "top" ? SAFE_TOP + "px" : k === "bottom" ? SAFE_BOT + "px" : "0px");
@@ -46,48 +48,125 @@
     }
     return n;
   }
+  /* bản app cũ (chưa có --fk-safe trong style.css): ép lớp phủ xuống dưới dải trạng thái như trước */
+  TI.appFitted = () => { try{ return getComputedStyle(document.documentElement).getPropertyValue("--fk-safe").trim() === "1"; }catch(e){ return false; } };
+  function legacyCSS(){
+    if($q("#__ti_legacy") || !document.head || TI.appFitted()) return;
+    const st = document.createElement("style"); st.id = "__ti_legacy";
+    st.textContent = `
+      #app-shell{ padding-top:${SAFE_TOP}px!important; }
+      #auth:not(.wl-mode), #onboarding{ top:${SAFE_TOP}px!important; bottom:0!important; height:auto!important; }
+      #onboarding{ padding-bottom:${SAFE_BOT}px!important; }
+      .sheet{ padding-bottom:${SAFE_BOT}px; max-height:min(88%, calc(100% - ${SAFE_TOP + 12}px))!important; }`;
+    document.head.appendChild(st);
+    say("app chưa có --fk-safe (bản cũ) → dùng CSS ép vùng an toàn của director");
+  }
   TI.applySafeArea = function(){
     let n = 0;
     for(const sh of Array.from(document.styleSheets)){ try{ n += patchRules(sh.cssRules); }catch(e){} }
     $a("[style*='safe-area-inset']").forEach(el => { el.setAttribute("style", envFix(el.getAttribute("style"))); n++; });
+    if(document.readyState === "complete") legacyCSS();
     return n;
   };
-  /* chữ/nút nằm trong dải trạng thái (bị island che) hoặc dải home → cảnh báo trong log chụp */
+  /* ---------- QA vùng an toàn ----------
+     Phần tử "chữ/nút" = lá có chữ trực tiếp, button, a, input/select/textarea, [role=button], icon svg nhỏ (≤ 64 px).
+     Lấy hình chữ nhật THẤY ĐƯỢC (cắt theo mọi tổ tiên overflow≠visible + màn). Lỗi khi:
+       trên : lọt vào 0…SAFE_TOP (mọi phần tử — nền/ảnh lớn không tính);
+       dưới : lọt vào (H−SAFE_BOT)…H, trừ nội dung của vùng cuộn đang tràn tiếp xuống dưới (cuộn dưới thanh home như iOS).
+     Mép ngang < 12 px → cảnh báo "edge" (không chặn). Có sheet mở → kiểm thêm mép trên sheet, header + nút đóng. */
+  function visRect(el){
+    const r = el.getBoundingClientRect();
+    let x0 = r.left, y0 = r.top, x1 = r.right, y1 = r.bottom, scrollClip = null;
+    for(let p = el.parentElement; p && p !== document.documentElement; p = p.parentElement){
+      const cs = getComputedStyle(p);
+      if(cs.overflowX !== "visible" || cs.overflowY !== "visible"){
+        const q = p.getBoundingClientRect();
+        if(/(auto|scroll)/.test(cs.overflowY) && p.scrollHeight > p.clientHeight + 4 && !scrollClip) scrollClip = { el: p, top: q.top, bottom: q.bottom };
+        x0 = Math.max(x0, q.left); y0 = Math.max(y0, q.top); x1 = Math.min(x1, q.right); y1 = Math.min(y1, q.bottom);
+      }
+      if(cs.position === "fixed") break;
+    }
+    x0 = Math.max(x0, 0); y0 = Math.max(y0, 0); x1 = Math.min(x1, innerWidth); y1 = Math.min(y1, innerHeight);
+    return { x0, y0, x1, y1, w: x1 - x0, h: y1 - y0, raw: r, scrollClip };
+  }
+  function shown(el){
+    try{ if(el.checkVisibility && !el.checkVisibility({ opacityProperty: true, visibilityProperty: true })) return false; }catch(e){}
+    for(let p = el; p && p !== document.documentElement; p = p.parentElement){
+      const cs = getComputedStyle(p);
+      if(cs.display === "none" || cs.visibility === "hidden" || +cs.opacity < 0.05) return false;
+    }
+    return true;
+  }
+  function isUI(el){
+    const tg = el.tagName;
+    if(/^(BUTTON|A|INPUT|SELECT|TEXTAREA)$/.test(tg) || el.getAttribute("role") === "button") return true;
+    if(/^(svg)$/i.test(tg)){ const r = el.getBoundingClientRect(); return r.width <= 64 && r.height <= 64 && !el.closest("button,a,[role=button]"); }
+    for(const n of el.childNodes) if(n.nodeType === 3 && n.nodeValue.trim()) return true;
+    return false;
+  }
+  const nameOf = el => { const c = (typeof el.className === "string" ? el.className : (el.className && el.className.baseVal) || "").trim().split(/\s+/).slice(0, 2).join(".");
+    return (el.tagName.toLowerCase() + (el.id ? "#" + el.id : "") + (c ? "." + c : "")).slice(0, 48) + (el.textContent ? " “" + el.textContent.trim().replace(/\s+/g, " ").slice(0, 24) + "”" : ""); };
   TI.safeAudit = function(){
-    const bad = [];
+    const H = innerHeight, W = innerWidth, errors = [], warns = [];
     $a("body *").forEach(el => {
-      if(!el.childElementCount && (el.textContent || "").trim() || /^(BUTTON|INPUT|IMG|svg)$/i.test(el.tagName)){
-        const r = el.getBoundingClientRect(); if(r.width < 2 || r.height < 2) return;
-        const cs = getComputedStyle(el); if(cs.visibility === "hidden" || +cs.opacity === 0) return;
-        if(r.bottom > 2 && r.top < SAFE_TOP - 2 && r.right > 0 && r.left < innerWidth) bad.push("trên:" + (el.id || el.className || el.tagName).toString().slice(0, 30));
-        else if(r.top < innerHeight - 2 && r.bottom > innerHeight - SAFE_BOT + 6 && r.right > 0 && r.left < innerWidth && r.height < 120) bad.push("dưới:" + (el.id || el.className || el.tagName).toString().slice(0, 30));
+      if(el.closest("#__ti_css, script, style, noscript, template, head")) return;
+      if(!isUI(el)) return;
+      const r0 = el.getBoundingClientRect();
+      if(r0.width < 2 || r0.height < 2 || r0.bottom <= 0 || r0.top >= H || r0.right <= 0 || r0.left >= W) return;
+      if(r0.top >= SAFE_TOP - 1 && r0.bottom <= H - SAFE_BOT + 1 && r0.left >= 12 && r0.right <= W - 12) return;   // nhanh: nằm gọn vùng an toàn
+      const v = visRect(el); if(v.w < 2 || v.h < 2) return;
+      if(!shown(el)) return;
+      const nm = nameOf(el), box = [Math.round(v.x0), Math.round(v.y0), Math.round(v.w), Math.round(v.h)];
+      if(v.y0 < SAFE_TOP - 1) errors.push({ zone: "top", el: nm, box });
+      else if(v.y1 > H - SAFE_BOT + 1){
+        /* nội dung vùng cuộn tràn dưới thanh home khi CHƯA cuộn hết (sẽ cuộn lên được) = bình thường trên iOS;
+           cuộn hết rồi mà vẫn nằm trong dải home = thiếu padding đáy → lỗi */
+        const sc = v.scrollClip, ce = sc && sc.el;
+        const scrolling = sc && sc.bottom >= H - SAFE_BOT && ce.scrollTop < ce.scrollHeight - ce.clientHeight - 1;
+        if(!scrolling) errors.push({ zone: "bottom", el: nm, box });
+      }
+      if((v.x0 < 12 && v.raw.left >= -1 && v.x0 > 0.5) || (v.x1 > W - 12 && v.raw.right <= W + 1 && v.x1 < W - 0.5)){
+        if(!el.closest("button,a,[role=button],input,select,textarea") || /^(BUTTON|A|INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) warns.push({ zone: "edge", el: nm, box });
       }
     });
-    return bad.slice(0, 6);
+    /* sheet đang mở: mép trên ≥ SAFE_TOP + 12, tiêu đề + nút đóng nằm trọn dưới dải trạng thái, đáy chừa thanh home */
+    let sheet = null;
+    const bd = $q("#sheet-backdrop.open"), sc = bd && ($q("#sheet-content") || $q(".sheet"));
+    if(sc){
+      const r = sc.getBoundingClientRect(), cs = getComputedStyle(sc);
+      const hd = sc.querySelector(".sheet-header"), hr = hd && hd.getBoundingClientRect();
+      const cl = hd && hd.querySelector("button, .icon-btn"), cr = cl && cl.getBoundingClientRect();
+      sheet = { top: Math.round(r.top), height: Math.round(r.height), padBottom: parseFloat(cs.paddingBottom) || 0, padX: Math.min(parseFloat(cs.paddingLeft) || 0, parseFloat(cs.paddingRight) || 0),
+                header: hr ? Math.round(hr.top) : null, close: cr ? [Math.round(cr.left), Math.round(cr.top), Math.round(cr.width), Math.round(cr.height)] : null };
+      if(r.top < SAFE_TOP + 12 - 1) errors.push({ zone: "sheet", el: "mép trên sheet y=" + Math.round(r.top) + " < " + (SAFE_TOP + 12), box: [0, Math.round(r.top), W, 0] });
+      if(hr && hr.top < SAFE_TOP) errors.push({ zone: "sheet", el: "tiêu đề sheet y=" + Math.round(hr.top), box: [0, Math.round(hr.top), W, Math.round(hr.height)] });
+      if(cr && (cr.top < SAFE_TOP || cr.right > W - 8)) errors.push({ zone: "sheet", el: "nút đóng sheet", box: sheet.close });
+      if(r.bottom >= H - 1 && sheet.padBottom < SAFE_BOT) errors.push({ zone: "sheet", el: "đáy sheet chỉ chừa " + sheet.padBottom + " px < thanh home " + SAFE_BOT, box: [0, H - SAFE_BOT, W, SAFE_BOT] });
+      if(sheet.padX < 16) warns.push({ zone: "edge", el: "lề ngang sheet " + sheet.padX + " px < 16", box: [0, Math.round(r.top), W, 0] });
+    }
+    const uniq = a => { const seen = new Set(); return a.filter(x => { const k = x.zone + x.el; if(seen.has(k)) return false; seen.add(k); return true; }); };
+    return { errors: uniq(errors).slice(0, 20), warns: uniq(warns).slice(0, 12), sheet, fitted: TI.appFitted() };
   };
   function injectCSS(){
     if($q("#__ti_css")) return;
     const st = document.createElement("style"); st.id = "__ti_css";
     st.textContent = `
+      :root{ --sat:${SAFE_TOP}px!important; --sab:${SAFE_BOT}px!important; --sal:0px!important; --sar:0px!important; }
       html,body{ scrollbar-width:none; }
       ::-webkit-scrollbar{ width:0!important; height:0!important; display:none!important; }
       *{ caret-color:transparent!important; }
-      #app-shell{ padding-top:${SAFE_TOP}px!important; }
-      /* lớp phủ KHÔNG tự dùng env(): đẩy xuống dưới dải trạng thái. Lớp có env() (màn chào #auth.wl-mode, #hs-overlay,
-         Cửa hàng, Tìm PT…) giữ top:0 và tự chừa 47 px như trên iPhone thật (tràn ảnh dưới thanh trạng thái). */
-      #auth:not(.wl-mode), #onboarding{ top:${SAFE_TOP}px!important; bottom:0!important; height:auto!important; }
-      #onboarding{ padding-bottom:${SAFE_BOT}px!important; }
       html, body, #app-shell{ background-color:#03080B; }
       .toast, #toast, .fk-toast, .toast-wrap{ opacity:0!important; visibility:hidden!important; }
-      .sheet{ padding-bottom:${SAFE_BOT}px; }
       body.__ti-notrans *{ transition:none!important; }
       html:not(.__ti-pop) .ach-pop{ display:none!important; }
       html:not(.__ti-pop) canvas.ach-confetti, html:not(.__ti-pop) .ach-confetti{ display:none!important; }
+      /* màn chào: bản app cũ còn mũi tên SMIL chạy trên bản đồ (trước giờ begin nằm ở góc 0,0 = "chấm lạ") → ẩn khi chụp */
+      .wl-runner{ display:none!important; }
     `;
     (document.head || document.documentElement).appendChild(st);
     TI.applySafeArea();
   }
-  W.addEventListener("load", () => { try{ TI.applySafeArea(); }catch(e){} });
+  W.addEventListener("load", () => { try{ TI.applySafeArea(); legacyCSS(); }catch(e){} });
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", injectCSS); else injectCSS();
 
   /* ---------- tiện ích đo ---------- */
@@ -115,6 +194,25 @@
     const vr = { x:0, y:0, w:innerWidth, h:innerHeight };
     // vùng cuộn bị cắt bởi viewport
     const cl = { x: Math.max(0, sr.x), y: Math.max(0, sr.y), w: Math.min(innerWidth, sr.x + sr.w) - Math.max(0, sr.x), h: Math.min(innerHeight, sr.y + sr.h) - Math.max(0, sr.y) };
+    /* dải cuộn chỉ lấy PHẦN NỘI DUNG thật sự cuộn: bỏ viền trên + bo góc của sheet và tiêu đề sheet dính (sticky) —
+       nếu không, mỗi dải mang theo viền mờ/bo góc của sheet và khi ghép sẽ hiện "vạch ngang" cắt qua nội dung, tiêu đề
+       bị cuộn mất. Vùng cuộn bắt đầu trong dải trạng thái (lớp phủ tràn viền) → cắt từ SAFE_TOP (nội dung không đè 9:41). */
+    let inset = 0, bandColor = "";
+    if(sc){
+      const cs = getComputedStyle(sc);
+      const isSheet = sc.matches && sc.matches(".sheet, #sheet-content, [role=dialog]");
+      const rad = parseFloat(cs.borderTopLeftRadius) || 0;
+      if(isSheet || rad > 0) inset = (parseFloat(cs.borderTopWidth) || 0) + rad;
+      const hd = isSheet && Array.from(sc.children).find(c => c.classList && c.classList.contains("sheet-header"));
+      if(hd && getComputedStyle(hd).position === "sticky") inset = Math.max(inset, Math.ceil(hd.getBoundingClientRect().bottom - cl.y));
+      if(cl.y < SAFE_TOP){
+        inset = Math.max(inset, SAFE_TOP - cl.y);
+        for(let p = sc; p && p !== document.documentElement; p = p.parentElement){ const bg = getComputedStyle(p).backgroundColor; if(bg && !/rgba\(0, 0, 0, 0\)|transparent/.test(bg)){ bandColor = bg; break; } }
+        bandColor = bandColor || "#061A24";
+      }
+      inset = Math.max(0, Math.min(Math.round(inset), Math.max(0, cl.h - 120)));
+      cl.y += inset; cl.h -= inset;
+    }
     const top0 = sc ? sc.scrollTop : 0;
     const targets = {};
     Object.entries(spec.targets || {}).forEach(([name, sel]) => {
@@ -128,7 +226,7 @@
     });
     const max = sc ? Math.max(0, sc.scrollHeight - sc.clientHeight) : 0;
     let light = false; try{ light = !!(W.fkTheme && fkTheme.isLight(fkTheme.current())); }catch(e){}
-    return { viewport: vr, scroller: cl, scrollMax: max, scrollTop: top0, targets, light, theme: (W.fkTheme && fkTheme.current && fkTheme.current()) || "" };
+    return { viewport: vr, scroller: cl, stripInset: inset, bandColor, scrollMax: max, scrollTop: top0, targets, light, theme: (W.fkTheme && fkTheme.current && fkTheme.current()) || "" };
   };
   async function imagesSettled(ms){
     await waitFor(() => $a("img").filter(i => { const r = i.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight && r.width > 2 && i.src && !i.complete; }).length === 0, ms || 5000);
@@ -138,7 +236,8 @@
   TI.prepStrips = function(){
     const sc = curScroller; if(!sc) return 0;
     stickyFixed = [];
-    $a("*", sc).forEach(el => { const p = getComputedStyle(el).position; if(p === "sticky"){ stickyFixed.push([el, el.style.position]); el.style.position = "relative"; } });
+    /* tắt sticky (dải ghép liền mạch) — trừ tiêu đề sheet: nó nằm trong phần đã cắt bỏ (stripInset) nên giữ dính */
+    $a("*", sc).forEach(el => { const p = getComputedStyle(el).position; if(p === "sticky" && !(el.parentElement === sc && el.classList.contains("sheet-header"))){ stickyFixed.push([el, el.style.position]); el.style.position = "relative"; } });
     sc.style.scrollBehavior = "auto"; sc.style.scrollSnapType = "none";
     return Math.max(0, sc.scrollHeight - sc.clientHeight);
   };
@@ -253,7 +352,17 @@
   function shot(id, def){ S[id] = def; order.push(id); }
 
   // --- 1. Màn chào (landing 3 phần) ---
-  shot("welcome", { setup: async () => { await waitFor(() => $q("#auth.open #auth-guest"), 15000); await sleep(1800); }, scroller: "#auth",
+  /* Bản đồ TapEasy (.wl-map) vẽ khi cuộn tới (~1,5 s) — dải cuộn chụp từng nấc nên trước đây dính lúc đang vẽ dở
+     (đường nửa chừng, nút chưa bật). Chụp ở trạng thái đã vẽ xong: wlMapFinish() của app (bản mới) hoặc tự gắn .in.done. */
+  TI.wlFinish = function(){
+    let ok = false;
+    try{ if(typeof W.wlMapFinish === "function") ok = W.wlMapFinish(); }catch(e){}
+    $a("#wl .wl-rev").forEach(el => el.classList.add("in", "done"));
+    $a("#wl .wl-map .wl-route").forEach(p => { p.style.animation = "none"; p.style.strokeDasharray = "none"; p.style.strokeDashoffset = "0"; });
+    $a("#wl .wl-map :is(.wl-stop, .wl-node)").forEach(n => { n.style.animation = "none"; n.style.transform = n.classList.contains("wl-node") ? "translate(-50%,-50%) scale(1)" : "none"; });
+    return ok;
+  };
+  shot("welcome", { setup: async () => { await waitFor(() => $q("#auth.open #auth-guest"), 15000); await sleep(1800); TI.wlFinish(); await sleep(200); }, scroller: "#auth",
     targets: { cta: "#wl-start", guest: "#auth-guest" } });
   // --- 2. Onboarding + sàng lọc ---
   shot("ob0", { setup: async () => { click($q("#auth-guest")); await waitFor(() => vis($q("#onboarding")) && $q("#in-name"), 6000); await sleep(600); setVal($q("#in-name"), "Minh Anh"); await TI.settle(500); },
@@ -373,6 +482,8 @@
     try{
       if(!cloud.isLoggedIn()) await cloud.signUp("pt.demo@tapeasy.local", "demo-" + Math.floor(rnd()*1e8), "Coach Huy");
       await cloud.updateMyProfile({ mainRole:"pt", isPT:true, brandName:"Huy Strength Lab" });
+      // số liệu hồ sơ PT demo (không để 0 trên phần "Thành tích huấn luyện")
+      try{ await cloud.updateMyProfile({ years:7, stats:{ students:48, sessions:1250, seed:true } }); }catch(e){}
       const names = [["Lan Phương","Giảm mỡ, săn chắc"],["Quốc Bảo","Tăng cơ"],["Thu Hà","Sức khoẻ lưng"],["Minh Tuấn","Chuẩn bị thi đấu"],["Ngọc Ánh","Sau sinh"]];
       const mine = await cloud.myClientsAsPT();
       if(mine.length < 3){
@@ -414,8 +525,51 @@
       await waitFor(() => $a("#fp-album .fp-card").length, 8000); await TI.settle(1800); }, scroller: "#app-scroll",
     targets: { filters: "[data-fp='filters']", card: "#fp-album .fp-card" } });
   shot("fpfilters", { setup: async () => { click($q("[data-fp='filters']")); await waitFor(() => $q("#ff-prov"), 3000); await TI.settle(900); } });
+  /* Hồ sơ PT kiểu F1: hero → cuộn tới "Thành tích huấn luyện" → số đếm 0 → giá trị thật (đếm 2,2 s, trễ 0,8/1,0/1,2 s),
+     vòng cung xoay. Chụp CHUỖI KHUNG theo thời gian ảo τ (seq): mọi CSS animation trong phần này bị dừng và tua tới đúng τ
+     (Web Animations API), số đếm tính lại đúng công thức của ptprofile.js (ease-out bậc 3) → mượt, tất định, không chụp lúc còn 0. */
+  const PP_FALLBACK = [48, 1250, 7];
   shot("fpprofile", { setup: async () => { await closeAll(); try{ await TE_FINDPT.openListing("seed_khang", { from:"findpt" }); }catch(e){ say("fp " + e.message); }
-      await waitFor(() => $q("#screen-ptprofile.active"), 6000); await TI.settle(2000); }, scroller: "#app-scroll",
+      await waitFor(() => $q("#screen-ptprofile.active"), 6000); await TI.settle(2000); }, scroller: "#app-scroll", noStrips: true,
+    targets: { reviews: "#fp-rv-box" },
+    seq: { dur: 5.9, fps: 30,
+      prep: async () => {
+        const sc = TI._ppSc = $q("#app-scroll"); const secs = $a("#pp-content .pp-sec"); const sec = TI._ppSec = secs[1];
+        if(!sc || !sec) return say("seq: không thấy phần thành tích");
+        try{ const io = G("ppIO"); if(io) io.disconnect(); }catch(e){}
+        sc.style.scrollBehavior = "auto"; sc.style.scrollSnapType = "none";
+        sec.classList.remove("in", "done");
+        $a("[data-count]", sec).forEach((n, i) => { n._counted = true; if(!(+n.dataset.count > 0)) n.dataset.count = PP_FALLBACK[i] || 0; n.textContent = "0"; });
+        sc.scrollTop = 0;
+        TI._ppY = Math.min(sc.scrollHeight - sc.clientHeight, Math.round(sec.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop));
+        TI._ppR = null;
+        sec.getAnimations({ subtree:true }).forEach(a => { try{ a.pause(); a.currentTime = 0; }catch(e){} });
+        await sleep(250);
+        return { y: TI._ppY };
+      },
+      at: async (tau) => {
+        const sc = TI._ppSc, sec = TI._ppSec; if(!sc || !sec) return;
+        const io = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2, cl = x => Math.max(0, Math.min(1, x));
+        sc.scrollTop = Math.round(TI._ppY * io(cl((tau - .3) / 1.25)));
+        const sr = sc.getBoundingClientRect(), r = sec.getBoundingClientRect();
+        if(TI._ppR == null && r.top < sr.top + sr.height * .8){ TI._ppR = tau; sec.classList.add("in"); }   // = rootMargin −20 % của ppIO
+        const lt = TI._ppR == null ? 0 : tau - TI._ppR;
+        sec.getAnimations({ subtree:true }).forEach(a => { try{ a.pause(); a.currentTime = (a.animationName === "ppSpin" ? tau : lt) * 1000; }catch(e){} });
+        $a("[data-count]", sec).forEach(n => {
+          const target = +n.dataset.count || 0, d = (+n.dataset.delay || 0) / 1000;
+          const p = TI._ppR == null ? 0 : cl((lt - d) / 2.2);
+          n.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))).toLocaleString("vi-VN");
+        });
+      },
+      end: async () => { const sec = TI._ppSec; if(sec){ sec.classList.add("in", "done"); $a("[data-count]", sec).forEach(n => n.textContent = (+n.dataset.count || 0).toLocaleString("vi-VN")); }
+        try{ const f = G("ppReveal"); if(f) f(); }catch(e){} }
+    } });
+  // phần còn lại của hồ sơ (thương hiệu, album, bảng giá, đánh giá): tiếp đúng vị trí cuộn cuối chuỗi khung, mọi phần đã hiện đủ
+  shot("fpdetails", { setup: async () => {
+      $a("#pp-content .pp-sec").forEach(sec => sec.classList.add("in", "done"));
+      $a("#pp-content [data-count]").forEach(n => { n._counted = true; n.textContent = (+n.dataset.count || 0).toLocaleString("vi-VN"); });
+      const sc = $q("#app-scroll"); if(sc){ sc.style.scrollBehavior = "auto"; sc.scrollTop = TI._ppY || sc.clientHeight; }
+      await TI.settle(900); }, scroller: "#app-scroll",
     targets: { reviews: "#fp-rv-box" } });
 
   // --- 11. Cộng đồng, sự kiện, cửa hàng ---
@@ -458,9 +612,14 @@
     const m = TI.measure({ scroller: sc, targets: def.targets });
     if(def.light !== undefined) m.light = def.light;
     m.id = id; m.noStrips = !!def.noStrips; m.safe = { top: SAFE_TOP, bottom: SAFE_BOT };
-    try{ const bad = TI.safeAudit(); if(bad.length) say("SAFE " + bad.join(", ")); }catch(e){}
+    try{ const a = TI.safeAudit(); m.safeAudit = a; if(a.errors.length) say("SAFE " + a.errors.slice(0, 4).map(x => x.zone + ":" + x.el).join(", ")); }catch(e){ say("safeAudit " + e.message); }
     m.log = TI.log.slice();
     return m;
   };
+  /* chuỗi khung (seq): capture_app.py gọi seqInfo → seqPrep → seqAt(τ) + chụp, lặp → seqEnd */
+  TI.seqInfo = id => { const q = S[id] && S[id].seq; return q ? { dur: q.dur, fps: q.fps || 30 } : null; };
+  TI.seqPrep = async id => { const q = S[id].seq; let r = null; try{ r = q.prep ? await q.prep() : null; }catch(e){ say("seqPrep " + e.message); } return Object.assign({ y: TI._ppY || 0 }, r || {}); };
+  TI.seqAt = async (id, tau) => { try{ await S[id].seq.at(tau); }catch(e){ say("seqAt " + e.message); } };
+  TI.seqEnd = async id => { try{ const q = S[id].seq; if(q.end) await q.end(); }catch(e){} };
   TI.after = async function(id){ const def = S[id]; if(def && def.after){ try{ await def.after(); }catch(e){} } };
 })();
