@@ -52,7 +52,7 @@ html,body{ background:#000; overflow:hidden; -webkit-font-smoothing:antialiased;
 .bar.cor i{ background:linear-gradient(90deg,#E0582A,#FF7A45); }
 .blab{ font:700 40px/1 var(--f-head); color:var(--text); }
 .bval{ font:800 50px/1 var(--f-disp); color:var(--text); text-align:right; }
-.note{ font:600 28px/1.2 var(--f-mono); color:rgba(245,247,243,.7); white-space:nowrap; }
+.note{ position:absolute; font:600 28px/1.2 var(--f-mono); color:rgba(245,247,243,.7); white-space:nowrap; }
 
 /* so sánh / danh sách */
 .cmp{ position:absolute; border-radius:30px; background:rgba(255,255,255,.06); border:2px solid rgba(255,255,255,.08); }
