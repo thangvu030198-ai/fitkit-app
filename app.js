@@ -981,7 +981,7 @@ function openOnboarding(prefill){
   { // 12/11: ảnh NGANG (chủ thể ở giữa) cho khung ngang — ảnh dọc bị cắt mất người
     const im = document.querySelector('.onboard-step[data-step="0"] .ob-hero-img') || $('.onboard-step[data-step="0"]').querySelector("img:not(.brand-wm)");
     if(im){ im.onerror = function(){ this.onerror = null; this.src = IMG.heroWorkout2; this.style.objectPosition = "center 18%"; };
-      im.src = "https://thangvu030198-ai.github.io/fitkit-app/media/people-ai/ch-gym-session.webp"; im.style.objectPosition = "center 38%"; }
+      im.src = "https://thangvu030198-ai.github.io/fitkit-app/media/people-ai/muscle-chest.webp"; im.style.objectPosition = "center 50%"; }
   }
   showObStep(0);
   $("#onboarding").classList.add("open");
