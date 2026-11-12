@@ -1,0 +1,48 @@
+name: Media — clip nền màn chào (đen trắng, nét cao)
+
+# Clip: "Cinematic Gym Training in Slow Motion" — JULLIAN PRODUCTION, Pexels (giấy phép Pexels: dùng miễn phí, không bắt buộc ghi công)
+# https://www.pexels.com/video/cinematic-gym-training-in-slow-motion-36184742/  (gốc 4K 2160×3840)
+# Ra: media/welcome/welcome-bw-1080.mp4 (1080×1920), welcome-bw-720.mp4 (720×1280), welcome-bw-poster.jpg — đen trắng, không tiếng, faststart.
+on:
+  workflow_dispatch:
+    inputs:
+      video_id: { description: "Mã video Pexels", default: "36184742", required: false }
+      start:    { description: "Bắt đầu từ giây", default: "0", required: false }
+      seconds:  { description: "Độ dài (giây)", default: "12", required: false }
+  push:
+    paths: [".github/workflows/media-welcome.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cài ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Tải & xử lý
+        run: |
+          set -e
+          ID="${{ inputs.video_id || '36184742' }}"; SS="${{ inputs.start || '0' }}"; T="${{ inputs.seconds || '12' }}"
+          mkdir -p media/welcome /tmp/w
+          curl -fsSL -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36" \
+               -o /tmp/w/src.mp4 "https://www.pexels.com/download/video/${ID}/"
+          ffprobe -v error -show_entries stream=width,height,duration -of csv=p=0 /tmp/w/src.mp4
+          VF="hue=s=0,eq=contrast=1.12:brightness=-0.02,fps=30"
+          ffmpeg -y -v error -ss "$SS" -t "$T" -i /tmp/w/src.mp4 -an -vf "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,$VF" \
+                 -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 25 -preset slow -movflags +faststart media/welcome/welcome-bw-1080.mp4
+          ffmpeg -y -v error -ss "$SS" -t "$T" -i /tmp/w/src.mp4 -an -vf "scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,$VF" \
+                 -c:v libx264 -profile:v main -pix_fmt yuv420p -crf 26 -preset slow -movflags +faststart media/welcome/welcome-bw-720.mp4
+          ffmpeg -y -v error -ss 0.5 -i media/welcome/welcome-bw-720.mp4 -frames:v 1 -q:v 4 media/welcome/welcome-bw-poster.jpg
+          ls -la media/welcome
+      - name: Lưu vào repo
+        run: |
+          git config user.name "tapeasy-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add media/welcome
+          if git diff --cached --quiet; then echo "Không có gì mới"; exit 0; fi
+          git commit -m "media: clip nền màn chào đen trắng (Pexels ${{ inputs.video_id || '36184742' }})"
+          git pull --rebase && git push
