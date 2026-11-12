@@ -24,4 +24,9 @@ const MEDIA_CONFIG = {
     : "https://thangvu030198-ai.github.io/fitkit-app/media/welcome/welcome-bw-720.mp4",   // clip Pexels 36184742, đen trắng (workflow media-welcome.yml)
   welcomePoster: "https://thangvu030198-ai.github.io/fitkit-app/media/welcome/welcome-bw-poster.jpg",
   welcomeQuery: "gym workout training",
+  /* Thống kê sử dụng ẩn danh qua PostHog (analytics.js · docs/ANALYTICS.md) — TUỲ CHỌN, để trống = không dùng PostHog.
+     Chỉ gửi khi người dùng bấm "Đồng ý"; SDK chỉ tải sau khi đồng ý. Khoá dự án PostHog (phc_…) là khoá công khai phía client.
+     Host mặc định EU (https://eu.i.posthog.com) — đổi sang US thì phải thêm host đó vào CSP trong index.html. */
+  posthogKey: "",
+  posthogHost: "",
 };

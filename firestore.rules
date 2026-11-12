@@ -683,6 +683,33 @@ service cloud.firestore {
     // "Yêu cầu của tôi" (collectionGroup requests where uid == me)
     match /{path=**}/requests/{qid} { allow read: if signedIn() && resource.data.uid == me(); }
 
+    // Góp ý & NPS trong app (feedback.js · docs/FEEDBACK.md) — 13/11/2026
+    //   CHỈ TẠO: người đã đăng nhập (kể cả đăng nhập ẩn danh trên app Firebase phụ "fk-feedback"); KHÔNG lưu uid.
+    //   Kiểm đủ trường + kiểu + kích thước (khớp FKFeedback.validate); createdAt = giờ máy chủ; status luôn 'new' khi tạo.
+    //   Đọc / đổi trạng thái: chỉ đội ngũ có quyền 'support.tickets' (Chủ sở hữu, Quản trị cấp cao, Quản trị viên, Hỗ trợ). Không ai xoá từ app.
+    match /feedback/{id} {
+      function okFeedback(d) {
+        return d.keys().hasOnly(['kind', 'category', 'text', 'score', 'contact', 'shot', 'appVersion', 'device', 'screen', 'createdAt', 'status', 'v', 'trigger'])
+          && d.keys().hasAll(['kind', 'appVersion', 'createdAt', 'status', 'v'])
+          && d.kind in ['feedback', 'nps'] && d.status == 'new' && d.v == 1
+          && d.createdAt == request.time
+          && d.appVersion is string && d.appVersion.size() > 0 && d.appVersion.size() <= 20
+          && (!('text' in d) || (d.text is string && d.text.size() <= 2000))
+          && (d.kind != 'feedback' || (d.category in ['bug', 'idea', 'content', 'other'] && d.text is string && d.text.size() >= 5 && !('score' in d)))
+          && (d.kind != 'nps' || (d.score is int && d.score >= 0 && d.score <= 10 && !('category' in d) && !('shot' in d)
+                                  && (!('text' in d) || d.text.size() <= 1000)))
+          && (!('contact' in d) || (d.contact is string && d.contact.size() > 0 && d.contact.size() <= 120))
+          && (!('shot' in d) || (d.shot is string && d.shot.size() <= 250000 && d.shot.matches('^data:image/(jpeg|webp);base64,[A-Za-z0-9+/=]+$')))
+          && (!('device' in d) || (d.device is map && d.device.keys().hasOnly(['platform', 'os', 'screen', 'lang', 'theme', 'mode'])))
+          && (!('screen' in d) || (d.screen is string && d.screen.size() <= 40))
+          && (!('trigger' in d) || (d.trigger is string && d.trigger.size() <= 30));
+      }
+      allow create: if signedIn() && notBanned() && okFeedback(request.resource.data);
+      allow read: if hasPerm('support.tickets');
+      allow update: if hasPerm('support.tickets') && onlyKeys(['status']) && request.resource.data.status in ['new', 'seen', 'done'];
+      allow delete: if false;
+    }
+
     // Nhận xét PT → học viên: RIÊNG TƯ (chỉ PT và học viên của form)
     match /clients/{cid}/feedback/{fid} {
       function fpc() { return get(/databases/$(database)/documents/clients/$(cid)).data; }

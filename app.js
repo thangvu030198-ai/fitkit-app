@@ -340,8 +340,18 @@ function fkDefaultTemplate(p, f){
   const age = Number(p.age) || 0;
   let lv = ["beginner","intermediate","advanced"].includes(p.level) ? p.level : "beginner";
   if(age >= 60 || (age && age < 18) || f.preg || f.post || f.hideNow || f.supervised || (Array.isArray(f.injuries) && f.injuries.length)) lv = "beginner";
-  if(lv === "advanced") return null;
   const g = p.gender === "female" ? "nu" : "nam";
+  const days = Number(p.daysPerWeek) || 0;                    // 13/11: số buổi/tuần + nơi tập (onboarding) — chưa khai → giữ cách chọn cũ
+  const home = p.equipment === "home" || p.equipment === "none";
+  if(home){                                                   // không có phòng gym → giáo án tối thiểu dụng cụ (nữ tập được 5 buổi → bản tại nhà 5 buổi)
+    const ids = g === "nu" && days >= 5 && lv === "beginner" ? ["tpl-f-home","tpl-u-home"] : ["tpl-u-home"];
+    for(const id of ids){ const t = PROGRAM_TEMPLATES.find(x=> x && x.id === id); if(t) return t; }
+  }
+  if(lv === "advanced"){
+    if(days && days <= 4){ const t = PROGRAM_TEMPLATES.find(x=> x && x.id === (g === "nu" ? "tpl-f-pb" : "tpl-m-pb")); if(t) return t; }
+    return null;
+  }
+  if(lv === "intermediate" && days && days <= 3) lv = "beginner";   // chỉ tập được ≤ 3 buổi → Full Body 3 buổi hợp hơn Upper/Lower 4 buổi
   const order = lv === "beginner" ? (g === "nu" ? ["tpl-f-fb","tpl-u-home"] : ["tpl-m-fb","tpl-u-home"])
                                   : (g === "nu" ? ["tpl-f-glute","tpl-f-fb"] : ["tpl-m-ul","tpl-m-fb"]);
   for(const id of order){ const t = PROGRAM_TEMPLATES.find(x=> x && x.id === id); if(t) return t; }
@@ -357,6 +367,7 @@ function fkApplyDefaultPlan(){
     plan.autoDefault = true; plan.startedAt = plan.startedAt || todayStr();
     state.plans[plan.id] = plan; state.activePlanId = plan.id; state.selectedDay = todayDayKey();
     saveState();
+    try{ if(!exist && typeof fkTrack === "function") fkTrack("plan_created", { source: state.onboarded ? "default_template" : "onboarding", template_id: t.id }); }catch(e){}
     if(!exist && typeof tplAttachVideos === "function"){ Promise.resolve().then(()=> tplAttachVideos(plan)).then(()=> saveState()).catch(()=>{}); }
     return plan;
   }catch(e){ try{ console.warn("[plan] default", e); }catch(_){} return null; }
@@ -383,6 +394,7 @@ function createBlankPlan(name){
   const plan = { id, name: name || "Giáo án mới", tagline: "Giáo án cá nhân hoá", builtin:false, days };
   state.plans[id] = plan;
   saveState();
+  try{ if(typeof fkTrack === "function") fkTrack("plan_created", { source: "blank" }); }catch(e){}
   return plan;
 }
 function duplicatePlan(planId){
@@ -850,18 +862,33 @@ function fkKeyable(el, role, label){
 let obStep = 0;
 const OB_STEPS = 5;
 let tempProfile = {};
+/* 13/11 (onboarding hoàn chỉnh — docs/ANALYTICS.md §phễu): tên từng bước cho bộ đếm "Bước 2/5 · …" + thanh tiến độ có aria;
+   obEditMode = đang SỬA câu trả lời (mở từ Hồ sơ / màn "Kế hoạch đã sẵn sàng") — bước đầu "Quay lại" đóng, không về màn chào. */
+const OB_STEP_NAMES = ["Bạn", "Giới tính & tuổi", "Chiều cao & cân nặng", "Vận động & lịch tập", "Mục tiêu & kinh nghiệm"];
+let obEditMode = false, obReturnToReady = false, obPrevAnswers = null;
 
 function renderOnboardProgress(){
-  $("#onboard-progress").innerHTML = Array.from({length:OB_STEPS}).map((_,i)=>
+  const el = $("#onboard-progress");
+  el.innerHTML = Array.from({length:OB_STEPS}).map((_,i)=>
     `<div class="${i<=obStep?'done':''}"></div>`).join("");
+  try{
+    el.setAttribute("role", "progressbar"); el.setAttribute("aria-label", "Tiến độ tạo hồ sơ");
+    el.setAttribute("aria-valuemin", "1"); el.setAttribute("aria-valuemax", String(OB_STEPS)); el.setAttribute("aria-valuenow", String(obStep + 1));
+    el.setAttribute("aria-valuetext", `Bước ${obStep + 1}/${OB_STEPS}: ${OB_STEP_NAMES[obStep] || ""}`);
+  }catch(e){}
+  const c = $("#onboard-count");
+  if(c) c.textContent = `Bước ${obStep + 1}/${OB_STEPS} · ${OB_STEP_NAMES[obStep] || ""}`;
 }
-function showObStep(i){
+function showObStep(i, focus){
   obStep = i;
   $$(".onboard-step").forEach(s=> s.classList.toggle("active", Number(s.dataset.step)===i));
-  $("#onboard-back").style.display = (i===0 && typeof showAuth !== "function") ? "none" : "flex";   // 12/11: bước 0 → quay về màn chào (slogan)
-  try{ $("#onboard-back").setAttribute("aria-label", i===0 ? "Quay lại màn chào" : "Quay lại bước trước"); }catch(e){}
-  $("#onboard-next").textContent = i===OB_STEPS-1 ? "Bắt đầu hành trình" : "Tiếp tục";
+  $("#onboard-back").style.display = (i===0 && typeof showAuth !== "function" && !obEditMode) ? "none" : "flex";   // 12/11: bước 0 → quay về màn chào (slogan)
+  try{ $("#onboard-back").setAttribute("aria-label", i===0 ? (obEditMode ? "Huỷ chỉnh sửa, về Hồ sơ" : "Quay lại màn chào") : "Quay lại bước trước"); }catch(e){}
+  $("#onboard-next").textContent = i===OB_STEPS-1 ? (obEditMode ? "Lưu thay đổi" : "Tạo kế hoạch của tôi") : "Tiếp tục";
+  obClearError(i);
   renderOnboardProgress();
+  if(focus){ try{ const h = $(`.onboard-step[data-step="${i}"] .onboard-hero`); if(h && h.setAttribute){ h.setAttribute("tabindex", "-1"); h.focus({ preventScroll:true }); } }catch(e){} }
+  try{ if(typeof fkTrack === "function") fkTrack("onboarding_step_view", { step: i, step_name: ["intro","sex_age","body","activity","goal"][i] || "", edit: obEditMode }); }catch(e){}
 }
 /* Thẻ chọn onboarding (QU-30): role="radio" + aria-checked + tabindex=0, Enter/Space/mũi tên chọn được bằng bàn phím */
 function fkChoiceSelect(cards, card){
@@ -878,6 +905,7 @@ function renderChoiceList(containerId, items, field, labelFn){
     card.addEventListener("click", ()=>{
       fkChoiceSelect($$(`[data-field="${field}"]`, el), card);
       tempProfile[field] = card.dataset.value;
+      try{ obClearError(obStep); }catch(e){}
     });
   });
 }
@@ -899,17 +927,53 @@ function ensureLevelChoices(){
   }
   if(box) renderChoiceList("#level-list", TRAIN_LEVELS, "level");
 }
-function validateStep(i){
-  if(i===1) return tempProfile.gender && Number($("#in-age").value) >= 14 && Number($("#in-age").value) <= 90;
-  if(i===2){
-    const h = Number($("#in-height").value), w = Number($("#in-weight").value);
-    const bf = $("#in-bodyfat").value;
-    const bfOk = bf==="" || (Number(bf) >= 3 && Number(bf) <= 60);
-    return h>=80 && h<=250 && w>=25 && w<=300 && bfOk;
+/* Nơi tập + số buổi/tuần (13/11): dùng để chọn giáo án gợi ý (fkDefaultTemplate) — có sẵn giá trị mặc định hợp lý */
+const OB_EQUIP = [
+  { id:"gym",  label:"Phòng gym", desc:"Đủ máy, tạ đòn, tạ đơn" },
+  { id:"home", label:"Tại nhà có dụng cụ", desc:"Tạ đơn, dây kháng lực, xà đơn" },
+  { id:"none", label:"Không dụng cụ", desc:"Chỉ dùng trọng lượng cơ thể" },
+];
+const OB_DAYS = [2, 3, 4, 5, 6];
+const OB_DEFAULTS = { activity:"light", equipment:"gym", days:3 };
+function renderDaysChoices(){
+  const el = $("#days-list"); if(!el) return;
+  if(el.setAttribute) el.setAttribute("role", "radiogroup");
+  el.innerHTML = OB_DAYS.map(d=> `<div class="choice-card ob-day" role="radio" aria-checked="false" tabindex="0" data-fk-key data-field="days" data-value="${d}" aria-label="${d} buổi mỗi tuần"><span>${d}</span><small>buổi</small></div>`).join("");
+  $$('[data-field="days"]', el).forEach(card=> card.addEventListener("click", ()=>{
+    fkChoiceSelect($$('[data-field="days"]', el), card); tempProfile.days = Number(card.dataset.value) || OB_DEFAULTS.days; obClearError(3);
+  }));
+}
+/* Kiểm từng bước → { text, field } (field = id ô cần sửa) hoặc null. validateStep() giữ nguyên chữ ký cũ. */
+function obStepError(i){
+  const num = id=>{ const v = String(($(id) || {}).value || "").trim().replace(",", "."); return v === "" ? NaN : Number(v); };
+  if(i===1){
+    if(!tempProfile.gender) return { text:"Chọn giới tính — dùng cho công thức tính năng lượng nghỉ (BMR).", field:null };
+    const a = num("#in-age");
+    if(!(a >= 14 && a <= 90)) return { text:"Nhập tuổi từ 14 đến 90.", field:"in-age" };
   }
-  if(i===3) return !!tempProfile.activity;
-  if(i===4) return !!tempProfile.goal && !!tempProfile.level;
-  return true;
+  if(i===2){
+    const h = num("#in-height"), w = num("#in-weight"), bfRaw = String(($("#in-bodyfat") || {}).value || "").trim();
+    if(!(h >= 80 && h <= 250)) return { text:"Chiều cao từ 80 đến 250 cm.", field:"in-height" };
+    if(!(w >= 25 && w <= 300)) return { text:"Cân nặng từ 25 đến 300 kg.", field:"in-weight" };
+    if(bfRaw !== "" && !(num("#in-bodyfat") >= 3 && num("#in-bodyfat") <= 60)) return { text:"Tỉ lệ mỡ từ 3 đến 60 % — hoặc để trống nếu chưa đo.", field:"in-bodyfat" };
+  }
+  if(i===3 && !tempProfile.activity) return { text:"Chọn mức vận động gần đúng nhất với bạn.", field:null };
+  if(i===4){
+    if(!tempProfile.goal) return { text:"Chọn mục tiêu của bạn.", field:null };
+    if(!tempProfile.level) return { text:"Chọn kinh nghiệm tập tạ để TapEasy gợi ý giáo án phù hợp", field:null };
+  }
+  return null;
+}
+function validateStep(i){ return !obStepError(i); }
+function obClearError(i){
+  try{ const e = $("#ob-err-" + i); if(e) e.textContent = "";
+    ["in-age","in-height","in-weight","in-bodyfat"].forEach(id=>{ const el = document.getElementById(id); if(el && el.removeAttribute) el.removeAttribute("aria-invalid"); }); }catch(e){}
+}
+function obShowError(i, err){
+  try{
+    const box = $("#ob-err-" + i); if(box) box.textContent = err.text;
+    if(err.field){ const el = document.getElementById(err.field); if(el){ el.setAttribute("aria-invalid", "true"); if(el.focus) el.focus(); } }
+  }catch(e){}
 }
 $$('[data-field="gender"]').forEach(card=>{
   fkKeyable(card, "radio"); card.setAttribute("aria-checked", "false");
@@ -917,73 +981,224 @@ $$('[data-field="gender"]').forEach(card=>{
   card.addEventListener("click", ()=>{
     fkChoiceSelect($$('[data-field="gender"]'), card);
     tempProfile.gender = card.dataset.value;
+    try{ obClearError(1); }catch(e){}
   });
 });
 $("#onboard-next").addEventListener("click", ()=>{
-  if(!validateStep(obStep)){
-    toast(obStep===4 && tempProfile.goal && !tempProfile.level ? "Chọn kinh nghiệm tập tạ để TapEasy gợi ý giáo án phù hợp" : "Vui lòng nhập đầy đủ thông tin", "error");
-    return;
-  }
+  const err = obStepError(obStep);
+  if(err){ obShowError(obStep, err); toast(err.text, "error"); return; }
+  obClearError(obStep);
+  try{ if(typeof fkTrack === "function") fkTrack("onboarding_step_complete", { step: obStep, edit: obEditMode }); }catch(e){}
   if(obStep === OB_STEPS-1){ finishOnboarding(); return; }
-  showObStep(obStep+1);
+  showObStep(obStep+1, true);
 });
 $("#onboard-back").addEventListener("click", ()=>{
-  if(obStep > 0) return showObStep(obStep-1);
+  if(obStep > 0) return showObStep(obStep-1, true);
+  // đang SỬA hồ sơ: đóng, giữ nguyên dữ liệu cũ, về nơi đã mở (Hồ sơ / màn kế hoạch)
+  if(obEditMode){
+    $("#onboarding").classList.remove("open"); obEditMode = false;
+    if(obReturnToReady){ obReturnToReady = false; showPlanReady(); } else goto("profile");
+    return;
+  }
   // bước đầu: đóng onboarding, về màn chào có slogan (chưa lưu gì)
   try{ $("#onboarding").classList.remove("open"); if(typeof showAuth === "function") showAuth("welcome"); }catch(e){}
 });
+/* Enter trong ô nhập = "Tiếp tục" (form không tự gửi / không tải lại trang) */
+try{
+  $("#onboard-form").addEventListener("submit", e=>{ e.preventDefault(); $("#onboard-next").click(); });
+  $("#onboard-form").addEventListener("keydown", e=>{
+    const t = e.target;
+    if(e.key === "Enter" && t && t.tagName === "INPUT"){ e.preventDefault(); $("#onboard-next").click(); }
+  });
+}catch(e){}
 
+const obPlanKey = p=> [p.gender, p.level, p.equipment, p.daysPerWeek, p.goal].join("|");
 function finishOnboarding(){
   const p = state.profile;
   const wasOnboarded = state.onboarded;
-  p.name = ($("#onboard-form input#in-name")?.value) || p.name || "Vận Động Viên";
+  const numIn = id=>{ const v = String(($(id) || {}).value || "").trim().replace(",", "."); return v === "" ? NaN : Number(v); };
+  const before = obPlanKey(p);
+  p.name = String(($("#in-name") || {}).value || p.name || "Vận Động Viên").trim().slice(0, 40) || "Vận Động Viên";
   p.gender = tempProfile.gender || "male";
-  p.age = Number($("#in-age").value) || 25;
-  p.height = Number($("#in-height").value) || 170;
-  p.weight = Number($("#in-weight").value) || 65;
-  p.bodyfat = $("#in-bodyfat").value ? Number($("#in-bodyfat").value) : null;
+  p.age = Math.round(numIn("#in-age")) || 25;
+  p.height = numIn("#in-height") || 170;
+  p.weight = Math.round((numIn("#in-weight") || 65) * 10) / 10;
+  p.bodyfat = Number.isFinite(numIn("#in-bodyfat")) ? numIn("#in-bodyfat") : null;
   p.activity = tempProfile.activity || "moderate";
   p.goal = tempProfile.goal || "gain";
   p.level = tempProfile.level || p.level || "beginner";
+  p.equipment = OB_EQUIP.some(e=> e.id === tempProfile.equipment) ? tempProfile.equipment : (p.equipment || OB_DEFAULTS.equipment);
+  p.daysPerWeek = OB_DAYS.includes(Number(tempProfile.days)) ? Number(tempProfile.days) : (Number(p.daysPerWeek) || OB_DEFAULTS.days);
   recomputeProfile();
   state.onboarded = true;
   let defPlan = null;
+  const editing = obEditMode; obEditMode = false;
+  const planChanged = wasOnboarded && before !== obPlanKey(p);
   if(!wasOnboarded){
     state.activePlanId = null; ensurePlans();
-    defPlan = fkApplyDefaultPlan();            // QT-05: giáo án theo cấp độ / giới tính / sàng lọc sức khoẻ
+    defPlan = fkApplyDefaultPlan();            // QT-05: giáo án theo cấp độ / giới tính / sàng lọc sức khoẻ (+ nơi tập, số buổi)
     if(!state.startDate) state.startDate = todayStr();
   }
   saveState();
   $("#onboarding").classList.remove("open");
-  // (QU-02) không renderAll() ở đây — goto() ngay sau sẽ vẽ màn đích, các màn khác vẽ lười khi vào
-  if(!wasOnboarded && typeof afterFirstOnboarding==="function") afterFirstOnboarding(); else goto("home");
-  toast(defPlan ? `Chào mừng ${p.name || "bạn"}! Giáo án gợi ý: ${defPlan.name}` : `Chào mừng ${p.name || "bạn"} đến với TapEasy!`, "celebration");
+  try{ if(typeof fkTrack === "function") fkTrack(wasOnboarded ? "profile_updated" : "onboarding_finish", { goal: p.goal, level: p.level, activity: p.activity, equipment: p.equipment, days_per_week: p.daysPerWeek, has_bodyfat: p.bodyfat != null, plan_changed: planChanged }); }catch(e){}
+  // Lần đầu → màn "Kế hoạch đã sẵn sàng" (BMR/TDEE/macro + tuần đầu + CTA "Bắt đầu buổi đầu tiên")
+  if(!wasOnboarded){ showPlanReady(); return; }
+  // Sửa từ màn kế hoạch → áp lại giáo án gợi ý theo câu trả lời mới rồi quay lại màn kế hoạch
+  if(obReturnToReady){
+    obReturnToReady = false;
+    if(planChanged){ const pl = getActivePlan(); if(!pl || pl.autoDefault) fkApplyDefaultPlan(); }
+    showPlanReady(); return;
+  }
+  // Sửa từ Hồ sơ → về Hồ sơ; câu trả lời ảnh hưởng giáo án đổi → hỏi có muốn đổi giáo án gợi ý không
+  goto(editing ? "profile" : "home");
+  toast(`Đã cập nhật hồ sơ · ${p.goalKcal} kcal/ngày`, "check_circle");
+  if(planChanged){
+    const t = fkDefaultTemplate(p, (window.FKHealth && typeof FKHealth.current === "function") ? FKHealth.current() : null);
+    const cur = getActivePlan();
+    if(t && !(cur && cur.fromTemplate === t.id)) setTimeout(()=> confirmDialog("Đổi giáo án gợi ý?", `Theo câu trả lời mới, giáo án phù hợp hơn là “${t.name}”. Giáo án hiện tại vẫn được giữ trong “Giáo án của tôi”.`,
+      ()=>{ const pl = fkApplyDefaultPlan(); if(pl){ toast(`Đang dùng: ${pl.name}`, "check_circle"); fkRenderActive && fkRenderActive(); } }, "Dùng giáo án mới", "swap_horiz"), 350);
+  }
 }
 
-function openOnboarding(prefill){
+/* =========================================================================
+   6b. MÀN "KẾ HOẠCH ĐÃ SẴN SÀNG" (sau onboarding lần đầu)
+   Số liệu lấy từ CHÍNH hàm tính của app (calcBMR / calcTDEE / calcGoalKcal / calcMacros / recomputeProfile)
+   và nuWaterGoal (nutrition.js) — KHÔNG lặp lại công thức ở đây.
+   ========================================================================= */
+function fkPlanSummary(p){
+  p = p || state.profile || {};
+  const bmr = calcBMR(p);                                                  // Mifflin-St Jeor
+  const tdee = Number(p.tdee) > 0 ? Number(p.tdee) : calcTDEE(bmr, p.activity);   // < 18 tuổi: recomputeProfile đã dùng EER
+  const kcal = Number(p.goalKcal) > 0 ? Number(p.goalKcal) : calcGoalKcal(tdee, p.goal);
+  const m = Number(p.protein) > 0 ? { protein: Number(p.protein), carbs: Number(p.carbs) || 0, fat: Number(p.fat) || 0 } : calcMacros(p.weight, kcal, p);
+  let water = null; try{ water = typeof nuWaterGoal === "function" ? nuWaterGoal(p) : null; }catch(e){}
+  const plan = getActivePlan();
+  const keys = typeof DAY_KEYS !== "undefined" ? DAY_KEYS : ["T2","T3","T4","T5","T6","T7","CN"];
+  const today = todayDayKey();
+  const days = keys.map(k=>{
+    const d = plan && plan.days ? plan.days[k] : null;
+    const n = d && Array.isArray(d.items) ? d.items.length : 0;
+    return { key:k, label: (typeof DAY_LABELS !== "undefined" && DAY_LABELS[k]) || k, title: n ? String(d.title || "Buổi tập") : "Nghỉ / hồi phục", n,
+      duration: n ? Number(d.duration) || 0 : 0, today: k === today };
+  });
+  const ti = keys.indexOf(today);
+  let first = null;
+  for(let j = 0; j < 7 && !first; j++){ const d = days[(Math.max(0, ti) + j) % 7]; if(d && d.n) first = d; }
+  const goalDef = GOALS.find(g=> g.id === p.goal);
+  return { bmr, tdee, kcal, protein: m.protein, carbs: m.carbs, fat: m.fat, water, planName: plan ? String(plan.name || "") : "",
+    days, first, trainDays: days.filter(d=> d.n).length, goalLabel: goalDef ? goalDef.label : "", deltaKcal: kcal - tdee };
+}
+let _obReadyInert = [];
+function hidePlanReady(){
+  const el = $("#ob-ready"); if(!el) return;
+  el.classList.remove("open"); el.hidden = true;
+  _obReadyInert.forEach(n=>{ try{ n.removeAttribute("inert"); }catch(e){} }); _obReadyInert = [];
+}
+function showPlanReady(){
+  const el = $("#ob-ready"), body = $("#ob-ready-body"); if(!el || !body){ if(typeof afterFirstOnboarding === "function") afterFirstOnboarding(); else goto("home"); return; }
+  const p = state.profile, S = fkPlanSummary(p);
+  const vn = n=> Math.round(Number(n) || 0).toLocaleString("vi-VN");
+  const eq = OB_EQUIP.find(e=> e.id === p.equipment), lv = TRAIN_LEVELS.find(l=> l.id === p.level), act = ACTIVITY_LEVELS.find(a=> a.id === p.activity);
+  const delta = S.deltaKcal === 0 ? "bằng mức tiêu hao" : (S.deltaKcal > 0 ? "+" : "−") + vn(Math.abs(S.deltaKcal)) + " kcal so với mức tiêu hao";
+  const answers = [
+    [4, "Mục tiêu", S.goalLabel], [4, "Kinh nghiệm", lv ? lv.label : ""], [3, "Vận động", act ? act.label : ""],
+    [3, "Nơi tập", eq ? eq.label : ""], [3, "Số buổi/tuần", String(p.daysPerWeek || OB_DEFAULTS.days)], [2, "Cơ thể", `${vn(p.height)} cm · ${fmt1(p.weight)} kg`],
+  ];
+  body.innerHTML = `
+    <div class="ob-ready-top">
+      <span class="ob-ready-badge" aria-hidden="true"><span class="material-symbols-rounded">check_circle</span></span>
+      <p class="ob-ready-eyebrow">Hồ sơ hoàn tất</p>
+      <h2 class="onboard-hero" id="ob-ready-h" tabindex="-1">Kế hoạch của ${escapeHtml(p.name || "bạn")} đã sẵn sàng</h2>
+      <p class="onboard-sub">Ước lượng theo công thức khoa học từ chỉ số bạn nhập — chỉnh được bất cứ lúc nào trong Hồ sơ.</p>
+    </div>
+    <section class="card ob-ready-card" aria-labelledby="ob-ready-en">
+      <div class="card-title" id="ob-ready-en"><span class="material-symbols-rounded">bolt</span>Năng lượng mỗi ngày</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="num">${vn(S.bmr)}</div><div class="cap">BMR · nghỉ ngơi</div></div>
+        <div class="stat-box"><div class="num">${vn(S.tdee)}</div><div class="cap">TDEE · cả ngày</div></div>
+        <div class="stat-box ob-hl"><div class="num">${vn(S.kcal)}</div><div class="cap">Mục tiêu kcal</div></div>
+      </div>
+      <p class="small-note" style="margin-top:8px;">${escapeHtml(S.goalLabel)}: ${escapeHtml(delta)}.</p>
+      <div class="ob-macros" role="list" aria-label="Đạm, tinh bột, chất béo mỗi ngày">
+        <div class="ob-mac p" role="listitem"><b>${vn(S.protein)} g</b><small>Đạm</small></div>
+        <div class="ob-mac c" role="listitem"><b>${vn(S.carbs)} g</b><small>Tinh bột</small></div>
+        <div class="ob-mac f" role="listitem"><b>${vn(S.fat)} g</b><small>Chất béo</small></div>
+        ${S.water ? `<div class="ob-mac w" role="listitem"><b>${escapeHtml(String(S.water).replace(".", ","))} L</b><small>Nước</small></div>` : ""}
+      </div>
+    </section>
+    <section class="card ob-ready-card" aria-labelledby="ob-ready-wk">
+      <div class="card-title" id="ob-ready-wk"><span class="material-symbols-rounded">event</span>Tuần đầu tiên${S.planName ? " · " + escapeHtml(S.planName) : ""}</div>
+      <ol class="ob-week">${S.days.map(d=> `<li class="ob-wd${d.n ? " on" : ""}${d.today ? " today" : ""}${S.first && S.first.key === d.key ? " first" : ""}">
+        <span class="ob-wd-k">${escapeHtml(d.key)}</span><span class="ob-wd-t">${escapeHtml(d.title)}</span>
+        <span class="ob-wd-m">${d.n ? `${d.n} bài${d.duration ? " · ~" + d.duration + "′" : ""}` : ""}${d.today ? `<em>Hôm nay</em>` : ""}</span></li>`).join("")}</ol>
+      <p class="small-note">${S.trainDays} buổi/tuần · ngày nghỉ giúp cơ hồi phục và lớn lên.</p>
+    </section>
+    <section class="ob-answers" aria-label="Câu trả lời của bạn">
+      ${answers.filter(a=> a[2]).map((a, i)=> `<button type="button" class="ob-ans" id="ob-ans-${i}" data-ob-edit="${a[0]}"><small>${escapeHtml(a[1])}</small><b>${escapeHtml(a[2])}</b><span class="ob-ans-e">Sửa</span></button>`).join("")}
+    </section>
+    <p class="small-note ob-ready-med">Không thay thế tư vấn y tế. Mang thai, bệnh tim mạch, tiểu đường, thận… hãy hỏi bác sĩ trước khi tập hoặc ăn kiêng.</p>`;
+  const foot = $("#ob-ready-foot");
+  if(foot) foot.innerHTML = `<button type="button" class="btn btn-primary btn-block ob-ready-go" id="ob-ready-go"><span class="material-symbols-rounded">play_arrow</span>Bắt đầu buổi đầu tiên</button>
+    <small class="ob-ready-sub" id="ob-ready-sub">${S.first ? `${escapeHtml(S.first.label)}${S.first.today ? " (hôm nay)" : ""} · ${escapeHtml(S.first.title)}${S.first.duration ? " · ~" + S.first.duration + " phút" : ""}` : "Chọn buổi tập trong màn Tập luyện"}</small>
+    <button type="button" class="btn btn-ghost btn-block" id="ob-ready-later">Xem Trang chủ trước</button>`;
+  el.hidden = false; el.classList.add("open");
+  // hộp thoại toàn màn: nền phía sau không nhận focus / trình đọc màn hình
+  _obReadyInert = [];
+  try{ const host = el.parentNode; if(host && host.children) [...host.children].forEach(n=>{ if(n === el || n.id === "toast" || !n.setAttribute || (n.hasAttribute && n.hasAttribute("inert"))) return; n.setAttribute("inert", ""); _obReadyInert.push(n); }); }catch(e){}
+  try{ const h = $("#ob-ready-h"); if(h && h.focus) h.focus({ preventScroll:true }); }catch(e){}
+  const later = ()=>{ hidePlanReady(); try{ if(typeof fkTrack === "function") fkTrack("plan_ready_later", {}); }catch(e){} if(typeof afterFirstOnboarding === "function") afterFirstOnboarding(); else goto("home"); };
+  const go = $("#ob-ready-go"); if(go) go.onclick = ()=> fkStartFirstWorkout(S);
+  const lt = $("#ob-ready-later"); if(lt) lt.onclick = later;
+  answers.filter(a=> a[2]).forEach((a, i)=>{ const b = document.getElementById("ob-ans-" + i); if(b) b.onclick = ()=>{ hidePlanReady(); obReturnToReady = true; openOnboarding(true, a[0]); }; });
+  el._later = later;
+  try{ if(typeof fkTrack === "function") fkTrack("plan_ready_view", { train_days: S.trainDays, goal: p.goal, has_first: !!S.first }); }catch(e){}
+}
+/** CTA "Bắt đầu buổi đầu tiên": vào Tập luyện, chọn buổi đầu (hôm nay nếu có, không thì buổi gần nhất) và mở buổi tập có hướng dẫn */
+function fkStartFirstWorkout(S){
+  S = S || fkPlanSummary();
+  hidePlanReady();
+  try{ if(typeof fkTrack === "function") fkTrack("first_workout_cta", { day_is_today: !!(S.first && S.first.today), has_first: !!S.first }); }catch(e){}
+  if(!S.first){ goto("workout"); return; }
+  state.selectedDay = S.first.key; saveState();
+  goto("workout");
+  setTimeout(()=>{ try{ startSession(S.first.key); }catch(e){} }, 250);
+}
+
+function openOnboarding(prefill, startStep){
   tempProfile = {};
+  obEditMode = !!prefill && !!state.onboarded;
+  if(!obEditMode) obReturnToReady = false;
   if(prefill){
     tempProfile.gender = state.profile.gender;
     tempProfile.activity = state.profile.activity;
     tempProfile.goal = state.profile.goal;
     if(state.profile.level) tempProfile.level = state.profile.level;
+    tempProfile.equipment = state.profile.equipment || OB_DEFAULTS.equipment;
+    tempProfile.days = Number(state.profile.daysPerWeek) || OB_DEFAULTS.days;
     $("#in-age").value = state.profile.age;
     $("#in-height").value = state.profile.height;
     $("#in-weight").value = state.profile.weight;
     $("#in-bodyfat").value = state.profile.bodyfat || "";
     $("#in-name").value = state.profile.name || "";
+  } else {
+    // giá trị mặc định hợp lý (đổi được): vận động nhẹ, phòng gym, 3 buổi/tuần — giới tính / mục tiêu / kinh nghiệm phải tự chọn
+    tempProfile.activity = OB_DEFAULTS.activity; tempProfile.equipment = OB_DEFAULTS.equipment; tempProfile.days = OB_DEFAULTS.days;
   }
   renderChoiceList("#activity-list", ACTIVITY_LEVELS, "activity");
   renderChoiceList("#goal-list", GOALS, "goal");
   ensureLevelChoices();
+  if($("#equip-list")) renderChoiceList("#equip-list", OB_EQUIP, "equipment");
+  renderDaysChoices();
   const mark = (field, v)=>{ const cs = $$(`[data-field="${field}"]`); const c = cs.find(x=> x.dataset.value === v); if(c) fkChoiceSelect(cs, c); else cs.forEach(x=>{ x.classList.remove("selected"); x.setAttribute && x.setAttribute("aria-checked", "false"); }); };
   mark("gender", tempProfile.gender); mark("activity", tempProfile.activity); mark("goal", tempProfile.goal); mark("level", tempProfile.level);
+  mark("equipment", tempProfile.equipment); mark("days", String(tempProfile.days));
   { // 12/11: ảnh NGANG (chủ thể ở giữa) cho khung ngang — ảnh dọc bị cắt mất người
     const im = document.querySelector('.onboard-step[data-step="0"] .ob-hero-img') || $('.onboard-step[data-step="0"]').querySelector("img:not(.brand-wm)");
     if(im){ im.onerror = function(){ this.onerror = null; this.src = "https://thangvu030198-ai.github.io/fitkit-app/media/welcome/welcome-bw-poster.jpg"; this.style.objectPosition = "center 30%"; };
       im.src = "https://thangvu030198-ai.github.io/fitkit-app/media/people-ai/ob-gym-empty.webp"; im.style.objectPosition = "center 50%"; }
   }
-  showObStep(0);
+  showObStep(Math.max(0, Math.min(OB_STEPS - 1, Number(startStep) || 0)));
   $("#onboarding").classList.add("open");
 }
 
@@ -1218,6 +1433,7 @@ function startSession(dayKey){
     const today = todayDayKey();
     session = { dayKey, idx:0, items, isToday: dayKey===today || !!makeup, makeup: !!makeup && dayKey!==today,
       date: todayStr(), sid: uid(), startedAt: Date.now(), completed: [] };
+    try{ if(typeof fkTrack === "function") fkTrack("workout_start", { day_key: dayKey, exercises: items.length, makeup: !!session.makeup, first_ever: !(state.finishedDates || []).length }); }catch(e){}
     renderSessionStep();
   };
   if(dayKey === todayDayKey()){ begin(false); return; }
@@ -1368,6 +1584,7 @@ function renderSessionStep(){
     }
     const keep = doneRows.map(r=>({ kg: Number(r.kg)||0, reps: timed ? 0 : Number(r.reps)||0, rpe: r.rpe ? Number(r.rpe) : undefined }));
     if(session.isToday) recordExerciseResult(key, meta.name, item.reps, keep, timed);
+    try{ if(typeof fkTrack === "function") fkTrack("set_logged", { sets: keep.length, timed: !!timed, weighted: !!isW, exercise_index: session.idx, saved: !!session.isToday }); }catch(e){}
     session.completed.push(item.uid);
     stopSetRest(); saveState();
     session.idx++; renderSessionStep();
@@ -1429,6 +1646,12 @@ function finishSession(){
     saveState();
     updateFinishedDates(dateKey);
   }
+  try{
+    const saved = !!session.isToday;
+    if(typeof fkTrack === "function") fkTrack("workout_finish", { completed: session.completed.length, total: session.items.length, saved, too_short: !!session.tooShort,
+      makeup: !!session.makeup, duration_min: Math.round((Date.now() - (Number(session.startedAt) || Date.now())) / 60000), volume_kg: Math.round((session.volume || 0) / 100) * 100 });
+    if(window.FKFeedback && typeof FKFeedback.afterWorkout === "function") FKFeedback.afterWorkout(saved);   // nút "Góp ý" nổi + NPS (sau buổi thứ 5)
+  }catch(e){}
   const saveNote = session.tooShort ? "" : session.makeup ? " · Đã lưu (tập bù) vào nhật ký hôm nay" : session.isToday ? " · Đã lưu vào nhật ký" : " · Chế độ xem trước, chưa lưu";
   openSheet(`
     <div style="text-align:center;padding:16px 0;">
@@ -3676,6 +3899,8 @@ function init(){
    --------------------------------------------------------------------- */
 function fkHandleBack(){
   if($("#sheet-backdrop") && $("#sheet-backdrop").classList.contains("open")){ closeSheet(); return true; }
+  const ready = $("#ob-ready"); if(ready && ready.classList.contains("open") && typeof ready._later === "function"){ ready._later(); return true; }
+  const ob = $("#onboarding"); if(ob && ob.classList.contains("open")){ $("#onboard-back").click(); return true; }
   const auth = $("#auth"); if(auth && !auth.hidden && getComputedStyle(auth).display!=="none") return false;
   const cur = ($(".screen.active")||{}).id || "";
   const name = cur.replace("screen-","");
@@ -3683,7 +3908,10 @@ function fkHandleBack(){
   if(name && name!=="home"){ goto("home"); return true; }
   return false;
 }
-document.addEventListener("keydown", e=>{ if(e.key==="Escape" && $("#sheet-backdrop").classList.contains("open")) closeSheet(); });
+document.addEventListener("keydown", e=>{
+  if(e.key==="Escape" && $("#sheet-backdrop").classList.contains("open")){ closeSheet(); return; }
+  const ready = $("#ob-ready"); if(e.key==="Escape" && ready && ready.classList.contains("open") && typeof ready._later === "function") ready._later();
+});
 (function(){
   try{
     const App = window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.App;

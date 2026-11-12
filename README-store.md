@@ -151,6 +151,8 @@ Email liên hệ trong file đang là email của bạn. Có thể đổi sang e
 
 - **Thu thập:** Email, Tên (để tạo tài khoản, chức năng app). Nội dung do người dùng tạo: ghi chú, lịch tập (chức năng app). Số điện thoại: chỉ khi PT tự nhập cho học viên.
 - **Không** dùng cho quảng cáo, **không** bán, **không** theo dõi người dùng (tracking: No).
+- **Thống kê sử dụng ẩn danh (13/11/2026):** tuỳ chọn, mặc định tắt, chỉ khi người dùng đồng ý → khai "App interactions / Product Interaction — Analytics, không liên kết danh tính" (chi tiết: docs/STORE-COMPLIANCE.md, docs/ANALYTICS.md).
+- **Góp ý & NPS trong app:** khai "Other user-generated content" (không gắn tài khoản; liên hệ chỉ khi người dùng cho phép) — docs/FEEDBACK.md.
 - Dữ liệu được mã hoá khi truyền: Yes (Firebase dùng HTTPS).
 - Người dùng có thể yêu cầu xoá: Yes, có nút Xoá tài khoản trong app.
 - Dữ liệu sức khoẻ (cân nặng, calo, giấc ngủ): **chỉ lưu trên máy, không thu thập lên máy chủ.**

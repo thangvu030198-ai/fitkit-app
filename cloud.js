@@ -412,6 +412,29 @@ const cloud = (() => {
     },
   };
 
+  /* ---------------- Góp ý (feedback) — hạ tầng riêng ---------------- */
+  function authTrack(ev, method){ try{ if(typeof fkTrack === "function") fkTrack(ev, { method }); }catch(e){} }
+  const DEMO_FB = "fitkit_cloud_demo_feedback";
+  const demoFeedback = {
+    _read(){ try{ const a = JSON.parse(localStorage.getItem(DEMO_FB) || "[]"); return Array.isArray(a) ? a : []; }catch(e){ return []; } },
+    _write(a){ localStorage.setItem(DEMO_FB, JSON.stringify(a.slice(-300))); },
+    add(doc){ const a = demoFeedback._read(); const x = Object.assign({}, doc, { id: rid("fb"), createdAt: now() }); a.push(x); demoFeedback._write(a); return { id: x.id, server: false }; },
+    list(){ return demoFeedback._read().slice().sort((a,b)=> (b.createdAt||0) - (a.createdAt||0)); },
+    setStatus(id, status){ const a = demoFeedback._read(); const x = a.find(f=> f.id === id); if(x){ x.status = status; demoFeedback._write(a); } return !!x; },
+  };
+  let _fbAnonDb = null;
+  /** Firestore để gửi góp ý: đã đăng nhập → db chính; chưa → app PHỤ đăng nhập ẩn danh (cần bật Anonymous trong Firebase Auth) */
+  async function feedbackDb(){
+    if(fb && fb.auth.currentUser) return fb.db;
+    if(_fbAnonDb) return _fbAnonDb;
+    const app2 = (firebase.apps || []).find(a=> a.name === "fk-feedback") || firebase.initializeApp(FIREBASE_CONFIG, "fk-feedback");
+    const a2 = app2.auth();
+    try{ await a2.setPersistence(firebase.auth.Auth.Persistence.NONE); }catch(e){}
+    if(!a2.currentUser) await a2.signInAnonymously();
+    _fbAnonDb = app2.firestore();
+    return _fbAnonDb;
+  }
+
   /* =====================================================================
      API CÔNG KHAI
      ===================================================================== */
@@ -439,11 +462,12 @@ const cloud = (() => {
       return ready;
     },
 
-    signUp: wrap(async (email, pw, name)=>{ await engine.signUp(email, pw, name); emit(); return user; }),
-    signIn: wrap(async (email, pw)=>{ await engine.signIn(email, pw); emit(); return user; }),
-    signInWithGoogle: wrap(async ()=>{ await engine.signInSocial("google"); emit(); return user; }),
-    signInWithFacebook: wrap(async ()=>{ await engine.signInSocial("facebook"); emit(); return user; }),
-    signInWithApple: wrap(async ()=>{ await engine.signInSocial("apple"); emit(); return user; }),
+    // Thống kê ẩn danh (analytics.js): chỉ ghi PHƯƠNG THỨC đăng nhập — không email/uid; tắt đồng ý → fkTrack bỏ qua
+    signUp: wrap(async (email, pw, name)=>{ await engine.signUp(email, pw, name); emit(); authTrack("signup", "email"); return user; }),
+    signIn: wrap(async (email, pw)=>{ await engine.signIn(email, pw); emit(); authTrack("login", "email"); return user; }),
+    signInWithGoogle: wrap(async ()=>{ await engine.signInSocial("google"); emit(); authTrack("login", "google"); return user; }),
+    signInWithFacebook: wrap(async ()=>{ await engine.signInSocial("facebook"); emit(); authTrack("login", "facebook"); return user; }),
+    signInWithApple: wrap(async ()=>{ await engine.signInSocial("apple"); emit(); authTrack("login", "apple"); return user; }),
     get isSocialUser(){ return !!(profile && profile.provider && profile.provider!=="password"); },
     signOut: wrap(async ()=>{ await engine.signOut(); blockCache = null; emit(); }),
     resetPassword: wrap(email=> engine.resetPassword(email)),
@@ -511,6 +535,30 @@ const cloud = (() => {
     /** Email đã xác minh? (lời mời PT theo email cần email đã xác minh — QS-14) */
     get emailVerified(){ try{ return mode !== "firebase" || !!(fb && fb.auth.currentUser && fb.auth.currentUser.emailVerified); }catch(e){ return false; } },
     sendVerifyEmail: wrap(async ()=>{ if(mode === "firebase" && fb && fb.auth.currentUser) await fb.auth.currentUser.sendEmailVerification(); return true; }),
+
+    /* ---- Góp ý & NPS (feedback.js · docs/FEEDBACK.md) ----
+       Firestore `feedback/{id}`: CHỈ TẠO (rules kiểm trường/kích thước), đọc chỉ quản trị (support.tickets).
+       Không lưu uid: chưa đăng nhập → đăng nhập ẩn danh trên 1 app Firebase PHỤ ("fk-feedback") để không đổi phiên của app.
+       Chế độ demo → lưu "máy chủ giả" trên máy này (bảng quản trị demo đọc được). Lỗi mạng → ném lỗi để feedback.js xếp hàng offline. */
+    feedback: {
+      submit: wrap(async doc=>{
+        if(mode !== "firebase") return demoFeedback.add(doc);
+        const db = await feedbackDb();
+        const ref = await db.collection("feedback").add(Object.assign({}, doc, { createdAt: firebase.firestore.FieldValue.serverTimestamp() }));
+        return { id: ref.id, server: true };
+      }),
+      list: wrap(async (limit)=>{
+        if(mode !== "firebase") return demoFeedback.list();
+        const snap = await fb.db.collection("feedback").orderBy("createdAt", "desc").limit(Math.min(500, Number(limit) || 300)).get();
+        return snap.docs.map(d=>{ const x = d.data() || {}; const c = x.createdAt; return Object.assign({}, x, { id: d.id, createdAt: c && c.toMillis ? c.toMillis() : Number(c) || 0 }); });
+      }),
+      setStatus: wrap(async (id, status)=>{
+        if(!["new", "seen", "done"].includes(status)) throw new Error("Trạng thái không hợp lệ.");
+        if(mode !== "firebase") return demoFeedback.setStatus(id, status);
+        await fb.db.collection("feedback").doc(String(id)).update({ status });
+        return true;
+      }),
+    },
 
     listSessions: wrap(async cid=> (await engine.listSessions(cid)).sort((a,b)=> (a.date+a.time).localeCompare(b.date+b.time))),
     saveSession: wrap((cid, s)=> engine.saveSession(cid, s)),

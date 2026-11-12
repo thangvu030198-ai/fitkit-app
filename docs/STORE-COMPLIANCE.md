@@ -86,7 +86,7 @@ Bằng chứng trong code giúp qua 4.2:
   - [ĐẠT khi deploy] Dọn dữ liệu còn sót khi user bị xoá ở bất kỳ đâu: `cleanupDeletedUser`.
 
 ### 5.1.2 Sử dụng & chia sẻ dữ liệu
-- [ĐẠT] Không quảng cáo, không SDK phân tích/tracking → App Tracking Transparency **không cần**; trả lời "Tracking: No".
+- [ĐẠT] Không quảng cáo. **13/11/2026:** có thống kê sử dụng ẩn danh **tuỳ chọn, mặc định tắt, chỉ bật khi người dùng đồng ý** (analytics.js · docs/ANALYTICS.md): không IDFA, không kết hợp dữ liệu bên thứ ba để quảng cáo, mã người dùng chỉ gửi dạng băm → **không phải "tracking"** theo định nghĩa của Apple → App Tracking Transparency **không cần**; vẫn trả lời "Tracking: No". Nếu chủ app bật Firebase Analytics trên iOS native, giữ `allow_ad_personalization_signals=false` và không thêm AdSupport.framework.
 - [CẦN LÀM] (i) AI bên thứ ba — mục 7 bảng trên.
 
 ### 5.1.3 Sức khoẻ & nghiên cứu sức khoẻ
@@ -126,7 +126,9 @@ Bằng chứng trong code giúp qua 4.2:
 | Health & Fitness → Health | Có — PAR-Q / số đo **khi học viên chọn chia sẻ với PT**; và khi người dùng tự bật phân tích AI (gửi tới nhà cung cấp AI) | Có | Không | App Functionality |
 | Identifiers → User ID | Có (Firebase UID) | Có | Không | App Functionality |
 | Identifiers → Device ID | Chỉ khi bật thông báo đẩy FCM | Có | Không | App Functionality |
-| Usage Data, Diagnostics, Location (chính xác/ước lượng), Financial Info (số thẻ/tài khoản), Contacts, Browsing | Không | — | — | — |
+| Usage Data → Product Interaction | **Có — chỉ khi người dùng bật "Thống kê sử dụng ẩn danh"** và chủ app đã cấu hình Firebase Analytics / PostHog (13/11/2026) | **Không** (mã người dùng băm một chiều, không tên/email) | Không | Analytics |
+| User Content → Other User Content (góp ý, điểm NPS 0–10, ảnh chụp màn hình tuỳ chọn) | Có — khi người dùng gửi Góp ý / đánh giá (13/11/2026) | **Không** (không lưu uid; email/SĐT chỉ khi người dùng cho phép liên hệ) | Không | App Functionality, Customer Support |
+| Usage Data → Advertising Data / Other, Diagnostics, Location (chính xác/ước lượng), Financial Info (số thẻ/tài khoản), Contacts, Browsing | Không | — | — | — |
 
 Ghi chú: thanh toán chuyển khoản/VietQR do người dùng tự chuyển — app **không** thu số thẻ/số tài khoản người mua. Dữ liệu chỉ nằm trên thiết bị (hồ sơ cơ thể, nhật ký, ảnh tiến trình chưa chia sẻ, sàng lọc sức khoẻ chưa chia sẻ) **không** tính là "thu thập".
 
@@ -166,11 +168,13 @@ Từ 31/08/2026: app mới & cập nhật phải target **API 36**. `build-andro
 | Messages → Other in-app messages | Có (**chat PT ↔ học viên + ảnh**, câu hỏi gửi PT, ghi chú) | Tuỳ chọn | Không | App functionality | Không |
 | App activity → Other user-generated content | Có (routine, đánh giá, bình luận, review sự kiện, lịch tập, yêu cầu hỗ trợ, báo cáo) | Tuỳ chọn | Không | App functionality | Routine, đánh giá, bình luận, review: có |
 | Device or other IDs | Chỉ khi bật thông báo đẩy FCM | Tuỳ chọn | Không | App functionality | Không |
+| App activity → **App interactions** | Có — **chỉ khi người dùng bật Thống kê sử dụng ẩn danh** (mặc định tắt) và chủ app cấu hình Firebase Analytics / PostHog | Tuỳ chọn | Không | Analytics | Không |
+| App activity → Other user-generated content (**góp ý, điểm NPS, ảnh chụp màn hình tự đính kèm**) | Có (13/11/2026) | Tuỳ chọn | Không | App functionality, Analytics (cải thiện sản phẩm) | Không |
 | Location, Contacts, Calendar, Audio, Files & docs, Web browsing, App info & performance | **Không** | — | — | — | — |
 
 **Xoá dữ liệu**: xoá tài khoản (app hoặc URL) xoá mọi dòng trên, **trừ** đơn hàng/quà được giữ dạng ẩn danh (bỏ tên, SĐT, địa chỉ) tối đa 10 năm cho kế toán — ghi đúng như vậy ở câu hỏi "Data deletion" và privacy-policy.html §9–10.
 Không khai báo: dữ liệu chỉ lưu trên máy (hồ sơ cơ thể, nhật ký tập/ăn/ngủ, ảnh tiến trình chưa chia sẻ, InBody, sàng lọc sức khoẻ chưa chia sẻ). Sao lưu Google Drive bị ẩn trên bản Android (pt.js `renderAccountCard`) — nếu bật lại phải khai báo thêm.
-Lưu ý: nếu thêm Firebase Analytics / Crashlytics → khai báo App interactions, Crash logs.
+Lưu ý: Firebase Analytics / PostHog (13/11/2026) đã khai ở dòng "App interactions" (tuỳ chọn, có đồng ý). Nếu thêm Crashlytics → khai báo thêm Crash logs.
 
 ### 2.3 Health apps declaration (App content → Health apps) — [CẦN LÀM]
 - Chọn: **Activity and fitness** (tập luyện, theo dõi buổi tập), **Nutrition and weight management** (calo, macro, cân nặng), **Sleep management** (nhật ký giấc ngủ). Có màn sàng lọc an toàn có xét thai kỳ — nếu Play hỏi về sức khoẻ phụ nữ/thai kỳ, trả lời là lời khuyên an toàn khi tập, **không** phải công cụ theo dõi thai kỳ.
@@ -210,7 +214,7 @@ Play yêu cầu app có tính năng tạo nội dung bằng AI cho phép ngườ
 | Không bắt đăng nhập cho tính năng cá nhân | `pt.js` màn chào "Dùng ngay" | ĐẠT |
 | Privacy policy trong app | `pt.js` `openPrivacySheet` + link đầy đủ (health-safety.js) | ĐẠT |
 | Miễn trừ y tế + sàng lọc | `health-safety.js` | ĐẠT khi tích hợp |
-| Không quảng cáo / tracking | Không có SDK quảng cáo/analytics trong index.html | ĐẠT |
+| Không quảng cáo / tracking | Không SDK quảng cáo; thống kê ẩn danh (analytics.js) **mặc định tắt**, SDK chỉ tải sau khi đồng ý, tôn trọng Do Not Track/GPC, không PII | ĐẠT |
 | AI bên thứ ba | `app.js` `openAiSettings`, `callVisionAI` | Thiếu đồng ý rõ ràng + báo cáo |
 | Rules Firestore | `firestore.rules` `users/{uid}` chỉ `get`, không email / SĐT (QS-17) | ĐẠT khi publish |
 | Target API Android | `build-android.yml` đặt compile/targetSdk 36 + JDK 21 | ĐẠT (kiểm bằng bản build) |

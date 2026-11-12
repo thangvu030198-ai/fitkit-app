@@ -1,0 +1,2108 @@
+{
+  "_doc": "Chuỗi video ngắn 9:16 TapEasy (TikTok/Reels/Shorts). Mỗi short = các nhịp (beats): say = lời đọc TTS (số viết bằng chữ cho dễ đọc), cap = phụ đề hiển thị (số viết bằng chữ số, cùng ý), h = tiêu đề động, v = hình (thẻ đồ hoạ / màn app thật / ảnh). engine.js tính thời lượng theo lời đọc thật. Sửa ở đây → node scripts/shorts/prep.js. Xem docs/SHORTS.md.",
+  "version": 1,
+  "fps": 30,
+  "w": 1080,
+  "h": 1920,
+  "wps": 2.4,
+  "voice": {
+    "model": "minimax-speech-2.8-turbo",
+    "voice": "Deep_Voice_Man",
+    "style": "nam, trầm ấm, tự tin, tốc độ vừa"
+  },
+  "qr": "assets/zalo-community-qr.jpg",
+  "end_card": {
+    "dur": 2.8,
+    "title": "Tải miễn phí trong cộng đồng TapEasy",
+    "sub": "Quét mã QR · nhóm Zalo TapEasy Cộng Đồng",
+    "say": "Quét mã, tải miễn phí nhé!"
+  },
+  "editorial": {
+    "line": "Tập đúng · Ăn đúng · Ngủ đúng — kiến thức ngắn, có nguồn, rồi cho thấy TapEasy làm giúp trong 1 chạm.",
+    "pillars": {
+      "kien-thuc": "Kiến thức có nguồn (calo, đạm, giấc ngủ) — xây uy tín, dễ lưu/chia sẻ",
+      "app-demo": "Demo giao diện thật — cho thấy app làm được gì",
+      "hanh-trinh": "Hành trình 12 tuần bằng biểu đồ trong app — ví dụ minh hoạ, không ảnh người thật",
+      "myth": "Phá bẫy phổ biến — hook mạnh, nhiều bình luận",
+      "teaser": "Sắp ra mắt — giữ chân người theo dõi"
+    },
+    "rules": [
+      "Hook (câu hỏi/con số) hiện ngay khung đầu, xong trước 1,5 s",
+      "Mỗi 2,5 s có điều mới trên hình (cắt cảnh, bước thẻ, nhấn)",
+      "Số liệu sức khoẻ có dòng nguồn; câu chữ dè dặt, không hứa hẹn kết quả",
+      "Không ảnh người thật trước–sau; số liệu hành trình ghi rõ ví dụ minh hoạ",
+      "Không tên/ảnh người nổi tiếng hay thương hiệu; không URL — CTA duy nhất là QR cộng đồng Zalo"
+    ]
+  },
+  "shorts": [
+    {
+      "id": "bmr-tdee",
+      "n": 1,
+      "pillar": "kien-thuc",
+      "title": "Cách tính BMR & TDEE chính xác",
+      "kicker": "KIẾN THỨC · 01",
+      "hook": [
+        "Bạn cần ăn",
+        "bao nhiêu calo?"
+      ],
+      "bg": "people:hero-workout-1",
+      "sources": "Nguồn: Mifflin 1990; Frankenfield 2005",
+      "disclaimer": "Công thức ước tính (sai số ~±10%) · Tham khảo, không thay tư vấn y tế",
+      "example": {
+        "gender": "male",
+        "age": 27,
+        "height": 172,
+        "weight": 70,
+        "activity": "moderate",
+        "bmr": 1645,
+        "tdee": 2550,
+        "lose": 2091,
+        "gain": 2856
+      },
+      "beats": [
+        {
+          "say": "Bạn cần ăn bao nhiêu calo mỗi ngày?",
+          "h": [
+            "Bạn cần ăn",
+            "bao nhiêu calo?"
+          ],
+          "v": [
+            {
+              "k": "img",
+              "src": "people:hero-workout-1",
+              "w": 1
+            },
+            {
+              "k": "duo",
+              "a": {
+                "t": "BMR",
+                "s": "đốt khi nghỉ"
+              },
+              "b": {
+                "t": "TDEE",
+                "s": "tổng cả ngày"
+              },
+              "w": 1
+            }
+          ]
+        },
+        {
+          "say": "BMR là năng lượng đốt khi nghỉ, tính bằng công thức Mifflin St Jeor.",
+          "cap": "BMR là năng lượng đốt khi nghỉ, tính bằng công thức Mifflin–St Jeor.",
+          "h": [
+            "BMR",
+            "Mifflin–St Jeor"
+          ],
+          "v": {
+            "k": "formula",
+            "title": "BMR (kcal/ngày)",
+            "lines": [
+              "10 × cân nặng (kg)",
+              "+ 6,25 × chiều cao (cm)",
+              "− 5 × tuổi",
+              "+ 5 (nam)  ·  − 161 (nữ)"
+            ]
+          }
+        },
+        {
+          "say": "Ví dụ nam hai bảy tuổi, cao một bảy hai, nặng bảy mươi ký: BMR một nghìn sáu trăm bốn lăm.",
+          "cap": "Ví dụ: nam 27 tuổi, cao 172 cm, nặng 70 kg → BMR = 1.645 kcal.",
+          "h": [
+            "Ví dụ: nam",
+            "27 tuổi · 70 kg"
+          ],
+          "v": {
+            "k": "calc",
+            "title": "Nam · 27 tuổi · 172 cm · 70 kg",
+            "rows": [
+              [
+                "10 × 70",
+                "700"
+              ],
+              [
+                "6,25 × 172",
+                "1.075"
+              ],
+              [
+                "− 5 × 27",
+                "−135"
+              ],
+              [
+                "nam",
+                "+5"
+              ]
+            ],
+            "total": {
+              "l": "BMR",
+              "v": 1645,
+              "suf": " kcal"
+            }
+          }
+        },
+        {
+          "say": "Nhân hệ số vận động: tập ba đến năm buổi một tuần là một phẩy năm lăm.",
+          "cap": "Nhân hệ số vận động: tập 3–5 buổi/tuần là ×1,55.",
+          "h": [
+            "TDEE =",
+            "BMR × vận động"
+          ],
+          "v": {
+            "k": "bars",
+            "title": "Hệ số vận động",
+            "rows": [
+              [
+                "Ít vận động",
+                1.2
+              ],
+              [
+                "1–3 buổi/tuần",
+                1.375
+              ],
+              [
+                "3–5 buổi/tuần",
+                1.55
+              ],
+              [
+                "6–7 buổi/tuần",
+                1.725
+              ],
+              [
+                "Lao động nặng",
+                1.9
+              ]
+            ],
+            "hi": 2,
+            "fmt": "×{v}",
+            "dec": 3,
+            "max": 2
+          }
+        },
+        {
+          "say": "Ra TDEE khoảng hai nghìn năm trăm rưởi calo. Giảm mỡ ăn thấp hơn, tăng cơ cao hơn.",
+          "cap": "TDEE ≈ 2.550 kcal. Giảm mỡ ăn thấp hơn, tăng cơ cao hơn.",
+          "h": [
+            "TDEE ≈",
+            "2.550 kcal"
+          ],
+          "v": [
+            {
+              "k": "stat",
+              "v": 2550,
+              "suf": " kcal",
+              "label": "TDEE · ăn để giữ cân",
+              "sub": "1.645 × 1,55",
+              "w": 1
+            },
+            {
+              "k": "bars",
+              "title": "Calo mục tiêu (app)",
+              "rows": [
+                [
+                  "Giảm mỡ −18%",
+                  2091
+                ],
+                [
+                  "Duy trì",
+                  2550
+                ],
+                [
+                  "Tăng cơ +12%",
+                  2856
+                ]
+              ],
+              "hi": -1,
+              "fmt": "{v} kcal",
+              "dec": 0,
+              "max": 3000,
+              "w": 1.2
+            }
+          ]
+        },
+        {
+          "say": "Lười tính tay? Nhập số đo vào TapEasy, app tự tính trong một chạm.",
+          "cap": "Lười tính tay? Nhập số đo vào TapEasy, app tự tính trong 1 chạm.",
+          "h": [
+            "App tự tính",
+            "trong 1 chạm"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "ob2",
+              "w": 1
+            },
+            {
+              "k": "phone",
+              "shot": "ob3",
+              "w": 1
+            },
+            {
+              "k": "phone",
+              "shot": "nutrition",
+              "scroll": 300,
+              "w": 1.2
+            }
+          ]
+        }
+      ],
+      "cover": "BMR & TDEE: tính đúng trong 30 giây",
+      "caption": "Bạn cần ăn bao nhiêu calo mỗi ngày? Tính BMR theo Mifflin–St Jeor, nhân hệ số vận động là ra TDEE. Lưu lại để tính cho cả nhà. Tham khảo, không thay tư vấn y tế.",
+      "hashtags": [
+        "#TapEasy",
+        "#TDEE",
+        "#BMR",
+        "#tinhcalo",
+        "#giammo",
+        "#tangco",
+        "#kienthucgym"
+      ]
+    },
+    {
+      "id": "tang-co-giam-mo",
+      "n": 2,
+      "pillar": "kien-thuc",
+      "title": "Lịch tập + ăn theo mục tiêu: tăng cơ vs giảm mỡ",
+      "kicker": "KIẾN THỨC · 02",
+      "hook": [
+        "Tăng cơ hay giảm mỡ:",
+        "khác nhau ở đâu?"
+      ],
+      "bg": "people:hero-workout-2",
+      "sources": "Nguồn: ISSN 2017; Helms 2014; Iraki 2019",
+      "disclaimer": "Tham khảo, không thay tư vấn y tế/dinh dưỡng",
+      "beats": [
+        {
+          "say": "Tăng cơ hay giảm mỡ, khác nhau ở đâu?",
+          "h": [
+            "Tăng cơ hay giảm mỡ:",
+            "khác nhau ở đâu?"
+          ],
+          "v": [
+            {
+              "k": "versus",
+              "a": {
+                "t": "TĂNG CƠ",
+                "img": "people:hero-m-2"
+              },
+              "b": {
+                "t": "GIẢM MỠ",
+                "img": "people:hero-f-2"
+              }
+            }
+          ]
+        },
+        {
+          "say": "Tăng cơ: ăn dư năm đến mười lăm phần trăm, tăng chậm khoảng một ký mỗi tháng.",
+          "cap": "Tăng cơ: ăn dư 5–15% calo, tăng chậm khoảng 1 kg mỗi tháng.",
+          "h": [
+            "Tăng cơ:",
+            "dư 5–15% calo"
+          ],
+          "v": [
+            {
+              "k": "stat",
+              "pre": "+5–",
+              "v": 15,
+              "suf": "%",
+              "label": "calo so với TDEE",
+              "sub": "≈ 0,25–0,5% cân nặng/tuần"
+            },
+            {
+              "k": "img",
+              "src": "people:hero-workout-4"
+            }
+          ]
+        },
+        {
+          "say": "Giảm mỡ: thiếu mười đến hai lăm phần trăm, giảm nửa đến một phần trăm cân nặng mỗi tuần.",
+          "cap": "Giảm mỡ: thiếu 10–25% calo, giảm 0,5–1% cân nặng mỗi tuần.",
+          "h": [
+            "Giảm mỡ:",
+            "thiếu 10–25% calo"
+          ],
+          "v": [
+            {
+              "k": "stat",
+              "pre": "−10–",
+              "v": 25,
+              "suf": "%",
+              "label": "calo so với TDEE",
+              "sub": "≈ 0,5–1% cân nặng/tuần"
+            },
+            {
+              "k": "img",
+              "src": "people:muscle-cardio"
+            }
+          ]
+        },
+        {
+          "say": "Cả hai cần một phẩy sáu đến hai phẩy hai gam đạm mỗi ký, giảm mỡ lấy mức cao.",
+          "cap": "Cả hai cần 1,6–2,2 g đạm mỗi kg cân nặng, giảm mỡ lấy mức cao.",
+          "h": [
+            "Đạm:",
+            "1,6–2,2 g/kg"
+          ],
+          "v": {
+            "k": "compare",
+            "title": "Ví dụ người 70 kg",
+            "rows": [
+              [
+                "Tăng cơ",
+                "~112–140 g đạm"
+              ],
+              [
+                "Giảm mỡ",
+                "~140–154 g đạm"
+              ]
+            ],
+            "note": "70 × 1,6–2,2 g"
+          }
+        },
+        {
+          "say": "Lịch mẫu: bốn buổi tạ mỗi tuần. Giảm mỡ vẫn tập tạ để giữ cơ.",
+          "cap": "Lịch mẫu: 4 buổi tạ mỗi tuần. Giảm mỡ vẫn tập tạ để giữ cơ.",
+          "h": [
+            "Lịch mẫu",
+            "4 buổi/tuần"
+          ],
+          "v": [
+            {
+              "k": "week",
+              "title": "Thân trên / thân dưới",
+              "days": [
+                [
+                  "T2",
+                  "Thân trên",
+                  "a"
+                ],
+                [
+                  "T3",
+                  "Thân dưới",
+                  "a"
+                ],
+                [
+                  "T4",
+                  "Nghỉ · đi bộ",
+                  "r"
+                ],
+                [
+                  "T5",
+                  "Thân trên",
+                  "a"
+                ],
+                [
+                  "T6",
+                  "Thân dưới",
+                  "a"
+                ],
+                [
+                  "T7",
+                  "Cardio nhẹ",
+                  "c"
+                ],
+                [
+                  "CN",
+                  "Nghỉ",
+                  "r"
+                ]
+              ],
+              "w": 1.3
+            },
+            {
+              "k": "phone",
+              "shot": "tplDetail",
+              "w": 1
+            }
+          ]
+        },
+        {
+          "say": "TapEasy tự lên calo, đạm và giáo án theo mục tiêu của bạn.",
+          "h": [
+            "TapEasy lên sẵn",
+            "theo mục tiêu"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "templates",
+              "w": 1
+            },
+            {
+              "k": "phone",
+              "shot": "nutrition",
+              "w": 1
+            }
+          ]
+        }
+      ],
+      "cover": "Tăng cơ vs giảm mỡ: ăn & tập khác gì?",
+      "caption": "Tăng cơ: dư 5–15% calo. Giảm mỡ: thiếu 10–25%. Đạm 1,6–2,2 g/kg cho cả hai, và vẫn tập tạ khi giảm mỡ. Bạn đang ở giai đoạn nào? Comment nhé!",
+      "hashtags": [
+        "#TapEasy",
+        "#tangco",
+        "#giammo",
+        "#lichtap",
+        "#dinhduong",
+        "#gymvietnam"
+      ]
+    },
+    {
+      "id": "giac-ngu",
+      "n": 3,
+      "pillar": "kien-thuc",
+      "title": "Tại sao giấc ngủ quan trọng khi tập",
+      "kicker": "KIẾN THỨC · 03",
+      "hook": [
+        "Tập chăm",
+        "mà ngủ 5 tiếng?"
+      ],
+      "bg": "people:sleep-hero",
+      "sources": "Nguồn: Watson 2015 (AASM/SRS); Fullagar 2015; Nedeltcheva 2010",
+      "disclaimer": "Mất ngủ kéo dài hãy gặp bác sĩ · Tham khảo, không thay tư vấn y tế",
+      "beats": [
+        {
+          "say": "Tập chăm mà mỗi đêm chỉ ngủ năm tiếng? Bạn đang phí công đấy.",
+          "cap": "Tập chăm mà mỗi đêm chỉ ngủ 5 tiếng? Bạn đang phí công đấy.",
+          "h": [
+            "Tập chăm",
+            "mà ngủ 5 tiếng?"
+          ],
+          "v": [
+            {
+              "k": "img",
+              "src": "people:sleep-hero"
+            },
+            {
+              "k": "stat",
+              "v": 5,
+              "suf": " giờ",
+              "label": "mỗi đêm — chưa đủ",
+              "warn": true
+            }
+          ]
+        },
+        {
+          "say": "Người lớn nên ngủ bảy đến chín tiếng mỗi đêm.",
+          "cap": "Người lớn nên ngủ 7–9 tiếng mỗi đêm.",
+          "h": [
+            "Người lớn cần",
+            "7–9 giờ/đêm"
+          ],
+          "v": {
+            "k": "stat",
+            "pre": "7–",
+            "v": 9,
+            "suf": " giờ",
+            "label": "khuyến nghị cho người trưởng thành",
+            "sub": "AASM / SRS 2015"
+          }
+        },
+        {
+          "say": "Lúc ngủ là lúc cơ thể phục hồi. Ngủ thiếu, sức tập và sự tập trung đều giảm.",
+          "h": [
+            "Ngủ là lúc",
+            "cơ thể phục hồi"
+          ],
+          "v": {
+            "k": "list",
+            "title": "Khi ngủ đủ",
+            "items": [
+              "Cơ & thần kinh phục hồi sau buổi tập",
+              "Hormone tăng trưởng tiết nhiều khi ngủ sâu",
+              "Ngủ thiếu: sức bền, tập trung giảm"
+            ]
+          }
+        },
+        {
+          "say": "Một nghiên cứu nhỏ: cùng ăn kiêng, ngủ năm tiếng rưỡi giảm ít mỡ hơn hẳn ngủ tám tiếng rưỡi.",
+          "cap": "Một nghiên cứu nhỏ: cùng ăn kiêng, ngủ 5,5 giờ giảm ít mỡ hơn hẳn ngủ 8,5 giờ.",
+          "h": [
+            "Ngủ thiếu",
+            "khi ăn kiêng"
+          ],
+          "v": {
+            "k": "bars",
+            "title": "Mỡ giảm sau 14 ngày ăn kiêng",
+            "rows": [
+              [
+                "Ngủ 8,5 giờ",
+                1.4
+              ],
+              [
+                "Ngủ 5,5 giờ",
+                0.6
+              ]
+            ],
+            "hi": 0,
+            "fmt": "{v} kg",
+            "dec": 1,
+            "max": 1.6,
+            "note": "Nedeltcheva 2010 · 10 người"
+          }
+        },
+        {
+          "say": "TapEasy giúp ghi giờ ngủ, chất lượng ngủ, xem xu hướng cả tuần.",
+          "h": [
+            "Ghi giấc ngủ",
+            "ngay trong app"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "sleep",
+              "w": 1
+            },
+            {
+              "k": "phone",
+              "shot": "sleep",
+              "scroll": 420,
+              "w": 1
+            }
+          ]
+        },
+        {
+          "say": "Mẹo: dậy đúng giờ mỗi ngày, tránh cà phê buổi chiều.",
+          "h": [
+            "Mẹo nhỏ",
+            "ngủ ngon hơn"
+          ],
+          "v": {
+            "k": "list",
+            "title": "Mẹo dễ làm",
+            "items": [
+              "Ngủ & dậy cùng giờ, kể cả cuối tuần",
+              "Hạn chế cà phê sau 14 giờ",
+              "Tắt màn hình 30 phút trước khi ngủ"
+            ]
+          }
+        }
+      ],
+      "cover": "Ngủ 5 tiếng = phí công tập?",
+      "caption": "Người lớn nên ngủ 7–9 giờ/đêm. Ngủ là lúc cơ thể phục hồi; ngủ thiếu khi ăn kiêng có thể làm giảm ít mỡ hơn. Tối nay bạn ngủ mấy tiếng? Tham khảo, không thay tư vấn y tế.",
+      "hashtags": [
+        "#TapEasy",
+        "#giacngu",
+        "#phuchoi",
+        "#suckhoe",
+        "#gymvietnam",
+        "#kienthucgym"
+      ]
+    },
+    {
+      "id": "sai-lam-calo",
+      "n": 4,
+      "pillar": "kien-thuc",
+      "title": "4 sai lầm khi tính calo",
+      "kicker": "KIẾN THỨC · 04",
+      "hook": [
+        "4 sai lầm",
+        "khi đếm calo"
+      ],
+      "bg": "people:ch-scale",
+      "sources": "Nguồn: USDA FoodData Central; Shcherbina 2017",
+      "disclaimer": "Số liệu làm tròn · Tham khảo, không thay tư vấn dinh dưỡng",
+      "beats": [
+        {
+          "say": "Đếm calo mà mãi không giảm? Kiểm tra bốn lỗi này.",
+          "cap": "Đếm calo mà mãi không giảm? Kiểm tra 4 lỗi này.",
+          "h": [
+            "4 sai lầm",
+            "khi đếm calo"
+          ],
+          "v": [
+            {
+              "k": "img",
+              "src": "people:ch-scale"
+            },
+            {
+              "k": "stat",
+              "v": 4,
+              "suf": " lỗi",
+              "label": "hay gặp nhất"
+            }
+          ]
+        },
+        {
+          "say": "Một: quên dầu và đồ uống. Một muỗng canh dầu đã khoảng một trăm hai mươi calo.",
+          "cap": "1. Quên dầu và đồ uống. 1 muỗng canh dầu ≈ 120 kcal.",
+          "h": [
+            "1. Quên dầu",
+            "& đồ uống"
+          ],
+          "v": {
+            "k": "food",
+            "items": [
+              {
+                "id": "dau-an",
+                "t": "1 muỗng canh dầu",
+                "v": "~120 kcal"
+              },
+              {
+                "id": "nuoc-ngot",
+                "t": "1 lon nước ngọt",
+                "v": "~140 kcal"
+              }
+            ]
+          }
+        },
+        {
+          "say": "Hai: nhầm cân sống và chín. Một trăm gam gạo sống gần gấp ba cơm chín.",
+          "cap": "2. Nhầm cân sống và chín. 100 g gạo sống gần gấp 3 cơm chín.",
+          "h": [
+            "2. Nhầm",
+            "sống & chín"
+          ],
+          "v": {
+            "k": "compare",
+            "title": "Cùng 100 g",
+            "rows": [
+              [
+                "Gạo sống",
+                "~360 kcal"
+              ],
+              [
+                "Cơm chín",
+                "~130 kcal"
+              ]
+            ],
+            "note": "Cân gì thì ghi đúng loại đó"
+          }
+        },
+        {
+          "say": "Ba: chọn mức vận động quá cao, TDEE bị đội lên vài trăm calo.",
+          "cap": "3. Chọn mức vận động quá cao: TDEE đội lên vài trăm calo.",
+          "h": [
+            "3. Vận động",
+            "khai quá cao"
+          ],
+          "v": {
+            "k": "compare",
+            "title": "BMR 1.645 kcal",
+            "rows": [
+              [
+                "× 1,55 (3–5 buổi)",
+                "2.550 kcal"
+              ],
+              [
+                "× 1,725 (6–7 buổi)",
+                "2.838 kcal"
+              ]
+            ],
+            "note": "Chênh ~288 kcal mỗi ngày"
+          }
+        },
+        {
+          "say": "Bốn: ăn bù calo đồng hồ báo đốt. Con số đó chỉ là ước tính.",
+          "h": [
+            "4. Ăn bù",
+            "calo đồng hồ"
+          ],
+          "v": {
+            "k": "stat",
+            "pre": "27–",
+            "v": 93,
+            "suf": "%",
+            "label": "sai số calo đốt (7 thiết bị đeo)",
+            "sub": "Shcherbina 2017"
+          }
+        },
+        {
+          "say": "Với TapEasy, tìm món Việt có sẵn, ghi bữa ăn chỉ vài chạm.",
+          "h": [
+            "Ghi bữa ăn",
+            "món Việt có sẵn"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "addfood",
+              "w": 1
+            },
+            {
+              "k": "phone",
+              "shot": "nutrition",
+              "scroll": 520,
+              "w": 1
+            }
+          ]
+        }
+      ],
+      "cover": "Đếm calo mãi không giảm? 4 lỗi này",
+      "caption": "Quên dầu ăn & đồ uống, nhầm sống/chín, khai vận động quá cao, ăn bù calo đồng hồ — bạn dính lỗi số mấy? Lưu lại để kiểm tra nhé.",
+      "hashtags": [
+        "#TapEasy",
+        "#demcalo",
+        "#giammo",
+        "#ankieng",
+        "#dinhduong",
+        "#meohay"
+      ]
+    },
+    {
+      "id": "protein-bao-nhieu",
+      "n": 5,
+      "pillar": "kien-thuc",
+      "title": "Protein bao nhiêu là đủ?",
+      "kicker": "KIẾN THỨC · 05",
+      "hook": [
+        "Protein",
+        "bao nhiêu là đủ?"
+      ],
+      "bg": "people:muscle-arms",
+      "sources": "Nguồn: ISSN 2017 (Jäger); Morton 2018; USDA",
+      "disclaimer": "Bệnh thận: hỏi bác sĩ trước khi tăng đạm · Tham khảo",
+      "beats": [
+        {
+          "say": "Ăn bao nhiêu đạm mỗi ngày là đủ để lên cơ?",
+          "h": [
+            "Protein",
+            "bao nhiêu là đủ?"
+          ],
+          "v": [
+            {
+              "k": "img",
+              "src": "people:muscle-arms"
+            },
+            {
+              "k": "food",
+              "items": [
+                {
+                  "id": "trung-ga",
+                  "t": "Trứng",
+                  "v": ""
+                },
+                {
+                  "id": "sua-chua-hy-lap",
+                  "t": "Sữa chua",
+                  "v": ""
+                },
+                {
+                  "id": "ca-ro-phi-hap",
+                  "t": "Cá",
+                  "v": ""
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "say": "Người tập tạ cần khoảng một phẩy sáu đến hai phẩy hai gam đạm mỗi ký.",
+          "cap": "Người tập tạ cần khoảng 1,6–2,2 g đạm mỗi kg cân nặng.",
+          "h": [
+            "Người tập:",
+            "1,6–2,2 g/kg"
+          ],
+          "v": {
+            "k": "stat",
+            "pre": "1,6–",
+            "v": 2.2,
+            "dec": 1,
+            "suf": " g/kg",
+            "label": "đạm mỗi ngày cho người tập tạ",
+            "sub": "Ít vận động: ~0,8 g/kg"
+          }
+        },
+        {
+          "say": "Nặng sáu mươi ký: chín mươi sáu đến một trăm ba hai gam mỗi ngày.",
+          "cap": "Nặng 60 kg: 96–132 g đạm mỗi ngày.",
+          "h": [
+            "Người 60 kg:",
+            "96–132 g/ngày"
+          ],
+          "v": {
+            "k": "calc",
+            "title": "Ví dụ 60 kg",
+            "rows": [
+              [
+                "60 × 1,6",
+                "96 g"
+              ],
+              [
+                "60 × 2,2",
+                "132 g"
+              ]
+            ],
+            "total": {
+              "l": "Mỗi ngày",
+              "pre": "96–",
+              "v": 132,
+              "suf": " g"
+            }
+          }
+        },
+        {
+          "say": "Chia đều ba đến bốn bữa, mỗi bữa khoảng hai mươi đến bốn mươi gam.",
+          "cap": "Chia đều 3–4 bữa, mỗi bữa khoảng 20–40 g.",
+          "h": [
+            "Chia đều",
+            "3–4 bữa"
+          ],
+          "v": {
+            "k": "bars",
+            "title": "Ví dụ ~110 g/ngày",
+            "rows": [
+              [
+                "Sáng",
+                25
+              ],
+              [
+                "Trưa",
+                35
+              ],
+              [
+                "Tối",
+                35
+              ],
+              [
+                "Bữa phụ",
+                15
+              ]
+            ],
+            "hi": -1,
+            "fmt": "{v} g",
+            "dec": 0,
+            "max": 40
+          }
+        },
+        {
+          "say": "Nguồn dễ kiếm: trứng, cá, sữa chua, đậu. Một quả trứng khoảng sáu gam đạm.",
+          "cap": "Nguồn dễ kiếm: trứng, cá, sữa chua, đậu. 1 quả trứng ≈ 6 g đạm.",
+          "h": [
+            "Đạm từ",
+            "món quen thuộc"
+          ],
+          "v": {
+            "k": "food",
+            "items": [
+              {
+                "id": "trung-ga",
+                "t": "1 quả trứng",
+                "v": "~6 g"
+              },
+              {
+                "id": "ca-ro-phi-hap",
+                "t": "100 g cá chín",
+                "v": "~26 g"
+              },
+              {
+                "id": "sua-chua-hy-lap",
+                "t": "1 hộp sữa chua Hy Lạp",
+                "v": "~17 g"
+              },
+              {
+                "id": "dau-den",
+                "t": "100 g đậu đen chín",
+                "v": "~9 g"
+              }
+            ]
+          }
+        },
+        {
+          "say": "TapEasy tính sẵn lượng đạm theo cân nặng và mục tiêu của bạn.",
+          "h": [
+            "App tính sẵn",
+            "đạm của bạn"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "nutrition",
+              "w": 1
+            },
+            {
+              "k": "phone",
+              "shot": "recipe",
+              "w": 1
+            }
+          ]
+        }
+      ],
+      "cover": "Protein: bao nhiêu gam là đủ?",
+      "caption": "Người tập tạ: ~1,6–2,2 g đạm/kg/ngày, chia 3–4 bữa (20–40 g/bữa). Trứng, cá, sữa chua, đậu đều là nguồn tốt. Có bệnh thận hãy hỏi bác sĩ trước khi tăng đạm.",
+      "hashtags": [
+        "#TapEasy",
+        "#protein",
+        "#damnaybaonhieu",
+        "#tangco",
+        "#dinhduong",
+        "#kienthucgym"
+      ]
+    },
+    {
+      "id": "demo-ghi-set",
+      "n": 6,
+      "pillar": "app-demo",
+      "title": "Ghi hiệp tập kg × lần + đồng hồ nghỉ",
+      "kicker": "DEMO APP · 06",
+      "hook": [
+        "Ghi hiệp tập",
+        "chỉ 1 chạm"
+      ],
+      "bg": "people:hero-workout-3",
+      "sources": "",
+      "disclaimer": "",
+      "beats": [
+        {
+          "say": "Vẫn ghi buổi tập vào sổ tay? Xem cách ghi trong một chạm.",
+          "cap": "Vẫn ghi buổi tập vào sổ tay? Xem cách ghi trong 1 chạm.",
+          "h": [
+            "Ghi hiệp tập",
+            "chỉ 1 chạm"
+          ],
+          "v": [
+            {
+              "k": "img",
+              "src": "people:hero-workout-3"
+            },
+            {
+              "k": "phone",
+              "shot": "session"
+            }
+          ]
+        },
+        {
+          "say": "Mỗi hiệp có mức tạ, số lần, độ khó. Số buổi trước đã điền sẵn, đúng thì tích là xong.",
+          "h": [
+            "kg × lần × RPE",
+            "điền sẵn"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "session",
+              "focus": [
+                10,
+                520,
+                370,
+                260,
+                1.45
+              ],
+              "w": 1
+            },
+            {
+              "k": "phone",
+              "shot": "sessionSets",
+              "focus": [
+                10,
+                520,
+                370,
+                260,
+                1.45
+              ],
+              "tap": [
+                358,
+                640
+              ],
+              "w": 1
+            }
+          ]
+        },
+        {
+          "say": "Tích xong, đồng hồ nghỉ tự chạy, báo cả khi tắt màn hình.",
+          "h": [
+            "Đồng hồ nghỉ",
+            "tự chạy"
+          ],
+          "v": {
+            "k": "phone",
+            "shot": "rest",
+            "focus": "rest"
+          }
+        },
+        {
+          "say": "Có hiệp khởi động và tính sẵn đĩa tạ mỗi bên, khỏi phải nhẩm.",
+          "h": [
+            "Khởi động",
+            "& tính đĩa tạ"
+          ],
+          "v": {
+            "k": "phone",
+            "shot": "warmup",
+            "scroll": 380
+          }
+        },
+        {
+          "say": "Xem lịch sử từng bài, một RM ước tính tăng dần qua từng tuần.",
+          "cap": "Xem lịch sử từng bài, 1RM ước tính tăng dần qua từng tuần.",
+          "h": [
+            "Lịch sử",
+            "& 1RM ước tính"
+          ],
+          "v": {
+            "k": "phone",
+            "shot": "history"
+          }
+        },
+        {
+          "say": "Đủ sức là app gợi ý tăng tạ cho buổi sau.",
+          "h": [
+            "Đủ sức?",
+            "App gợi ý tăng tạ"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "records"
+            },
+            {
+              "k": "phone",
+              "shot": "exlib",
+              "scroll": 500
+            }
+          ]
+        }
+      ],
+      "cover": "Ghi buổi tập trong 1 chạm",
+      "caption": "Ghi kg × lần × RPE từng hiệp, số buổi trước điền sẵn, đồng hồ nghỉ tự chạy, có hiệp khởi động & tính đĩa tạ. Bỏ sổ tay được rồi! Tải miễn phí trong cộng đồng TapEasy.",
+      "hashtags": [
+        "#TapEasy",
+        "#apptapgym",
+        "#nhatkytap",
+        "#gymvietnam",
+        "#tangco",
+        "#fitness"
+      ]
+    },
+    {
+      "id": "demo-thuc-don",
+      "n": 7,
+      "pillar": "app-demo",
+      "title": "Thực đơn món Việt + công thức",
+      "kicker": "DEMO APP · 07",
+      "hook": [
+        "Ăn kiêng",
+        "vẫn toàn món Việt"
+      ],
+      "bg": "people:ev-ws-cooking",
+      "sources": "",
+      "disclaimer": "",
+      "beats": [
+        {
+          "say": "Ăn kiêng mà vẫn muốn món Việt quen thuộc? Xem thực đơn này.",
+          "h": [
+            "Ăn kiêng",
+            "vẫn toàn món Việt"
+          ],
+          "v": [
+            {
+              "k": "food",
+              "items": [
+                {
+                  "id": "pho-ga-nac",
+                  "t": "Phở gà nạc",
+                  "v": ""
+                },
+                {
+                  "id": "goi-cuon",
+                  "t": "Gỏi cuốn",
+                  "v": ""
+                },
+                {
+                  "id": "canh-chua-ca-basa",
+                  "t": "Canh chua cá",
+                  "v": ""
+                }
+              ]
+            },
+            {
+              "k": "food",
+              "items": [
+                {
+                  "id": "banh-mi-ga-xe",
+                  "t": "Bánh mì gà xé",
+                  "v": ""
+                },
+                {
+                  "id": "bun-cha-suat",
+                  "t": "Bún chả",
+                  "v": ""
+                },
+                {
+                  "id": "ga-kho-gung",
+                  "t": "Gà kho gừng",
+                  "v": ""
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "say": "TapEasy lên thực đơn theo đúng lượng calo và mục tiêu của bạn.",
+          "h": [
+            "Thực đơn",
+            "theo calo của bạn"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "nutrition"
+            },
+            {
+              "k": "phone",
+              "shot": "nutrition",
+              "scroll": 700
+            }
+          ]
+        },
+        {
+          "say": "Mỗi món có công thức chi tiết, có cả món nồi chiên không dầu.",
+          "h": [
+            "Công thức",
+            "từng bước"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "recipe"
+            },
+            {
+              "k": "phone",
+              "shot": "recipe",
+              "scroll": 600
+            }
+          ]
+        },
+        {
+          "say": "Ăn chay vẫn có thực đơn đủ đạm.",
+          "h": [
+            "Món chay",
+            "vẫn đủ đạm"
+          ],
+          "v": {
+            "k": "phone",
+            "shot": "recipeVeg"
+          }
+        },
+        {
+          "say": "Không thích món nào? Đổi sang món tương đương chỉ một chạm.",
+          "cap": "Không thích món nào? Đổi sang món tương đương chỉ 1 chạm.",
+          "h": [
+            "Đổi món",
+            "1 chạm"
+          ],
+          "v": {
+            "k": "phone",
+            "shot": "swap"
+          }
+        },
+        {
+          "say": "Và danh sách đi chợ cho cả tuần đã có sẵn.",
+          "h": [
+            "Danh sách",
+            "đi chợ cả tuần"
+          ],
+          "v": {
+            "k": "phone",
+            "shot": "shopping"
+          }
+        }
+      ],
+      "cover": "Ăn kiêng toàn món Việt",
+      "caption": "Thực đơn theo calo & mục tiêu, toàn món Việt quen thuộc, công thức từng bước (có món nồi chiên không dầu, món chay), đổi món 1 chạm, danh sách đi chợ cả tuần.",
+      "hashtags": [
+        "#TapEasy",
+        "#thucdon",
+        "#monviet",
+        "#ankieng",
+        "#eatclean",
+        "#giammo"
+      ]
+    },
+    {
+      "id": "demo-tim-pt",
+      "n": 8,
+      "pillar": "app-demo",
+      "title": "Tìm PT phù hợp & hồ sơ PT",
+      "kicker": "DEMO APP · 08",
+      "hook": [
+        "Tìm PT",
+        "đúng người"
+      ],
+      "bg": "people:pt-khang",
+      "sources": "",
+      "disclaimer": "Ảnh & hồ sơ PT trong video là dữ liệu demo",
+      "beats": [
+        {
+          "say": "Tìm huấn luyện viên cá nhân mà sợ chọn sai người?",
+          "h": [
+            "Tìm PT",
+            "đúng người"
+          ],
+          "v": [
+            {
+              "k": "img",
+              "src": "people:pt-khang"
+            },
+            {
+              "k": "phone",
+              "shot": "findpt"
+            }
+          ]
+        },
+        {
+          "say": "Lọc theo khu vực, chuyên môn và mức giá.",
+          "h": [
+            "Lọc theo",
+            "khu vực & giá"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "findpt",
+              "scroll": 400
+            },
+            {
+              "k": "phone",
+              "shot": "fpfilters"
+            }
+          ]
+        },
+        {
+          "say": "Hồ sơ cho thấy số học viên, số buổi đã dạy, năm kinh nghiệm.",
+          "h": [
+            "Hồ sơ PT",
+            "minh bạch"
+          ],
+          "v": {
+            "k": "phone",
+            "shot": "fpprofile",
+            "seq": true
+          }
+        },
+        {
+          "say": "Đánh giá chỉ đến từ học viên đã tập thật.",
+          "h": [
+            "Đánh giá",
+            "từ người tập thật"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "fpdetails"
+            },
+            {
+              "k": "phone",
+              "shot": "fpdetails",
+              "scroll": 900
+            }
+          ]
+        },
+        {
+          "say": "Bạn là PT? Quản lý học viên, lịch dạy và doanh thu ngay trong app.",
+          "h": [
+            "Bạn là PT?",
+            "Quản lý học viên"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "coach"
+            },
+            {
+              "k": "phone",
+              "shot": "ptcal"
+            },
+            {
+              "k": "phone",
+              "shot": "ptrevenue"
+            }
+          ]
+        }
+      ],
+      "cover": "Tìm PT đúng người, không sợ chọn sai",
+      "caption": "Lọc PT theo khu vực, chuyên môn, mức giá; hồ sơ minh bạch (số học viên, số buổi, năm kinh nghiệm); đánh giá chỉ từ người đã tập thật. PT cũng quản lý học viên & lịch dạy ngay trong app.",
+      "hashtags": [
+        "#TapEasy",
+        "#timPT",
+        "#personaltrainer",
+        "#huanluyenvien",
+        "#gymvietnam",
+        "#PT"
+      ]
+    },
+    {
+      "id": "demo-16-theme",
+      "n": 9,
+      "pillar": "app-demo",
+      "title": "16 giao diện, đổi trong 1 chạm",
+      "kicker": "DEMO APP · 09",
+      "hook": [
+        "16 giao diện",
+        "đổi trong 1 chạm"
+      ],
+      "bg": "",
+      "sources": "",
+      "disclaimer": "",
+      "beats": [
+        {
+          "say": "Chán giao diện cũ? TapEasy có mười sáu giao diện.",
+          "cap": "Chán giao diện cũ? TapEasy có 16 giao diện.",
+          "h": [
+            "16 giao diện",
+            "đổi trong 1 chạm"
+          ],
+          "v": [
+            {
+              "k": "stat",
+              "v": 16,
+              "suf": "",
+              "label": "giao diện · đổi tức thì"
+            },
+            {
+              "k": "phone",
+              "shot": "themepicker",
+              "tap": "pick"
+            }
+          ]
+        },
+        {
+          "say": "Từ Đại dương, Hoàng hôn, Rừng, đến Tím đêm.",
+          "h": [
+            "Tối & dịu mắt"
+          ],
+          "v": {
+            "k": "themes",
+            "shots": [
+              "theme-ocean",
+              "theme-sunset",
+              "theme-forest",
+              "theme-midnight"
+            ],
+            "names": [
+              "Đại dương",
+              "Hoàng hôn",
+              "Rừng",
+              "Tím đêm"
+            ]
+          }
+        },
+        {
+          "say": "Hay Sáng, Aurora, Espresso, Thu Alpine cho ai thích tối giản.",
+          "h": [
+            "Tối giản",
+            "kiểu tạp chí"
+          ],
+          "v": {
+            "k": "themes",
+            "shots": [
+              "theme-light",
+              "theme-aurora",
+              "theme-espresso",
+              "theme-alpine"
+            ],
+            "names": [
+              "Sáng",
+              "Aurora",
+              "Espresso",
+              "Thu Alpine"
+            ]
+          }
+        },
+        {
+          "say": "Thêm Sương Wellness, Sanctuary, Cam năng lượng, Volt, Tím Đêm Pro và Chanh sáng.",
+          "h": [
+            "Nổi bật",
+            "khi tập"
+          ],
+          "v": {
+            "k": "themes",
+            "shots": [
+              "theme-wellness",
+              "theme-sanctuary",
+              "theme-ember",
+              "theme-volt",
+              "theme-violet",
+              "theme-lime"
+            ],
+            "names": [
+              "Sương Wellness",
+              "Sanctuary",
+              "Cam năng lượng",
+              "Volt",
+              "Tím Đêm Pro",
+              "Chanh sáng"
+            ]
+          }
+        },
+        {
+          "say": "Icon biến hình, nút bấm có rung phản hồi. Chọn màu là chính bạn.",
+          "h": [
+            "Chọn màu",
+            "là chính bạn"
+          ],
+          "v": {
+            "k": "phone",
+            "shot": "theme-end"
+          }
+        }
+      ],
+      "cover": "16 giao diện cho app tập của bạn",
+      "caption": "Navy, Đại dương, Hoàng hôn, Rừng, Tím đêm, Sáng, Aurora, Espresso, Thu Alpine, Sương Wellness, Sanctuary, Cam năng lượng, Volt, Tím Đêm Pro, Chanh sáng… Bạn chọn màu nào?",
+      "hashtags": [
+        "#TapEasy",
+        "#giaodien",
+        "#appdep",
+        "#apptapgym",
+        "#theme",
+        "#fitness"
+      ]
+    },
+    {
+      "id": "hanh-trinh-12-tuan",
+      "n": 10,
+      "pillar": "hanh-trinh",
+      "title": "Trước – sau 12 tuần: hành trình bằng biểu đồ (ví dụ minh hoạ)",
+      "kicker": "HÀNH TRÌNH · 10",
+      "hook": [
+        "12 tuần",
+        "thay đổi được gì?"
+      ],
+      "bg": "people:hero-workout-2",
+      "illustrative": true,
+      "sources": "Ví dụ minh hoạ — không phải kết quả của một người thật",
+      "disclaimer": "Kết quả mỗi người khác nhau · Tham khảo, không thay tư vấn y tế",
+      "beats": [
+        {
+          "say": "Mười hai tuần tập đều và ăn đúng thì thay đổi được bao nhiêu? Xem ví dụ minh hoạ này.",
+          "cap": "12 tuần tập đều và ăn đúng thì thay đổi được bao nhiêu? Xem ví dụ minh hoạ này.",
+          "h": [
+            "12 tuần",
+            "thay đổi được gì?"
+          ],
+          "v": [
+            {
+              "k": "stat",
+              "v": 12,
+              "suf": " tuần",
+              "label": "tập đều · ăn đúng · ngủ đủ",
+              "sub": "Ví dụ minh hoạ"
+            },
+            {
+              "k": "heat",
+              "title": "Lịch tập 12 tuần (minh hoạ)",
+              "weeks": 12,
+              "per": 4,
+              "miss": [
+                5,
+                18,
+                30,
+                41
+              ]
+            }
+          ]
+        },
+        {
+          "say": "Cân nặng giảm từ từ, khoảng ba trăm rưởi gam mỗi tuần, không ép cân.",
+          "cap": "Cân nặng giảm từ từ, khoảng 350 g mỗi tuần, không ép cân.",
+          "h": [
+            "Cân nặng",
+            "74 → 69,8 kg"
+          ],
+          "v": {
+            "k": "chart",
+            "title": "Cân nặng (kg)",
+            "unit": "kg",
+            "dec": 1,
+            "pts": [
+              74.0,
+              73.5,
+              73.3,
+              72.8,
+              72.6,
+              72.0,
+              71.8,
+              71.5,
+              71.0,
+              70.8,
+              70.3,
+              70.1,
+              69.8
+            ],
+            "badge": "Số liệu minh hoạ"
+          }
+        },
+        {
+          "say": "Tỉ lệ mỡ giảm, cơ được giữ nhờ tập tạ và ăn đủ đạm.",
+          "h": [
+            "Mỡ cơ thể",
+            "24% → 19,5%"
+          ],
+          "v": {
+            "k": "chart",
+            "title": "Tỉ lệ mỡ (%)",
+            "unit": "%",
+            "dec": 1,
+            "pts": [
+              24.0,
+              23.7,
+              23.4,
+              23.0,
+              22.6,
+              22.3,
+              21.9,
+              21.4,
+              21.0,
+              20.6,
+              20.2,
+              19.8,
+              19.5
+            ],
+            "badge": "Số liệu minh hoạ",
+            "color": "coral"
+          }
+        },
+        {
+          "say": "Mức tạ squat cũng tăng đều qua từng tuần.",
+          "h": [
+            "Sức mạnh",
+            "tăng đều"
+          ],
+          "v": {
+            "k": "chart",
+            "title": "Squat 1RM ước tính (kg)",
+            "unit": "kg",
+            "dec": 1,
+            "pts": [
+              60,
+              61.5,
+              62.5,
+              64,
+              65,
+              66.5,
+              68,
+              69,
+              70.5,
+              72,
+              73.5,
+              75,
+              77.5
+            ],
+            "badge": "Số liệu minh hoạ",
+            "up": true
+          }
+        },
+        {
+          "say": "TapEasy vẽ sẵn biểu đồ cân nặng, chỉ số cơ thể và kỷ lục của bạn.",
+          "h": [
+            "App ghi lại",
+            "mọi tiến bộ"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "progress"
+            },
+            {
+              "k": "phone",
+              "shot": "progressInbody"
+            },
+            {
+              "k": "phone",
+              "shot": "records"
+            }
+          ]
+        },
+        {
+          "say": "Kết quả mỗi người khác nhau. Quan trọng là đều đặn.",
+          "h": [
+            "Đều đặn",
+            "thắng hoàn hảo"
+          ],
+          "v": {
+            "k": "list",
+            "title": "Giữ nhịp 12 tuần",
+            "items": [
+              "Giảm ~0,5% cân nặng/tuần là bền",
+              "Tập tạ 3–4 buổi để giữ cơ",
+              "Ngủ 7–9 giờ, đủ đạm mỗi ngày"
+            ]
+          }
+        }
+      ],
+      "cover": "12 tuần thay đổi được gì? (minh hoạ)",
+      "caption": "Ví dụ minh hoạ hành trình 12 tuần: cân nặng giảm ~0,35 kg/tuần, tỉ lệ mỡ giảm, sức mạnh tăng đều — tất cả nhìn thấy trên biểu đồ của app. Số liệu minh hoạ, kết quả mỗi người khác nhau.",
+      "hashtags": [
+        "#TapEasy",
+        "#hanhtrinh12tuan",
+        "#truocsau",
+        "#giammo",
+        "#theodoitiendo",
+        "#gymvietnam"
+      ]
+    },
+    {
+      "id": "suc-manh-12-tuan",
+      "n": 11,
+      "pillar": "hanh-trinh",
+      "title": "Người mới tập tạ: 12 tuần mạnh lên bao nhiêu? (ví dụ minh hoạ)",
+      "kicker": "HÀNH TRÌNH · 11",
+      "hook": [
+        "Người mới tập tạ:",
+        "12 tuần mạnh cỡ nào?"
+      ],
+      "bg": "people:ev-pl-bar",
+      "illustrative": true,
+      "sources": "Nguồn: ACSM 2009 (tăng tải tiến triển) · số liệu minh hoạ",
+      "disclaimer": "Tốc độ tiến bộ mỗi người khác nhau · tập đúng kỹ thuật",
+      "beats": [
+        {
+          "say": "Người mới tập tạ, sau mười hai tuần mạnh lên bao nhiêu? Đây là ví dụ minh hoạ.",
+          "cap": "Người mới tập tạ, sau 12 tuần mạnh lên bao nhiêu? Đây là ví dụ minh hoạ.",
+          "h": [
+            "Người mới tập tạ:",
+            "12 tuần mạnh cỡ nào?"
+          ],
+          "v": [
+            {
+              "k": "img",
+              "src": "people:ev-pl-bar"
+            },
+            {
+              "k": "stat",
+              "v": 12,
+              "suf": " tuần",
+              "label": "3 buổi tạ mỗi tuần",
+              "sub": "Ví dụ minh hoạ"
+            }
+          ]
+        },
+        {
+          "say": "Bí quyết là tăng tải từ từ: thêm chút tạ hoặc thêm một lần mỗi tuần, giữ kỹ thuật chuẩn.",
+          "cap": "Bí quyết: tăng tải từ từ, thêm chút tạ hoặc thêm 1 lần mỗi tuần, giữ kỹ thuật chuẩn.",
+          "h": [
+            "Bí quyết:",
+            "tăng tải từ từ"
+          ],
+          "v": {
+            "k": "list",
+            "title": "Tăng tải tiến triển",
+            "items": [
+              "Làm đủ số lần, kỹ thuật chuẩn",
+              "Buổi sau: +2,5 kg hoặc +1 lần",
+              "Mệt kéo dài: tuần giảm tải"
+            ]
+          }
+        },
+        {
+          "say": "Squat từ bốn mươi lên bảy mươi ký, đẩy ngực từ ba mươi lên bốn lăm.",
+          "cap": "Squat từ 40 lên 70 kg, đẩy ngực từ 30 lên 45 kg.",
+          "h": [
+            "Tuần 1 → tuần 12",
+            "(ví dụ)"
+          ],
+          "v": {
+            "k": "beforeafter",
+            "title": "Mức tạ làm việc (minh hoạ)",
+            "a": "Tuần 1",
+            "b": "Tuần 12",
+            "unit": "kg",
+            "rows": [
+              [
+                "Squat",
+                40,
+                70
+              ],
+              [
+                "Đẩy ngực",
+                30,
+                45
+              ],
+              [
+                "Deadlift",
+                50,
+                85
+              ]
+            ]
+          }
+        },
+        {
+          "say": "Ba buổi mỗi tuần là ba mươi sáu buổi. Chuỗi ngày tập giữ lửa cho bạn.",
+          "cap": "3 buổi mỗi tuần là 36 buổi. Chuỗi ngày tập giữ lửa cho bạn.",
+          "h": [
+            "36 buổi",
+            "không bỏ cuộc"
+          ],
+          "v": {
+            "k": "heat",
+            "title": "36 buổi trong 12 tuần (minh hoạ)",
+            "weeks": 12,
+            "per": 3,
+            "miss": []
+          }
+        },
+        {
+          "say": "TapEasy tự ghi kỷ lục, huy hiệu và tổng kết mỗi tuần.",
+          "h": [
+            "Kỷ lục, huy hiệu",
+            "& tổng kết tuần"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "records"
+            },
+            {
+              "k": "phone",
+              "shot": "achieve"
+            },
+            {
+              "k": "phone",
+              "shot": "weekly"
+            }
+          ]
+        }
+      ],
+      "cover": "Người mới tập tạ: 12 tuần (minh hoạ)",
+      "caption": "Ví dụ minh hoạ: người mới, 3 buổi tạ/tuần, tăng tải từ từ (+2,5 kg hoặc +1 lần khi làm đủ số lần, đúng kỹ thuật). Kỷ lục & tổng kết tuần tự ghi trong app. Tiến độ mỗi người khác nhau.",
+      "hashtags": [
+        "#TapEasy",
+        "#nguoimoitapgym",
+        "#progressiveoverload",
+        "#squat",
+        "#truocsau",
+        "#gymvietnam"
+      ]
+    },
+    {
+      "id": "tap-bung-giam-mo",
+      "n": 12,
+      "pillar": "myth",
+      "title": "Tập bụng có giảm mỡ bụng không?",
+      "kicker": "SỰ THẬT · 12",
+      "hook": [
+        "Gập bụng mỗi ngày",
+        "có giảm mỡ bụng?"
+      ],
+      "bg": "people:muscle-core",
+      "sources": "Nguồn: Vispute 2011; Ramírez-Campillo 2013",
+      "disclaimer": "Tham khảo, không thay tư vấn y tế",
+      "beats": [
+        {
+          "say": "Gập bụng mỗi ngày có làm tan mỡ bụng không?",
+          "h": [
+            "Gập bụng mỗi ngày",
+            "có giảm mỡ bụng?"
+          ],
+          "v": [
+            {
+              "k": "img",
+              "src": "people:muscle-core"
+            },
+            {
+              "k": "myth",
+              "claim": "Tập bụng = đốt mỡ bụng",
+              "verdict": "?"
+            }
+          ]
+        },
+        {
+          "say": "Câu trả lời là không. Cơ thể không đốt mỡ đúng chỗ bạn tập.",
+          "h": [
+            "Câu trả lời:",
+            "KHÔNG"
+          ],
+          "v": {
+            "k": "myth",
+            "claim": "Tập bụng = đốt mỡ bụng",
+            "verdict": "SAI"
+          }
+        },
+        {
+          "say": "Một nghiên cứu sáu tuần chỉ tập bụng: mỡ bụng gần như không đổi.",
+          "cap": "Một nghiên cứu 6 tuần chỉ tập bụng: mỡ bụng gần như không đổi.",
+          "h": [
+            "Nghiên cứu",
+            "6 tuần tập bụng"
+          ],
+          "v": {
+            "k": "compare",
+            "title": "Sau 6 tuần chỉ tập bụng",
+            "rows": [
+              [
+                "Mỡ bụng",
+                "không giảm đáng kể"
+              ],
+              [
+                "Sức bền cơ bụng",
+                "tăng"
+              ]
+            ],
+            "note": "Vispute 2011 · 24 người"
+          }
+        },
+        {
+          "say": "Muốn giảm mỡ bụng, cần thâm hụt calo, tập toàn thân và ngủ đủ.",
+          "h": [
+            "Muốn giảm mỡ:",
+            "thâm hụt calo"
+          ],
+          "v": {
+            "k": "list",
+            "title": "Cách giảm mỡ bụng",
+            "items": [
+              "Ăn thiếu calo vừa phải",
+              "Tập toàn thân + đi bộ",
+              "Ngủ đủ 7–9 giờ"
+            ]
+          }
+        },
+        {
+          "say": "Nhưng vẫn nên tập core để khoẻ lưng và giữ tư thế tốt.",
+          "h": [
+            "Vẫn nên",
+            "tập core"
+          ],
+          "v": [
+            {
+              "k": "img",
+              "src": "people:ev-yoga-balance"
+            },
+            {
+              "k": "phone",
+              "shot": "exlib"
+            }
+          ]
+        },
+        {
+          "say": "TapEasy tính mức thâm hụt an toàn và lên lịch tập toàn thân cho bạn.",
+          "h": [
+            "Thâm hụt an toàn",
+            "lịch toàn thân"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "nutrition"
+            },
+            {
+              "k": "phone",
+              "shot": "plans"
+            }
+          ]
+        }
+      ],
+      "cover": "Gập bụng có tan mỡ bụng?",
+      "caption": "Tập bụng không đốt mỡ “tại chỗ”. Mỡ bụng giảm khi thâm hụt calo, tập toàn thân và ngủ đủ — nhưng vẫn nên tập core cho lưng khoẻ, tư thế đẹp. Bạn từng tin điều này chưa?",
+      "hashtags": [
+        "#TapEasy",
+        "#mobung",
+        "#giammobung",
+        "#suthat",
+        "#gymvietnam",
+        "#kienthucgym"
+      ]
+    },
+    {
+      "id": "mo-hoi-dot-mo",
+      "n": 13,
+      "pillar": "myth",
+      "title": "Đổ mồ hôi nhiều = đốt mỡ nhiều?",
+      "kicker": "SỰ THẬT · 13",
+      "hook": [
+        "Đổ mồ hôi nhiều",
+        "= đốt mỡ nhiều?"
+      ],
+      "bg": "people:ev-fit-wallball",
+      "sources": "Nguồn: ACSM 2007 (Sawka) – bù nước khi tập",
+      "disclaimer": "Không dùng áo/bạt xông để giảm cân · Tham khảo",
+      "beats": [
+        {
+          "say": "Tập ra càng nhiều mồ hôi thì càng đốt nhiều mỡ? Không hẳn.",
+          "h": [
+            "Đổ mồ hôi nhiều",
+            "= đốt mỡ nhiều?"
+          ],
+          "v": [
+            {
+              "k": "img",
+              "src": "people:ev-fit-wallball"
+            },
+            {
+              "k": "myth",
+              "claim": "Càng ướt áo, càng đốt mỡ",
+              "verdict": "?"
+            }
+          ]
+        },
+        {
+          "say": "Mồ hôi giúp cơ thể làm mát, không phải thước đo mỡ bị đốt.",
+          "h": [
+            "Mồ hôi",
+            "để làm mát"
+          ],
+          "v": {
+            "k": "myth",
+            "claim": "Càng ướt áo, càng đốt mỡ",
+            "verdict": "SAI"
+          }
+        },
+        {
+          "say": "Cân nhẹ đi sau buổi tập chủ yếu là nước, uống lại là về.",
+          "h": [
+            "Cân giảm sau tập",
+            "chủ yếu là nước"
+          ],
+          "v": {
+            "k": "compare",
+            "title": "Sau 1 buổi tập nóng",
+            "rows": [
+              [
+                "Cân giảm 1 kg",
+                "≈ 1 lít nước"
+              ],
+              [
+                "Uống bù",
+                "cân về lại"
+              ]
+            ],
+            "note": "Mỡ giảm nhờ thâm hụt calo lâu dài"
+          }
+        },
+        {
+          "say": "Mất nước quá hai phần trăm cân nặng có thể làm giảm sức tập. Hãy uống nước đều.",
+          "cap": "Mất nước quá 2% cân nặng có thể làm giảm sức tập. Hãy uống nước đều.",
+          "h": [
+            "Mất nước > 2%",
+            "giảm sức tập"
+          ],
+          "v": {
+            "k": "stat",
+            "pre": "> ",
+            "v": 2,
+            "suf": "%",
+            "label": "cân nặng mất do mồ hôi",
+            "sub": "Người 70 kg ≈ 1,4 kg"
+          }
+        },
+        {
+          "say": "TapEasy giúp bạn ghi lại lượng nước uống mỗi ngày.",
+          "h": [
+            "Ghi nước uống",
+            "mỗi ngày"
+          ],
+          "v": [
+            {
+              "k": "phone",
+              "shot": "nutrition",
+              "focus": "water"
+            },
+            {
+              "k": "img",
+              "src": "people:ch-water"
+            }
+          ]
+        }
+      ],
+      "cover": "Càng đổ mồ hôi càng giảm mỡ?",
+      "caption": "Mồ hôi là để làm mát, không phải thước đo mỡ bị đốt. Cân giảm sau buổi tập chủ yếu là nước. Mất nước > 2% cân nặng có thể giảm sức tập — nhớ uống nước đều nhé!",
+      "hashtags": [
+        "#TapEasy",
+        "#mohoi",
+        "#giammo",
+        "#suthat",
+        "#uongnuoc",
+        "#gymvietnam"
+      ]
+    },
+    {
+      "id": "sap-ra-mat",
+      "n": 14,
+      "pillar": "teaser",
+      "title": "Sắp ra mắt: đồng hồ thông minh & HYROX",
+      "kicker": "SẮP RA MẮT · 14",
+      "hook": [
+        "Sắp ra mắt",
+        "trên cổ tay bạn"
+      ],
+      "bg": "people:ev-run-dawn",
+      "sources": "",
+      "disclaimer": "Tính năng đang phát triển, có thể thay đổi",
+      "beats": [
+        {
+          "say": "Sắp tới, TapEasy sẽ có mặt trên cổ tay bạn.",
+          "h": [
+            "Sắp ra mắt",
+            "trên cổ tay bạn"
+          ],
+          "v": [
+            {
+              "k": "img",
+              "src": "people:ev-run-dawn"
+            },
+            {
+              "k": "watch",
+              "mode": "logo"
+            }
+          ]
+        },
+        {
+          "say": "Chạy bộ với bản đồ, tốc độ và từng cây số.",
+          "h": [
+            "Chạy bộ",
+            "bản đồ & pace"
+          ],
+          "v": {
+            "k": "watch",
+            "mode": "run"
+          }
+        },
+        {
+          "say": "Chế độ HYROX: tám chặng chạy, tám trạm, bấm giờ từng trạm.",
+          "cap": "Chế độ HYROX: 8 chặng chạy, 8 trạm, bấm giờ từng trạm.",
+          "h": [
+            "HYROX",
+            "8 × 1 km + 8 trạm"
+          ],
+          "v": [
+            {
+              "k": "watch",
+              "mode": "hyrox"
+            },
+            {
+              "k": "img",
+              "src": "people:ev-fit-sled"
+            }
+          ]
+        },
+        {
+          "say": "Đồng bộ nhịp tim và giấc ngủ từ đồng hồ thông minh phổ biến.",
+          "h": [
+            "Nhịp tim",
+            "& giấc ngủ"
+          ],
+          "v": {
+            "k": "watch",
+            "mode": "health"
+          }
+        },
+        {
+          "say": "Theo dõi cộng đồng TapEasy để cập nhật sớm nhất.",
+          "h": [
+            "Cập nhật sớm",
+            "trong cộng đồng"
+          ],
+          "v": [
+            {
+              "k": "watch",
+              "mode": "summary"
+            },
+            {
+              "k": "img",
+              "src": "people:rv-finish-cheer"
+            }
+          ]
+        }
+      ],
+      "cover": "Sắp ra mắt: TapEasy trên cổ tay",
+      "caption": "Sắp ra mắt: chạy bộ (bản đồ, pace, từng km), chế độ HYROX (8 chặng chạy + 8 trạm), đồng bộ nhịp tim & giấc ngủ từ đồng hồ thông minh. Vào cộng đồng TapEasy để cập nhật sớm nhất!",
+      "hashtags": [
+        "#TapEasy",
+        "#sapramat",
+        "#HYROX",
+        "#chaybo",
+        "#donghothongminh",
+        "#fitness"
+      ]
+    }
+  ]
+}

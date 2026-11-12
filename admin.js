@@ -574,9 +574,10 @@ registerSection({ id:"shop", title:"Cửa hàng & đơn hàng", icon:"adm_shop",
 /* 6.9 Hỗ trợ khách hàng */
 const TOPIC = { order:"Đơn hàng", account:"Tài khoản", pt:"PT", event:"Sự kiện", bug:"Lỗi app", other:"Khác" };
 registerSection({ id:"support", title:"Hỗ trợ khách hàng", icon:"adm_help", order:85, badge:true, perms:["support.tickets"], render: async el=>{
+  if(A.supTab === "feedback") return renderFeedbackPanel(el);      // 13/11: thẻ "Góp ý & NPS" (feedback.js)
   const list = await CA.listTickets();
   const rows = list.filter(t=> !A.tkSt || t.status === A.tkSt);
-  el.innerHTML = `<div class="adm-toolbar"><div class="adm-seg">${[["open","Mới"],["answered","Đã trả lời"],["closed","Đã đóng"],["","Tất cả"]].map(([k,l])=> `<button class="${A.tkSt === k ? "on" : ""}" data-adm="tk-st" data-id="${k}">${l} (${list.filter(t=> !k || t.status === k).length})</button>`).join("")}</div></div>
+  el.innerHTML = supTabs() + `<div class="adm-toolbar"><div class="adm-seg">${[["open","Mới"],["answered","Đã trả lời"],["closed","Đã đóng"],["","Tất cả"]].map(([k,l])=> `<button class="${A.tkSt === k ? "on" : ""}" data-adm="tk-st" data-id="${k}">${l} (${list.filter(t=> !k || t.status === k).length})</button>`).join("")}</div></div>
     <div class="adm-cards">${rows.map(t=> `<article class="adm-card"><div class="adm-ch"><h3><span class="adm-pill">${esc(TOPIC[t.topic] || t.topic)}</span>${esc(t.name || t.uid)}${t.sample ? ` <span class="adm-pill">mẫu</span>` : ""}</h3><span class="adm-pill ${t.status === "open" ? "warn" : t.status === "closed" ? "" : "ok"}">${t.status === "open" ? "Mới" : t.status === "answered" ? "Đã trả lời" : "Đã đóng"}</span></div>
       <p class="adm-quote">${esc(t.text)}</p>${arr(t.replies).map(r=> `<div class="adm-reply ${r.staff ? "staff" : ""}"><p>${esc(r.text)}</p><small>${esc(r.name || "")} · ${esc(fdt(r.ts))}</small></div>`).join("")}
       <p class="adm-dim">${esc(fdt(t.createdAt))}</p>
@@ -584,6 +585,54 @@ registerSection({ id:"support", title:"Hỗ trợ khách hàng", icon:"adm_help"
         <div class="adm-acts"><button class="adm-btn pri sm" data-adm="tk-reply" data-id="${esc(t.id)}">Gửi trả lời</button><button class="adm-btn sm ghost" data-adm="tk-close" data-id="${esc(t.id)}">Đóng yêu cầu</button>${can("users.view") && !t.sample ? `<button class="adm-btn sm ghost" data-adm="user" data-id="${esc(t.uid)}">Xem người dùng</button>` : ""}</div>` : ""}
     </article>`).join("") || empty("Không có yêu cầu nào.")}</div>`;
 } });
+
+/* 6.9b Góp ý & NPS (feedback.js · docs/FEEDBACK.md) — thẻ con của "Hỗ trợ khách hàng"; đọc collection `feedback` (rules: support.tickets).
+   Liên hệ (email/SĐT người dùng TỰ cho phép) chỉ hiện khi có thêm quyền users.pii. Ảnh chụp màn hình chỉ nhận data:image/jpeg|webp. */
+const FB_CAT = { bug:"Lỗi", idea:"Ý tưởng", content:"Nội dung", other:"Khác" };
+const FB_ST = { new:"Mới", seen:"Đã xem", done:"Đã xử lý" };
+function fbNps(list, since){
+  if(G.FKFeedback && typeof G.FKFeedback.npsSummary === "function") return G.FKFeedback.npsSummary(list, since);
+  const rows = arr(list).filter(x=> x && x.kind === "nps" && Number.isInteger(x.score) && (!since || (x.createdAt || 0) >= since));
+  const dist = Array.from({ length: 11 }, ()=> 0); rows.forEach(x=> dist[x.score]++);
+  const n = rows.length, pro = rows.filter(x=> x.score >= 9).length, det = rows.filter(x=> x.score <= 6).length;
+  return { n, promoters: pro, passives: n - pro - det, detractors: det, nps: n ? Math.round((pro - det) / n * 100) : null, avg: null, dist };
+}
+const fbShot = s=> typeof s === "string" && /^data:image\/(jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(s) ? s : "";
+/* Thẻ con trong mục "Hỗ trợ khách hàng" (không thêm mục mới vào thanh bên — cùng quyền support.tickets) */
+const supTabs = ()=> `<div class="adm-toolbar"><div class="adm-seg" role="tablist" aria-label="Hỗ trợ khách hàng">${[["tickets","Yêu cầu hỗ trợ"],["feedback","Góp ý & NPS"]].map(([k, l])=> `<button role="tab" aria-selected="${(A.supTab || "tickets") === k ? "true" : "false"}" class="${(A.supTab || "tickets") === k ? "on" : ""}" data-adm="sup-tab" data-id="${k}">${esc(l)}</button>`).join("")}</div></div>`;
+async function renderFeedbackPanel(el){
+  if(!can("support.tickets")){ el.innerHTML = empty("Bạn không có quyền xem góp ý."); return; }
+  const list = arr(await cloud.feedback.list(300));
+  A._fb = list;
+  const k = A.fbKind || "", c = A.fbCat || "", st = A.fbSt == null ? "new" : A.fbSt;
+  const rows = list.filter(f=> (!k || f.kind === k) && (!c || f.category === c) && (!st || (f.status || "new") === st));
+  const s90 = fbNps(list, Date.now() - 90 * 86400000), sAll = fbNps(list);
+  const max = Math.max(1, ...s90.dist);
+  const npsTone = s90.nps == null ? "" : s90.nps >= 30 ? "ok" : s90.nps < 0 ? "hot" : "";
+  const seg = (key, cur, opts)=> `<div class="adm-seg">${opts.map(([v, l])=> `<button class="${cur === v ? "on" : ""}" data-adm="${key}" data-id="${esc(v)}">${esc(l)}</button>`).join("")}</div>`;
+  const segKind = seg("fb-kind", k, [["","Tất cả"],["feedback","Góp ý"],["nps","NPS"]]);
+  const segCat = seg("fb-cat", c, [["","Mọi loại"]].concat(Object.entries(FB_CAT)));
+  const segSt = seg("fb-st", st, [["new","Mới"],["seen","Đã xem"],["done","Đã xử lý"],["","Tất cả"]]);
+  el.innerHTML = supTabs() + `<div class="adm-kpis">
+      ${kpi("NPS 90 ngày", s90.nps == null ? "—" : String(s90.nps), s90.n ? `${s90.n} lượt · TB ${s90.avg == null ? "—" : s90.avg}` : "chưa có lượt chấm", "", npsTone)}
+      ${kpi("Ủng hộ (9–10)", String(s90.promoters), s90.n ? Math.round(s90.promoters / s90.n * 100) + "%" : "", "")}
+      ${kpi("Trung lập (7–8)", String(s90.passives), s90.n ? Math.round(s90.passives / s90.n * 100) + "%" : "", "")}
+      ${kpi("Phản đối (0–6)", String(s90.detractors), s90.n ? Math.round(s90.detractors / s90.n * 100) + "%" : "", "", s90.detractors ? "hot" : "")}
+      ${kpi("Góp ý mới", String(list.filter(f=> f.kind === "feedback" && (f.status || "new") === "new").length), `NPS toàn thời gian: ${sAll.nps == null ? "—" : sAll.nps}`, "")}
+    </div>
+    ${card(`${ic("adm_chart")}Phân bố điểm NPS (90 ngày)`, `<div class="adm-nps-bars" role="img" aria-label="Phân bố điểm 0 đến 10">${s90.dist.map((n, i)=> `<div class="adm-nps-col ${i >= 9 ? "pro" : i >= 7 ? "pas" : "det"}"><i style="height:${Math.round(n / max * 100)}%"></i><b>${esc(String(n))}</b><small>${i}</small></div>`).join("")}</div>`)}
+    <div class="adm-toolbar">${segKind}${segCat}${segSt}</div>
+    <div class="adm-cards">${rows.map(f=>{
+      const shot = fbShot(f.shot), d = obj(f.device);
+      return `<article class="adm-card"><div class="adm-ch"><h3>${f.kind === "nps" ? `<span class="adm-pill ${f.score >= 9 ? "ok" : f.score <= 6 ? "warn" : ""}">NPS ${esc(String(f.score))}</span>` : `<span class="adm-pill">${esc(FB_CAT[f.category] || f.category || "Khác")}</span>`}
+        <small class="adm-dim">${esc(fdt(f.createdAt))}</small></h3><span class="adm-pill ${(f.status || "new") === "new" ? "warn" : (f.status === "done" ? "ok" : "")}">${esc(FB_ST[f.status || "new"] || f.status)}</span></div>
+        ${f.text ? `<p class="adm-quote">${esc(f.text)}</p>` : `<p class="adm-dim">(không ghi lý do)</p>`}
+        ${shot ? `<a class="adm-fb-shot" href="${esc(shot)}" target="_blank" rel="noopener noreferrer"><img src="${esc(shot)}" alt="Ảnh chụp màn hình kèm góp ý" loading="lazy"></a>` : ""}
+        <p class="adm-dim">${esc(["v" + (f.appVersion || "?"), d.platform, d.os, d.screen, d.theme, f.screen ? "màn " + f.screen : "", f.trigger ? "mở từ " + f.trigger : ""].filter(Boolean).join(" · "))}</p>
+        ${f.contact ? (can("users.pii") ? `<p class="adm-dim">Liên hệ (người dùng cho phép): <b>${esc(f.contact)}</b></p>` : `<p class="adm-dim">Có thông tin liên hệ — cần quyền "users.pii" để xem.</p>`) : ""}
+        <div class="adm-acts">${(f.status || "new") !== "seen" ? `<button class="adm-btn sm ghost" data-adm="fb-mark" data-id="${esc(f.id)}|seen">Đánh dấu đã xem</button>` : ""}${f.status !== "done" ? `<button class="adm-btn sm" data-adm="fb-mark" data-id="${esc(f.id)}|done">Đã xử lý</button>` : ""}</div>
+      </article>`; }).join("") || empty("Không có góp ý nào khớp bộ lọc.")}</div>`;
+}
 
 /* 6.10 Thông báo toàn hệ thống */
 const AUD = { all:"Tất cả người dùng", pt:"Chỉ PT", member:"Chỉ học viên / thành viên", staff:"Chỉ đội ngũ quản trị" };
@@ -742,6 +791,11 @@ const ACT = {
   "v-save": ()=> act(()=> CA.saveVoucher({ code: q("#adm-v-code", A.root).value, kind: q("#adm-v-kind", A.root).value, value: q("#adm-v-val", A.root).value, min: q("#adm-v-min", A.root).value, uses: q("#adm-v-uses", A.root).value, exp: q("#adm-v-exp", A.root).value, title:"" }), "Đã tạo mã"),
   "v-revoke": async id=>{ const a = await ask({ title:`Thu hồi mã ${id}?`, msg:"Khách không dùng được mã này nữa.", label:"Thu hồi", danger:true }); if(a) act(()=> CA.revokeVoucher(id), "Đã thu hồi"); },
   "tk-st": id=>{ A.tkSt = id; renderSection(); },
+  "sup-tab": id=>{ A.supTab = id === "feedback" ? "feedback" : "tickets"; renderSection(); },
+  "fb-kind": id=>{ A.fbKind = id || ""; renderSection(); },
+  "fb-cat": id=>{ A.fbCat = id || ""; renderSection(); },
+  "fb-st": id=>{ A.fbSt = id || ""; renderSection(); },
+  "fb-mark": v=>{ const [id, st] = String(v || "").split("|"); if(!can("support.tickets")) return; act(()=> cloud.feedback.setStatus(id, st), st === "done" ? "Đã đánh dấu xử lý" : "Đã đánh dấu đã xem"); },
   "tk-reply": id=>{ const t = (document.getElementById("adm-tk-" + id) || {}).value || ""; act(()=> CA.replyTicket(id, t, false), "Đã gửi trả lời"); },
   "tk-close": id=>{ const t = (document.getElementById("adm-tk-" + id) || {}).value || ""; act(()=> CA.replyTicket(id, t, true), "Đã đóng yêu cầu"); },
   "bc-send": async ()=>{
@@ -885,6 +939,6 @@ function integrate(){
 }
 
 G.TE_ADMIN = { __v:1, open, close, render: ()=> A.open && (R.active() ? renderShell() : renderLogin()), registerSection, sections: SECTIONS, isOpen: ()=> A.open,
-  addHook: (id, fn)=>{ (_hooks[id] = _hooks[id] || []).push(fn); }, _A: A, _ACT: ACT, actionVi, toCSV, matrixHTML, visibleSections };
+  addHook: (id, fn)=>{ (_hooks[id] = _hooks[id] || []).push(fn); }, _A: A, _ACT: ACT, renderFeedbackPanel, actionVi, toCSV, matrixHTML, visibleSections };
 try{ integrate(); }catch(e){ warn(e); }
 })(typeof window !== "undefined" ? window : globalThis);

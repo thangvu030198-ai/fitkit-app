@@ -18,4 +18,5 @@ const FIREBASE_CONFIG = {
   storageBucket: "",
   messagingSenderId: "",
   appId: "",
+  measurementId: "",   // TUỲ CHỌN: "G-…" để bật Firebase Analytics (chỉ gửi khi người dùng đồng ý — docs/ANALYTICS.md)
 };

@@ -1,0 +1,162 @@
+/* TapEasy Shorts — khung dựng 1080×1920. Màu thương hiệu (style.css / theme-accent.css / brand.css):
+   navy #061A24 · mực #03080B · mint #33D6C9 / #A3F0E8 · teal logo #02BCB3 · coral CTA #FF7A45 · chữ #F5F7F3 */
+:root{ --navy:#061A24; --navy2:#0B2A33; --navy3:#114650; --ink:#03080B; --mint:#33D6C9; --mint2:#A3F0E8; --teal:#02BCB3; --coral:#FF7A45; --text:#F5F7F3;
+  --f-disp:"Barlow Condensed","Inter Tight","Noto Sans",system-ui,sans-serif; --f-head:"Inter Tight","Inter","Noto Sans",system-ui,sans-serif;
+  --f-body:"Inter","Noto Sans",system-ui,sans-serif; --f-mono:"JetBrains Mono","Noto Sans Mono",ui-monospace,monospace; }
+*{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ background:#000; overflow:hidden; -webkit-font-smoothing:antialiased; }
+#stage{ position:relative; width:1080px; height:1920px; overflow:hidden; background:var(--ink); color:var(--text); font-family:var(--f-body); }
+.abs{ position:absolute; left:0; top:0; }
+.off{ display:none !important; }
+
+/* ---------- nền ---------- */
+.bg{ position:absolute; inset:0; overflow:hidden; }
+.bg .base{ position:absolute; inset:0; background:radial-gradient(120% 70% at 75% 18%, #0E3B47 0%, #061A24 46%, #03080B 100%); }
+.bg .ph{ position:absolute; inset:-3%; width:106%; height:106%; object-fit:cover; filter:grayscale(.35) contrast(1.08) brightness(.5) saturate(.8); }
+.bg .tint{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(3,8,11,.72) 0%, rgba(6,26,36,.42) 30%, rgba(6,26,36,.5) 62%, rgba(3,8,11,.92) 100%); }
+.bg .blob{ position:absolute; border-radius:50%; filter:blur(90px); opacity:.42; }
+.bg .grid{ position:absolute; inset:0; opacity:.5; background-image:linear-gradient(rgba(51,214,201,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(51,214,201,.05) 1px, transparent 1px); background-size:90px 90px; }
+
+/* ---------- vùng hình ---------- */
+.vis{ position:absolute; overflow:hidden; border-radius:44px; }
+.piece{ position:absolute; inset:0; transform-origin:50% 50%; will-change:transform,opacity,filter; }
+.glass{ position:absolute; border-radius:40px; background:linear-gradient(160deg, rgba(14,59,71,.78), rgba(6,26,36,.86) 55%, rgba(3,8,11,.9));
+  border:2px solid rgba(163,240,232,.16); box-shadow:0 40px 90px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08); }
+.ctitle{ position:absolute; font:700 30px/1.2 var(--f-mono); letter-spacing:.08em; text-transform:uppercase; color:var(--mint); white-space:nowrap; }
+.row{ position:absolute; white-space:nowrap; }
+
+/* ảnh */
+.pimg{ position:absolute; inset:0; border-radius:44px; overflow:hidden; background:linear-gradient(160deg,#0B3140,#061A24); }
+.pimg img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform-origin:50% 40%; }
+.pimg .shade{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(3,8,11,.05) 40%, rgba(3,8,11,.55) 100%); }
+.pimg .rim{ position:absolute; inset:0; border-radius:44px; box-shadow:inset 0 0 0 2px rgba(163,240,232,.18); }
+
+/* số lớn */
+.big{ font-family:var(--f-disp); font-weight:800; letter-spacing:-.01em; line-height:.86; color:var(--mint); white-space:nowrap; }
+.big .pre,.big .suf{ font-size:.46em; color:var(--text); letter-spacing:0; }
+.big.warn{ color:var(--coral); }
+.lbl{ font:600 44px/1.18 var(--f-head); color:var(--text); white-space:nowrap; }
+.sub{ font:600 30px/1.2 var(--f-mono); color:rgba(163,240,232,.8); white-space:nowrap; }
+
+/* công thức / phép tính / thanh */
+.fline{ font:800 58px/1.1 var(--f-head); color:var(--text); letter-spacing:-.01em; }
+.fline .hl{ position:absolute; left:-18px; top:6px; bottom:6px; width:8px; border-radius:4px; background:var(--mint); }
+.crow{ font:700 50px/1.1 var(--f-head); }
+.crow .r{ position:absolute; right:0; top:0; color:var(--mint2); font-family:var(--f-disp); font-weight:800; font-size:64px; }
+.ctotal{ font-family:var(--f-disp); font-weight:800; color:var(--mint); font-size:120px; line-height:.9; }
+.ctotal .l{ font:800 44px/1 var(--f-head); color:var(--text); margin-right:18px; vertical-align:18px; }
+.sep{ position:absolute; height:3px; border-radius:2px; background:rgba(163,240,232,.25); }
+.bar{ position:absolute; height:64px; border-radius:18px; background:rgba(255,255,255,.08); overflow:hidden; }
+.bar i{ position:absolute; left:0; top:0; bottom:0; border-radius:18px; background:linear-gradient(90deg,#1FA89F,#33D6C9); }
+.bar.dim i{ background:linear-gradient(90deg,rgba(163,240,232,.25),rgba(163,240,232,.45)); }
+.bar.cor i{ background:linear-gradient(90deg,#E0582A,#FF7A45); }
+.blab{ font:700 40px/1 var(--f-head); color:var(--text); }
+.bval{ font:800 50px/1 var(--f-disp); color:var(--text); text-align:right; }
+.note{ font:600 28px/1.2 var(--f-mono); color:rgba(245,247,243,.7); white-space:nowrap; }
+
+/* so sánh / danh sách */
+.cmp{ position:absolute; border-radius:30px; background:rgba(255,255,255,.06); border:2px solid rgba(255,255,255,.08); }
+.cmp.hi{ background:rgba(51,214,201,.14); border-color:rgba(51,214,201,.5); }
+.cmp .a{ position:absolute; font:700 42px/1.1 var(--f-head); color:rgba(245,247,243,.86); white-space:nowrap; }
+.cmp .b{ position:absolute; font:800 58px/1 var(--f-disp); color:var(--mint); white-space:nowrap; text-align:right; }
+.li{ font:700 44px/1.18 var(--f-head); color:var(--text); }
+.li .n{ position:absolute; left:0; top:-4px; width:64px; height:64px; border-radius:20px; background:var(--mint); color:var(--ink); font:800 40px/64px var(--f-disp); text-align:center; }
+
+/* tuần */
+.day{ position:absolute; border-radius:24px; background:rgba(255,255,255,.06); border:2px solid rgba(255,255,255,.08); }
+.day.a{ background:rgba(51,214,201,.16); border-color:rgba(51,214,201,.55); }
+.day.c{ background:rgba(255,122,69,.14); border-color:rgba(255,122,69,.5); }
+.day .d{ position:absolute; left:26px; top:22px; font:800 40px/1 var(--f-disp); color:var(--mint2); }
+.day .t{ position:absolute; left:110px; top:20px; font:700 40px/1.1 var(--f-head); color:var(--text); white-space:nowrap; }
+
+/* món ăn */
+.food{ position:absolute; }
+.food .plate{ position:absolute; border-radius:50%; background:radial-gradient(circle at 50% 40%, #F5F7F3 0%, #DDE6E8 60%, #B8C7CB 100%); box-shadow:0 30px 60px rgba(0,0,0,.45); overflow:hidden; }
+.food .plate img{ position:absolute; inset:6%; width:88%; height:88%; object-fit:contain; }
+.food .ft{ position:absolute; left:0; right:0; text-align:center; font:700 34px/1.15 var(--f-head); color:var(--text); white-space:nowrap; }
+.food .fv{ position:absolute; left:0; right:0; text-align:center; font:800 48px/1 var(--f-disp); color:var(--mint); white-space:nowrap; }
+
+/* đúng/sai */
+.claim{ font:800 64px/1.12 var(--f-head); color:var(--text); text-align:center; }
+.stamp{ position:absolute; font:800 170px/1 var(--f-disp); color:var(--coral); border:12px solid var(--coral); border-radius:32px; padding:10px 40px 0; letter-spacing:.04em; }
+.stamp.q{ color:var(--mint); border-color:var(--mint); }
+
+/* biểu đồ */
+.chart svg{ position:absolute; overflow:visible; }
+.badge{ position:absolute; font:700 26px/1 var(--f-mono); letter-spacing:.06em; color:var(--ink); background:var(--mint2); border-radius:999px; padding:12px 20px; white-space:nowrap; text-transform:uppercase; }
+.badge.cor{ background:#FFB08A; }
+.kv{ font:800 70px/1 var(--f-disp); color:var(--text); white-space:nowrap; }
+.kv small{ font:600 28px/1 var(--f-mono); color:rgba(245,247,243,.7); display:block; margin-bottom:10px; letter-spacing:.06em; }
+.cell{ position:absolute; border-radius:10px; background:rgba(255,255,255,.07); }
+.cell.on{ background:var(--mint); box-shadow:0 0 22px rgba(51,214,201,.5); }
+
+/* điện thoại (tự vẽ, không logo hãng) */
+.rig{ position:absolute; width:424px; height:878px; transform-origin:50% 50%; }
+.phone{ position:absolute; inset:0; border-radius:72px; }
+.phone .frame{ position:absolute; inset:0; border-radius:72px; background:linear-gradient(135deg,#9aa2aa 0%,#3c4247 16%,#c8cfd5 34%,#59616a 52%,#adb5bc 70%,#3f454b 86%,#8e969d 100%);
+  box-shadow:0 50px 110px rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.35); }
+.phone .bezel{ position:absolute; inset:6px; border-radius:66px; background:#000; }
+.phone .screen{ position:absolute; left:17px; top:17px; width:390px; height:844px; border-radius:55px; overflow:hidden; background:#061A24; clip-path:inset(0 round 55px); }
+.phone .island{ position:absolute; left:135px; top:11px; width:120px; height:34px; border-radius:999px; background:#000; z-index:5; }
+.phone .home{ position:absolute; left:128px; bottom:8px; width:134px; height:5px; border-radius:3px; background:rgba(255,255,255,.85); z-index:5; }
+.phone .sheen{ position:absolute; left:17px; top:17px; width:390px; height:844px; border-radius:55px; pointer-events:none; z-index:6;
+  background:linear-gradient(125deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 30%); }
+.screen img{ position:absolute; display:block; }
+.screen .clip{ position:absolute; overflow:hidden; }
+.screen .ph{ position:absolute; inset:0; background:linear-gradient(160deg,#0B3140,#061A24); }
+.screen .ph b{ position:absolute; left:0; right:0; top:46%; text-align:center; font:800 40px var(--f-head); color:var(--mint2); }
+.tap{ position:absolute; width:70px; height:70px; margin:-35px 0 0 -35px; border-radius:50%; border:4px solid rgba(255,255,255,.9); background:rgba(51,214,201,.35); z-index:7; }
+.tchip{ position:absolute; font:800 40px/1 var(--f-head); color:var(--ink); background:var(--mint); border-radius:999px; padding:18px 30px; white-space:nowrap; box-shadow:0 20px 40px rgba(0,0,0,.4); }
+
+/* đồng hồ (tự vẽ, không thương hiệu) */
+.watch{ position:absolute; }
+.watch .band{ position:absolute; left:110px; width:220px; border-radius:40px; background:linear-gradient(90deg,#1b2328,#2c363c 50%,#1b2328); }
+.watch .case{ position:absolute; left:40px; top:150px; width:360px; height:430px; border-radius:110px; background:linear-gradient(135deg,#8d969d,#2f363b 30%,#b9c1c7 60%,#3a4247); box-shadow:0 50px 100px rgba(0,0,0,.6); }
+.watch .crown{ position:absolute; left:392px; top:290px; width:26px; height:80px; border-radius:10px; background:linear-gradient(90deg,#59616a,#c8cfd5,#59616a); }
+.watch .wscr{ position:absolute; left:58px; top:168px; width:324px; height:394px; border-radius:94px; background:#000; overflow:hidden; }
+.wscr .wl{ position:absolute; left:0; right:0; text-align:center; white-space:nowrap; }
+.wscr .w1{ font:800 34px/1 var(--f-head); color:var(--mint); }
+.wscr .w2{ font:800 96px/1 var(--f-disp); color:#fff; }
+.wscr .w3{ font:700 30px/1 var(--f-mono); color:rgba(255,255,255,.75); }
+
+/* ---------- chữ ---------- */
+.kick{ position:absolute; display:flex; align-items:center; gap:16px; font:700 28px/1 var(--f-mono); letter-spacing:.12em; color:var(--mint2); white-space:nowrap; }
+.kick .logo{ font:800 32px/1 var(--f-head); letter-spacing:-.01em; color:#fff; }
+.kick .logo b{ color:var(--teal); }
+.kick .bar{ display:inline-block; width:46px; height:3px; background:var(--mint); border-radius:2px; }
+.head{ position:absolute; }
+.head .ln{ display:block; white-space:nowrap; overflow:hidden; padding:2px 0 8px; }
+.head .w{ display:inline-block; font-family:var(--f-head); font-weight:800; letter-spacing:-.025em; line-height:1; color:#fff; will-change:transform; text-shadow:0 6px 30px rgba(0,0,0,.45); }
+.head .acc .w{ color:var(--mint); }
+.cap{ position:absolute; text-align:center; }
+.cap .cl{ display:block; white-space:nowrap; }
+.cap .pl{ display:inline-block; padding:4px 18px 8px; border-radius:18px; background:rgba(3,8,11,.62); }
+.cap .cw{ display:inline-block; font:800 58px/1.2 var(--f-head); color:#fff; letter-spacing:-.01em; transform-origin:50% 70%; text-shadow:0 3px 14px rgba(0,0,0,.6); }
+.cap .cw.now{ color:var(--mint); }
+.cap .cw.fut{ color:rgba(255,255,255,.5); }
+.src{ position:absolute; font:500 22px/24px var(--f-body); color:rgba(245,247,243,.74); white-space:nowrap; }
+.src div{ white-space:nowrap; overflow:hidden; text-overflow:clip; }
+
+.prog{ position:absolute; left:0; top:0; height:10px; width:1080px; background:rgba(255,255,255,.1); }
+.prog i{ position:absolute; left:0; top:0; bottom:0; background:linear-gradient(90deg,#02BCB3,#33D6C9,#A3F0E8); }
+.prog b{ position:absolute; top:0; bottom:0; width:3px; background:rgba(3,8,11,.8); }
+.grain{ position:absolute; inset:0; opacity:.085; mix-blend-mode:overlay; pointer-events:none; background-size:256px 256px; }
+.vign{ position:absolute; inset:0; pointer-events:none; background:radial-gradient(130% 90% at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,.42) 100%); }
+.flash{ position:absolute; inset:0; background:#A3F0E8; mix-blend-mode:overlay; pointer-events:none; }
+
+/* ---------- thẻ kết ---------- */
+.end{ position:absolute; inset:0; overflow:hidden; }
+.end .eb{ position:absolute; inset:0; background:radial-gradient(110% 70% at 50% 40%, #0E3B47 0%, #061A24 50%, #03080B 100%); }
+.end .ttl{ position:absolute; text-align:center; font:800 76px/1.08 var(--f-head); letter-spacing:-.02em; color:#fff; }
+.end .ttl .acc{ color:var(--mint); }
+.end .qr{ position:absolute; border-radius:40px; background:#fff; box-shadow:0 40px 100px rgba(0,0,0,.6), 0 0 0 10px rgba(51,214,201,.35); overflow:hidden; }
+.end .qr img{ position:absolute; inset:24px; width:calc(100% - 48px); height:calc(100% - 48px); object-fit:contain; }
+.end .es{ position:absolute; text-align:center; font:700 40px/1.2 var(--f-head); color:var(--mint2); white-space:nowrap; }
+.end .chips{ position:absolute; text-align:center; font:700 30px/1 var(--f-mono); letter-spacing:.08em; color:rgba(245,247,243,.85); white-space:nowrap; }
+
+/* ---------- ảnh bìa ---------- */
+.cover{ position:absolute; inset:0; }
+.cover .cv-ttl{ position:absolute; text-align:left; font:800 112px/1.02 var(--f-head); letter-spacing:-.03em; color:#fff; text-shadow:0 10px 40px rgba(0,0,0,.55); }
+.cover .cv-ttl .acc{ color:var(--mint); }
+.cover .cv-n{ position:absolute; font:800 300px/1 var(--f-disp); color:transparent; -webkit-text-stroke:3px rgba(51,214,201,.55); }
+.cover .cv-tag{ position:absolute; font:700 32px/1 var(--f-mono); letter-spacing:.12em; color:var(--ink); background:var(--mint); border-radius:999px; padding:16px 26px; white-space:nowrap; }

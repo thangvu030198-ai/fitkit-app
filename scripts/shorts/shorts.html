@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>TapEasy Shorts — compose</title>
+<!-- Trang dựng khung 1080×1920: mỗi khung = render(t) thuần. ?id=bmr-tdee [&t=3.2 | &play=1 | &cover=1]
+     Dữ liệu: build/plans/<id>.js (prep.js) + build/app/manifest.js (capture.py). Không hiện URL nào trên khung hình. -->
+<meta name="viewport" content="width=1080">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@500;700&subset=vietnamese&display=block">
+<link rel="stylesheet" href="shorts.css">
+<script src="engine.js"></script>
+<script>
+  (function(){
+    var id = (new URLSearchParams(location.search).get("id") || "").replace(/[^a-z0-9-]/g, "");
+    document.write('<script src="build/plans/' + id + '.js"><\/script>');
+  })();
+</script>
+<script src="build/app/manifest.js" onerror="window.__MANIFEST__=null"></script>
+</head>
+<body>
+<div id="stage"></div>
+<script src="shorts.js"></script>
+</body>
+</html>

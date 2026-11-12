@@ -5,7 +5,7 @@
    - Google Fonts (CSS + woff2): cache-first trong cache riêng (file font bất biến theo URL).
    - Precache đủ mọi file index.html nạp (scripts/prepare-www.sh kiểm danh sách); lưu TỪNG file.
    Tên cache giữ tiền tố "fitkit-" (định danh kỹ thuật, không hiển thị) — đổi số phiên bản mỗi lần thêm/bớt/sửa file. */
-const CACHE = "fitkit-v20";  // v20: slogan giãn dòng, Volt tiêu đề không đè vòng, bản đồ màn chào (wlMapFinish) · v13: theme-accent.css/.js (token accent + logo đổi màu theo theme, 4 gói mới) · v12: press-feel.js/.css (cảm giác bấm) · v11: morph-icons.js + vendor/morphicons.min.js (icon biến hình) · v10: people-ai.js (ảnh có người → ảnh AI) · v9 (integrator 12/11): app.js, pt.js, nhiều module đổi — làm mới cache · v8 (vòng 2 ux): fk-lazy.js — exdb-vi-1..3 / kb-data-1..6 nạp lười nhưng VẪN precache (offline)
+const CACHE = "fitkit-v21";  // v21: analytics.js (thống kê có đồng ý) + feedback.js (góp ý/NPS/có gì mới) + onboarding "Kế hoạch đã sẵn sàng" · v20: slogan giãn dòng, Volt tiêu đề không đè vòng, bản đồ màn chào (wlMapFinish) · v13: theme-accent.css/.js (token accent + logo đổi màu theo theme, 4 gói mới) · v12: press-feel.js/.css (cảm giác bấm) · v11: morph-icons.js + vendor/morphicons.min.js (icon biến hình) · v10: people-ai.js (ảnh có người → ảnh AI) · v9 (integrator 12/11): app.js, pt.js, nhiều module đổi — làm mới cache · v8 (vòng 2 ux): fk-lazy.js — exdb-vi-1..3 / kb-data-1..6 nạp lười nhưng VẪN precache (offline)
                              // v7 (vòng sửa UX): SWR + HTML mạng trước có hạn giờ; JSZip nạp khi cần; CSP
                              // (v6: Quản trị & phân quyền, Tìm PT, Kho kiến thức, ảnh/clip sự kiện · v5: PT Connect, Cộng đồng, Sự kiện, Gian hàng)
 const FONT_CACHE = "fitkit-fonts-v1";
@@ -21,7 +21,7 @@ const ASSETS = [
   "./press-feel.css",   // cảm giác bấm (docs/PRESS-FEEL.md)
   "./theme-accent.css", "./theme-accent.js",   // token accent theo theme + logo SVG nội tuyến (docs/THEME-PACKS.md §8)
   // JS lõi
-  "./themes.js", "./fk-lazy.js", "./icons.js", "./firebase-config.js", "./media-config.js", "./cloud.js", "./rbac.js", "./data.js", "./people-ai.js", "./templates.js", "./exdb.js", "./app.js",
+  "./themes.js", "./fk-lazy.js", "./icons.js", "./firebase-config.js", "./media-config.js", "./cloud.js", "./rbac.js", "./analytics.js", "./data.js", "./people-ai.js", "./templates.js", "./exdb.js", "./app.js",
   "./meals.js", "./meals-extra.js", "./nutrition.js", "./freevideos.js", "./video.js", "./library.js", "./coach.js", "./ptprofile.js", "./pt.js",
   // JS module mở rộng
   "./ui-kit.js", "./exdb-vi-1.js", "./exdb-vi-2.js", "./exdb-vi-3.js", "./exdb-vi.js", "./nutrition-pro.js", "./training-pro.js",
@@ -29,7 +29,7 @@ const ASSETS = [
   "./cloud-pt-directory.js", "./findpt.js", "./achievements.js",
   "./cloud-events.js", "./events-media.js", "./events.js", "./shop-data.js", "./shop.js",
   "./kb-data-1.js", "./kb-data-2.js", "./kb-data-3.js", "./kb-data-4.js", "./kb-data-5.js", "./kb-data-6.js", "./kb.js",
-  "./cloud-admin.js", "./admin.js", "./press-feel.js", "./morph-icons.js", "./health-safety.js",
+  "./cloud-admin.js", "./admin.js", "./feedback.js", "./press-feel.js", "./morph-icons.js", "./health-safety.js",
   // vendor/morphicons.min.js (icon biến hình, nạp lười): KHÔNG liệt kê tĩnh vì chỉ có sau khi chạy workflow vendor-morphicons —
   // scripts/prepare-www.sh tự thêm vào ASSETS khi file có; lúc chạy, lần tải đầu được cache stale-while-revalidate như mọi JS cùng nguồn.
   // Ảnh / thương hiệu
