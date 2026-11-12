@@ -1,0 +1,809 @@
+{
+ "model": "gpt-image-2.5",
+ "base": "https://apivn.vn/v1",
+ "manifest": "scripts/ai_people_prompts.json",
+ "started": "2026-11-12T05:15:42.637411Z",
+ "items": {
+  "hero-workout-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 18.5
+  },
+  "hero-workout-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.4
+  },
+  "hero-workout-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.7
+  },
+  "hero-workout-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.1
+  },
+  "avatar-default": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.3
+  },
+  "sleep-card": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.8
+  },
+  "sleep-hero": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.2
+  },
+  "muscle-legs": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.0
+  },
+  "muscle-chest": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.3
+  },
+  "muscle-arms": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.6
+  },
+  "muscle-core": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.6
+  },
+  "muscle-cardio": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.0
+  },
+  "ev-run-dawn": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.4
+  },
+  "ev-run-bridge": {
+   "ok": true,
+   "via": "images",
+   "sec": 31.3
+  },
+  "ev-group-outdoor": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.4
+  },
+  "ev-run-warmup": {
+   "ok": true,
+   "via": "images",
+   "sec": 32.1
+  },
+  "ev-group-jog": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.3
+  },
+  "ev-group-stretch": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.6
+  },
+  "ev-group-warmup": {
+   "ok": true,
+   "via": "images",
+   "sec": 31.5
+  },
+  "ev-fit-row": {
+   "ok": true,
+   "via": "images",
+   "sec": 18.6
+  },
+  "ev-fit-zone": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.6
+  },
+  "ev-fit-sled": {
+   "ok": true,
+   "via": "images",
+   "sec": 38.1
+  },
+  "ev-fit-wallball": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.9
+  },
+  "ev-pl-deadlift": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.0
+  },
+  "ev-pl-bar": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.2
+  },
+  "ev-pl-ready": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.6
+  },
+  "ev-pl-woman": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.5
+  },
+  "ev-ws-cooking": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.7
+  },
+  "ev-ws-menu": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.8
+  },
+  "ev-picnic-group": {
+   "ok": true,
+   "via": "images",
+   "sec": 17.4
+  },
+  "ev-picnic-lunch": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.7
+  },
+  "ev-picnic-yoga": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.4
+  },
+  "ev-run-mist": {
+   "ok": true,
+   "via": "images",
+   "sec": 27.3
+  },
+  "ev-yoga-park": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.2
+  },
+  "ev-yoga-group": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.1
+  },
+  "ev-yoga-autumn": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.9
+  },
+  "ev-yoga-balance": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.0
+  },
+  "ch-gym-session": {
+   "ok": true,
+   "via": "images",
+   "sec": 16.8
+  },
+  "ch-partners": {
+   "ok": true,
+   "via": "images",
+   "sec": 18.8
+  },
+  "ch-run-street": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.2
+  },
+  "ch-water": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.2
+  },
+  "ch-scale": {
+   "ok": true,
+   "via": "images",
+   "sec": 16.1
+  },
+  "rv-medal": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.0
+  },
+  "rv-crowd-warmup": {
+   "ok": true,
+   "via": "images",
+   "sec": 17.9
+  },
+  "rv-thumbs": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.1
+  },
+  "rv-finish-cheer": {
+   "ok": true,
+   "via": "images",
+   "sec": 36.9
+  },
+  "pt-khang": {
+   "ok": true,
+   "via": "images",
+   "sec": 16.5
+  },
+  "pt-khang-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.1
+  },
+  "pt-khang-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.4
+  },
+  "pt-khang-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 29.0
+  },
+  "pt-khang-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.2
+  },
+  "pt-khang-5": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.3
+  },
+  "pt-khang-6": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.0
+  },
+  "pt-khang-7": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.7
+  },
+  "pt-thuha": {
+   "ok": true,
+   "via": "images",
+   "sec": 17.3
+  },
+  "pt-thuha-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 31.6
+  },
+  "pt-thuha-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.6
+  },
+  "pt-thuha-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.1
+  },
+  "pt-phuc": {
+   "ok": true,
+   "via": "images",
+   "sec": 16.6
+  },
+  "pt-thuha-5": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.1
+  },
+  "pt-thuha-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 30.8
+  },
+  "pt-phuc-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 17.4
+  },
+  "pt-phuc-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 24.2
+  },
+  "pt-phuc-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.1
+  },
+  "pt-phuc-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 18.1
+  },
+  "pt-phuc-6": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.8
+  },
+  "pt-phuc-5": {
+   "ok": true,
+   "via": "images",
+   "sec": 38.0
+  },
+  "pt-ngocanh": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.1
+  },
+  "pt-ngocanh-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 18.2
+  },
+  "pt-ngocanh-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.0
+  },
+  "pt-ngocanh-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 16.8
+  },
+  "pt-ngocanh-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 23.8
+  },
+  "pt-ngocanh-5": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.0
+  },
+  "pt-ductai": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.4
+  },
+  "pt-ductai-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.4
+  },
+  "pt-ductai-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.6
+  },
+  "pt-ductai-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.8
+  },
+  "pt-ductai-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.9
+  },
+  "pt-ductai-5": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.4
+  },
+  "pt-ductai-6": {
+   "ok": true,
+   "via": "images",
+   "sec": 30.6
+  },
+  "pt-quynhnhu-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.4
+  },
+  "pt-quynhnhu": {
+   "ok": true,
+   "via": "images",
+   "sec": 32.9
+  },
+  "pt-quynhnhu-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.1
+  },
+  "pt-quynhnhu-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.3
+  },
+  "pt-quynhnhu-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 28.5
+  },
+  "pt-giabao": {
+   "ok": true,
+   "via": "images",
+   "sec": 14.7
+  },
+  "pt-giabao-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.4
+  },
+  "pt-giabao-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 18.5
+  },
+  "pt-giabao-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.7
+  },
+  "pt-giabao-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.1
+  },
+  "pt-vanson": {
+   "ok": true,
+   "via": "images",
+   "sec": 17.1
+  },
+  "pt-giabao-5": {
+   "ok": true,
+   "via": "images",
+   "sec": 34.4
+  },
+  "pt-vanson-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 22.8
+  },
+  "pt-vanson-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 20.9
+  },
+  "pt-vanson-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.7
+  },
+  "pt-vanson-5": {
+   "ok": true,
+   "via": "images",
+   "sec": 17.5
+  },
+  "pt-vanson-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.8
+  },
+  "pt-mailinh-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 18.4
+  },
+  "pt-mailinh-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.4
+  },
+  "pt-mailinh-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 17.0
+  },
+  "pt-mailinh-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 21.3
+  },
+  "pt-mailinh": {
+   "ok": true,
+   "via": "images",
+   "sec": 55.2
+  },
+  "pt-thanhtam": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.2
+  },
+  "pt-mailinh-5": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.3
+  },
+  "pt-thanhtam-1": {
+   "ok": true,
+   "via": "images",
+   "sec": 17.9
+  },
+  "pt-thanhtam-3": {
+   "ok": true,
+   "via": "images",
+   "sec": 19.2
+  },
+  "pt-thanhtam-5": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529433536521558268d9d61vAl9zYz)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529442967983068268d9d6Iy6hObsu)\",\"t"
+  },
+  "pt-khanhvy": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529469036280208268d9d6IacHWufy)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529478690889698268d9d6bj75m9TN)\",\"t"
+  },
+  "pt-thanhtam-2": {
+   "ok": true,
+   "via": "images",
+   "sec": 26.9
+  },
+  "pt-khanhvy-1": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529512967879258268d9d6Wt2pwWS4)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529534542141988268d9d6qApS6mTV)\",\"t"
+  },
+  "pt-khanhvy-2": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529512965798918268d9d6az90m6AD)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529534542759268268d9d6vTKB6CPK)\",\"t"
+  },
+  "pt-thanhtam-4": {
+   "ok": true,
+   "via": "images",
+   "sec": 25.2
+  },
+  "pt-khanhvy-3": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529539309771298268d9d6JRyBBJFK)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529544921435588268d9d69VW3GhDz)\",\"t"
+  },
+  "pt-khanhvy-4": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529539309507808268d9d6lUtVgODS)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529544926611738268d9d61XTS7wNG)\",\"t"
+  },
+  "pt-quanghuy": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529544911435858268d9d6vrN2K7Nh)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529568332164988268d9d6pbZSDljm)\",\"t"
+  },
+  "pt-quanghuy-2": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529568316487398268d9d6ynP4aS0L)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529578012556878268d9d6DFSbnd8a)\",\"t"
+  },
+  "pt-quanghuy-1": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529568296870788268d9d6BwnuHbOh)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529578031985408268d9d6hIN4ZHyA)\",\"t"
+  },
+  "pt-quanghuy-3": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529578031106338268d9d6tCiO3iH9)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529587784407358268d9d6mn4ez8Hn)\",\"t"
+  },
+  "pt-my": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529587721968698268d9d6TudT6HWI)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530041539784048268d9d6D7O1Qa7z)\",\"t"
+  },
+  "pt-quanghuy-4": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120529587721967918268d9d6ls3BqTTz)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530041546875588268d9d6DC0ZZJ6b)\",\"t"
+  },
+  "pt-my-1": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530041557494408268d9d6flMf6eHC)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530074596524458268d9d6XQ1ULEQo)\",\"t"
+  },
+  "pt-my-3": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530074594336918268d9d6K4wpqSNz)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530085816827768268d9d6hDGlYVZX)\",\"t"
+  },
+  "pt-my-2": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530074539703298268d9d6mRSLKERt)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530085829389778268d9d6RnykjTqU)\",\"t"
+  },
+  "pt-my-4": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530085825573968268d9d6XzQPdVyl)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530090593733618268d9d6YEt88hTp)\",\"t"
+  },
+  "pt-nhatnam": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530090642588328268d9d6bgYVl46C)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530123811941058268d9d6JhvmHpb3)\",\"t"
+  },
+  "pt-my-5": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530090626768458268d9d6p4ZwQXjj)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530123835402668268d9d64OmfKsw6)\",\"t"
+  },
+  "pt-nhatnam-1": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530123834653898268d9d6NvGfeGpN)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530133690966018268d9d6k75iFjUt)\",\"t"
+  },
+  "pt-nhatnam-2": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530133602365188268d9d62kGPM7Q9)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530143342660908268d9d642iHoFtp)\",\"t"
+  },
+  "pt-nhatnam-3": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530133628028458268d9d6kcCWGONC)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530143345229158268d9d6aYNfEHd8)\",\"t"
+  },
+  "pt-nhatnam-4": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530143304421938268d9d6x6VBOqIv)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530186780294818268d9d6PCjl7Jt2)\",\"t"
+  },
+  "pt-nhatnam-5": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530186749696598268d9d60JAqcz4j)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530191470723358268d9d6xptscuLV)\",\"t"
+  },
+  "pt-thuyduong": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530186776128738268d9d6Vc2op2o6)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530196785929568268d9d6VFVgpTsn)\",\"t"
+  },
+  "pt-thuyduong-1": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530196784490338268d9d6CKV8IP2e)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530201536546578268d9d6F49q7ovK)\",\"t"
+  },
+  "pt-thuyduong-2": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530196761707678268d9d6ekTOq3F3)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530201524883308268d9d6cEPmYTiJ)\",\"t"
+  },
+  "pt-thuyduong-4": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530206278097408268d9d6XjojoOsw)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530211366205318268d9d6FY0pn0Oh)\",\"t"
+  },
+  "pt-thuyduong-3": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530201598453138268d9d6MYrOGgY4)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530211389060178268d9d6xNMHDNgd)\",\"t"
+  },
+  "pt-tuankiet": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530206294068898268d9d6cxo5zdKZ)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530211391860868268d9d6oECs1waN)\",\"t"
+  },
+  "pt-tuankiet-2": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530220740183838268d9d6dJnAbCSV)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530225460987318268d9d654Ytqeks)\",\"t"
+  },
+  "pt-tuankiet-3": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530220783655238268d9d6VuNsh6b4)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530225521656578268d9d61KkkgGsP)\",\"t"
+  },
+  "pt-tuankiet-1": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530220784895778268d9d6PJ6L9GJD)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530225530797858268d9d6Uxxr5GWV)\",\"t"
+  },
+  "pt-tuankiet-4": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530230189531918268d9d6lVzCOG6M)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530234912104628268d9d6ZXafmJAo)\",\"t"
+  },
+  "pt-baotram-1": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530230256044398268d9d6vMrKt75d)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530234961252768268d9d6JSYQcVFu)\",\"t"
+  },
+  "pt-baotram": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530230259813958268d9d6asTOg5Ro)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530234964224998268d9d6Zeyb5SWz)\",\"t"
+  },
+  "pt-baotram-2": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530239638087008268d9d6PioV9639)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530244355767838268d9d61K8oK7DT)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-baotram-3": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530239661485138268d9d6yJECWFgY)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530244389532638268d9d6lUlaVsXV)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-baotram-4": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư còn ₫337,58, chưa đủ để tạm giữ ₫371,23 cho yêu cầu này (phần không dùng hết được trả lại ngay khi xong). Nạp thêm tại https://***.***.vn/*** hoặc giảm max_tokens rồi gọi lại (request id: 202611120530239680358808268d9d6bofCE2aP)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"i | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530249575809438268d9d6NkanfoEi)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-anhdung": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530249548077118268d9d6GdBz0oL6)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530294618950298268d9d68OsqJWcx)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-baotram-5": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530249592814348268d9d664XGuM0R)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530294649817068268d9d63RI8zwgO)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-anhdung-1": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530294651824188268d9d6RYOY5cU3)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530304289873238268d9d6giTNMfUl)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-anhdung-2": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530304251403208268d9d6svv5USCM)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530308976813118268d9d6IQOMTScm)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-anhdung-3": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530304274237618268d9d6uRxFKnKd)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530309060924938268d9d65JL6mcBx)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-anhdung-4": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530309016327268268d9d6kofsFb3x)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530313733317428268d9d6uymYIV9r)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-haiyen-1": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530313814657208268d9d6p9I6PbEf)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530318573603808268d9d6upbhiZYJ)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-haiyen": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530313735198978268d9d6nCpzj6aO)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530318588154798268d9d6mFV0Zumd)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-haiyen-2": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530318590071728268d9d6S5GFidN0)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530323340210928268d9d6fsyIa5rY)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-haiyen-3": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530323332057838268d9d6WiWHneki)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530345306652318268d9d6tozgSF8y)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-haiyen-4": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530345314794878268d9d6mtnWjjwS)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530350051011128268d9d6HoOeohgH)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-haiyen-5": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530345283285628268d9d6EHDuArDm)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530350069250698268d9d6s9CWLqq0)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-minhtri": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530350040205288268d9d6nIZZOnb8)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530354981534198268d9d6wqiF88Da)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-minhtri-2": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530355017925448268d9d6SNbpDtWn)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530359715294738268d9d6LmmY0FA9)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-minhtri-1": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530354999677428268d9d6dhHphX6g)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530359744934608268d9d6Cfqyy9Jw)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-minhtri-3": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530359732066118268d9d6c5RlZBdW)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530369174925998268d9d6FTlaM5dC)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-minhtri-5": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530369139992228268d9d6pXKCm24k)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530373845582658268d9d6h4m1g3du)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "pt-minhtri-4": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530369172609328268d9d60lcujJTX)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530373908110758268d9d6LugEhO7p)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "rv-pt-progress": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530373897898548268d9d6zLImLEtw)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530378648204978268d9d6DDsleQoV)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "rv-pt-yoga-home": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530378568604308268d9d6R10PrRUO)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530383274846538268d9d662FT7Raf)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "rv-pt-posture": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530378658891108268d9d6NWFcZjRk)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530383399588018268d9d6VV7Fw8j9)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "rv-pt-dance-home": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530383385467728268d9d6QnfUF8fY)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530388115324728268d9d6tpMSoYUO)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "rv-pt-hipthrust": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530388001285018268d9d6Q4EzHNOm)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530392812742798268d9d6P2n8OZqQ)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "rv-pt-trail-finish": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530388117462118268d9d6Z2TUu10x)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530392861143158268d9d6caoIimec)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  },
+  "rv-pt-first-lift": {
+   "ok": false,
+   "error": "images: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530392859686108268d9d6jVSxDAsQ)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}} | images-min: HTTP 403 {\"error\":{\"message\":\"Số dư không đủ (còn ₫-33,64). Nạp thêm tại https://***.***.vn/*** rồi gọi lại (request id: 202611120530397579631258268d9d6e0gebxwh)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"insufficient_user_quota\"}}"
+  }
+ },
+ "finished": "2026-11-12T05:30:39.833853Z",
+ "ok": 108,
+ "fail": 63,
+ "sheets": [
+  "contact-01.jpg",
+  "contact-02.jpg",
+  "contact-03.jpg",
+  "contact-04.jpg"
+ ]
+}
