@@ -864,7 +864,9 @@ function renderBg(n, t, kn){
       n.chip.style.color = th[2]; n.chip.style.borderColor = th[2];
       const q = sp(t - ch.shots[k].t0, "ui");
       const pa = n.phoneAt || { x: W/2, y: H/2, k: 1 };
-      const cx = V ? W / 2 : n.L.tx, cy = V ? pa.y - PH_H * pa.k / 2 - H * .035 : H * .885;
+      let cx = V ? W / 2 : n.L.tx, cy = V ? pa.y - PH_H * pa.k / 2 - H * .035 : H * .885;
+      // Ngang: thẻ số nằm ở H*.75 cao ~H*.15 → chip đặt CẠNH thẻ số (căn giữa dọc), không chồng lên (QA chữ v3)
+      if(!V && n.stat){ cx = n.L.statX + n.stat.offsetWidth + W * .02; cy = n.L.statY + (n.stat.offsetHeight - n.chip.offsetHeight) / 2; }
       n.chip.style.left = px(cx); n.chip.style.top = px(cy);
       n.chip.style.transform = `translate(${V ? "-50%" : "0"},0) scale(${(.85 + .15 * q).toFixed(4)})`;
       n.chip.style.opacity = clamp((t - ch.shots[1].t0 + .2) / .2).toFixed(3);
