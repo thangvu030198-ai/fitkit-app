@@ -505,6 +505,7 @@
 <script src="cloud.js"></script>
 <script src="rbac.js"></script>          <!-- vòng 3: NGAY SAU cloud.js — phân quyền quản trị (TE_RBAC, teCan); vô hiệu state.isAdmin cũ trước khi app.js nạp state -->
 <script src="data.js"></script>
+<script src="people-ai.js"></script>     <!-- ảnh có người → ảnh minh hoạ AI (media/people-ai, docs/AI-PEOPLE-IMAGES.md) — NGAY SAU data.js -->
 <script src="templates.js"></script>
 <script src="exdb.js"></script>
 <script src="app.js"></script>
@@ -552,6 +553,7 @@
 <script src="admin.js"></script>          <!-- vòng 3: Bảng quản trị -->
 <script src="theme-packs.js"></script>     <!-- gói giao diện: khúc xạ kính lỏng Espresso (chỉ hiệu ứng, không đổi DOM app) -->
 <script src="ui-signature.js"></script>    <!-- thành phần chữ ký: trượt xác nhận, stepper, gauge, hồ sơ, typewriter — trước health-safety.js -->
+<script src="morph-icons.js" defer></script>     <!-- icon biến hình (morphicons, MIT): tự nạp lười thư viện tự host lúc rảnh; thiếu thư viện → đổi icon tức thì (docs/MORPH-ICONS.md) -->
 <script src="health-safety.js"></script>   <!-- LUÔN CUỐI: lớp an toàn bọc mọi hàm render/startSession -->
 </body>
 </html>

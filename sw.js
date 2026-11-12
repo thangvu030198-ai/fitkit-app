@@ -5,7 +5,7 @@
    - Google Fonts (CSS + woff2): cache-first trong cache riêng (file font bất biến theo URL).
    - Precache đủ mọi file index.html nạp (scripts/prepare-www.sh kiểm danh sách); lưu TỪNG file.
    Tên cache giữ tiền tố "fitkit-" (định danh kỹ thuật, không hiển thị) — đổi số phiên bản mỗi lần thêm/bớt/sửa file. */
-const CACHE = "fitkit-v9";   // v9 (integrator 12/11): app.js, pt.js, nhiều module đổi — làm mới cache · v8 (vòng 2 ux): fk-lazy.js — exdb-vi-1..3 / kb-data-1..6 nạp lười nhưng VẪN precache (offline)
+const CACHE = "fitkit-v11";  // v11: morph-icons.js + vendor/morphicons.min.js (icon biến hình) · v10: people-ai.js (ảnh có người → ảnh AI) · v9 (integrator 12/11): app.js, pt.js, nhiều module đổi — làm mới cache · v8 (vòng 2 ux): fk-lazy.js — exdb-vi-1..3 / kb-data-1..6 nạp lười nhưng VẪN precache (offline)
                              // v7 (vòng sửa UX): SWR + HTML mạng trước có hạn giờ; JSZip nạp khi cần; CSP
                              // (v6: Quản trị & phân quyền, Tìm PT, Kho kiến thức, ảnh/clip sự kiện · v5: PT Connect, Cộng đồng, Sự kiện, Gian hàng)
 const FONT_CACHE = "fitkit-fonts-v1";
@@ -19,7 +19,7 @@ const ASSETS = [
   "./themes-modules.css",
   "./theme-packs.css", "./ui-signature.css", "./theme-packs.js", "./ui-signature.js",   // gói giao diện + thành phần chữ ký (docs/THEME-PACKS.md)
   // JS lõi
-  "./themes.js", "./fk-lazy.js", "./icons.js", "./firebase-config.js", "./media-config.js", "./cloud.js", "./rbac.js", "./data.js", "./templates.js", "./exdb.js", "./app.js",
+  "./themes.js", "./fk-lazy.js", "./icons.js", "./firebase-config.js", "./media-config.js", "./cloud.js", "./rbac.js", "./data.js", "./people-ai.js", "./templates.js", "./exdb.js", "./app.js",
   "./meals.js", "./meals-extra.js", "./nutrition.js", "./freevideos.js", "./video.js", "./library.js", "./coach.js", "./ptprofile.js", "./pt.js",
   // JS module mở rộng
   "./ui-kit.js", "./exdb-vi-1.js", "./exdb-vi-2.js", "./exdb-vi-3.js", "./exdb-vi.js", "./nutrition-pro.js", "./training-pro.js",
@@ -27,7 +27,9 @@ const ASSETS = [
   "./cloud-pt-directory.js", "./findpt.js", "./achievements.js",
   "./cloud-events.js", "./events-media.js", "./events.js", "./shop-data.js", "./shop.js",
   "./kb-data-1.js", "./kb-data-2.js", "./kb-data-3.js", "./kb-data-4.js", "./kb-data-5.js", "./kb-data-6.js", "./kb.js",
-  "./cloud-admin.js", "./admin.js", "./health-safety.js",
+  "./cloud-admin.js", "./admin.js", "./morph-icons.js", "./health-safety.js",
+  // vendor/morphicons.min.js (icon biến hình, nạp lười): KHÔNG liệt kê tĩnh vì chỉ có sau khi chạy workflow vendor-morphicons —
+  // scripts/prepare-www.sh tự thêm vào ASSETS khi file có; lúc chạy, lần tải đầu được cache stale-while-revalidate như mọi JS cùng nguồn.
   // Ảnh / thương hiệu
   "./assets/bg-storm.jpg", "./assets/icon-192.png", "./assets/icon-512.png", "./assets/icon-maskable-512.png", "./assets/apple-touch-icon-180.png",
   "./assets/favicon.svg", "./assets/favicon-32.png", "./assets/favicon-16.png", "./assets/favicon.ico",

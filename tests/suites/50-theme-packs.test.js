@@ -65,7 +65,8 @@ module.exports = {
       assert.ok(ci("ui-signature.css") < ci("brand.css"), "trước brand.css (brand.css + themes-modules.css luôn cuối)");
       const o = scriptOrder(), at = f=> o.indexOf(f);
       assert.ok(at("admin.js") < at("theme-packs.js") && at("theme-packs.js") < at("ui-signature.js"), "theme-packs.js → ui-signature.js sau admin.js");
-      assert.equal(at("ui-signature.js"), at("health-safety.js") - 1, "ui-signature.js ngay trước health-safety.js");
+      // (12/11) morph-icons.js (icon biến hình, docs/MORPH-ICONS.md) được phép nằm giữa — yêu cầu "ngay trước health-safety.js"
+      assert.equal(at("ui-signature.js"), at("health-safety.js") - 1 - (at("morph-icons.js") === at("health-safety.js") - 1 ? 1 : 0), "ui-signature.js ngay trước health-safety.js (chỉ morph-icons.js được xen giữa)");
       assert.equal(o[o.length - 1], "health-safety.js");
       assert.ok(at("themes.js") < at("icons.js"), "themes.js vẫn trong <head>");
       const sw = read("sw.js"), www = read("scripts/prepare-www.sh");

@@ -1497,7 +1497,7 @@ function momentsBodyHTML(){
 function momentsListHTML(list){
   list = arr(list).filter(notBlocked);                       // App Store 1.2: ẩn bài của người đã chặn
   if(!list.length) return typeof fkEmpty === "function" ? fkEmpty("photo_library", "Chưa có khoảnh khắc nào", "Điểm danh một sự kiện offline rồi đăng ảnh/clip đầu tiên — nhận +50 điểm!", null, { small:true }) : `<p class="small-note">Chưa có khoảnh khắc nào.</p>`;
-  return list.map(p=> momentCardHTML(p)).join("") + (list.some(p=> TM() && TM().mediaOf(p).some(m=> m.credit && m.credit.site === "Pexels")) ? `<p class="small-note te-center">Ảnh/clip mẫu: Pexels — tên tác giả ghi trên từng ảnh.</p>` : "");
+  return list.map(p=> momentCardHTML(p)).join("") + (list.some(p=> TM() && TM().mediaOf(p).some(m=> m.credit && m.credit.site === "Pexels")) ? `<p class="small-note te-center">${typeof fkPeopleAI !== "undefined" && fkPeopleAI.active() ? "Ảnh minh hoạ tạo bằng AI · clip mẫu: Pexels — tên tác giả ghi trên từng clip." : "Ảnh/clip mẫu: Pexels — tên tác giả ghi trên từng ảnh."}</p>` : "");
 }
 async function loadMoments(force){
   if(!force && C.moments && Date.now() - C.momentsTs < 30000) return;

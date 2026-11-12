@@ -82,8 +82,18 @@ def build(out, test=None, offline=False, no_sw=True, embed_shop=False):
             missing.append(src)
             return f'<!-- thiếu {src} -->'
         code = inline_assets(p.read_text(encoding="utf8")).replace("</script", "<\\/script")
-        return f'<script data-src="{src}">\n' + code + '\n</script>'
-    html = re.sub(r'<script src="(?!https?:)([^"]+\.js)"></script>', js, html)
+        pre_lib = ""
+        if src == "morph-icons.js":
+            # icon biến hình: nhúng thư viện tự host NẾU đã vendor (workflow vendor-morphicons) — không có thì bỏ qua (đổi icon tức thì)
+            v = ROOT / "vendor" / "morphicons.min.js"
+            if v.exists():
+                pre_lib = '<script data-src="vendor/morphicons.min.js">\n' + v.read_text(encoding="utf8").replace("</script", "<\\/script") + \
+                    '\n;(window.__fkLazyDone = window.__fkLazyDone || {})["vendor/morphicons.min.js"] = 1;\n</script>\n'
+                print("Nhúng vendor/morphicons.min.js (icon biến hình)")
+            else:
+                print("Chưa có vendor/morphicons.min.js — bỏ qua (icon đổi tức thì)")
+        return pre_lib + f'<script data-src="{src}">\n' + code + '\n</script>'
+    html = re.sub(r'<script src="(?!https?:)([^"]+\.js)"(?: defer)?></script>', js, html)   # defer (morph-icons.js): bản 1 file chạy tại chỗ
 
     # Vòng 2 (ux, fkLazy): dữ liệu nạp lười <script type="text/fk-lazy" data-group="…" src="…"> — bản 1 file không có
     # file rời để tải ⇒ NHÚNG và chạy ngay tại chỗ, rồi đăng ký vào window.__fkLazyDone ⇒ fkLazy.load(nhóm) resolve ngay.

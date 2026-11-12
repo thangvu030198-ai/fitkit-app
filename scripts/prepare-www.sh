@@ -28,7 +28,7 @@ cp index.html manifest.json sw.js privacy-policy.html delete-account.html \
    www/
 cp brand.css www/ 2>/dev/null || echo "⚠️ Chưa có brand.css (biến màu thương hiệu TapEasy) — app vẫn chạy với màu mặc định"
 # JS lõi (rbac.js ngay sau cloud.js)
-cp themes.js fk-lazy.js icons.js firebase-config.js media-config.js cloud.js rbac.js data.js templates.js exdb.js app.js \
+cp themes.js fk-lazy.js icons.js firebase-config.js media-config.js cloud.js rbac.js data.js people-ai.js templates.js exdb.js app.js \
    meals.js meals-extra.js nutrition.js freevideos.js video.js library.js coach.js ptprofile.js pt.js \
    www/
 # JS module mở rộng (nạp sau pt.js; health-safety.js luôn cuối)
@@ -40,10 +40,15 @@ cp ui-kit.js exdb-vi-1.js exdb-vi-2.js exdb-vi-3.js exdb-vi.js nutrition-pro.js 
    cloud-events.js events-media.js events.js shop-data.js shop.js \
    kb-data-1.js kb-data-2.js kb-data-3.js kb-data-4.js kb-data-5.js kb-data-6.js kb.js \
    cloud-admin.js admin.js \
+   morph-icons.js \
    health-safety.js \
    www/
 # Gói giao diện + thành phần chữ ký (nạp sau health-safety.js / sau themes-modules.css — docs/THEME-PACKS.md)
 cp theme-packs.css ui-signature.css theme-packs.js ui-signature.js www/
+
+# morphicons (MIT) — icon biến hình, tự host (tạo bằng .github/workflows/vendor-morphicons.yml); chưa có → app đổi icon tức thì
+if [ -f vendor/morphicons.min.js ]; then cp vendor/morphicons.min.js www/vendor/; cp vendor/morphicons.LICENSE vendor/morphicons.VERSION www/vendor/ 2>/dev/null || true
+else echo "⚠️ Chưa có vendor/morphicons.min.js (chạy workflow vendor-morphicons) — icon đổi tức thì, không biến hình"; fi
 
 # free-exercise-db (Unlicense / Public Domain) — đóng gói kèm app để dùng offline
 curl -fsSL https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json -o www/vendor/exercises.json \
@@ -149,7 +154,7 @@ if(E.BUNDLE !== "0" && cssList.length > 1){
 }
 
 /* ---------- 2. JS: nén từng file (nếu có esbuild) — giữ nguyên từng <script> ---------- */
-const jsRe = /<script src="([^"]+\.js)"><\/script>[^\n]*\n?/g;
+const jsRe = /<script src="([^"]+\.js)"(?: defer)?><\/script>[^\n]*\n?/g;
 // + dữ liệu nạp lười (vòng 2, fkLazy): <script type="text/fk-lazy" data-group=… src=…> — trình duyệt không tự tải,
 //   fk-lazy.js chèn khi cần ⇒ file vẫn phải có trong www/ (bước kiểm bên trên) + precache (bước 3 lấy mọi src=)
 const lazyList = [...html.matchAll(/<script\b[^>]*\btype="text\/fk-lazy"[^>]*>/g)]
@@ -173,7 +178,7 @@ const refs = [...html.matchAll(/(?:src|href)="([^"]+)"/g)].map(m => m[1].replace
   .filter(h => LOCAL.test(h) && /\.(js|css|png|jpe?g|svg|ico|webp|json)$/i.test(h));
 const old = (sw.match(/const ASSETS = \[([\s\S]*?)\];/) || [, ""])[1];
 const oldAssets = [...old.matchAll(/"\.\/([^"]+)"/g)].map(m => m[1]).filter(h => /^assets\//.test(h));
-const extra = ["manifest.json", "theme-packs.js", "ui-signature.js"];      // tài nguyên phụ luôn có
+const extra = ["manifest.json", "theme-packs.js", "ui-signature.js", "vendor/morphicons.min.js"];      // + icon biến hình (nạp lười, nếu đã vendor) · tài nguyên phụ luôn có
 const all = [...new Set(["index.html", ...refs, ...extra, ...oldAssets])].filter(f => fs.existsSync(path.join(W, f)));
 const ver = hash(all.map(f => f + ":" + crypto.createHash("sha1").update(fs.readFileSync(path.join(W, f))).digest("hex")).join("|"));
 sw = sw.replace(/const ASSETS = \[[\s\S]*?\];/, "const ASSETS = [  // SINH TỰ ĐỘNG bởi scripts/prepare-www.sh từ www/index.html\n  " +

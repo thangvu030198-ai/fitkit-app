@@ -1,0 +1,7 @@
+{
+ "hero-workout-1": { "file": "hero-workout-1.webp", "sm": "hero-workout-1-sm.webp", "w": 853, "h": 1280, "src": "ai", "size": "1024x1536" },
+ "pt-khang": { "file": "pt-khang.webp", "sm": "pt-khang-sm.webp", "w": 853, "h": 1280, "src": "ai", "size": "1024x1536" },
+ "ev-run-dawn": { "file": "ev-run-dawn.webp", "sm": "ev-run-dawn-sm.webp", "w": 1280, "h": 853, "src": "ai", "size": "1536x1024" },
+ "evil": { "file": "x.webp\" onerror=\"alert(1)" },
+ "muscle-core": { "file": "../../etc/passwd" }
+}

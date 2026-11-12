@@ -293,6 +293,8 @@ function vidHTML(m, o){
 }
 function creditHTML(m){
   const c = m && m.credit; if(!c || !(c.by || c.site)) return "";
+  /* ảnh mẫu có người đã thay bằng ảnh AI (people-ai.js) → không ghi tác giả Pexels nữa */
+  if(m.kind !== "video" && G.fkPeopleAI && G.fkPeopleAI.isAi(m.src || m.thumb)) return esc(G.fkPeopleAI.LABEL);
   const who = esc(c.by || c.site), site = c.by && c.site ? " / " + esc(c.site) : "";
   return `${m.kind === "video" ? "Video" : "Ảnh"}: ${c.url && /^https:\/\//.test(c.url) ? `<a href="${esc(c.url)}" target="_blank" rel="noopener noreferrer">${who}</a>` : who}${site}`;
 }

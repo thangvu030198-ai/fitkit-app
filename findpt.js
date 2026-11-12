@@ -32,6 +32,7 @@ const esc = s=> (typeof escapeHtml === "function") ? escapeHtml(s == null ? "" :
 const ic = (n, cls)=> `<span class="material-symbols-rounded${cls ? " " + cls : ""}" aria-hidden="true">${n}</span>`;
 const q = (s, r)=> (r || document).querySelector(s);
 const qa = (s, r)=> Array.from((r || document).querySelectorAll(s));
+const fpAi = ()=> !!(G.fkPeopleAI && G.fkPeopleAI.active());   // ảnh hồ sơ minh hoạ đã thay bằng ảnh AI (people-ai.js)
 const url = u=>{ const s = String(u == null ? "" : u); if(typeof attrUrl === "function") return attrUrl(s, { noBlob:true }); return /^(https:\/\/|data:image\/(jpeg|png|webp);base64,)/i.test(s) ? esc(s) : ""; };
 const warn = (...a)=>{ try{ console.warn("[findpt]", ...a); }catch(e){} };
 const say = (m, i)=>{ try{ toast(m, i || "check"); }catch(e){} };
@@ -179,7 +180,7 @@ function render(){
       <div class="fp-eyebrow">TapEasy · Hồ sơ PT công khai</div>
       <h1 class="fp-h1" aria-label="Tìm PT"><span class="l1">Tìm</span><span class="l2">PT<em>.</em></span></h1>
       <p class="fp-sub">${C.list ? `<b>${total}</b> huấn luyện viên · ${provN} tỉnh/thành. ` : ""}Giá, chứng chỉ và đánh giá từ người <b>đã tập cùng</b> — công khai cho mọi người.</p>
-      ${P.showsSamples() && (C.list || []).some(l=> l.seed) ? `<p class="fp-demo">${ic("info")}Bản thử nghiệm: hồ sơ minh hoạ (ảnh Pexels, tên & đánh giá giả lập).</p>` : ""}
+      ${P.showsSamples() && (C.list || []).some(l=> l.seed) ? `<p class="fp-demo">${ic("info")}Bản thử nghiệm: hồ sơ minh hoạ (${fpAi() ? "ảnh minh hoạ tạo bằng AI" : "ảnh Pexels"}, tên & đánh giá giả lập).</p>` : ""}
     </header>
     <label class="fp-search">${ic("search")}<input id="fp-q" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" placeholder="Tên, chuyên môn, phòng tập, phường… (không dấu cũng được)" value="${esc(f.q)}" aria-label="Tìm PT"><button type="button" class="fp-clear" data-fp="clearq" aria-label="Xoá từ khoá" ${f.q ? "" : "hidden"}>${ic("close")}</button></label>
     <div class="fp-chips" role="toolbar" aria-label="Lọc nhanh">
@@ -193,7 +194,7 @@ function render(){
     <footer class="fp-foot">
       <p>Xếp hạng không có suất trả tiền. Giá do PT tự niêm yết, bạn thanh toán trực tiếp cho PT — TapEasy không cộng thêm phí.</p>
       <button type="button" class="fp-link" data-fp="how">${ic("shield")}Cách xếp hạng, đánh giá & kiểm duyệt</button>
-      ${(C.list || []).some(l=> l.seed) ? `<button type="button" class="fp-link dim" data-fp="credits">${ic("photo_library")}Nguồn ảnh minh hoạ (Pexels)</button>` : ""}
+      ${(C.list || []).some(l=> l.seed) ? `<button type="button" class="fp-link dim" data-fp="credits">${ic("photo_library")}Nguồn ảnh minh hoạ (${fpAi() ? "tạo bằng AI" : "Pexels"})</button>` : ""}
     </footer>
     <nav class="fp-dock" aria-label="Công cụ album">
       <button type="button" data-fp="filters">${ic("tune")}<span>Bộ lọc${nF ? ` (${nF})` : ""}</span></button>
@@ -487,7 +488,7 @@ function openHow(){
     <p>= số yêu cầu (buổi thử, kết nối, câu hỏi) PT trả lời trong 24 giờ ÷ tổng yêu cầu 90 ngày gần nhất. Dưới 3 yêu cầu thì hiện "Chưa đủ dữ liệu".</p>
     <h4>${ic("payments")}Giá</h4>
     <p>PT tự niêm yết, ngày cập nhật giá hiện trong hồ sơ. Bạn thanh toán trực tiếp cho PT; TapEasy không cộng thêm phí.</p>
-    ${P.showsSamples() ? `<h4>${ic("info")}Hồ sơ minh hoạ</h4><p>Bản thử nghiệm có 20 hồ sơ PT minh hoạ: ảnh từ Pexels (tác giả ghi dưới ảnh), tên, giá và đánh giá là giả lập để bạn thử tính năng.</p>` : ""}
+    ${P.showsSamples() ? `<h4>${ic("info")}Hồ sơ minh hoạ</h4><p>Bản thử nghiệm có 20 hồ sơ PT minh hoạ: ${fpAi() ? "ảnh minh hoạ tạo bằng AI (nhân vật không có thật)" : "ảnh từ Pexels (tác giả ghi dưới ảnh)"}, tên, giá và đánh giá là giả lập để bạn thử tính năng.</p>` : ""}
   </div>`);
 }
 function openPhotoCredits(){
@@ -496,6 +497,7 @@ function openPhotoCredits(){
   list.forEach(l=>{ if(l.coverCredit && l.coverCredit.by) all.push(l.coverCredit.by); (l.album || []).forEach(a=> a.by && all.push(a.by)); });
   const by = {}; all.forEach(n=> by[n] = (by[n]||0) + 1);
   openSheet(`<div class="sheet-header"><h3>Nguồn ảnh minh hoạ</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng">${ic("close")}</button></div>
+    ${fpAi() ? `<p class="small-note"><b>Ảnh minh hoạ tạo bằng AI</b>: ảnh hồ sơ PT minh hoạ do AI tạo (TapEasy) — nhân vật trong ảnh không có thật, không phải PT có tên trong hồ sơ, không dùng hình người nổi tiếng. Ảnh nào chưa có bản AI vẫn hiện ảnh Pexels gốc (tác giả bên dưới).</p>` : ""}
     <p class="small-note">Ảnh hồ sơ PT minh hoạ lấy từ <b>Pexels</b> (pexels.com) theo Pexels License — dùng miễn phí, kể cả thương mại. Người trong ảnh là người mẫu ảnh, <b>không phải</b> PT có tên trong hồ sơ minh hoạ. Không dùng ảnh người nổi tiếng.</p>
     <div class="fp-credit-list">${Object.keys(by).sort((a,b)=> by[b] - by[a]).map(n=> `<span>${esc(n)} <i>${by[n]}</i></span>`).join("")}</div>
     <p class="small-note" style="margin-top:10px;">Chạm vào ảnh trong album của từng PT để xem tên tác giả và liên kết gốc.</p>`);
@@ -692,7 +694,7 @@ function extHTML(l, o){
     </section>
 
     <section class="fp-xs" id="fp-sec-rv"><div id="fp-rv-box"></div></section>
-    ${l.seed ? `<footer class="fp-xs fp-xcredit"><small>Hồ sơ minh hoạ: ảnh từ Pexels (${esc([...new Set(album.map(a=> a.by).filter(Boolean))].join(", "))}). Người trong ảnh là người mẫu, không phải PT có tên trong hồ sơ.</small></footer>` : ""}
+    ${l.seed ? `<footer class="fp-xs fp-xcredit"><small>${fpAi() && album.some(a=> G.fkPeopleAI.isAi(a.src)) ? "Hồ sơ minh hoạ: Ảnh minh hoạ tạo bằng AI — nhân vật không có thật, không phải PT có tên trong hồ sơ." : `Hồ sơ minh hoạ: ảnh từ Pexels (${esc([...new Set(album.map(a=> a.by).filter(Boolean))].join(", "))}). Người trong ảnh là người mẫu, không phải PT có tên trong hồ sơ.`}</small></footer>` : ""}
   </div>`;
 }
 function dockHTML(l, o){
@@ -767,7 +769,7 @@ function openLightbox(items, idx, title){
   const host = q("#app-shell") || document.body;
   const el = document.createElement("div"); el.className = "fp-lb"; el.id = "fp-lb"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Ảnh " + (title || ""));
   el.innerHTML = `<div class="fp-lb-top"><span id="fp-lb-n">${idx+1}/${items.length}</span><b>${esc(title || "")}</b><button type="button" class="fp-round" data-lb="close" aria-label="Đóng">${ic("close")}</button></div>
-    <div class="fp-lb-row" id="fp-lb-row">${items.map(a=> `<figure class="fp-lb-s"><img src="${url(a.src)}" alt="" decoding="async"><figcaption>${a.caption ? esc(a.caption) : ""}${a.by ? `Ảnh: ${esc(a.by)}${/pexels/.test(String(a.link||a.src)) ? " / Pexels" : ""}` : ""}</figcaption></figure>`).join("")}</div>`;
+    <div class="fp-lb-row" id="fp-lb-row">${items.map(a=> `<figure class="fp-lb-s"><img src="${url(a.src)}" alt="" decoding="async"><figcaption>${a.caption ? esc(a.caption) : ""}${G.fkPeopleAI && G.fkPeopleAI.isAi(a.src) ? esc(G.fkPeopleAI.LABEL) : a.by ? `Ảnh: ${esc(a.by)}${/pexels/.test(String(a.link||a.src)) ? " / Pexels" : ""}` : ""}</figcaption></figure>`).join("")}</div>`;
   host.appendChild(el);
   const row = q("#fp-lb-row", el);
   requestAnimationFrame(()=>{ row.scrollLeft = idx * row.clientWidth; el.classList.add("open"); });
@@ -1510,7 +1512,7 @@ function install(){
   // Nguồn ảnh trong "Nguồn dữ liệu & bản quyền"
   if(typeof openCreditsSheet === "function"){
     const _cr = openCreditsSheet;
-    openCreditsSheet = function(){ const r = _cr.apply(this, arguments); try{ const p = q("#sheet-content .policy-text"); if(p && !q("[data-fp-cr]", p)) p.insertAdjacentHTML("beforeend", `<p data-fp-cr><b>Ảnh hồ sơ PT minh hoạ (Tìm PT):</b> Pexels (pexels.com), theo Pexels License; tên tác giả hiển thị dưới từng ảnh. Người trong ảnh là người mẫu, không phải PT trong hồ sơ minh hoạ.</p>`); }catch(e){} return r; };
+    openCreditsSheet = function(){ const r = _cr.apply(this, arguments); try{ const p = q("#sheet-content .policy-text"); if(p && !q("[data-fp-cr]", p)) p.insertAdjacentHTML("beforeend", `<p data-fp-cr><b>Ảnh hồ sơ PT minh hoạ (Tìm PT):</b> ${fpAi() ? "Ảnh minh hoạ tạo bằng AI (nhân vật không có thật); ảnh chưa có bản AI: " : ""}Pexels (pexels.com), theo Pexels License; tên tác giả hiển thị dưới từng ảnh. Người trong ảnh là người mẫu, không phải PT trong hồ sơ minh hoạ.</p>`); }catch(e){} return r; };
   }
   try{ document.addEventListener("click", e=>{ const t = e.target; if(t && t.closest && t.closest(".btn-menu-trigger, .btn-menu-trigger-nu")) setTimeout(()=>{ try{ injectMenu(); }catch(err){} }, 0); }, true); }catch(e){}
   // (QU-05 / QP-23) không còn nghe "scroll" cho parallax — cuộn album/hồ sơ không chạy JS mỗi khung
