@@ -1,0 +1,193 @@
+name: Media — chuỗi video ngắn TapEasy (TikTok / Reels / Shorts 9:16)
+
+# 14 short 1080×1920, 15–45 s (scripts/shorts/series.json). Tài liệu: docs/SHORTS.md
+# 1) prepare : kiểm offline (smoke_node.js) → giọng đọc TTS từng nhịp (minimax-speech-2.8-turbo, giọng nam trầm, cache theo hash)
+#              → kế hoạch dựng canh theo lời thật → chụp màn app THẬT (bộ chụp của intro, 390×844 @3x) + ảnh AI → artifact shorts-build
+# 2) render  : ma trận song song (≤ 2 short/máy): render(t) → H.264 + nhạc tự tổng hợp + giọng (nhạc tự hạ khi có lời)
+#              → −14 LUFS + bìa JPG + SRT + QA từng short → artifact shorts-part-*
+# 3) publish : gom → media/shorts/index.json + QA toàn bộ → artifact tapeasy-shorts (+ commit media/shorts)
+# BẮT BUỘC có giọng đọc: TTS lỗi/không khoá → workflow DỪNG (--strict), không xuất bản short nào thiếu giọng.
+# Khoá TTS: secrets.IMG_API_KEY (không in ra log; tts.py che khoá). app_url CHỈ dùng để chụp app — video không hiện URL nào;
+# CTA duy nhất: QR nhóm Zalo "TapEasy Cộng Đồng".
+on:
+  workflow_dispatch:
+    inputs:
+      ids:     { description: "Id short, cách nhau dấu phẩy (trống = cả 14)", default: "", required: false }
+      app_url: { description: "URL app để chụp (không hiện trên video)", default: "https://thangvu030198-ai.github.io/fitkit-app/", required: false }
+      voice:   { description: "Giọng đọc TTS (true/false)", default: "true", required: false }
+      commit:  { description: "Commit media/shorts vào repo (true/false)", default: "true", required: false }
+
+permissions:
+  contents: write
+
+concurrency:
+  group: media-shorts
+  cancel-in-progress: false
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    outputs:
+      groups: ${{ steps.groups.outputs.groups }}
+      ids: ${{ steps.groups.outputs.ids }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - name: Chọn short + chia nhóm dựng song song
+        id: groups
+        env:
+          IDS: ${{ inputs.ids }}
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_OUTPUT"
+          import json, os
+          s = json.load(open("scripts/shorts/series.json", encoding="utf-8"))
+          all_ids = [x["id"] for x in s["shorts"]]
+          want = [x.strip() for x in os.environ.get("IDS", "").split(",") if x.strip()]
+          bad = [x for x in want if x not in all_ids]
+          if bad: raise SystemExit("Không có short: " + ", ".join(bad))
+          ids = want or all_ids
+          groups = [",".join(ids[i:i + 2]) for i in range(0, len(ids), 2)]
+          print("ids=" + ",".join(ids))
+          print("groups=" + json.dumps(groups))
+          EOF
+          cat "$GITHUB_OUTPUT"
+      - name: Kiểm offline (không trình duyệt) — kịch bản, thời lượng, hook, vùng an toàn, render(t) mọi khung
+        run: node scripts/shorts/smoke_node.js --step 0.25
+      - name: Cài Playwright (Chromium) + ffmpeg + fonts
+        run: |
+          pip install -q playwright==1.48.0 numpy pillow
+          python -m playwright install --with-deps chromium
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-noto-core
+      - name: Cache giọng đọc (theo hash lời)
+        uses: actions/cache@v4
+        with:
+          path: scripts/shorts/build/voice
+          key: shorts-voice-${{ hashFiles('scripts/shorts/series.json') }}
+          restore-keys: shorts-voice-
+      - name: Giọng đọc TTS (nam trầm ấm) — lỗi thì short dùng nhạc + phụ đề
+        if: ${{ (inputs.voice || 'true') == 'true' }}
+        continue-on-error: true
+        env:
+          TTS_API_KEY: ${{ secrets.IMG_API_KEY }}
+          TTS_API_BASE: https://apivn.vn/v1
+          TTS_MODEL: minimax-speech-2.8-turbo
+          TTS_VOICE: Deep_Voice_Man
+        run: |
+          python scripts/shorts/tts.py --strict --ids "${{ steps.groups.outputs.ids }}"
+          cat scripts/shorts/build/qa/voice/report.txt || true
+      - name: Tắt giọng đọc (voice=false)
+        if: ${{ (inputs.voice || 'true') != 'true' }}
+        run: rm -rf scripts/shorts/build/voice && echo "::notice::voice=false — chỉ nhạc + phụ đề"
+      - name: Kế hoạch dựng (canh nhịp theo lời thật)
+        run: node scripts/shorts/prep.js --ids "${{ steps.groups.outputs.ids }}"
+      - name: Ảnh AI (người tập, món ăn) + QR cộng đồng
+        run: python scripts/shorts/fetch_assets.py --ids "${{ steps.groups.outputs.ids }}"
+      - name: Chụp app thật (390×844 @3x, dữ liệu demo cục bộ)
+        env:
+          APP_URL: ${{ inputs.app_url || 'https://thangvu030198-ai.github.io/fitkit-app/' }}
+        run: |
+          case "$APP_URL" in https://*|http://127.0.0.1*) ;; *) echo "::error::app_url phải là https://"; exit 1;; esac
+          python scripts/shorts/capture.py --url "$APP_URL" --ids "${{ steps.groups.outputs.ids }}"
+      - name: Không hiện URL/GitHub trên khung hình
+        run: |
+          if grep -niE "github|https?://" scripts/shorts/series.json scripts/shorts/shorts.js scripts/shorts/build/plans/*.js; then echo "::error::có URL trong nội dung video"; exit 1; fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shorts-build
+          path: |
+            scripts/shorts/build
+            !scripts/shorts/build/app/_dir
+          retention-days: 3
+
+  render:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        group: ${{ fromJSON(needs.prepare.outputs.groups) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - name: Cài Playwright (Chromium) + ffmpeg + fonts
+        run: |
+          pip install -q playwright==1.48.0 numpy pillow
+          python -m playwright install --with-deps chromium
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-noto-core
+      - uses: actions/download-artifact@v4
+        with: { name: shorts-build, path: scripts/shorts/build }
+      - name: Dựng khung ${{ matrix.group }}
+        run: python scripts/shorts/render.py --ids "${{ matrix.group }}"
+      - name: Nhạc tự tổng hợp + giọng đọc (hạ nhạc dưới lời)
+        run: python scripts/shorts/audio.py --ids "${{ matrix.group }}"
+      - name: Ghép + chuẩn hoá −14 LUFS + bìa + SRT
+        run: python scripts/shorts/finalize.py --ids "${{ matrix.group }}" --dest media/shorts
+      - name: QA (15–45 s, vùng an toàn, ≤ 2 dòng phụ đề, chữ không chồng, thẻ kết ≥ 2 s, tệp)
+        run: python scripts/shorts/qa.py --media media/shorts --ids "${{ matrix.group }}"
+      - name: Tên artifact
+        id: art
+        run: echo "name=shorts-part-$(echo '${{ matrix.group }}' | tr ',' '_')" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ steps.art.outputs.name }}
+          path: |
+            media/shorts/*.mp4
+            media/shorts/*.jpg
+            media/shorts/*.srt
+            scripts/shorts/build/out/*.meta.json
+            scripts/shorts/build/qa
+          retention-days: 5
+
+  publish:
+    needs: [prepare, render]
+    if: ${{ always() && needs.prepare.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - run: |
+          pip install -q pillow
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - uses: actions/download-artifact@v4
+        with: { name: shorts-build, path: scripts/shorts/build }
+      - uses: actions/download-artifact@v4
+        with: { pattern: shorts-part-*, merge-multiple: true, path: . }
+      - name: index.json + QA toàn bộ
+        run: |
+          python scripts/shorts/finalize.py --index --dest media/shorts
+          ls -la media/shorts
+          python scripts/shorts/qa.py --media media/shorts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tapeasy-shorts
+          path: |
+            media/shorts
+            scripts/shorts/build/qa
+          retention-days: 30
+      - name: Lưu vào repo (chỉ media/shorts)
+        if: ${{ (inputs.commit || 'true') == 'true' }}
+        run: |
+          git config user.name "tapeasy-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add media/shorts
+          if git diff --cached --quiet; then echo "Không có gì mới"; exit 0; fi
+          git commit -m "media: TapEasy shorts 9:16 ($(ls media/shorts/*.mp4 | wc -l) video, $(date +%Y-%m-%d))"
+          git pull --rebase && git push
