@@ -5,7 +5,7 @@
    - Google Fonts (CSS + woff2): cache-first trong cache riêng (file font bất biến theo URL).
    - Precache đủ mọi file index.html nạp (scripts/prepare-www.sh kiểm danh sách); lưu TỪNG file.
    Tên cache giữ tiền tố "fitkit-" (định danh kỹ thuật, không hiển thị) — đổi số phiên bản mỗi lần thêm/bớt/sửa file. */
-const CACHE = "fitkit-v15";  // v13: theme-accent.css/.js (token accent + logo đổi màu theo theme, 4 gói mới) · v12: press-feel.js/.css (cảm giác bấm) · v11: morph-icons.js + vendor/morphicons.min.js (icon biến hình) · v10: people-ai.js (ảnh có người → ảnh AI) · v9 (integrator 12/11): app.js, pt.js, nhiều module đổi — làm mới cache · v8 (vòng 2 ux): fk-lazy.js — exdb-vi-1..3 / kb-data-1..6 nạp lười nhưng VẪN precache (offline)
+const CACHE = "fitkit-v16";  // v13: theme-accent.css/.js (token accent + logo đổi màu theo theme, 4 gói mới) · v12: press-feel.js/.css (cảm giác bấm) · v11: morph-icons.js + vendor/morphicons.min.js (icon biến hình) · v10: people-ai.js (ảnh có người → ảnh AI) · v9 (integrator 12/11): app.js, pt.js, nhiều module đổi — làm mới cache · v8 (vòng 2 ux): fk-lazy.js — exdb-vi-1..3 / kb-data-1..6 nạp lười nhưng VẪN precache (offline)
                              // v7 (vòng sửa UX): SWR + HTML mạng trước có hạn giờ; JSZip nạp khi cần; CSP
                              // (v6: Quản trị & phân quyền, Tìm PT, Kho kiến thức, ảnh/clip sự kiện · v5: PT Connect, Cộng đồng, Sự kiện, Gian hàng)
 const FONT_CACHE = "fitkit-fonts-v1";

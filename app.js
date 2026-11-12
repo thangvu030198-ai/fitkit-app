@@ -858,7 +858,8 @@ function renderOnboardProgress(){
 function showObStep(i){
   obStep = i;
   $$(".onboard-step").forEach(s=> s.classList.toggle("active", Number(s.dataset.step)===i));
-  $("#onboard-back").style.display = i===0 ? "none" : "flex";
+  $("#onboard-back").style.display = (i===0 && typeof showAuth !== "function") ? "none" : "flex";   // 12/11: bước 0 → quay về màn chào (slogan)
+  try{ $("#onboard-back").setAttribute("aria-label", i===0 ? "Quay lại màn chào" : "Quay lại bước trước"); }catch(e){}
   $("#onboard-next").textContent = i===OB_STEPS-1 ? "Bắt đầu hành trình" : "Tiếp tục";
   renderOnboardProgress();
 }
@@ -926,7 +927,11 @@ $("#onboard-next").addEventListener("click", ()=>{
   if(obStep === OB_STEPS-1){ finishOnboarding(); return; }
   showObStep(obStep+1);
 });
-$("#onboard-back").addEventListener("click", ()=> showObStep(Math.max(0,obStep-1)));
+$("#onboard-back").addEventListener("click", ()=>{
+  if(obStep > 0) return showObStep(obStep-1);
+  // bước đầu: đóng onboarding, về màn chào có slogan (chưa lưu gì)
+  try{ $("#onboarding").classList.remove("open"); if(typeof showAuth === "function") showAuth("welcome"); }catch(e){}
+});
 
 function finishOnboarding(){
   const p = state.profile;
