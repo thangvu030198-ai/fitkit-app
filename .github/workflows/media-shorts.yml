@@ -134,11 +134,12 @@ jobs:
         run: python scripts/shorts/audio.py --ids "${{ matrix.group }}"
       - name: Ghép + chuẩn hoá −14 LUFS + bìa + SRT
         run: python scripts/shorts/finalize.py --ids "${{ matrix.group }}" --dest media/shorts
-      - name: QA (15–45 s, vùng an toàn, ≤ 2 dòng phụ đề, chữ không chồng, thẻ kết ≥ 2 s, tệp)
-        run: python scripts/shorts/qa.py --media media/shorts --ids "${{ matrix.group }}"
       - name: Tên artifact
         id: art
+        if: always()
         run: echo "name=shorts-part-$(echo '${{ matrix.group }}' | tr ',' '_')" >> "$GITHUB_OUTPUT"
+      - name: QA (15–45 s, vùng an toàn, ≤ 2 dòng phụ đề, chữ không chồng, thẻ kết ≥ 2 s, tệp, CÓ giọng)
+        run: python scripts/shorts/qa.py --media media/shorts --ids "${{ matrix.group }}"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
