@@ -404,7 +404,7 @@
     }
     v.setAttribute("aria-hidden", "true"); v.setAttribute("tabindex", "-1");
     v.preload = "metadata";
-    const hero = v.closest(".wl-hero") || v.parentNode; if(!hero || hero.querySelector(".fk-vid-toggle")) return;
+    const hero = v.closest(".wl-hero") || v.parentNode; if(!hero || hero.querySelector(".fk-vid-toggle, .wl-vid-toggle")) return;   // 12/11: video.js đã có nút tạm dừng → không thêm nút thứ 2
     const btn = D.createElement("button");
     btn.type = "button"; btn.className = "fk-vid-toggle";
     const set = (playing)=>{ btn.innerHTML = playing ? SVG_PAUSE : SVG_PLAY;
