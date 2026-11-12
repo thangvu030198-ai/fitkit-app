@@ -1,0 +1,267 @@
+{
+  "_doc": "Storyboard TapEasy intro. Đơn vị thời gian = PHÁCH (beat) ở BPM bên dưới; prep.py đổi sang giây -> build/timeline.js. Sửa nội dung/nhịp ở đây rồi chạy lại prep.py + render.py. Xem docs/INTRO-VIDEO.md.",
+  "bpm": 116,
+  "fps": 30,
+  "lead_in_beats": 0,
+  "qr_card": "assets/zalo-community-qr.jpg",
+  "hero_chapter": "themes",
+  "chapters": [
+    {
+      "id": "intro", "kind": "intro", "beats": 32, "bg": "clip",
+      "num": "", "title": ["TapEasy"], "style": "wipe",
+      "slogan": [["TẬP ĐÚNG", 4], ["TIẾN BỘ", 6], ["THẬT SỰ", 7]],
+      "phone_in": 12,
+      "captions": [
+        [14, "Giáo án · dinh dưỡng · kết nối PT — trong một app"],
+        [21, "Tiếng Việt · miễn phí · không cần tài khoản"]
+      ],
+      "shots": [
+        { "id": "welcome", "beats": 20, "scroll": [[2.5, 17, 1320]], "taps": [[18.7, "guest"]] }
+      ],
+      "out": "zoom"
+    },
+    {
+      "id": "profile", "beats": 28, "bg": "people:hero-workout-2",
+      "num": "01", "title": ["Hồ sơ của bạn", "& sàng lọc sức khoẻ"], "accent": 1, "style": "rise",
+      "stat": { "at": 2, "value": 5, "suffix": " bước", "label": "thiết lập ~1 phút" },
+      "captions": [
+        [1, "Giới tính, tuổi, chiều cao, cân nặng, mục tiêu"],
+        [9, "Tự tính BMR · TDEE (Mifflin-St Jeor) và calo mục tiêu"],
+        [17, "Sàng lọc PAR-Q+: app tự điều chỉnh bài tập & calo an toàn"]
+      ],
+      "shots": [
+        { "id": "ob0", "beats": 3, "enter": "cut", "taps": [[2.4, "next"]] },
+        { "id": "ob1", "beats": 3, "taps": [[0.9, "male"], [2.4, "next"]] },
+        { "id": "ob2", "beats": 3, "taps": [[2.4, "next"]] },
+        { "id": "ob3", "beats": 3, "taps": [[1.0, "act"], [2.4, "next"]] },
+        { "id": "ob4", "beats": 4, "taps": [[1.2, "goal"]], "focus": [[1.5, 2.2, [0, 280, 390, 180], 1.35]] },
+        { "id": "health", "beats": 4, "enter": "sheet" },
+        { "id": "health2", "beats": 4, "scroll": [[1, 3.6, 420]] },
+        { "id": "profile", "beats": 4, "enter": "push", "scroll": [[0.6, 3.8, 900]] }
+      ],
+      "out": "whip"
+    },
+    {
+      "id": "home", "beats": 28, "bg": "people:hero-workout-1",
+      "num": "02", "title": ["Trang chủ, lịch tuần", "& chuỗi ngày tập"], "accent": 2, "style": "chars",
+      "stat": { "at": 9, "value": 18, "suffix": " ngày", "label": "chuỗi tập liên tiếp" },
+      "captions": [
+        [1, "Mở app là biết hôm nay tập gì, ăn bao nhiêu"],
+        [9, "Lịch tuần nhìn là hiểu — giữ chuỗi ngày để có động lực"],
+        [18, "Tiến độ, cân nặng, InBody và ảnh trước–sau"]
+      ],
+      "shots": [
+        { "id": "home0", "beats": 12, "enter": "cut", "focus": [[2.4, 4.6, [0, 130, 390, 220], 1.45]], "scroll": [[5, 11, 950]] },
+        { "id": "workout", "beats": 9, "enter": "push", "scroll": [[1.5, 8, 900]] },
+        { "id": "progress", "beats": 7, "enter": "push", "scroll": [[1, 6.5, 800]] }
+      ],
+      "out": "rotate"
+    },
+    {
+      "id": "plans", "beats": 28, "bg": "people:hero-workout-3",
+      "num": "03", "title": ["Giáo án mẫu", "hoặc tự tạo riêng"], "accent": 0, "style": "wipe",
+      "captions": [
+        [1, "Giáo án theo giới tính & cấp độ: PPL, Upper/Lower, Full Body…"],
+        [10, "Một chạm “Thêm vào tuần tập” — tự gắn video từng bài"],
+        [19, "Tự tạo giáo án: mục tiêu, số buổi, dụng cụ, chấn thương"]
+      ],
+      "shots": [
+        { "id": "templates", "beats": 6, "enter": "sheet", "scroll": [[1.5, 5, 224]] },
+        { "id": "tplDetail", "beats": 8, "enter": "push", "scroll": [[1.5, 7, 560]] },
+        { "id": "builder", "beats": 7, "enter": "sheet", "taps": [[3.5, [292, 380]]] },
+        { "id": "plans", "beats": 7, "enter": "push" }
+      ],
+      "out": "zoom"
+    },
+    {
+      "id": "session", "beats": 40, "bg": "people:hero-workout-4",
+      "num": "04", "title": ["Buổi tập", "thông minh"], "accent": 1, "style": "rise",
+      "stat": { "at": 30, "value": 800, "suffix": "+", "label": "bài tập có video hướng dẫn" },
+      "captions": [
+        [1, "Ghi kg × lần × RPE từng hiệp — điền sẵn số buổi trước"],
+        [10, "Đồng hồ nghỉ giữa hiệp, báo cả khi khoá màn hình"],
+        [17, "Tự tăng tạ khi bạn đủ sức · hiệp khởi động & tính đĩa tạ"],
+        [25, "1RM ước tính, kỷ lục và video cho từng bài"]
+      ],
+      "shots": [
+        { "id": "session", "beats": 6, "enter": "sheet", "focus": [[2.6, 5.2, [10, 560, 370, 200], 1.6]], "taps": [[4.2, [358, 695]]] },
+        { "id": "sessionSets", "beats": 3, "enter": "cut" },
+        { "id": "rest", "beats": 6, "enter": "fade", "focus": [[0.6, 4.5, "rest", 1.5]] },
+        { "id": "warmup", "beats": 7, "enter": "push", "scroll": [[2, 6, 400]] },
+        { "id": "history", "beats": 6, "enter": "sheet" },
+        { "id": "exdetail", "beats": 6, "enter": "push", "taps": [[1.5, [195, 300]]] },
+        { "id": "exlib", "beats": 6, "enter": "push", "scroll": [[1.5, 5.5, 680]] }
+      ],
+      "out": "match"
+    },
+    {
+      "id": "cycle", "beats": 24, "bg": "people:hero-workout-2", "carry": true,
+      "num": "05", "title": ["Chu kỳ, giảm tải", "& siêu hiệp"], "accent": 1, "style": "chars",
+      "captions": [
+        [1, "Chu kỳ 4–16 tuần, tự xếp tuần giảm tải"],
+        [8, "Siêu hiệp & liên hoàn: ghép bài, tiết kiệm thời gian"],
+        [16, "Khối lượng từng nhóm cơ mỗi tuần — đủ mà không quá tải"]
+      ],
+      "shots": [
+        { "id": "cycle", "beats": 8, "enter": "sheet" },
+        { "id": "superset", "beats": 8, "enter": "sheet", "scroll": [[2, 7, 390]] },
+        { "id": "volume", "beats": 8, "enter": "push", "scroll": [[1, 7, 1060]] }
+      ],
+      "out": "sweep"
+    },
+    {
+      "id": "achieve", "beats": 24, "bg": "people:hero-workout-1",
+      "num": "06", "title": ["Thành tích", "& huy hiệu"], "accent": 1, "style": "rise",
+      "captions": [
+        [1, "Huy hiệu, cấp độ & XP cho từng thói quen tốt"],
+        [9, "Bảng kỷ lục cá nhân từng bài"],
+        [16, "Tổng kết tuần: buổi tập, khối lượng, dinh dưỡng"]
+      ],
+      "shots": [
+        { "id": "badgepop", "beats": 6, "enter": "fade", "focus": [[0.4, 4, [40, 380, 310, 300], 1.35]] },
+        { "id": "achieve", "beats": 10, "enter": "push", "scroll": [[1.5, 9, 1800]] },
+        { "id": "weekly", "beats": 8, "enter": "sheet", "scroll": [[2, 7, 375]] }
+      ],
+      "out": "whip"
+    },
+    {
+      "id": "nutrition", "beats": 40, "bg": "people:sleep-hero",
+      "num": "07", "title": ["Dinh dưỡng", "kiểu Việt"], "accent": 1, "style": "wipe",
+      "captions": [
+        [1, "Thực đơn Việt & Âu theo BMI và mục tiêu — ảnh món thật"],
+        [11, "Công thức chi tiết, có nồi chiên không dầu & món chay"],
+        [20, "Đổi món một chạm · danh sách đi chợ 7 ngày"],
+        [29, "Theo dõi nước · chế độ “Ẩn số calo” nhẹ nhàng"]
+      ],
+      "shots": [
+        { "id": "nutrition", "beats": 10, "enter": "cut", "focus": [[2.2, 4.2, [20, 150, 350, 260], 1.4]], "scroll": [[5, 9.6, 1500]] },
+        { "id": "recipe", "beats": 6, "enter": "sheet", "scroll": [[2, 5.5, 410]] },
+        { "id": "recipeVeg", "beats": 4, "enter": "push" },
+        { "id": "swap", "beats": 6, "enter": "sheet", "scroll": [[1.5, 5.5, 600]] },
+        { "id": "shopping", "beats": 6, "enter": "push", "scroll": [[1.5, 5.5, 900]] },
+        { "id": "hidekcal", "beats": 8, "enter": "push", "scroll": [[3, 7, 600]] }
+      ],
+      "out": "rotate"
+    },
+    {
+      "id": "pt", "beats": 32, "bg": "people:pt-khang",
+      "num": "08", "title": ["TapEasy PT", "cho huấn luyện viên"], "accent": 0, "style": "chars",
+      "captions": [
+        [1, "Quản lý học viên, lịch dạy và từng buổi tập"],
+        [9, "Giao giáo án mẫu cho học viên chỉ vài chạm"],
+        [17, "Ghi buổi tập thay học viên · nhắn tin ngay trong app"],
+        [25, "Gói tập, công nợ & doanh thu từng tháng"]
+      ],
+      "shots": [
+        { "id": "coach", "beats": 6, "enter": "cut", "scroll": [[1.5, 5.5, 800]] },
+        { "id": "client", "beats": 3, "enter": "push" },
+        { "id": "ptcal", "beats": 4, "enter": "sheet" },
+        { "id": "ptassign", "beats": 5, "enter": "sheet", "scroll": [[1.5, 4.5, 360]] },
+        { "id": "ptproxy", "beats": 8, "enter": "sheet", "scroll": [[1.5, 7, 500]] },
+        { "id": "ptrevenue", "beats": 6, "enter": "sheet", "focus": [[1, 4.5, [10, 180, 370, 260], 1.35]] }
+      ],
+      "out": "match"
+    },
+    {
+      "id": "findpt", "beats": 28, "bg": "people:pt-khang", "carry": true,
+      "num": "09", "title": ["Tìm PT", "phù hợp"], "accent": 0, "style": "rise",
+      "captions": [
+        [1, "Album PT theo khu vực, chuyên môn và mức giá"],
+        [10, "Bộ lọc chi tiết: hình thức tập, phòng tập, giá"],
+        [18, "Đánh giá minh bạch — chỉ từ học viên đã tập thật"]
+      ],
+      "shots": [
+        { "id": "findpt", "beats": 10, "enter": "push", "scroll": [[2, 9.5, 1700]] },
+        { "id": "fpfilters", "beats": 7, "enter": "sheet", "scroll": [[2, 6, 600]] },
+        { "id": "fpprofile", "beats": 11, "enter": "push", "scroll": [[2, 10.5, 2400]] }
+      ],
+      "out": "whip"
+    },
+    {
+      "id": "social", "beats": 32, "bg": "people:ev-run-dawn",
+      "num": "10", "title": ["Cộng đồng, sự kiện", "& cửa hàng"], "accent": 0, "style": "wipe",
+      "captions": [
+        [1, "Cộng đồng chia sẻ giáo án thật"],
+        [8, "Sự kiện & thi đua mỗi tháng, điểm danh bằng mã QR"],
+        [17, "Tích điểm TapEasy, đổi quà"],
+        [24, "Cửa hàng đồ tập ngay trong app"]
+      ],
+      "shots": [
+        { "id": "community", "beats": 8, "enter": "cut", "scroll": [[2, 7.5, 1100]] },
+        { "id": "events", "beats": 8, "enter": "push", "scroll": [[2, 7.5, 1000]] },
+        { "id": "gifts", "beats": 7, "enter": "push" },
+        { "id": "shop", "beats": 9, "enter": "fade", "scroll": [[1.5, 8.5, 1600]] }
+      ],
+      "out": "rotate"
+    },
+    {
+      "id": "kb", "beats": 20, "bg": "people:hero-workout-3",
+      "num": "11", "title": ["Kho kiến thức"], "accent": 0, "style": "chars",
+      "captions": [
+        [1, "Kỹ thuật, dinh dưỡng, phục hồi — viết bởi chuyên gia"],
+        [10, "Tìm không dấu, lưu bài để đọc lại"]
+      ],
+      "shots": [
+        { "id": "kb", "beats": 9, "enter": "cut", "scroll": [[2, 8.5, 1100]] },
+        { "id": "kbarticle", "beats": 11, "enter": "push", "scroll": [[2, 10.5, 1800]] }
+      ],
+      "out": "flood"
+    },
+    {
+      "id": "themes", "beats": 32, "bg": "none", "kind": "themes",
+      "num": "12", "title": ["16 giao diện", "đổi màu một chạm"], "accent": 0, "style": "rise",
+      "stat": { "at": 1, "value": 16, "suffix": "", "label": "gói giao diện" },
+      "captions": [
+        [1, "Từ Navy, Đại dương, Hoàng hôn… tới Aurora, Espresso, Volt"],
+        [17, "Icon biến hình & cảm giác bấm có rung phản hồi"]
+      ],
+      "shots": [
+        { "id": "themepicker", "beats": 5, "enter": "cut", "taps": [[3.5, "pick"]] },
+        { "id": "theme-ocean", "beats": 1.5, "enter": "theme" },
+        { "id": "theme-sunset", "beats": 1.5, "enter": "theme" },
+        { "id": "theme-forest", "beats": 1.5, "enter": "theme" },
+        { "id": "theme-midnight", "beats": 1.5, "enter": "theme" },
+        { "id": "theme-light", "beats": 1.5, "enter": "theme" },
+        { "id": "theme-aurora", "beats": 1.5, "enter": "theme" },
+        { "id": "theme-espresso", "beats": 1.5, "enter": "theme" },
+        { "id": "theme-alpine", "beats": 1.5, "enter": "theme" },
+        { "id": "theme-wellness", "beats": 1.5, "enter": "theme" },
+        { "id": "theme-sanctuary", "beats": 1.5, "enter": "theme" },
+        { "id": "theme-ember", "beats": 1.5, "enter": "theme" },
+        { "id": "theme-volt", "beats": 1.5, "enter": "theme" },
+        { "id": "theme-violet", "beats": 1.5, "enter": "theme" },
+        { "id": "theme-lime", "beats": 1.5, "enter": "theme" },
+        { "id": "theme-end", "beats": 6, "enter": "theme", "taps": [[1.5, [60, 790]], [2.6, [140, 790]], [3.6, [215, 790]]] }
+      ],
+      "out": "rotate"
+    },
+    {
+      "id": "privacy", "beats": 20, "bg": "people:ob-gym-empty",
+      "num": "13", "title": ["Bảo mật", "& quyền riêng tư"], "accent": 0, "style": "wipe",
+      "captions": [
+        [1, "Dữ liệu sức khoẻ chỉ lưu trên máy của bạn"],
+        [7, "Không quảng cáo, không bán dữ liệu"],
+        [13, "Chặn người dùng · xoá tài khoản bất kỳ lúc nào"]
+      ],
+      "shots": [
+        { "id": "privacy", "beats": 10, "enter": "sheet", "focus": [[1, 8, [16, 200, 360, 300], 1.3]] },
+        { "id": "account", "beats": 10, "enter": "push", "scroll": [[1.5, 9, 3200]] }
+      ],
+      "out": "zoom"
+    },
+    {
+      "id": "outro", "kind": "outro", "beats": 36, "bg": "clip",
+      "num": "", "title": ["Tham gia", "TapEasy Cộng Đồng"], "accent": 1, "style": "rise",
+      "a2hs": 4,
+      "cta_at": 18,
+      "captions": [
+        [1, "Cài lên màn hình chính — mở như app thật"],
+        [9, "Nhanh, nhẹ, tiếng Việt, miễn phí"]
+      ],
+      "shots": [
+        { "id": "theme-end", "beats": 36, "enter": "cut" }
+      ],
+      "out": "end"
+    }
+  ]
+}

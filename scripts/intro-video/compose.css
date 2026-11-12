@@ -1,0 +1,133 @@
+/* TapEasy intro — khung dựng. Màu thương hiệu: navy #061A24 · mint #5EE6C7 · coral #FF7A45 */
+:root{ --navy:#061A24; --ink:#03080B; --mint:#5EE6C7; --mint2:#9AF1DD; --coral:#FF7A45; --text:#F5F7F3;
+  --f-disp:"Barlow Condensed","Inter Tight",system-ui,sans-serif; --f-head:"Inter Tight","Inter",system-ui,sans-serif;
+  --f-body:"Inter",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,monospace; }
+*{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ background:#000; overflow:hidden; -webkit-font-smoothing:antialiased; }
+#stage{ position:relative; overflow:hidden; background:var(--ink); color:var(--text); font-family:var(--f-body); }
+.abs{ position:absolute; left:0; top:0; }
+.slot{ position:absolute; inset:0; overflow:hidden; will-change:transform; }
+.slot.off{ display:none; }
+
+/* ---------- nền ---------- */
+.bg{ position:absolute; inset:-4%; }
+.bg .base{ position:absolute; inset:0; background:radial-gradient(120% 80% at 70% 20%, #0B3140 0%, #061A24 45%, #03080B 100%); }
+.bg .photo{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:grayscale(1) contrast(1.15) brightness(.55); opacity:.42; }
+.bg .tint{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(6,26,36,.55) 0%, rgba(6,26,36,.25) 40%, rgba(3,8,11,.85) 100%); mix-blend-mode:normal; }
+.bg .teal{ position:absolute; inset:0; background:#0E5A5A; mix-blend-mode:color; opacity:.55; }
+.bg .blob{ position:absolute; border-radius:50%; filter:blur(60px); opacity:.35; }
+.bg .ghost{ position:absolute; font-family:var(--f-disp); font-weight:800; line-height:.8; color:transparent; -webkit-text-stroke:2px rgba(94,230,199,.10); white-space:nowrap; letter-spacing:-.02em; }
+.bg .clipf{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:grayscale(1) contrast(1.12); }
+.bg .grid{ position:absolute; inset:0; background-image:linear-gradient(rgba(94,230,199,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(94,230,199,.05) 1px, transparent 1px); }
+
+/* ---------- chữ ---------- */
+.fg{ position:absolute; inset:0; transform-origin:50% 55%; }
+.txt{ position:absolute; inset:0; pointer-events:none; }
+.capbg{ position:absolute; left:0; right:0; bottom:0; height:17%; background:linear-gradient(180deg, rgba(3,8,11,0) 0%, rgba(3,8,11,.78) 45%, rgba(3,8,11,.92) 100%); }
+.kicker{ position:absolute; font-family:var(--f-mono); font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--mint); display:flex; align-items:center; gap:.7em; white-space:nowrap; }
+.kicker .n{ font-weight:700; color:var(--text); }
+.kicker .bar{ display:inline-block; height:2px; background:var(--mint); }
+.title{ position:absolute; font-family:var(--f-head); font-weight:800; letter-spacing:-.025em; line-height:1.02; }
+.title .ln{ display:block; position:relative; white-space:nowrap; padding:.06em 0 .1em; }
+.title .mask{ display:inline-block; overflow:hidden; vertical-align:top; padding:0 .02em .12em; margin-bottom:-.12em; }
+.title .w{ display:inline-block; will-change:transform; }
+.title .c{ display:inline-block; will-change:transform,opacity,filter; }
+.title .acc{ color:var(--mint); }
+.title .wipebar{ position:absolute; top:.08em; bottom:.06em; width:.09em; background:var(--mint); border-radius:2px; }
+.cap{ position:absolute; font-family:var(--f-body); font-weight:500; line-height:1.28; color:rgba(245,247,243,.92); }
+.cap b{ color:var(--mint2); font-weight:600; }
+.cap .dot{ display:inline-block; width:.42em; height:.42em; border-radius:50%; background:var(--coral); margin-right:.55em; vertical-align:.12em; }
+.stat{ position:absolute; padding:.55em .8em .6em; border-radius:.6em; background:rgba(10,32,42,.62); border:1px solid rgba(154,241,221,.22);
+  backdrop-filter:blur(14px) saturate(130%); -webkit-backdrop-filter:blur(14px) saturate(130%); box-shadow:0 20px 60px rgba(0,0,0,.45); white-space:nowrap; }
+.stat .v{ font-family:var(--f-disp); font-weight:800; color:var(--mint); line-height:.9; letter-spacing:-.01em; }
+.stat .l{ font-family:var(--f-body); font-weight:500; color:rgba(245,247,243,.82); margin-top:.25em; }
+.chip{ position:absolute; font-family:var(--f-mono); font-weight:700; padding:.5em .9em; border-radius:999px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25); white-space:nowrap; }
+
+/* ---------- điện thoại (tự vẽ, không logo) ----------
+   MỘT nguồn số đo (compose.js → biến CSS trên .phone): khung 424×878, màn 390×844 đặt tại (17,17)
+   = đúng khung chụp app 390×844 CSS px → tỉ lệ 390:844, không co giãn/crop. Bo góc đồng tâm:
+   khung ngoài R, viền trong R−6, màn R−17 (màn và kính dùng CHUNG clip-path → góc ảnh app = góc màn). */
+.cam{ position:absolute; inset:0; perspective:2400px; perspective-origin:50% 45%; }
+.rig{ position:absolute; left:0; top:0; width:var(--ph-w,424px); height:var(--ph-h,878px); transform-origin:50% 50%; }
+.tilt{ position:absolute; inset:0; transform-style:preserve-3d; transform-origin:50% 50%; }
+.phone{ position:absolute; inset:0; border-radius:var(--r-out,72px); }
+.phone .shadow{ position:absolute; left:6%; right:6%; bottom:-46px; height:60px; border-radius:50%; background:rgba(0,0,0,.55); filter:blur(28px); }
+.phone .frame{ position:absolute; inset:0; border-radius:var(--r-out,72px);
+  background:linear-gradient(135deg,#9aa2aa 0%,#3c4247 16%,#c8cfd5 34%,#59616a 52%,#adb5bc 70%,#3f454b 86%,#8e969d 100%);
+  box-shadow:0 40px 90px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.35); }
+.phone .frame2{ position:absolute; inset:3px; border-radius:calc(var(--r-out,72px) - 3px); background:linear-gradient(160deg,#2a2f34,#15181b 40%,#2b3036); }
+.phone .bezel{ position:absolute; inset:6px; border-radius:calc(var(--r-out,72px) - 6px); background:#000; }
+.phone .btn{ position:absolute; width:5px; border-radius:2px; background:linear-gradient(90deg,#4a5157,#b9c0c6 50%,#4a5157); }
+/* màn: không translateZ / will-change bên trong (tránh lớp ghép riêng làm lệch/viền khi xoay 3D) */
+.phone .screen{ position:absolute; left:var(--scr-x,17px); top:var(--scr-y,17px); width:var(--scr-w,390px); height:var(--scr-h,844px);
+  border-radius:var(--r-scr,55px); clip-path:inset(0 round var(--r-scr,55px)); overflow:hidden; background:#000; }
+.phone .island{ position:absolute; z-index:5; border-radius:999px; background:#000; }
+.phone .island i{ position:absolute; top:50%; width:12px; height:12px; margin-top:-6px; border-radius:50%; background:radial-gradient(circle at 40% 40%,#2b3a55 0%,#0b0f18 60%); }
+.phone .glass{ position:absolute; left:var(--scr-x,17px); top:var(--scr-y,17px); width:var(--scr-w,390px); height:var(--scr-h,844px);
+  border-radius:var(--r-scr,55px); clip-path:inset(0 round var(--r-scr,55px)); overflow:hidden; pointer-events:none; z-index:6; }
+.phone .glass .sheen{ position:absolute; top:-30%; width:42%; height:160%; background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.16), rgba(255,255,255,0)); transform:rotate(18deg); }
+.phone .glass .refl{ position:absolute; inset:0; background:linear-gradient(125deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,0) 32%); }
+.homebar{ position:absolute; left:50%; width:134px; height:5px; margin-left:-67px; border-radius:3px; z-index:4; }
+.shotl{ position:absolute; left:0; top:0; width:390px; height:844px; overflow:hidden; background:#061A24; }
+.shotl img{ position:absolute; display:block; }
+.shotl .base{ left:0; top:0; width:390px; height:844px; }
+.shotl .clip{ position:absolute; overflow:hidden; }
+.shotl .strips{ position:absolute; left:0; top:0; width:100%; }
+.shotl .ph{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; color:#9AF1DD; font:600 22px var(--f-head); text-align:center;
+  background:repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 64px, transparent 64px 128px), linear-gradient(160deg,#0B3140,#061A24); }
+.status{ position:absolute; left:0; top:0; width:390px; z-index:4; }
+.touch{ position:absolute; left:0; top:0; width:50px; height:50px; margin:-25px 0 0 -25px; border-radius:50%; z-index:7;
+  background:radial-gradient(circle, rgba(255,255,255,.55) 0%, rgba(255,255,255,.28) 60%, rgba(255,255,255,.12) 100%);
+  border:2px solid rgba(255,255,255,.85); box-shadow:0 6px 18px rgba(0,0,0,.35); }
+.ripple{ position:absolute; left:0; top:0; border-radius:50%; border:3px solid rgba(255,255,255,.9); z-index:7; }
+.tapglow{ position:absolute; left:0; top:0; border-radius:50%; background:radial-gradient(circle, rgba(94,230,199,.45), rgba(94,230,199,0) 70%); z-index:7; }
+
+/* chương kết: bảng chia sẻ + màn hình chính tự vẽ (không icon hệ điều hành) */
+.share{ position:absolute; left:8px; right:8px; bottom:8px; border-radius:30px; background:rgba(242,244,246,.97); color:#111; z-index:8; padding:18px 18px 22px; font-family:var(--f-body); box-shadow:0 -10px 40px rgba(0,0,0,.35); }
+.share .h{ display:flex; gap:12px; align-items:center; padding-bottom:14px; border-bottom:1px solid #d9dde1; }
+.share .h img{ width:46px; height:46px; border-radius:11px; }
+.share .h b{ display:block; font-size:16px; } .share .h small{ color:#666; font-size:13px; }
+.share .row{ display:flex; align-items:center; justify-content:space-between; padding:15px 6px; font-size:17px; border-bottom:1px solid #e3e6e9; }
+.share .row:last-child{ border-bottom:none; }
+.share .ico{ width:26px; height:26px; border:2px solid #222; border-radius:7px; position:relative; }
+.share .ico.plus::before,.share .ico.plus::after{ content:""; position:absolute; left:50%; top:50%; background:#222; }
+.share .ico.plus::before{ width:12px; height:2px; margin:-1px 0 0 -6px; } .share .ico.plus::after{ width:2px; height:12px; margin:-6px 0 0 -1px; }
+.share .row.hl{ background:rgba(94,230,199,.25); border-radius:12px; }
+.hs{ position:absolute; inset:0; z-index:8; background:linear-gradient(160deg,#103b4a 0%,#0a2530 45%,#2a1a2e 100%); }
+.hs .ic{ position:absolute; width:62px; height:62px; border-radius:15px; background:rgba(255,255,255,.14); }
+.hs .lbl{ position:absolute; width:80px; text-align:center; font:500 11px var(--f-body); color:rgba(255,255,255,.85); }
+.hs .app{ position:absolute; width:62px; height:62px; border-radius:15px; overflow:hidden; box-shadow:0 8px 22px rgba(0,0,0,.4); }
+.hs .app img{ width:100%; height:100%; }
+.hs .dock{ position:absolute; left:14px; right:14px; bottom:18px; height:90px; border-radius:30px; background:rgba(255,255,255,.14); }
+
+/* hiệu ứng toàn khung */
+.fx{ position:absolute; inset:0; pointer-events:none; }
+.vignette{ position:absolute; inset:0; background:radial-gradient(120% 95% at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,.42) 100%); }
+.grain{ position:absolute; inset:0; width:100%; height:100%; opacity:.09; mix-blend-mode:overlay; }
+.sweep{ position:absolute; top:-50%; height:200%; background:linear-gradient(90deg, rgba(255,255,255,0), rgba(220,255,245,.55), rgba(255,255,255,0)); transform:rotate(14deg); mix-blend-mode:screen; }
+.black{ position:absolute; inset:0; background:#000; }
+.logo{ position:absolute; }
+.logo img{ display:block; width:100%; }
+.slogan{ position:absolute; font-family:var(--f-disp); font-weight:800; text-transform:uppercase; line-height:.92; letter-spacing:.005em; }
+.slogan .sw{ display:block; white-space:nowrap; will-change:transform,opacity; }
+.cta{ position:absolute; text-align:center; }
+.cta .url-unused{ display:inline-block; white-space:nowrap; font-size:.86em; font-family:var(--f-mono); font-weight:700; color:var(--ink); background:var(--mint); border-radius:999px; padding:.5em 1.1em; }
+.cta .btn{ display:inline-flex; align-items:center; gap:.5em; font-family:var(--f-head); font-weight:700; color:#1B0F0A; background:var(--coral); border-radius:999px; padding:.55em 1.2em; }
+.cta .sub{ font-family:var(--f-body); color:rgba(245,247,243,.85); }
+
+/* chương kết: thẻ QR nhóm Zalo (lớp riêng TRÊN hạt phim/vignette — không hiệu ứng nào đè lên QR) */
+.qrlayer{ position:absolute; inset:0; pointer-events:none; }
+.qrcard{ position:absolute; left:0; top:0; transform-origin:50% 50%; }
+.qrcard img{ display:block; width:100%; height:100%; border-radius:4.2%/3.3%; box-shadow:0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.08); }
+.qrcap{ position:absolute; font-family:var(--f-head); font-weight:700; color:var(--text); white-space:nowrap; display:flex; align-items:center; gap:.5em; }
+.qrcap .z{ display:inline-flex; align-items:center; justify-content:center; height:1.35em; padding:0 .45em; border-radius:.4em; background:#0068FF; color:#fff; font-size:.8em; font-weight:800; }
+.cta .lead{ font-family:var(--f-body); font-weight:500; color:rgba(245,247,243,.92); }
+.cta .lead b{ color:var(--mint); font-weight:700; }
+/* ?qa=fit : tô màu để đo khít (qa_fit.py) — ảnh app = magenta, màn trống = xanh lá */
+.qa-fit .shotl, .qa-fit .shotl *{ background:#FF00FF !important; }
+.qa-fit .shotl img, .qa-fit .shotl .ph{ opacity:0 !important; }
+.qa-fit .phone .screen{ background:#00FF00 !important; }
+.qa-fit .status, .qa-fit .homebar, .qa-fit .touch, .qa-fit .ripple, .qa-fit .tapglow, .qa-fit .island, .qa-fit .glass, .qa-fit .share, .qa-fit .hs, .qa-fit .fx, .qa-fit .txt, .qa-fit .qrlayer{ visibility:hidden !important; }
+.qa-fit .shotl{ box-shadow:none !important; filter:none !important; }
+.qa-scr .shotl{ visibility:hidden !important; }
+.qa-fit .cam{ opacity:1 !important; } .qa-fit .slot, .qa-fit .fg{ filter:none !important; } .qa-fit .bg, .qa-fit .black, .qa-fit .phone .shadow{ visibility:hidden !important; }
