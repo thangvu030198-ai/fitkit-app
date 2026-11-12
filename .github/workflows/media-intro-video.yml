@@ -1,0 +1,137 @@
+name: Media — video giới thiệu TapEasy (intro dọc + ngang)
+
+# Dựng video giới thiệu ~3:50 từ app THẬT (chụp bằng Playwright, dữ liệu demo cục bộ, không đăng nhập tài khoản thật).
+# 1) capture  : chụp 70+ màn app 390×844 @3x + tải ảnh nền/clip màn chào  → artifact intro-build
+# 2) render   : 2 khổ × 3 phần chạy song song (compose.html → render(t) → H.264)  → artifact intro-chunks-*
+# 3) publish  : ghép + nhạc tự tổng hợp + chuẩn hoá -14 LUFS + poster + QA (+ QR nhóm Zalo quét được) → media/intro/ (commit) + artifact tapeasy-intro
+# app_url CHỈ dùng để chụp app — video không hiện URL/tên miền nào; đoạn kết là QR nhóm Zalo "TapEasy Cộng Đồng"
+# (scripts/intro-video/assets/zalo-community-qr.jpg).
+# Tài liệu: docs/INTRO-VIDEO.md
+on:
+  workflow_dispatch:
+    inputs:
+      app_url:  { description: "URL app để chụp (không hiện trên video)", default: "https://thangvu030198-ai.github.io/fitkit-app/", required: false }
+      fps:      { description: "Khung/giây (30 hoặc 60)", default: "30", required: false }
+      scale:    { description: "deviceScaleFactor khi chụp app", default: "3", required: false }
+      commit:   { description: "Commit media/intro vào repo (true/false)", default: "true", required: false }
+
+permissions:
+  contents: write
+
+concurrency:
+  group: media-intro-video
+  cancel-in-progress: false
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Cài Playwright (Chromium) + ffmpeg + fonts
+        run: |
+          pip install -q playwright==1.48.0 numpy pillow opencv-python-headless
+          python -m playwright install --with-deps chromium
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-noto-core fonts-noto-color-emoji
+      - name: Storyboard → mốc thời gian
+        run: python scripts/intro-video/prep.py
+      - name: Ảnh nền + clip màn chào
+        run: python scripts/intro-video/fetch_assets.py
+      - name: Chụp app thật (390×844 @${{ inputs.scale || '3' }}x)
+        run: python scripts/intro-video/capture_app.py --url "${{ inputs.app_url || 'https://thangvu030198-ai.github.io/fitkit-app/' }}" --scale "${{ inputs.scale || '3' }}"
+      - name: Contact sheet các màn đã chụp
+        run: |
+          cd scripts/intro-video/build
+          python ../contact_sheet.py shots_contact.jpg 10 200 $(ls -d shots/*/ | sed 's#/$#/base.jpg#')
+      - name: Không hiện URL/GitHub trên video
+        run: |
+          if grep -niE "github|https?://" scripts/intro-video/timeline.json scripts/intro-video/build/timeline.js; then echo "::error::timeline còn URL"; exit 1; fi
+      - name: QA khít ảnh app ↔ màn mockup (dọc + ngang, ≤ 1 px)
+        run: |
+          python scripts/intro-video/qa_fit.py --fmt v
+          python scripts/intro-video/qa_fit.py --fmt h
+      - uses: actions/upload-artifact@v4
+        with:
+          name: intro-build
+          path: scripts/intro-video/build
+          retention-days: 5
+
+  render:
+    needs: capture
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        fmt: [v, h]
+        part: [0, 1, 2]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Cài Playwright (Chromium) + ffmpeg
+        run: |
+          pip install -q playwright==1.48.0 numpy pillow
+          python -m playwright install --with-deps chromium
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-noto-core
+      - uses: actions/download-artifact@v4
+        with: { name: intro-build, path: scripts/intro-video/build }
+      - name: Dựng khung ${{ matrix.fmt }} phần ${{ matrix.part }}/3
+        run: python scripts/intro-video/render.py --fmt ${{ matrix.fmt }} --part ${{ matrix.part }} --parts 3 --fps ${{ inputs.fps || '30' }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: intro-chunks-${{ matrix.fmt }}-${{ matrix.part }}
+          path: scripts/intro-video/build/out/${{ matrix.fmt }}/chunks
+          retention-days: 3
+
+  publish:
+    needs: render
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: |
+          pip install -q numpy pillow opencv-python-headless
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - uses: actions/download-artifact@v4
+        with: { name: intro-build, path: scripts/intro-video/build }
+      - uses: actions/download-artifact@v4
+        with: { pattern: intro-chunks-v-*, merge-multiple: true, path: scripts/intro-video/build/out/v/chunks }
+      - uses: actions/download-artifact@v4
+        with: { pattern: intro-chunks-h-*, merge-multiple: true, path: scripts/intro-video/build/out/h/chunks }
+      - name: Nhạc tự tổng hợp (116 BPM, không bản quyền)
+        run: python scripts/intro-video/music.py
+      - name: Ghép + chuẩn hoá âm lượng + poster
+        run: python scripts/intro-video/finalize.py --fmt v --fmt h --dest media/intro
+      - name: QA (contact sheet, dải quanh chuyển cảnh, nháy sáng, QR cuối phim quét được + đứng yên)
+        run: |
+          python scripts/intro-video/qa.py media/intro/tapeasy-intro-1080x1920.mp4
+          python scripts/intro-video/qa.py media/intro/tapeasy-intro-1920x1080.mp4
+          cp scripts/intro-video/build/shots_contact.jpg scripts/intro-video/build/qa/ 2>/dev/null || true
+          ls -la media/intro
+          grep -h "QR" scripts/intro-video/build/qa/*/report.txt
+          ! grep -h "QR.*TRƯỢT" scripts/intro-video/build/qa/*/report.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tapeasy-intro
+          path: |
+            media/intro
+            scripts/intro-video/build/qa
+          retention-days: 30
+      - name: Lưu vào repo (media/intro)
+        if: ${{ (inputs.commit || 'true') == 'true' }}
+        run: |
+          git config user.name "tapeasy-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add media/intro
+          if git diff --cached --quiet; then echo "Không có gì mới"; exit 0; fi
+          git commit -m "media: video giới thiệu TapEasy (1080×1920 + 1920×1080, $(date +%Y-%m-%d))"
+          git pull --rebase && git push
