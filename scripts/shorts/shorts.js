@@ -95,10 +95,10 @@ const heads = P.beats.map(b => {
   const box = el("div", "", headBox); show(box, false);
   const size = b.hsize; const words = [];
   b.h.forEach((line, li) => {
-    const ln = tq(el("div", "ln" + (li === b.acc ? " acc" : ""), box), "head");
+    const ln = tq(el("div", "ln" + (li === b.acc ? " acc" : ""), box), "head"); ln.style.fontSize = size + "px";   // khoảng trắng giữa các từ lấy cỡ chữ của dòng
     String(line).split(/\s+/).filter(Boolean).forEach((w, wi) => {
+      if(wi) ln.appendChild(document.createTextNode(" "));   // khoảng trắng TRƯỚC từ (trước đây nằm sau → dính chữ)
       const s = el("span", "w", ln, w); s.style.fontSize = size + "px";
-      if(wi) ln.appendChild(document.createTextNode(" "));
       words.push(s);
     });
   });

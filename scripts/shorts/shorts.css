@@ -125,13 +125,13 @@ html,body{ background:#000; overflow:hidden; -webkit-font-smoothing:antialiased;
 .kick .logo b{ color:var(--teal); }
 .kick .bar{ display:inline-block; width:46px; height:3px; background:var(--mint); border-radius:2px; }
 .head{ position:absolute; }
-.head .ln{ display:block; white-space:nowrap; overflow:hidden; padding:2px 0 8px; }
+.head .ln{ display:block; white-space:nowrap; overflow:hidden; padding:2px 0 8px; font-family:var(--f-head); font-weight:800; line-height:1; letter-spacing:-.025em; }
 .head .w{ display:inline-block; font-family:var(--f-head); font-weight:800; letter-spacing:-.025em; line-height:1; color:#fff; will-change:transform; text-shadow:0 6px 30px rgba(0,0,0,.45); }
 .head .acc .w{ color:var(--mint); }
 .cap{ position:absolute; text-align:center; }
 .cap .cl{ display:block; white-space:nowrap; }
 .cap .cl + .cl{ margin-top:8px; }   /* 2 dòng không chạm nhau khi chữ “nảy” (scale 1,07) */
-.cap .pl{ display:inline-block; padding:3px 18px 6px; border-radius:18px; background:rgba(3,8,11,.62); }
+.cap .pl{ display:inline-block; font:800 58px/1.2 var(--f-head); padding:3px 18px 6px; border-radius:18px; background:rgba(3,8,11,.62); }
 .cap .cw{ display:inline-block; font:800 58px/1.2 var(--f-head); color:#fff; letter-spacing:-.01em; transform-origin:50% 70%; text-shadow:0 3px 14px rgba(0,0,0,.6); }
 .cap .cw.now{ color:var(--mint); }
 .cap .cw.fut{ color:rgba(255,255,255,.5); }
