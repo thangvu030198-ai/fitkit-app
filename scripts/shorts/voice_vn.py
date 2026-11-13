@@ -15,10 +15,12 @@ T = importlib.util.module_from_spec(spec); spec.loader.exec_module(T)
 
 TEXT = ("Tập mãi mà không lên cơ? Khoan đã! Có thể bạn đang ăn sai calo đấy. "
         "Mở TapEasy, nhập chiều cao, cân nặng, một chạm là ra ngay lượng calo mỗi ngày của bạn. Thử ngay nhé!")
-STYLE = ("Read the following Vietnamese text aloud in a native Hanoi (Northern Vietnamese) accent, as a young Vietnamese man "
-         "around 25 who is a popular TikTok product reviewer: energetic, warm and conversational like talking to a friend, "
-         "punchy emphasis on key words, crisp clear articulation of every tone, natural pace with short natural pauses at commas "
-         "and periods, never robotic. Only speak the Vietnamese text")
+STYLE = os.environ.get("VN_STYLE") or (
+    "Read the following Vietnamese text aloud in a native Hanoi (Northern Vietnamese) accent, as a mature, composed Vietnamese man "
+    "around 30 who reviews fitness apps: calm, confident and trustworthy, warm but restrained, speaking naturally like a real person "
+    "explaining to a friend. Keep intonation even and steady, NO exaggerated emphasis, no dramatic rises, no shouting, no hype. "
+    "Clear, precise articulation of every Vietnamese tone, normal conversational pace, short natural pauses at commas and periods. "
+    "Only speak the Vietnamese text")
 MM = "minimax-speech-2.8-turbo"
 MMHD = "minimax-speech-2.8-hd"
 
@@ -126,10 +128,10 @@ def main():
     # Ưu tiên: nam trẻ giọng Bắc, kiểu reviewer TikTok, tự nhiên như người thật → Gemini TTS (điều khiển giọng bằng lời dặn)
     GM = "gemini-3.1-flash-tts-preview"
     C = []
-    for v, tag in [("Puck", "sôi nổi"), ("Fenrir", "hào hứng"), ("Achird", "thân thiện"), ("Sadachbia", "lanh lợi"),
-                   ("Zubenelgenubi", "thoải mái"), ("Umbriel", "dễ nghe"), ("Iapetus", "rõ ràng"), ("Algieba", "mượt")]:
-        C.append((f"Gemini · {v} · nam trẻ Hà Nội kiểu reviewer ({tag})", GM, v, 1.0, "GEMINI", ()))
-    C.append(("Tham khảo: MiniMax nam tiếng Việt (Vietnamese_male_1)", MM, "Vietnamese_male_1", 1.0, "happy", ("openai_vs",)))
+    for v, tag in [("Charon", "trầm, mạch lạc"), ("Orus", "chắc, vững"), ("Iapetus", "rõ ràng"), ("Algieba", "mượt, ấm"),
+                   ("Rasalgethi", "từ tốn, hiểu biết"), ("Alnilam", "chắc giọng"), ("Schedar", "đều, điềm tĩnh"),
+                   ("Sadaltager", "chín chắn")]:
+        C.append((f"Gemini · {v} · nam Hà Nội trưởng thành, điềm đạm ({tag})", GM, v, 1.0, "GEMINI", ()))
 
     rows, seen = [], set()
     for i, (label, model, voice, speed, emo, hows) in enumerate(C, 1):
