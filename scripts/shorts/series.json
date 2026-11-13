@@ -8,14 +8,14 @@
   "voice": {
     "model": "minimax-speech-2.8-turbo",
     "voice": "Friendly_Person",
-    "speed": 0.9,
+    "speed": 1.0,
     "pitch": 0,
     "emotion": "happy",
     "how": "openai_vs",
     "style": "giọng 07 (chủ dự án chọn): model turbo như mẫu 07 (KHÔNG dùng HD — ra giọng khác); tốc độ 0.9 + ngắt nghỉ sau dấu câu cho tròn vành rõ chữ",
     "pauses": {
-      "comma": 0.22,
-      "stop": 0.42
+      "comma": 0.15,
+      "stop": 0.3
     }
   },
   "qr": "assets/zalo-community-qr.jpg",

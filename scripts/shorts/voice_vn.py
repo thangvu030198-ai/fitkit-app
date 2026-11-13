@@ -24,6 +24,29 @@ def dur(b):
     except Exception: return None
 
 
+def pcm_wav(pcm, sr=24000):
+    import struct
+    return (b"RIFF" + struct.pack("<I", 36 + len(pcm)) + b"WAVEfmt " + struct.pack("<IHHIIHH", 16, 1, 1, sr, sr * 2, 2, 16)
+            + b"data" + struct.pack("<I", len(pcm)) + pcm)
+
+
+def gemini_call(model, voice, text, style):
+    """Gemini TTS qua apivn: thử /audio/speech (mp3/wav/pcm) — PCM thô 24 kHz → bọc WAV."""
+    inp = (style + ": " + text) if style else text
+    for fmt in ("mp3", "wav", "pcm"):
+        body = {"model": model, "input": inp, "voice": voice, "response_format": fmt}
+        st, ct, b = T.http("POST", T.BASE + "/audio/speech", body)
+        T.log_attempt("gemini/" + fmt, T.BASE + "/audio/speech", voice, st, ct, b, model)
+        if st != 200 or not b or len(b) < 2000: continue
+        if T.looks_audio(b): return b
+        if b[:1] in (b"{", b"["):
+            a, why = T.extract_audio(st, ct, b)
+            if a: return a
+            continue
+        return pcm_wav(b)                                                  # PCM thô (audio/L16, audio/pcm…)
+    return None
+
+
 def models_list():
     st, ct, b = T.http("GET", T.BASE + "/models", timeout=40)
     try: j = json.loads(b.decode("utf-8"))
@@ -50,7 +73,10 @@ def main():
         C.append((f"MiniMax HD giọng Việt: {v}", MMHD, v, 1.0, "", ("openai_vs", "openai")))
     for m in tts_models:
         if "minimax" in m.lower(): continue
-        if re.search(r"gemini", m, re.I): vs = ["Charon", "Fenrir", "Puck", "Orus"]
+        if re.search(r"gemini", m, re.I):
+            for v in ["Charon", "Fenrir", "Puck", "Orus", "Iapetus", "Algenib"]:
+                C.append((f"Gemini TTS · {v} · giọng Hà Nội hào hứng", m, v, 1.0, "GEMINI", ()))
+            continue
         elif re.search(r"gpt|tts-1|openai", m, re.I): vs = ["onyx", "ash", "echo"]
         elif re.search(r"eleven", m, re.I): vs = ["pNInz6obpgDQGcFmaJgB", "TxGEqnHWrfWFTfGW9XjX"]
         else: vs = ["male", "default"]
@@ -62,15 +88,21 @@ def main():
         seen.add((model, voice))
         T.SPEED, T.PITCH, T.EMOTION = speed, 0, emo
         ok = None
+        if emo == "GEMINI":
+            T.EMOTION = ""
+            a = gemini_call(model, voice, TEXT, "Đọc bằng giọng nam Hà Nội chuẩn, tròn vành rõ chữ, hào hứng, tốc độ vừa phải")
+            if a: ok = ("gemini", a)
         for how in hows:
             audio, st, why = T.call({"how": how, "voice": voice}, model, TEXT, f"vn {i}")
             if audio and len(audio) > 2000: ok = (how, audio); break
         if not ok:
             print(f"  ✗ {model} · {voice}", flush=True); continue
-        fn = re.sub(r"[^A-Za-z0-9._-]+", "_", f"{len(rows) + 1:02d}-{model}-{voice}")[:80] + ".mp3"
+        ext = ".wav" if ok[1][:4] == b"RIFF" else ".mp3"
+        fn = re.sub(r"[^A-Za-z0-9._-]+", "_", f"{len(rows) + 1:02d}-{model}-{voice}")[:80] + ext
         open(os.path.join(OUT, fn), "wb").write(ok[1])
         rows.append({"n": len(rows) + 1, "label": label, "model": model, "voice": voice, "how": ok[0], "file": fn, "dur": dur(ok[1])})
         print(f"  ✓ {fn} ({ok[0]}, {rows[-1]['dur']} s)", flush=True)
+    json.dump(T.LOG, open(os.path.join(OUT, "tts-log.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)   # đã che khoá
     json.dump({"text": TEXT, "samples": rows}, open(os.path.join(OUT, "index.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     items = "\n".join(
         f'<li><b>Giọng số {r["n"]:02d}</b> — {html.escape(r["label"])}<br><small>{html.escape(r["voice"])} · {html.escape(r["model"])}</small><br>'
