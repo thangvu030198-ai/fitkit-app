@@ -85,7 +85,13 @@ def main():
         for s in shorts: rep["failed"][s["id"]] = "thiếu khoá"
         return finish(1 if args.strict else 0)
     recipe = None
-    if os.environ.get("TTS_RECIPE"): recipe = {"how": os.environ["TTS_RECIPE"], "voice": pref}
+    GEM = "gemini" in model.lower()
+    if GEM:                                                               # Gemini TTS (giọng Việt bản ngữ, điều khiển bằng lời dặn)
+        import voice_vn as V
+        GSTYLE = VS.get("style_prompt") or V.STYLE
+        PAUSE = None                                                      # <#x#> chỉ dành cho MiniMax
+        recipe = {"how": "gemini", "voice": pref}
+    elif os.environ.get("TTS_RECIPE"): recipe = {"how": os.environ["TTS_RECIPE"], "voice": pref}
     else:
         recipe = T.probe(model, [pref])                                   # đường đã chạy ở intro: openai + Deep_Voice_Man
         if not recipe:
@@ -104,12 +110,23 @@ def main():
         for key, text in segments(s, end_say):
             text = pace(text, PAUSE)
             fn = os.path.join(d, f"{key}.mp3"); meta = fn[:-4] + ".json"
-            h = hashlib.sha1(json.dumps([text, model, recipe, T.SPEED, T.PITCH, getattr(T, "EMOTION", "")], ensure_ascii=False).encode("utf-8")).hexdigest()[:14]
+            h = hashlib.sha1(json.dumps([text, model, recipe, T.SPEED, T.PITCH, getattr(T, "EMOTION", ""), GSTYLE if GEM else ""], ensure_ascii=False).encode("utf-8")).hexdigest()[:14]
             cached = not args.force and os.path.exists(fn) and os.path.exists(meta) and json.load(open(meta)).get("hash") == h
             if not cached:
                 audio = None
                 for k in range(3):
-                    audio, st, why = T.call(recipe, model, text, f"{s['id']}#{key} lần {k + 1}")
+                    if GEM:
+                        wav = V.gemini_call(model, pref, text, GSTYLE)
+                        audio = None
+                        if wav:
+                            import subprocess, tempfile
+                            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tf: tf.write(wav)
+                            p = subprocess.run(["ffmpeg", "-hide_banner", "-v", "error", "-y", "-i", tf.name, "-ac", "1", "-ar", "48000", "-b:a", "192k", "-f", "mp3", "pipe:1"], capture_output=True)
+                            os.unlink(tf.name)
+                            audio = p.stdout if p.returncode == 0 and len(p.stdout) > 2000 else None
+                        st = 200 if audio else 0
+                    else:
+                        audio, st, why = T.call(recipe, model, text, f"{s['id']}#{key} lần {k + 1}")
                     if audio: break
                     if st in (401, 403): break
                     time.sleep(2 * (k + 1))
