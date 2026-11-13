@@ -3,83 +3,74 @@
  "samples": [
   {
    "n": 1,
-   "label": "Gemini · Puck · nam trẻ Hà Nội kiểu reviewer (sôi nổi)",
+   "label": "Gemini · Charon · nam Hà Nội trưởng thành, điềm đạm (trầm, mạch lạc)",
    "model": "gemini-3.1-flash-tts-preview",
-   "voice": "Puck",
+   "voice": "Charon",
    "how": "gemini",
-   "file": "01-gemini-3.1-flash-tts-preview-Puck.wav",
+   "file": "01-gemini-3.1-flash-tts-preview-Charon.wav",
    "dur": null
   },
   {
    "n": 2,
-   "label": "Gemini · Fenrir · nam trẻ Hà Nội kiểu reviewer (hào hứng)",
+   "label": "Gemini · Orus · nam Hà Nội trưởng thành, điềm đạm (chắc, vững)",
    "model": "gemini-3.1-flash-tts-preview",
-   "voice": "Fenrir",
+   "voice": "Orus",
    "how": "gemini",
-   "file": "02-gemini-3.1-flash-tts-preview-Fenrir.wav",
+   "file": "02-gemini-3.1-flash-tts-preview-Orus.wav",
    "dur": null
   },
   {
    "n": 3,
-   "label": "Gemini · Achird · nam trẻ Hà Nội kiểu reviewer (thân thiện)",
+   "label": "Gemini · Iapetus · nam Hà Nội trưởng thành, điềm đạm (rõ ràng)",
    "model": "gemini-3.1-flash-tts-preview",
-   "voice": "Achird",
+   "voice": "Iapetus",
    "how": "gemini",
-   "file": "03-gemini-3.1-flash-tts-preview-Achird.wav",
+   "file": "03-gemini-3.1-flash-tts-preview-Iapetus.wav",
    "dur": null
   },
   {
    "n": 4,
-   "label": "Gemini · Sadachbia · nam trẻ Hà Nội kiểu reviewer (lanh lợi)",
+   "label": "Gemini · Algieba · nam Hà Nội trưởng thành, điềm đạm (mượt, ấm)",
    "model": "gemini-3.1-flash-tts-preview",
-   "voice": "Sadachbia",
+   "voice": "Algieba",
    "how": "gemini",
-   "file": "04-gemini-3.1-flash-tts-preview-Sadachbia.wav",
+   "file": "04-gemini-3.1-flash-tts-preview-Algieba.wav",
    "dur": null
   },
   {
    "n": 5,
-   "label": "Gemini · Zubenelgenubi · nam trẻ Hà Nội kiểu reviewer (thoải mái)",
+   "label": "Gemini · Rasalgethi · nam Hà Nội trưởng thành, điềm đạm (từ tốn, hiểu biết)",
    "model": "gemini-3.1-flash-tts-preview",
-   "voice": "Zubenelgenubi",
+   "voice": "Rasalgethi",
    "how": "gemini",
-   "file": "05-gemini-3.1-flash-tts-preview-Zubenelgenubi.wav",
+   "file": "05-gemini-3.1-flash-tts-preview-Rasalgethi.wav",
    "dur": null
   },
   {
    "n": 6,
-   "label": "Gemini · Umbriel · nam trẻ Hà Nội kiểu reviewer (dễ nghe)",
+   "label": "Gemini · Alnilam · nam Hà Nội trưởng thành, điềm đạm (chắc giọng)",
    "model": "gemini-3.1-flash-tts-preview",
-   "voice": "Umbriel",
+   "voice": "Alnilam",
    "how": "gemini",
-   "file": "06-gemini-3.1-flash-tts-preview-Umbriel.wav",
+   "file": "06-gemini-3.1-flash-tts-preview-Alnilam.wav",
    "dur": null
   },
   {
    "n": 7,
-   "label": "Gemini · Iapetus · nam trẻ Hà Nội kiểu reviewer (rõ ràng)",
+   "label": "Gemini · Schedar · nam Hà Nội trưởng thành, điềm đạm (đều, điềm tĩnh)",
    "model": "gemini-3.1-flash-tts-preview",
-   "voice": "Iapetus",
+   "voice": "Schedar",
    "how": "gemini",
-   "file": "07-gemini-3.1-flash-tts-preview-Iapetus.wav",
+   "file": "07-gemini-3.1-flash-tts-preview-Schedar.wav",
    "dur": null
   },
   {
    "n": 8,
-   "label": "Gemini · Algieba · nam trẻ Hà Nội kiểu reviewer (mượt)",
+   "label": "Gemini · Sadaltager · nam Hà Nội trưởng thành, điềm đạm (chín chắn)",
    "model": "gemini-3.1-flash-tts-preview",
-   "voice": "Algieba",
+   "voice": "Sadaltager",
    "how": "gemini",
-   "file": "08-gemini-3.1-flash-tts-preview-Algieba.wav",
-   "dur": null
-  },
-  {
-   "n": 9,
-   "label": "Tham khảo: MiniMax nam tiếng Việt (Vietnamese_male_1)",
-   "model": "minimax-speech-2.8-turbo",
-   "voice": "Vietnamese_male_1",
-   "how": "openai_vs",
-   "file": "09-minimax-speech-2.8-turbo-Vietnamese_male_1.mp3",
+   "file": "08-gemini-3.1-flash-tts-preview-Sadaltager.wav",
    "dur": null
   }
  ]
