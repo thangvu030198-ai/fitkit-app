@@ -57,6 +57,12 @@ def main():
     T = load_intro_tts()
     model = (os.environ.get("TTS_MODEL") or (series.get("voice") or {}).get("model") or "minimax-speech-2.8-turbo").strip()
     pref = (os.environ.get("TTS_VOICE") or (series.get("voice") or {}).get("voice") or "Deep_Voice_Man").strip()
+    VS = series.get("voice") or {}
+    # chất giọng (series.json → voice): tốc độ / cao độ / cảm xúc; biến môi trường TTS_* vẫn được ưu tiên
+    if not os.environ.get("TTS_SPEED") and VS.get("speed") is not None: T.SPEED = float(VS["speed"])
+    if not os.environ.get("TTS_PITCH") and VS.get("pitch") is not None: T.PITCH = int(VS["pitch"])
+    if not os.environ.get("TTS_EMOTION") and VS.get("emotion"): T.EMOTION = str(VS["emotion"])
+    if not os.environ.get("TTS_RECIPE") and VS.get("how"): os.environ["TTS_RECIPE"] = str(VS["how"])
     rep = {"ok": [], "failed": {}, "model": model, "recipe": None, "warnings": []}
 
     def finish(code):
@@ -94,7 +100,7 @@ def main():
         durs, files, bad = {}, {}, None
         for key, text in segments(s, end_say):
             fn = os.path.join(d, f"{key}.mp3"); meta = fn[:-4] + ".json"
-            h = hashlib.sha1(json.dumps([text, model, recipe, T.SPEED, T.PITCH], ensure_ascii=False).encode("utf-8")).hexdigest()[:14]
+            h = hashlib.sha1(json.dumps([text, model, recipe, T.SPEED, T.PITCH, getattr(T, "EMOTION", "")], ensure_ascii=False).encode("utf-8")).hexdigest()[:14]
             cached = not args.force and os.path.exists(fn) and os.path.exists(meta) and json.load(open(meta)).get("hash") == h
             if not cached:
                 audio = None

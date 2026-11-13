@@ -47,6 +47,7 @@ SPEED = float(os.environ.get("TTS_SPEED") or 1.0)
 PITCH = int(float(os.environ.get("TTS_PITCH") or -2))
 VOICE_ENV = (os.environ.get("TTS_VOICE") or "").strip()
 RECIPE_ENV = (os.environ.get("TTS_RECIPE") or "").strip()
+EMOTION = (os.environ.get("TTS_EMOTION") or "").strip()     # MiniMax: happy | surprised | neutral … (trống = không gửi)
 DEFAULT_VOICES = ["Deep_Voice_Man", "presenter_male", "audiobook_male_1", "male-qn-jingying", "Vietnamese_male_1", "Determined_Man", "onyx"]
 STRATEGIES = ["openai", "openai_vs", "t2a_v2", "audio_t2a_v2"]
 PROBE_TEXT = "Xin chào, đây là TapEasy. Tập đúng, tiến bộ thật sự."
@@ -176,6 +177,7 @@ def discover_voices():
 
 def build_request(how, model, text, voice):
     vs = {"voice_id": voice, "speed": SPEED, "vol": 1.0, "pitch": PITCH}
+    if EMOTION: vs["emotion"] = EMOTION
     if how == "openai":
         return BASE + "/audio/speech", {"model": model, "input": text, "voice": voice, "response_format": "mp3", "speed": SPEED}
     if how == "openai_vs":

@@ -14,6 +14,7 @@ import argparse, importlib.util, json, math, os, sys, wave, zlib
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
 BUILD = os.path.join(HERE, "build")
 SR = 48000
 GH = os.environ.get("GITHUB_ACTIONS") == "true"
@@ -31,11 +32,17 @@ add, kick, hat, clap, saw, note, whoosh, click, impact, riser, lowpass, env_exp 
 PROGS = [([57, 60, 64], 45), ([53, 57, 60], 41), ([48, 52, 55], 36), ([55, 59, 62], 43)]   # Am F C G
 
 
-def music(P, seed):
-    M.rng = np.random.default_rng(seed)                 # tất định theo short
-    bpm = 118; beat = 60 / bpm; dur = P["duration"] + 0.5
-    N = int(dur * SR); mus = np.zeros((2, N)); sfx = np.zeros((2, N))
-    end0 = P["end"]["t0"]; rot = seed % 4
+def music(P, seed, sid=None):
+    """Nhạc nền RIÊNG từng clip (music_styles.py: phong cách/BPM/key/vòng hợp âm khác nhau) + SFX chung (whoosh, impact, riser)."""
+    M.rng = np.random.default_rng(seed)
+    dur = P["duration"] + 0.5; N = int(dur * SR); sfx = np.zeros((2, N)); end0 = P["end"]["t0"]
+    if sid is not None:
+        import music_styles as MS
+        mus = MS.render(P, sid)[:, :N]
+        if mus.shape[1] < N: mus = np.pad(mus, ((0, 0), (0, N - mus.shape[1])))
+        return _sfx_and_ramp(P, mus, sfx, N, end0)
+    bpm = 118; beat = 60 / bpm
+    mus = np.zeros((2, N)); rot = seed % 4
     K, HC, HO, CL = kick(), hat(), hat(True), clap()
     for b in range(int(dur / beat) + 1):
         t = b * beat; pos = b % 4; bar = b // 4
@@ -65,6 +72,10 @@ def music(P, seed):
             add(mus, te, s * .05, 1.0, .35 if e % 2 else -.35)
     for i, d, g in ((0, .129, .2), (0, .258, .09)):
         j = int(d * SR); mus[:, j:] += mus[:, :-j] * g
+    return _sfx_and_ramp(P, mus, sfx, N, end0)
+
+
+def _sfx_and_ramp(P, mus, sfx, N, end0):
     # hiệu ứng
     add(sfx, 0.0, impact(), .55)
     for ev in P["events"]:
@@ -139,7 +150,7 @@ def main():
     rep = []
     for sid in ids:
         P = json.load(open(os.path.join(BUILD, "plans", sid + ".json"), encoding="utf-8"))
-        mus, sfx = music(P, zlib.crc32(sid.encode()) % 100000)
+        mus, sfx = music(P, zlib.crc32(sid.encode()) % 100000, sid)
         v, why = voice_track(P, sid)
         N = mus.shape[1]
         if v is not None:
