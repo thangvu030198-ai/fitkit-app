@@ -6,9 +6,13 @@
   "h": 1920,
   "wps": 2.4,
   "voice": {
-    "model": "minimax-speech-2.8-turbo",
-    "voice": "Deep_Voice_Man",
-    "style": "nam, trầm ấm, tự tin, tốc độ vừa"
+    "model": "minimax-speech-2.8-hd",
+    "voice": "Friendly_Person",
+    "speed": 1.0,
+    "pitch": 0,
+    "emotion": "happy",
+    "how": "openai_vs",
+    "style": "giọng 07 (chủ dự án chọn 13/11): nam thân thiện, hào hứng; tốc độ 1.0 + model HD để tròn vành rõ chữ"
   },
   "qr": "assets/zalo-community-qr.jpg",
   "end_card": {
