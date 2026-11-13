@@ -1,0 +1,30 @@
+name: Media — giọng đọc mẫu (nghe & chọn)
+
+# Tạo ~12 giọng mẫu MiniMax (cùng 1 câu) → media/voice-samples/ + trang nghe thử index.html (GitHub Pages).
+# Khoá: secrets.IMG_API_KEY (không in ra log).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  samples:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Tạo giọng mẫu
+        env:
+          IMG_API_KEY: ${{ secrets.IMG_API_KEY }}
+        run: python scripts/shorts/voice_samples.py
+      - name: Lưu vào repo
+        run: |
+          git config user.name "tapeasy-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add media/voice-samples
+          if git diff --cached --quiet; then echo "Không có gì mới"; exit 0; fi
+          git commit -m "media: giọng đọc mẫu để chọn"
+          git pull --rebase && git push
