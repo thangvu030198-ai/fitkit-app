@@ -1,0 +1,50 @@
+{
+ "text": "Tập mãi mà không lên cơ? Khoan đã! Có thể bạn đang ăn sai calo đấy. Mở TapEasy, nhập chiều cao, cân nặng, một chạm là ra ngay lượng calo mỗi ngày của bạn. Thử ngay nhé!",
+ "samples": [
+  {
+   "n": 1,
+   "label": "Đối chứng: giọng 07 hiện tại (tiếng Anh nói tiếng Việt)",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Friendly_Person",
+   "how": "openai_vs",
+   "file": "01-minimax-speech-2.8-turbo-Friendly_Person.mp3",
+   "dur": null
+  },
+  {
+   "n": 2,
+   "label": "MiniMax giọng Việt: Vietnamese_kindhearted_girl",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Vietnamese_kindhearted_girl",
+   "how": "openai_vs",
+   "file": "02-minimax-speech-2.8-turbo-Vietnamese_kindhearted_girl.mp3",
+   "dur": null
+  },
+  {
+   "n": 3,
+   "label": "MiniMax HD giọng Việt: Vietnamese_kindhearted_girl",
+   "model": "minimax-speech-2.8-hd",
+   "voice": "Vietnamese_kindhearted_girl",
+   "how": "openai_vs",
+   "file": "03-minimax-speech-2.8-hd-Vietnamese_kindhearted_girl.mp3",
+   "dur": null
+  },
+  {
+   "n": 4,
+   "label": "MiniMax giọng Việt: Vietnamese_male_1",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Vietnamese_male_1",
+   "how": "openai_vs",
+   "file": "04-minimax-speech-2.8-turbo-Vietnamese_male_1.mp3",
+   "dur": null
+  },
+  {
+   "n": 5,
+   "label": "MiniMax HD giọng Việt: Vietnamese_male_1",
+   "model": "minimax-speech-2.8-hd",
+   "voice": "Vietnamese_male_1",
+   "how": "openai_vs",
+   "file": "05-minimax-speech-2.8-hd-Vietnamese_male_1.mp3",
+   "dur": null
+  }
+ ]
+}
