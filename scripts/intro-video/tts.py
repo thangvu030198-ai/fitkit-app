@@ -188,7 +188,24 @@ def build_request(how, model, text, voice):
     return BASE + ("/t2a_v2" if how == "t2a_v2" else "/audio/t2a_v2"), body
 
 
+def call_gemini(voice, model, text, note=""):
+    """Gemini TTS (giọng Việt bản ngữ — chủ dự án chốt Alnilam, nam Hà Nội điềm đạm) → mp3 bytes"""
+    sys.path.insert(0, os.path.join(HERE, "..", "shorts"))
+    import voice_vn as V
+    for _ in range(2):
+        wav = V.gemini_call(model, voice, text, V.STYLE)
+        if not wav or wav[:4] != b"RIFF": continue
+        secs = (len(wav) - 44) / 48000.0; words = len(text.split())
+        if secs > words * 0.7 + 3:                                        # đọc lẫn cả lời dặn → gọi lại
+            print(f"  ! {note}: {secs:.1f}s cho {words} chữ — gọi lại", flush=True); continue
+        p = subprocess.run(["ffmpeg", "-hide_banner", "-v", "error", "-i", "pipe:0", "-ac", "1", "-ar", "48000", "-b:a", "192k", "-f", "mp3", "pipe:1"],
+                           input=wav, capture_output=True)
+        if p.returncode == 0 and len(p.stdout) > 2000: return p.stdout, 200, ""
+    return None, 0, "gemini lỗi"
+
+
 def call(recipe, model, text, note=""):
+    if recipe.get("how") == "gemini": return call_gemini(recipe["voice"], model, text, note)
     url, body = build_request(recipe["how"], model, text, recipe["voice"])
     st, ct, b = http("POST", url, body)
     audio, why = extract_audio(st, ct, b)
@@ -360,10 +377,14 @@ def main():
         warn("TTS_API_BASE phải là https://"); report["warnings"].append("base không phải https"); return finish(1 if args.strict else 0)
 
     # 1) dò giọng + cách gọi
-    disc, found = discover_voices()
-    report["voices_found"] = found
-    voices = list(dict.fromkeys(([VOICE_ENV] if VOICE_ENV else []) + disc + DEFAULT_VOICES))
-    recipe = probe(model, voices)
+    if "gemini" in model.lower():
+        voices = [VOICE_ENV or "Alnilam"]
+        recipe = {"how": "gemini", "voice": voices[0]}
+    else:
+        disc, found = discover_voices()
+        report["voices_found"] = found
+        voices = list(dict.fromkeys(([VOICE_ENV] if VOICE_ENV else []) + disc + DEFAULT_VOICES))
+        recipe = probe(model, voices)
     if not recipe:
         warn("TTS: không cách gọi/giọng nào chạy được — xem build/qa/voice/tts-log.json (đã che khoá) để chỉnh TTS_RECIPE/TTS_VOICE")
         report["warnings"].append("không dò được cách gọi"); return finish(1 if args.strict else 0)
