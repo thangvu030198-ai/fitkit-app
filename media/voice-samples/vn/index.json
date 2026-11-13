@@ -45,6 +45,60 @@
    "how": "openai_vs",
    "file": "05-minimax-speech-2.8-hd-Vietnamese_male_1.mp3",
    "dur": null
+  },
+  {
+   "n": 6,
+   "label": "Gemini TTS · Charon · giọng Hà Nội hào hứng",
+   "model": "gemini-3.1-flash-tts-preview",
+   "voice": "Charon",
+   "how": "gemini",
+   "file": "06-gemini-3.1-flash-tts-preview-Charon.wav",
+   "dur": null
+  },
+  {
+   "n": 7,
+   "label": "Gemini TTS · Fenrir · giọng Hà Nội hào hứng",
+   "model": "gemini-3.1-flash-tts-preview",
+   "voice": "Fenrir",
+   "how": "gemini",
+   "file": "07-gemini-3.1-flash-tts-preview-Fenrir.wav",
+   "dur": null
+  },
+  {
+   "n": 8,
+   "label": "Gemini TTS · Puck · giọng Hà Nội hào hứng",
+   "model": "gemini-3.1-flash-tts-preview",
+   "voice": "Puck",
+   "how": "gemini",
+   "file": "08-gemini-3.1-flash-tts-preview-Puck.wav",
+   "dur": null
+  },
+  {
+   "n": 9,
+   "label": "Gemini TTS · Orus · giọng Hà Nội hào hứng",
+   "model": "gemini-3.1-flash-tts-preview",
+   "voice": "Orus",
+   "how": "gemini",
+   "file": "09-gemini-3.1-flash-tts-preview-Orus.wav",
+   "dur": null
+  },
+  {
+   "n": 10,
+   "label": "Gemini TTS · Iapetus · giọng Hà Nội hào hứng",
+   "model": "gemini-3.1-flash-tts-preview",
+   "voice": "Iapetus",
+   "how": "gemini",
+   "file": "10-gemini-3.1-flash-tts-preview-Iapetus.wav",
+   "dur": null
+  },
+  {
+   "n": 11,
+   "label": "Gemini TTS · Algenib · giọng Hà Nội hào hứng",
+   "model": "gemini-3.1-flash-tts-preview",
+   "voice": "Algenib",
+   "how": "gemini",
+   "file": "11-gemini-3.1-flash-tts-preview-Algenib.wav",
+   "dur": null
   }
  ]
 }
