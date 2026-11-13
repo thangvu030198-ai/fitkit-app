@@ -41,9 +41,9 @@ def finalize(sid, dest):
     raw = os.path.join(BUILD, "out", sid + ".mux.mp4")
     run(["ffmpeg", "-v", "error", "-y", "-i", video, "-i", audio, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
          "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-t", f"{P['duration']:.3f}", raw])
-    p = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", raw, "-vn", "-af", "loudnorm=I=-14:TP=-1.0:LRA=11:print_format=json", "-f", "null", "-"], capture_output=True, text=True)
+    p = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", raw, "-vn", "-af", "loudnorm=I=-14:TP=-2.0:LRA=11:print_format=json", "-f", "null", "-"], capture_output=True, text=True)
     m = re.search(r"\{[^{}]*\"input_i\"[^{}]*\}", p.stderr, re.S)
-    af = "loudnorm=I=-14:TP=-1.0:LRA=11"
+    af = "loudnorm=I=-14:TP=-2.0:LRA=11"
     if m:
         lp = json.loads(m.group(0))
         af += (f":measured_I={lp['input_i']}:measured_TP={lp['input_tp']}:measured_LRA={lp['input_lra']}"
