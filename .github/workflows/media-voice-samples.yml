@@ -23,7 +23,8 @@ jobs:
         env:
           IMG_API_KEY: ${{ secrets.IMG_API_KEY }}
           SAMPLES_SET: ${{ inputs.set }}
-        run: python scripts/shorts/voice_samples.py
+        run: |
+          if [ "$SAMPLES_SET" = "vn" ]; then python scripts/shorts/voice_vn.py; else python scripts/shorts/voice_samples.py; fi
       - name: Lưu vào repo
         run: |
           git config user.name "tapeasy-bot"
