@@ -35,18 +35,43 @@ CANDS = [
 ]
 
 
+PS = {"comma": 0.22, "stop": 0.42}
+PL = {"comma": 0.3, "stop": 0.55}
+# bộ "07": giữ đúng giọng 07 (turbo, Friendly_Person, happy), chậm hơn + ngắt nghỉ — (nhãn, model, voice, speed, pitch, emotion, pauses)
+SET07 = [
+    ("Gốc 07 (tốc độ 1.12, không ngắt) — để so sánh", "minimax-speech-2.8-turbo", "Friendly_Person", 1.12, 0, "happy", None),
+    ("07 · tốc độ 0.95 · ngắt nghỉ vừa",             "minimax-speech-2.8-turbo", "Friendly_Person", 0.95, 0, "happy", PS),
+    ("07 · tốc độ 0.9 · ngắt nghỉ vừa (đề xuất)",    "minimax-speech-2.8-turbo", "Friendly_Person", 0.9, 0, "happy", PS),
+    ("07 · tốc độ 0.9 · ngắt nghỉ dài",              "minimax-speech-2.8-turbo", "Friendly_Person", 0.9, 0, "happy", PL),
+    ("07 · tốc độ 0.85 · ngắt nghỉ dài",             "minimax-speech-2.8-turbo", "Friendly_Person", 0.85, 0, "happy", PL),
+    ("07 · tốc độ 0.9 · KHÔNG ngắt (đối chứng)",     "minimax-speech-2.8-turbo", "Friendly_Person", 0.9, 0, "happy", None),
+]
+
+
+def dur(b):
+    try: return round(len(T.decode(bytes(b))) / T.SR, 2)
+    except Exception: return None
+
+
 def main():
+    global OUT, CANDS
     if not T.KEY:
         print("thiếu IMG_API_KEY"); return 1
+    sys.path.insert(0, HERE)
+    from pace import pace
+    if os.environ.get("SAMPLES_SET") == "07":
+        OUT = os.path.join(OUT, "07"); CANDS = SET07
     os.makedirs(OUT, exist_ok=True)
     rows = []
-    for i, (label, model, voice, speed, pitch, emo) in enumerate(CANDS, 1):
+    for i, c in enumerate(CANDS, 1):
+        label, model, voice, speed, pitch, emo = c[:6]
+        pz = c[6] if len(c) > 6 else None
         T.SPEED, T.PITCH, T.EMOTION = speed, pitch, emo
         ok = None
         for how in (("openai_vs", "openai") if emo or pitch else ("openai", "openai_vs")):
-            audio, st, why = T.call({"how": how, "voice": voice}, model, TEXT, f"mẫu {i}")
-            if audio: ok = (how, audio); break
-        fn = f"{i:02d}-{voice}-{speed:g}.mp3"
+            audio, st, why = T.call({"how": how, "voice": voice}, model, pace(TEXT, pz), f"mẫu {i}")
+            if audio: ok = (how, audio); print(f"     thời lượng {dur(audio)} s · ngắt {pz}", flush=True); break
+        fn = f"{i:02d}-{voice}-{speed:g}{'-ngat' if pz else ''}.mp3"
         if ok:
             open(os.path.join(OUT, fn), "wb").write(ok[1])
             rows.append({"n": i, "label": label, "model": model, "voice": voice, "speed": speed, "pitch": pitch, "emotion": emo, "how": ok[0], "file": fn})

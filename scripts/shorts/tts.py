@@ -63,7 +63,10 @@ def main():
     if not os.environ.get("TTS_PITCH") and VS.get("pitch") is not None: T.PITCH = int(VS["pitch"])
     if not os.environ.get("TTS_EMOTION") and VS.get("emotion"): T.EMOTION = str(VS["emotion"])
     if not os.environ.get("TTS_RECIPE") and VS.get("how"): os.environ["TTS_RECIPE"] = str(VS["how"])
-    rep = {"ok": [], "failed": {}, "model": model, "recipe": None, "warnings": []}
+    sys.path.insert(0, HERE)
+    from pace import pace
+    PAUSE = VS.get("pauses") or None                                      # ngắt nghỉ sau dấu câu (<#giây#> MiniMax)
+    rep = {"ok": [], "failed": {}, "model": model, "recipe": None, "warnings": [], "pauses": PAUSE}
 
     def finish(code):
         with open(os.path.join(QADIR, "tts-log.json"), "w", encoding="utf-8") as f: json.dump(T.LOG, f, ensure_ascii=False, indent=1)
@@ -99,6 +102,7 @@ def main():
         if os.path.exists(segp): os.remove(segp)
         durs, files, bad = {}, {}, None
         for key, text in segments(s, end_say):
+            text = pace(text, PAUSE)
             fn = os.path.join(d, f"{key}.mp3"); meta = fn[:-4] + ".json"
             h = hashlib.sha1(json.dumps([text, model, recipe, T.SPEED, T.PITCH, getattr(T, "EMOTION", "")], ensure_ascii=False).encode("utf-8")).hexdigest()[:14]
             cached = not args.force and os.path.exists(fn) and os.path.exists(meta) and json.load(open(meta)).get("hash") == h
