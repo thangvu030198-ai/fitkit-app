@@ -1,0 +1,71 @@
+{
+ "text": "Tập mãi mà không lên cơ? Khoan đã! Có thể bạn đang ăn sai calo đấy. Mở TapEasy, nhập chiều cao, cân nặng, một chạm là ra ngay TDEE của bạn. Quá dễ luôn! Thử ngay nhé!",
+ "samples": [
+  {
+   "n": 1,
+   "label": "Gốc 07 (tốc độ 1.12, không ngắt) — để so sánh",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Friendly_Person",
+   "speed": 1.12,
+   "pitch": 0,
+   "emotion": "happy",
+   "how": "openai_vs",
+   "file": "01-Friendly_Person-1.12.mp3"
+  },
+  {
+   "n": 2,
+   "label": "07 · tốc độ 0.95 · ngắt nghỉ vừa",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Friendly_Person",
+   "speed": 0.95,
+   "pitch": 0,
+   "emotion": "happy",
+   "how": "openai_vs",
+   "file": "02-Friendly_Person-0.95-ngat.mp3"
+  },
+  {
+   "n": 3,
+   "label": "07 · tốc độ 0.9 · ngắt nghỉ vừa (đề xuất)",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Friendly_Person",
+   "speed": 0.9,
+   "pitch": 0,
+   "emotion": "happy",
+   "how": "openai_vs",
+   "file": "03-Friendly_Person-0.9-ngat.mp3"
+  },
+  {
+   "n": 4,
+   "label": "07 · tốc độ 0.9 · ngắt nghỉ dài",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Friendly_Person",
+   "speed": 0.9,
+   "pitch": 0,
+   "emotion": "happy",
+   "how": "openai_vs",
+   "file": "04-Friendly_Person-0.9-ngat.mp3"
+  },
+  {
+   "n": 5,
+   "label": "07 · tốc độ 0.85 · ngắt nghỉ dài",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Friendly_Person",
+   "speed": 0.85,
+   "pitch": 0,
+   "emotion": "happy",
+   "how": "openai_vs",
+   "file": "05-Friendly_Person-0.85-ngat.mp3"
+  },
+  {
+   "n": 6,
+   "label": "07 · tốc độ 0.9 · KHÔNG ngắt (đối chứng)",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Friendly_Person",
+   "speed": 0.9,
+   "pitch": 0,
+   "emotion": "happy",
+   "how": "openai_vs",
+   "file": "06-Friendly_Person-0.9.mp3"
+  }
+ ]
+}
