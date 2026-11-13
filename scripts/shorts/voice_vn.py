@@ -59,7 +59,7 @@ def main():
     if not T.KEY: print("thiếu IMG_API_KEY"); return 1
     os.makedirs(OUT, exist_ok=True)
     ids = models_list()
-    tts_models = [m for m in ids if re.search(r"speech|tts|t2a|audio|voice", m, re.I)]
+    tts_models = list(dict.fromkeys([m for m in ids if re.search(r"speech|tts|t2a|audio|voice", m, re.I)] + ["gemini-3.1-flash-tts-preview"]))
     _, found = T.discover_voices()
     vn_voices = [v["id"] for v in found if re.search(r"viet|vi[_-]|vn|vietnam", v["id"] + json.dumps(v.get("raw", {}), ensure_ascii=False), re.I)]
     json.dump({"tts_models": tts_models, "all_models_count": len(ids), "voices_found": found[:200], "vn_voices": vn_voices},
