@@ -1,0 +1,182 @@
+[
+ {
+  "t": "06:03:08",
+  "how": "GET",
+  "url": "https://apivn.vn/v1/audio/voices",
+  "voice": "",
+  "status": 404,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"Invalid URL (GET /v1/audio/voices)\",\"type\":\"invalid_request_error\",\"param\":\"\",\"code\":\"\"}}",
+  "note": "dò danh sách giọng/model"
+ },
+ {
+  "t": "06:03:09",
+  "how": "GET",
+  "url": "https://apivn.vn/v1/voices",
+  "voice": "",
+  "status": 404,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"Invalid URL (GET /v1/voices)\",\"type\":\"invalid_request_error\",\"param\":\"\",\"code\":\"\"}}",
+  "note": "dò danh sách giọng/model"
+ },
+ {
+  "t": "06:03:10",
+  "how": "GET",
+  "url": "https://apivn.vn/v1/audio/speech/voices",
+  "voice": "",
+  "status": 404,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"Invalid URL (GET /v1/audio/speech/voices)\",\"type\":\"invalid_request_error\",\"param\":\"\",\"code\":\"\"}}",
+  "note": "dò danh sách giọng/model"
+ },
+ {
+  "t": "06:03:10",
+  "how": "GET",
+  "url": "https://apivn.vn/v1/get_voice",
+  "voice": "",
+  "status": 404,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"Invalid URL (GET /v1/get_voice)\",\"type\":\"invalid_request_error\",\"param\":\"\",\"code\":\"\"}}",
+  "note": "dò danh sách giọng/model"
+ },
+ {
+  "t": "06:03:14",
+  "how": "GET",
+  "url": "https://apivn.vn/v1/models",
+  "voice": "",
+  "status": 200,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"data\":[{\"id\":\"claude-haiku-4-5\",\"object\":\"model\",\"created\":1626777600,\"owned_by\":\"claude\",\"supported_endpoint_types\":[\"anthropic\",\"openai\"]},{\"id\":\"claude-sonnet-5-5\",\"object\":\"model\",\"created\":1626777600,\"owned_by\":\"claude\",\"supported_endpoint_types\":[\"anthropic\",\"openai\"]},{\"id\":\"claude-opus-4-7\",\"object\":\"model\",\"created\":1626777600,\"owned_by\":\"claude\",\"supported_endpoint_types\":[\"anthropic\",\"openai\"]},{\"id\":\"claude-opus-5\",\"object\":\"model\",\"created\":1626777600,\"owned_by\":\"claude\",\"supported_endpoint_types\":[\"anthropic\",\"openai\"]},{\"id\":\"claude-haiku-5-5\",\"object\":\"model\",\"created\":162677",
+  "note": "dò danh sách giọng/model"
+ },
+ {
+  "t": "06:03:18",
+  "how": "openai_vs",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Friendly_Person",
+  "status": 200,
+  "ctype": "audio/mpeg",
+  "body": "<audio 232692 byte>",
+  "note": "vn 1"
+ },
+ {
+  "t": "06:03:20",
+  "how": "openai_vs",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Vietnamese_kindhearted_girl",
+  "status": 200,
+  "ctype": "audio/mpeg",
+  "body": "<audio 189492 byte>",
+  "note": "vn 2"
+ },
+ {
+  "t": "06:03:23",
+  "how": "openai_vs",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Vietnamese_kindhearted_girl",
+  "status": 200,
+  "ctype": "audio/mpeg",
+  "body": "<audio 210228 byte>",
+  "note": "vn 3"
+ },
+ {
+  "t": "06:03:26",
+  "how": "openai_vs",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Vietnamese_male_1",
+  "status": 200,
+  "ctype": "audio/mpeg",
+  "body": "<audio 204468 byte>",
+  "note": "vn 4"
+ },
+ {
+  "t": "06:03:28",
+  "how": "openai_vs",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Vietnamese_male_1",
+  "status": 200,
+  "ctype": "audio/mpeg",
+  "body": "<audio 210228 byte>",
+  "note": "vn 5"
+ },
+ {
+  "t": "06:03:49",
+  "how": "openai_vs",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "vietnamese_male",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130603325727231768268d9d6KYDLiEhQ)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "note": "vn 6 · HTTP 500"
+ },
+ {
+  "t": "06:04:02",
+  "how": "openai",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "vietnamese_male",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130603499967243058268d9d6hxlCbdT6)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "note": "vn 6 · HTTP 500"
+ },
+ {
+  "t": "06:04:17",
+  "how": "openai_vs",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "vietnamese_male",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130604056297687388268d9d6IcQxFewm)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "note": "vn 7 · HTTP 500"
+ },
+ {
+  "t": "06:04:31",
+  "how": "openai",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "vietnamese_male",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130604175862639438268d9d6nlZtHYOU)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "note": "vn 7 · HTTP 500"
+ },
+ {
+  "t": "06:04:45",
+  "how": "openai_vs",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Vietnamese_man",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130604316653688858268d9d6uRHtty33)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "note": "vn 8 · HTTP 500"
+ },
+ {
+  "t": "06:04:58",
+  "how": "openai",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Vietnamese_man",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130604453763050828268d9d6sARNNC3p)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "note": "vn 8 · HTTP 500"
+ },
+ {
+  "t": "06:05:17",
+  "how": "openai_vs",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Vietnamese_man",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130605000623559758268d9d6sz17qTwr)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "note": "vn 9 · HTTP 500"
+ },
+ {
+  "t": "06:05:30",
+  "how": "openai",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Vietnamese_man",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130605176161902288268d9d6OWd0G95n)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "note": "vn 9 · HTTP 500"
+ }
+]
