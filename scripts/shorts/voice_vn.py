@@ -15,6 +15,10 @@ T = importlib.util.module_from_spec(spec); spec.loader.exec_module(T)
 
 TEXT = ("Tập mãi mà không lên cơ? Khoan đã! Có thể bạn đang ăn sai calo đấy. "
         "Mở TapEasy, nhập chiều cao, cân nặng, một chạm là ra ngay lượng calo mỗi ngày của bạn. Thử ngay nhé!")
+STYLE = ("Read the following Vietnamese text aloud in a native Hanoi (Northern Vietnamese) accent, as a young Vietnamese man "
+         "around 25 who is a popular TikTok product reviewer: energetic, warm and conversational like talking to a friend, "
+         "punchy emphasis on key words, crisp clear articulation of every tone, natural pace with short natural pauses at commas "
+         "and periods, never robotic. Only speak the Vietnamese text")
 MM = "minimax-speech-2.8-turbo"
 MMHD = "minimax-speech-2.8-hd"
 
@@ -61,11 +65,15 @@ def gemini_call(model, voice, text, style):
         if st == 200:
             try:
                 j = json.loads(b.decode("utf-8"))
-                for p in j["candidates"][0]["content"]["parts"]:
-                    d = (p.get("inlineData") or p.get("inline_data") or {}).get("data")
-                    if d:
-                        raw = base64.b64decode(d)
-                        return raw if T.looks_audio(raw) else pcm_wav(raw)
+                cands = j if isinstance(j, list) else [j]                    # có thể trả nhiều khối (stream gộp)
+                pcm = b""
+                for blk in cands:
+                    for c in blk.get("candidates", []):
+                        for p in (c.get("content") or {}).get("parts", []):
+                            d = (p.get("inlineData") or p.get("inline_data") or {}).get("data")
+                            if d: pcm += base64.b64decode(d)
+                print(f"  gemini {voice}: {len(pcm)} byte PCM ≈ {len(pcm) / 48000:.1f} s", flush=True)
+                if len(pcm) > 48000: return pcm if T.looks_audio(pcm) else pcm_wav(pcm)
             except Exception as e:
                 print("  gemini parse:", T.redact(e)[:120])
     # 2) chat/completions kiểu OpenAI có audio
@@ -115,20 +123,13 @@ def main():
     print(f"model TTS: {tts_models}\ngiọng Việt dò được: {vn_voices}", flush=True)
 
     # (nhãn, model, voice, speed, emotion, how-order)
-    C = [("Đối chứng: giọng 07 hiện tại (tiếng Anh nói tiếng Việt)", MM, "Friendly_Person", 1.0, "happy", ("openai_vs",))]
-    for v in dict.fromkeys(vn_voices + ["Vietnamese_kindhearted_girl", "Vietnamese_male_1", "vietnamese_male", "Vietnamese_man"]):
-        C.append((f"MiniMax giọng Việt: {v}", MM, v, 1.0, "happy", ("openai_vs", "openai")))
-        C.append((f"MiniMax HD giọng Việt: {v}", MMHD, v, 1.0, "", ("openai_vs", "openai")))
-    for m in tts_models:
-        if "minimax" in m.lower(): continue
-        if re.search(r"gemini", m, re.I):
-            for v in ["Charon", "Fenrir", "Puck", "Orus", "Iapetus", "Algenib"]:
-                C.append((f"Gemini TTS · {v} · giọng Hà Nội hào hứng", m, v, 1.0, "GEMINI", ()))
-            continue
-        elif re.search(r"gpt|tts-1|openai", m, re.I): vs = ["onyx", "ash", "echo"]
-        elif re.search(r"eleven", m, re.I): vs = ["pNInz6obpgDQGcFmaJgB", "TxGEqnHWrfWFTfGW9XjX"]
-        else: vs = ["male", "default"]
-        for v in vs: C.append((f"{m} · {v}", m, v, 1.0, "", ("openai",)))
+    # Ưu tiên: nam trẻ giọng Bắc, kiểu reviewer TikTok, tự nhiên như người thật → Gemini TTS (điều khiển giọng bằng lời dặn)
+    GM = "gemini-3.1-flash-tts-preview"
+    C = []
+    for v, tag in [("Puck", "sôi nổi"), ("Fenrir", "hào hứng"), ("Achird", "thân thiện"), ("Sadachbia", "lanh lợi"),
+                   ("Zubenelgenubi", "thoải mái"), ("Umbriel", "dễ nghe"), ("Iapetus", "rõ ràng"), ("Algieba", "mượt")]:
+        C.append((f"Gemini · {v} · nam trẻ Hà Nội kiểu reviewer ({tag})", GM, v, 1.0, "GEMINI", ()))
+    C.append(("Tham khảo: MiniMax nam tiếng Việt (Vietnamese_male_1)", MM, "Vietnamese_male_1", 1.0, "happy", ("openai_vs",)))
 
     rows, seen = [], set()
     for i, (label, model, voice, speed, emo, hows) in enumerate(C, 1):
@@ -138,7 +139,7 @@ def main():
         ok = None
         if emo == "GEMINI":
             T.EMOTION = ""
-            a = gemini_call(model, voice, TEXT, "Đọc bằng giọng nam Hà Nội chuẩn, tròn vành rõ chữ, hào hứng, tốc độ vừa phải")
+            a = gemini_call(model, voice, TEXT, STYLE)
             if a: ok = ("gemini", a)
         for how in hows:
             audio, st, why = T.call({"how": how, "voice": voice}, model, TEXT, f"vn {i}")
