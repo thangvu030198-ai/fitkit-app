@@ -47,16 +47,15 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-noto-core fonts-noto-color-emoji
       - name: Storyboard → mốc thời gian
         run: python scripts/intro-video/prep.py
-      - name: Giọng đọc (TTS minimax-speech-2.8-turbo, nam trầm ấm) — kéo dài chương nếu lời dài hơn
+      - name: Giọng đọc (Gemini Alnilam — nam Hà Nội điềm đạm, giống clip ngắn) — kéo dài chương nếu lời dài hơn
         if: ${{ (inputs.voice || 'true') == 'true' }}
-        continue-on-error: true
         env:
           TTS_API_KEY: ${{ secrets.TTS_API_KEY || secrets.IMG_API_KEY }}
           TTS_API_BASE: https://apivn.vn/v1
-          TTS_MODEL: minimax-speech-2.8-turbo
-          TTS_VOICE: ${{ inputs.tts_voice || '' }}
+          TTS_MODEL: gemini-3.1-flash-tts-preview
+          TTS_VOICE: ${{ inputs.tts_voice || 'Alnilam' }}
         run: |
-          python scripts/intro-video/tts.py --fit-timeline
+          python scripts/intro-video/tts.py --fit-timeline --strict
           cat scripts/intro-video/build/qa/voice/report.txt || true
           if [ ! -f scripts/intro-video/build/voice/voice.wav ]; then echo "::warning::Không có giọng đọc — video sẽ chỉ có nhạc. Log (đã che khoá): build/qa/voice/tts-log.json trong artifact tapeasy-intro"; fi
       - name: Kiểm logic bộ dựng (không cần trình duyệt) — render(t) mọi khung, phụ đề không mồ côi, QR ≥ 6 s
