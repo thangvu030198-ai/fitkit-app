@@ -1,6 +1,6 @@
 {
  "series": "TapEasy Shorts",
- "generated": "2026-11-12 21:23",
+ "generated": "2026-11-13 02:49",
  "count": 14,
  "format": "1080x1920 H.264 30fps, AAC -14 LUFS",
  "cta": "Tải miễn phí trong cộng đồng TapEasy (QR nhóm Zalo)",
@@ -22,12 +22,12 @@
     "#tangco",
     "#kienthucgym"
    ],
-   "duration": 33.4,
+   "duration": 36.7,
    "voice": true,
    "video": "bmr-tdee.mp4",
    "cover": "bmr-tdee.jpg",
    "srt": "bmr-tdee.srt",
-   "mb": 12.65
+   "mb": 13.51
   },
   {
    "id": "tang-co-giam-mo",
@@ -45,12 +45,12 @@
     "#dinhduong",
     "#gymvietnam"
    ],
-   "duration": 32.4,
+   "duration": 31.1,
    "voice": true,
    "video": "tang-co-giam-mo.mp4",
    "cover": "tang-co-giam-mo.jpg",
    "srt": "tang-co-giam-mo.srt",
-   "mb": 13.12
+   "mb": 12.99
   },
   {
    "id": "giac-ngu",
@@ -68,12 +68,12 @@
     "#gymvietnam",
     "#kienthucgym"
    ],
-   "duration": 32.0,
+   "duration": 31.5,
    "voice": true,
    "video": "giac-ngu.mp4",
    "cover": "giac-ngu.jpg",
    "srt": "giac-ngu.srt",
-   "mb": 11.93
+   "mb": 11.99
   },
   {
    "id": "sai-lam-calo",
@@ -91,12 +91,12 @@
     "#dinhduong",
     "#meohay"
    ],
-   "duration": 36.3,
+   "duration": 34.0,
    "voice": true,
    "video": "sai-lam-calo.mp4",
    "cover": "sai-lam-calo.jpg",
    "srt": "sai-lam-calo.srt",
-   "mb": 15.73
+   "mb": 14.56
   },
   {
    "id": "protein-bao-nhieu",
@@ -114,12 +114,12 @@
     "#dinhduong",
     "#kienthucgym"
    ],
-   "duration": 30.7,
+   "duration": 32.0,
    "voice": true,
    "video": "protein-bao-nhieu.mp4",
    "cover": "protein-bao-nhieu.jpg",
    "srt": "protein-bao-nhieu.srt",
-   "mb": 11.35
+   "mb": 11.55
   },
   {
    "id": "demo-ghi-set",
@@ -137,12 +137,12 @@
     "#tangco",
     "#fitness"
    ],
-   "duration": 28.4,
+   "duration": 30.5,
    "voice": true,
    "video": "demo-ghi-set.mp4",
    "cover": "demo-ghi-set.jpg",
    "srt": "demo-ghi-set.srt",
-   "mb": 15.5
+   "mb": 15.68
   },
   {
    "id": "demo-thuc-don",
@@ -160,12 +160,12 @@
     "#eatclean",
     "#giammo"
    ],
-   "duration": 25.6,
+   "duration": 23.9,
    "voice": true,
    "video": "demo-thuc-don.mp4",
    "cover": "demo-thuc-don.jpg",
    "srt": "demo-thuc-don.srt",
-   "mb": 13.46
+   "mb": 12.33
   },
   {
    "id": "demo-tim-pt",
@@ -183,12 +183,12 @@
     "#gymvietnam",
     "#PT"
    ],
-   "duration": 21.0,
+   "duration": 22.1,
    "voice": true,
    "video": "demo-tim-pt.mp4",
    "cover": "demo-tim-pt.jpg",
    "srt": "demo-tim-pt.srt",
-   "mb": 10.08
+   "mb": 10.5
   },
   {
    "id": "demo-16-theme",
@@ -206,12 +206,12 @@
     "#theme",
     "#fitness"
    ],
-   "duration": 26.9,
+   "duration": 29.9,
    "voice": true,
    "video": "demo-16-theme.mp4",
    "cover": "demo-16-theme.jpg",
    "srt": "demo-16-theme.srt",
-   "mb": 11.39
+   "mb": 12.46
   },
   {
    "id": "hanh-trinh-12-tuan",
@@ -229,12 +229,12 @@
     "#theodoitiendo",
     "#gymvietnam"
    ],
-   "duration": 29.9,
+   "duration": 28.7,
    "voice": true,
    "video": "hanh-trinh-12-tuan.mp4",
    "cover": "hanh-trinh-12-tuan.jpg",
    "srt": "hanh-trinh-12-tuan.srt",
-   "mb": 10.99
+   "mb": 10.29
   },
   {
    "id": "suc-manh-12-tuan",
@@ -252,12 +252,12 @@
     "#truocsau",
     "#gymvietnam"
    ],
-   "duration": 30.6,
+   "duration": 29.1,
    "voice": true,
    "video": "suc-manh-12-tuan.mp4",
    "cover": "suc-manh-12-tuan.jpg",
    "srt": "suc-manh-12-tuan.srt",
-   "mb": 12.45
+   "mb": 12.13
   },
   {
    "id": "tap-bung-giam-mo",
@@ -275,12 +275,12 @@
     "#gymvietnam",
     "#kienthucgym"
    ],
-   "duration": 27.6,
+   "duration": 27.7,
    "voice": true,
    "video": "tap-bung-giam-mo.mp4",
    "cover": "tap-bung-giam-mo.jpg",
    "srt": "tap-bung-giam-mo.srt",
-   "mb": 12.84
+   "mb": 13.28
   },
   {
    "id": "mo-hoi-dot-mo",
@@ -298,12 +298,12 @@
     "#uongnuoc",
     "#gymvietnam"
    ],
-   "duration": 23.6,
+   "duration": 22.9,
    "voice": true,
    "video": "mo-hoi-dot-mo.mp4",
    "cover": "mo-hoi-dot-mo.jpg",
    "srt": "mo-hoi-dot-mo.srt",
-   "mb": 9.48
+   "mb": 9.38
   },
   {
    "id": "sap-ra-mat",
@@ -321,12 +321,12 @@
     "#donghothongminh",
     "#fitness"
    ],
-   "duration": 23.1,
+   "duration": 22.5,
    "voice": true,
    "video": "sap-ra-mat.mp4",
    "cover": "sap-ra-mat.jpg",
    "srt": "sap-ra-mat.srt",
-   "mb": 12.72
+   "mb": 12.2
   }
  ]
 }
