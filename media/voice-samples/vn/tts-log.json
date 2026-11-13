@@ -1,6 +1,6 @@
 [
  {
-  "t": "06:18:14",
+  "t": "06:27:50",
   "how": "GET",
   "url": "https://apivn.vn/v1/audio/voices",
   "voice": "",
@@ -10,7 +10,7 @@
   "note": "dò danh sách giọng/model"
  },
  {
-  "t": "06:18:14",
+  "t": "06:27:50",
   "how": "GET",
   "url": "https://apivn.vn/v1/voices",
   "voice": "",
@@ -20,7 +20,7 @@
   "note": "dò danh sách giọng/model"
  },
  {
-  "t": "06:18:15",
+  "t": "06:27:51",
   "how": "GET",
   "url": "https://apivn.vn/v1/audio/speech/voices",
   "voice": "",
@@ -30,7 +30,7 @@
   "note": "dò danh sách giọng/model"
  },
  {
-  "t": "06:18:15",
+  "t": "06:27:51",
   "how": "GET",
   "url": "https://apivn.vn/v1/get_voice",
   "voice": "",
@@ -40,7 +40,7 @@
   "note": "dò danh sách giọng/model"
  },
  {
-  "t": "06:18:16",
+  "t": "06:27:52",
   "how": "GET",
   "url": "https://apivn.vn/v1/models",
   "voice": "",
@@ -50,157 +50,7 @@
   "note": "dò danh sách giọng/model"
  },
  {
-  "t": "06:18:21",
-  "how": "openai_vs",
-  "url": "https://apivn.vn/v1/audio/speech",
-  "voice": "Friendly_Person",
-  "status": 200,
-  "ctype": "audio/mpeg",
-  "body": "<audio 196404 byte>",
-  "note": "vn 1"
- },
- {
-  "t": "06:18:24",
-  "how": "openai_vs",
-  "url": "https://apivn.vn/v1/audio/speech",
-  "voice": "Vietnamese_kindhearted_girl",
-  "status": 200,
-  "ctype": "audio/mpeg",
-  "body": "<audio 200436 byte>",
-  "note": "vn 2"
- },
- {
-  "t": "06:18:27",
-  "how": "openai_vs",
-  "url": "https://apivn.vn/v1/audio/speech",
-  "voice": "Vietnamese_kindhearted_girl",
-  "status": 200,
-  "ctype": "audio/mpeg",
-  "body": "<audio 206196 byte>",
-  "note": "vn 3"
- },
- {
-  "t": "06:18:31",
-  "how": "openai_vs",
-  "url": "https://apivn.vn/v1/audio/speech",
-  "voice": "Vietnamese_male_1",
-  "status": 200,
-  "ctype": "audio/mpeg",
-  "body": "<audio 202164 byte>",
-  "note": "vn 4"
- },
- {
-  "t": "06:18:34",
-  "how": "openai_vs",
-  "url": "https://apivn.vn/v1/audio/speech",
-  "voice": "Vietnamese_male_1",
-  "status": 200,
-  "ctype": "audio/mpeg",
-  "body": "<audio 215988 byte>",
-  "note": "vn 5"
- },
- {
-  "t": "06:18:49",
-  "how": "openai_vs",
-  "url": "https://apivn.vn/v1/audio/speech",
-  "voice": "vietnamese_male",
-  "status": 500,
-  "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130618353079944608268d9d6S2tDvYKS)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
-  "note": "vn 6 · HTTP 500"
- },
- {
-  "t": "06:19:02",
-  "how": "openai",
-  "url": "https://apivn.vn/v1/audio/speech",
-  "voice": "vietnamese_male",
-  "status": 500,
-  "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130618495942937878268d9d6aaohyYrf)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
-  "note": "vn 6 · HTTP 500"
- },
- {
-  "t": "06:19:15",
-  "how": "openai_vs",
-  "url": "https://apivn.vn/v1/audio/speech",
-  "voice": "vietnamese_male",
-  "status": 500,
-  "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130619029617698568268d9d6K2gWFxxl)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
-  "note": "vn 7 · HTTP 500"
- },
- {
-  "t": "06:19:28",
-  "how": "openai",
-  "url": "https://apivn.vn/v1/audio/speech",
-  "voice": "vietnamese_male",
-  "status": 500,
-  "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130619163429006518268d9d6Ac8DccgD)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
-  "note": "vn 7 · HTTP 500"
- },
- {
-  "t": "06:19:44",
-  "how": "openai_vs",
-  "url": "https://apivn.vn/v1/audio/speech",
-  "voice": "Vietnamese_man",
-  "status": 500,
-  "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130619311159403568268d9d6gypTITFs)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
-  "note": "vn 8 · HTTP 500"
- },
- {
-  "t": "06:19:57",
-  "how": "openai",
-  "url": "https://apivn.vn/v1/audio/speech",
-  "voice": "Vietnamese_man",
-  "status": 500,
-  "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130619443695877768268d9d6lmYMABeV)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
-  "note": "vn 8 · HTTP 500"
- },
- {
-  "t": "06:20:13",
-  "how": "openai_vs",
-  "url": "https://apivn.vn/v1/audio/speech",
-  "voice": "Vietnamese_man",
-  "status": 500,
-  "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130619597713879348268d9d6ZYk1pX3N)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
-  "note": "vn 9 · HTTP 500"
- },
- {
-  "t": "06:20:27",
-  "how": "openai",
-  "url": "https://apivn.vn/v1/audio/speech",
-  "voice": "Vietnamese_man",
-  "status": 500,
-  "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130620136771833908268d9d6JMA54YcI)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
-  "note": "vn 9 · HTTP 500"
- },
- {
-  "t": "06:20:33",
-  "how": "gemini/native",
-  "url": "https://apivn.vn/v1beta/models/gemini-3.1-flash-tts-preview:generateContent",
-  "voice": "Charon",
-  "status": 200,
-  "ctype": "application/json",
-  "body": "{\"candidates\":[{\"content\":{\"parts\":[{\"inlineData\":{\"data\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-  "note": "gemini-3.1-flash-tts-preview"
- },
- {
-  "t": "06:20:39",
-  "how": "gemini/native",
-  "url": "https://apivn.vn/v1beta/models/gemini-3.1-flash-tts-preview:generateContent",
-  "voice": "Fenrir",
-  "status": 200,
-  "ctype": "application/json",
-  "body": "{\"candidates\":[{\"content\":{\"parts\":[{\"inlineData\":{\"data\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-  "note": "gemini-3.1-flash-tts-preview"
- },
- {
-  "t": "06:20:46",
+  "t": "06:27:59",
   "how": "gemini/native",
   "url": "https://apivn.vn/v1beta/models/gemini-3.1-flash-tts-preview:generateContent",
   "voice": "Puck",
@@ -210,33 +60,83 @@
   "note": "gemini-3.1-flash-tts-preview"
  },
  {
-  "t": "06:20:52",
+  "t": "06:28:05",
   "how": "gemini/native",
   "url": "https://apivn.vn/v1beta/models/gemini-3.1-flash-tts-preview:generateContent",
-  "voice": "Orus",
+  "voice": "Fenrir",
   "status": 200,
   "ctype": "application/json",
-  "body": "{\"candidates\":[{\"content\":{\"parts\":[{\"inlineData\":{\"data\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8BAP//AQD//wEA//8BAP//AQD//wEA//8BAP//AQAAAAEA//8BAAAAAQAAAAEAAAABAAAAAQAAAAIAAAABAAAAAQAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAA",
+  "body": "{\"candidates\":[{\"content\":{\"parts\":[{\"inlineData\":{\"data\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAA",
   "note": "gemini-3.1-flash-tts-preview"
  },
  {
-  "t": "06:20:58",
+  "t": "06:28:11",
+  "how": "gemini/native",
+  "url": "https://apivn.vn/v1beta/models/gemini-3.1-flash-tts-preview:generateContent",
+  "voice": "Achird",
+  "status": 200,
+  "ctype": "application/json",
+  "body": "{\"candidates\":[{\"content\":{\"parts\":[{\"inlineData\":{\"data\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAA//8AAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAEAAQABAAEAAQABAAAAAAAAAAAAAAAAAAAAAQABA",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:28:18",
+  "how": "gemini/native",
+  "url": "https://apivn.vn/v1beta/models/gemini-3.1-flash-tts-preview:generateContent",
+  "voice": "Sadachbia",
+  "status": 200,
+  "ctype": "application/json",
+  "body": "{\"candidates\":[{\"content\":{\"parts\":[{\"inlineData\":{\"data\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAAAAAAAAAQAAA",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:28:24",
+  "how": "gemini/native",
+  "url": "https://apivn.vn/v1beta/models/gemini-3.1-flash-tts-preview:generateContent",
+  "voice": "Zubenelgenubi",
+  "status": 200,
+  "ctype": "application/json",
+  "body": "{\"candidates\":[{\"content\":{\"parts\":[{\"inlineData\":{\"data\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:28:31",
+  "how": "gemini/native",
+  "url": "https://apivn.vn/v1beta/models/gemini-3.1-flash-tts-preview:generateContent",
+  "voice": "Umbriel",
+  "status": 200,
+  "ctype": "application/json",
+  "body": "{\"candidates\":[{\"content\":{\"parts\":[{\"inlineData\":{\"data\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//AAD//wEA//8BAAAAAQD//wEA//8BAP//AQD//wEA//8BAP//AQD//wEA//8BAP//AQD//wEA//8BAP//AQD//wEA//8BAP//AQD//wEA//8BAP//AQD//wEA//8CAP//AgD//wIA//8BAP//AQD//wIA//8BAP//AQD//wIA//8BAP//AQD+/wEA/v8BAP7/AQD+/wEA/v8BAP7/AQD+/wEA/v8BAP//AgD//wIA//8CAP//AgD//wIAAAACAP//AgD//wIA//8CAP//AgD//wIA//8CAP//AQD//wEA/v8BAP//AQD+/",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:28:38",
   "how": "gemini/native",
   "url": "https://apivn.vn/v1beta/models/gemini-3.1-flash-tts-preview:generateContent",
   "voice": "Iapetus",
   "status": 200,
   "ctype": "application/json",
-  "body": "{\"candidates\":[{\"content\":{\"parts\":[{\"inlineData\":{\"data\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAAAAAAAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AQAAAAEAAAABAAAAAQD//wEA//8BAP//AQD//wAA/v8AAP//AAD//wEA//8BAP//AQAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIA//8BAP//AgD//wIA//8CAAAAAgAAAAIAAAACAAAAAwAAAAMAAAACAAAAAgAAAAIAAAACAP//AQD//wEA//8CAP//AgAAAAMAAQADAAEABAABAAQAAQADAAEAAwAAAAIAAAABAP//AQD+/wAA/v8BAP//AQD//",
+  "body": "{\"candidates\":[{\"content\":{\"parts\":[{\"inlineData\":{\"data\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEAAAAAAAAAAAAAAAEAAQABAAAAAQAAAAAAAAAAAAAAAAABA",
   "note": "gemini-3.1-flash-tts-preview"
  },
  {
-  "t": "06:21:04",
+  "t": "06:28:45",
   "how": "gemini/native",
   "url": "https://apivn.vn/v1beta/models/gemini-3.1-flash-tts-preview:generateContent",
-  "voice": "Algenib",
+  "voice": "Algieba",
   "status": 200,
   "ctype": "application/json",
-  "body": "{\"candidates\":[{\"content\":{\"parts\":[{\"inlineData\":{\"data\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAQAAAAEAAAAAAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAP//AAD//wAA//8AAP//AAAAAAEAAAABAAAAAQAAAAIAAQACAAEAAgAAAAEAAAABAAAAAQAAAAEAAAABAAAAAgABAAIAAQACAAAAAQAAAAEA//8AAP//AAD//wAAAAABAAAAAgABAAIAAQACAAEAAgABAAIAAQABAAAAAQAAAAEA//8AAP//AAD//wEAAQADAAEAAwABAAIAAAABAAAAAAD//",
+  "body": "{\"candidates\":[{\"content\":{\"parts\":[{\"inlineData\":{\"data\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:28:51",
+  "how": "openai_vs",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Vietnamese_male_1",
+  "status": 200,
+  "ctype": "audio/mpeg",
+  "body": "<audio 210228 byte>",
+  "note": "vn 9"
  }
 ]
