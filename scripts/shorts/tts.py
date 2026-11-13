@@ -118,6 +118,10 @@ def main():
                     if GEM:
                         wav = V.gemini_call(model, pref, text, GSTYLE)
                         audio = None
+                        if wav and wav[:4] == b"RIFF":                    # chặn lỗi đọc cả lời dặn: quá dài so với số chữ → gọi lại
+                            secs = (len(wav) - 44) / 48000.0; words = len(text.split())
+                            if secs > words * 0.7 + 3:
+                                print(f"  ! {s['id']}#{key}: {secs:.1f}s cho {words} chữ — gọi lại", flush=True); wav = None
                         if wav:
                             import subprocess, tempfile
                             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tf: tf.write(wav)

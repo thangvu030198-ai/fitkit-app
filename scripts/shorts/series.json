@@ -6,17 +6,13 @@
   "h": 1920,
   "wps": 2.4,
   "voice": {
-    "model": "minimax-speech-2.8-turbo",
-    "voice": "Friendly_Person",
+    "model": "gemini-3.1-flash-tts-preview",
+    "voice": "Alnilam",
     "speed": 1.0,
     "pitch": 0,
-    "emotion": "happy",
-    "how": "openai_vs",
-    "style": "giọng 07 (chủ dự án chọn): model turbo như mẫu 07 (KHÔNG dùng HD — ra giọng khác); tốc độ 0.9 + ngắt nghỉ sau dấu câu cho tròn vành rõ chữ",
-    "pauses": {
-      "comma": 0.15,
-      "stop": 0.3
-    }
+    "emotion": "",
+    "how": "gemini",
+    "style": "Chủ dự án chốt 13/11: giọng 06 — Gemini Alnilam, nam Hà Nội trưởng thành, điềm đạm, chắc giọng (lời dặn = voice_vn.STYLE)"
   },
   "qr": "assets/zalo-community-qr.jpg",
   "end_card": {
