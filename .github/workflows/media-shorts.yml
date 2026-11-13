@@ -78,8 +78,6 @@ jobs:
         env:
           TTS_API_KEY: ${{ secrets.IMG_API_KEY }}
           TTS_API_BASE: https://apivn.vn/v1
-          TTS_MODEL: minimax-speech-2.8-turbo
-          TTS_VOICE: Deep_Voice_Man
         run: |
           python scripts/shorts/tts.py --strict --ids "${{ steps.groups.outputs.ids }}"
           cat scripts/shorts/build/qa/voice/report.txt || true
