@@ -4,6 +4,8 @@ name: Media — giọng đọc mẫu (nghe & chọn)
 # Khoá: secrets.IMG_API_KEY (không in ra log).
 on:
   workflow_dispatch:
+    inputs:
+      set: { description: "Bộ mẫu (trống = 12 giọng; 07 = giọng 07 chậm + ngắt nghỉ)", default: "07", required: false }
 
 permissions:
   contents: write
@@ -20,6 +22,7 @@ jobs:
       - name: Tạo giọng mẫu
         env:
           IMG_API_KEY: ${{ secrets.IMG_API_KEY }}
+          SAMPLES_SET: ${{ inputs.set }}
         run: python scripts/shorts/voice_samples.py
       - name: Lưu vào repo
         run: |
