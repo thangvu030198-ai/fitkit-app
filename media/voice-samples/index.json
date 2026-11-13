@@ -1,0 +1,137 @@
+{
+ "text": "Tập mãi mà không lên cơ? Khoan đã! Có thể bạn đang ăn sai calo đấy. Mở TapEasy, nhập chiều cao, cân nặng, một chạm là ra ngay TDEE của bạn. Quá dễ luôn! Thử ngay nhé!",
+ "samples": [
+  {
+   "n": 1,
+   "label": "Giọng hiện tại (nam trầm, tốc độ vừa)",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Deep_Voice_Man",
+   "speed": 1.0,
+   "pitch": -2,
+   "emotion": "",
+   "how": "openai_vs",
+   "file": "01-Deep_Voice_Man-1.mp3"
+  },
+  {
+   "n": 2,
+   "label": "Nam trầm — nhanh, hào hứng",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Deep_Voice_Man",
+   "speed": 1.12,
+   "pitch": 0,
+   "emotion": "happy",
+   "how": "openai_vs",
+   "file": "02-Deep_Voice_Man-1.12.mp3"
+  },
+  {
+   "n": 3,
+   "label": "Nam quyết đoán — hào hứng",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Determined_Man",
+   "speed": 1.12,
+   "pitch": 0,
+   "emotion": "happy",
+   "how": "openai_vs",
+   "file": "03-Determined_Man-1.12.mp3"
+  },
+  {
+   "n": 4,
+   "label": "Nam trẻ năng lượng",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Young_Knight",
+   "speed": 1.12,
+   "pitch": 0,
+   "emotion": "happy",
+   "how": "openai_vs",
+   "file": "04-Young_Knight-1.12.mp3"
+  },
+  {
+   "n": 5,
+   "label": "Nam trẻ tự nhiên, kiểu TikToker",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Casual_Guy",
+   "speed": 1.15,
+   "pitch": 0,
+   "emotion": "happy",
+   "how": "openai_vs",
+   "file": "05-Casual_Guy-1.15.mp3"
+  },
+  {
+   "n": 6,
+   "label": "Nam trẻ lịch sự, sáng",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Decent_Boy",
+   "speed": 1.12,
+   "pitch": 0,
+   "emotion": "happy",
+   "how": "openai_vs",
+   "file": "06-Decent_Boy-1.12.mp3"
+  },
+  {
+   "n": 7,
+   "label": "Nam thân thiện",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Friendly_Person",
+   "speed": 1.12,
+   "pitch": 0,
+   "emotion": "happy",
+   "how": "openai_vs",
+   "file": "07-Friendly_Person-1.12.mp3"
+  },
+  {
+   "n": 8,
+   "label": "Nam lịch lãm",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Elegant_Man",
+   "speed": 1.1,
+   "pitch": 0,
+   "emotion": "happy",
+   "how": "openai_vs",
+   "file": "08-Elegant_Man-1.1.mp3"
+  },
+  {
+   "n": 9,
+   "label": "Nam uy lực (kiểu trailer)",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Imposing_Manner",
+   "speed": 1.08,
+   "pitch": 0,
+   "emotion": "surprised",
+   "how": "openai_vs",
+   "file": "09-Imposing_Manner-1.08.mp3"
+  },
+  {
+   "n": 10,
+   "label": "Nam trầm — bản HD, hào hứng",
+   "model": "minimax-speech-2.8-hd",
+   "voice": "Deep_Voice_Man",
+   "speed": 1.12,
+   "pitch": 0,
+   "emotion": "happy",
+   "how": "openai_vs",
+   "file": "10-Deep_Voice_Man-1.12.mp3"
+  },
+  {
+   "n": 11,
+   "label": "Nam trẻ năng lượng — bản HD",
+   "model": "minimax-speech-2.8-hd",
+   "voice": "Young_Knight",
+   "speed": 1.15,
+   "pitch": 1,
+   "emotion": "happy",
+   "how": "openai_vs",
+   "file": "11-Young_Knight-1.15.mp3"
+  },
+  {
+   "n": 12,
+   "label": "Nam quyết đoán — nhanh nhất",
+   "model": "minimax-speech-2.8-turbo",
+   "voice": "Determined_Man",
+   "speed": 1.2,
+   "pitch": 1,
+   "emotion": "surprised",
+   "how": "openai_vs",
+   "file": "12-Determined_Man-1.2.mp3"
+  }
+ ]
+}
