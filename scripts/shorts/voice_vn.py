@@ -30,9 +30,57 @@ def pcm_wav(pcm, sr=24000):
             + b"data" + struct.pack("<I", len(pcm)) + pcm)
 
 
+def http_goog(url, body, timeout=180):
+    """POST kiểu Gemini gốc: khoá ở header (Bearer + x-goog-api-key), KHÔNG để trong URL."""
+    import urllib.request, urllib.error
+    req = urllib.request.Request(url, data=json.dumps(body, ensure_ascii=False).encode("utf-8"), method="POST", headers={
+        "Authorization": f"Bearer {T.KEY}", "x-goog-api-key": T.KEY, "Content-Type": "application/json", "User-Agent": "tapeasy-tts/1.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return r.status, (r.headers.get("Content-Type") or ""), r.read()
+    except urllib.error.HTTPError as e:
+        try: b = e.read()
+        except Exception: b = b""
+        return e.code, (e.headers.get("Content-Type") or "") if e.headers else "", b
+    except Exception as e:
+        return 0, "", T.redact(f"{type(e).__name__}: {e}").encode("utf-8")
+
+
 def gemini_call(model, voice, text, style):
     """Gemini TTS qua apivn: thử /audio/speech (mp3/wav/pcm) — PCM thô 24 kHz → bọc WAV."""
+    import base64
     inp = (style + ": " + text) if style else text
+    root = T.BASE[:-3] if T.BASE.endswith("/v1") else T.BASE
+    gen = {"contents": [{"role": "user", "parts": [{"text": inp}]}],
+           "generationConfig": {"responseModalities": ["AUDIO"],
+                                "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice}}}}}
+    # 1) định dạng gốc Gemini (v1beta generateContent) — apivn /audio/speech báo "not implemented" cho Gemini
+    for url in (root + f"/v1beta/models/{model}:generateContent", T.BASE + f"/models/{model}:generateContent"):
+        st, ct, b = http_goog(url, gen)
+        T.log_attempt("gemini/native", url, voice, st, ct, b, model)
+        if st == 200:
+            try:
+                j = json.loads(b.decode("utf-8"))
+                for p in j["candidates"][0]["content"]["parts"]:
+                    d = (p.get("inlineData") or p.get("inline_data") or {}).get("data")
+                    if d:
+                        raw = base64.b64decode(d)
+                        return raw if T.looks_audio(raw) else pcm_wav(raw)
+            except Exception as e:
+                print("  gemini parse:", T.redact(e)[:120])
+    # 2) chat/completions kiểu OpenAI có audio
+    body = {"model": model, "messages": [{"role": "user", "content": inp}], "modalities": ["audio"], "audio": {"voice": voice, "format": "wav"}}
+    st, ct, b = T.http("POST", T.BASE + "/chat/completions", body)
+    T.log_attempt("gemini/chat", T.BASE + "/chat/completions", voice, st, ct, b, model)
+    if st == 200:
+        try:
+            j = json.loads(b.decode("utf-8"))
+            d = j["choices"][0]["message"].get("audio", {}).get("data")
+            if d:
+                raw = base64.b64decode(d)
+                return raw if T.looks_audio(raw) else pcm_wav(raw)
+        except Exception as e:
+            print("  gemini chat parse:", T.redact(e)[:120])
     for fmt in ("mp3", "wav", "pcm"):
         body = {"model": model, "input": inp, "voice": voice, "response_format": fmt}
         st, ct, b = T.http("POST", T.BASE + "/audio/speech", body)
