@@ -1,6 +1,10 @@
 {
- "tts_models": [],
- "all_models_count": 0,
+ "tts_models": [
+  "gemini-3.1-flash-tts-preview",
+  "minimax-speech-2.8-hd",
+  "minimax-speech-2.8-turbo"
+ ],
+ "all_models_count": 40,
  "voices_found": [],
  "vn_voices": []
 }

@@ -1,6 +1,6 @@
 [
  {
-  "t": "06:03:08",
+  "t": "06:10:08",
   "how": "GET",
   "url": "https://apivn.vn/v1/audio/voices",
   "voice": "",
@@ -10,7 +10,7 @@
   "note": "dò danh sách giọng/model"
  },
  {
-  "t": "06:03:09",
+  "t": "06:10:10",
   "how": "GET",
   "url": "https://apivn.vn/v1/voices",
   "voice": "",
@@ -20,7 +20,7 @@
   "note": "dò danh sách giọng/model"
  },
  {
-  "t": "06:03:10",
+  "t": "06:10:12",
   "how": "GET",
   "url": "https://apivn.vn/v1/audio/speech/voices",
   "voice": "",
@@ -30,7 +30,7 @@
   "note": "dò danh sách giọng/model"
  },
  {
-  "t": "06:03:10",
+  "t": "06:10:12",
   "how": "GET",
   "url": "https://apivn.vn/v1/get_voice",
   "voice": "",
@@ -40,7 +40,7 @@
   "note": "dò danh sách giọng/model"
  },
  {
-  "t": "06:03:14",
+  "t": "06:10:14",
   "how": "GET",
   "url": "https://apivn.vn/v1/models",
   "voice": "",
@@ -50,27 +50,27 @@
   "note": "dò danh sách giọng/model"
  },
  {
-  "t": "06:03:18",
+  "t": "06:10:21",
   "how": "openai_vs",
   "url": "https://apivn.vn/v1/audio/speech",
   "voice": "Friendly_Person",
   "status": 200,
   "ctype": "audio/mpeg",
-  "body": "<audio 232692 byte>",
+  "body": "<audio 210804 byte>",
   "note": "vn 1"
  },
  {
-  "t": "06:03:20",
+  "t": "06:10:25",
   "how": "openai_vs",
   "url": "https://apivn.vn/v1/audio/speech",
   "voice": "Vietnamese_kindhearted_girl",
   "status": 200,
   "ctype": "audio/mpeg",
-  "body": "<audio 189492 byte>",
+  "body": "<audio 210804 byte>",
   "note": "vn 2"
  },
  {
-  "t": "06:03:23",
+  "t": "06:10:28",
   "how": "openai_vs",
   "url": "https://apivn.vn/v1/audio/speech",
   "voice": "Vietnamese_kindhearted_girl",
@@ -80,103 +80,283 @@
   "note": "vn 3"
  },
  {
-  "t": "06:03:26",
+  "t": "06:10:31",
   "how": "openai_vs",
   "url": "https://apivn.vn/v1/audio/speech",
   "voice": "Vietnamese_male_1",
   "status": 200,
   "ctype": "audio/mpeg",
-  "body": "<audio 204468 byte>",
+  "body": "<audio 192372 byte>",
   "note": "vn 4"
  },
  {
-  "t": "06:03:28",
+  "t": "06:10:35",
   "how": "openai_vs",
   "url": "https://apivn.vn/v1/audio/speech",
   "voice": "Vietnamese_male_1",
   "status": 200,
   "ctype": "audio/mpeg",
-  "body": "<audio 210228 byte>",
+  "body": "<audio 197556 byte>",
   "note": "vn 5"
  },
  {
-  "t": "06:03:49",
+  "t": "06:10:49",
   "how": "openai_vs",
   "url": "https://apivn.vn/v1/audio/speech",
   "voice": "vietnamese_male",
   "status": 500,
   "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130603325727231768268d9d6KYDLiEhQ)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130610359175057008268d9d6wIsreNI5)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
   "note": "vn 6 · HTTP 500"
  },
  {
-  "t": "06:04:02",
+  "t": "06:11:03",
   "how": "openai",
   "url": "https://apivn.vn/v1/audio/speech",
   "voice": "vietnamese_male",
   "status": 500,
   "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130603499967243058268d9d6hxlCbdT6)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130610498169908928268d9d65Zp5fAL7)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
   "note": "vn 6 · HTTP 500"
  },
  {
-  "t": "06:04:17",
+  "t": "06:11:17",
   "how": "openai_vs",
   "url": "https://apivn.vn/v1/audio/speech",
   "voice": "vietnamese_male",
   "status": 500,
   "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130604056297687388268d9d6IcQxFewm)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130611036662191058268d9d61Tq3wufD)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
   "note": "vn 7 · HTTP 500"
  },
  {
-  "t": "06:04:31",
+  "t": "06:11:31",
   "how": "openai",
   "url": "https://apivn.vn/v1/audio/speech",
   "voice": "vietnamese_male",
   "status": 500,
   "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130604175862639438268d9d6nlZtHYOU)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130611181147908848268d9d6coiFTxaH)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
   "note": "vn 7 · HTTP 500"
  },
  {
-  "t": "06:04:45",
+  "t": "06:11:44",
   "how": "openai_vs",
   "url": "https://apivn.vn/v1/audio/speech",
   "voice": "Vietnamese_man",
   "status": 500,
   "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130604316653688858268d9d6uRHtty33)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130611313491104558268d9d6wWjkHKxQ)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
   "note": "vn 8 · HTTP 500"
  },
  {
-  "t": "06:04:58",
+  "t": "06:11:58",
   "how": "openai",
   "url": "https://apivn.vn/v1/audio/speech",
   "voice": "Vietnamese_man",
   "status": 500,
   "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130604453763050828268d9d6sARNNC3p)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-turbo 的可用渠道不存在（retry） (request id: 202611130611450562261338268d9d62qjRhmLd)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
   "note": "vn 8 · HTTP 500"
  },
  {
-  "t": "06:05:17",
+  "t": "06:12:11",
   "how": "openai_vs",
   "url": "https://apivn.vn/v1/audio/speech",
   "voice": "Vietnamese_man",
   "status": 500,
   "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130605000623559758268d9d6sz17qTwr)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130611585578124748268d9d6IkDPdgok)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
   "note": "vn 9 · HTTP 500"
  },
  {
-  "t": "06:05:30",
+  "t": "06:12:27",
   "how": "openai",
   "url": "https://apivn.vn/v1/audio/speech",
   "voice": "Vietnamese_man",
   "status": 500,
   "ctype": "application/json; charset=utf-8",
-  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130605176161902288268d9d6OWd0G95n)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
+  "body": "{\"error\":{\"message\":\"分组 auto 下模型 minimax-speech-2.8-hd 的可用渠道不存在（retry） (request id: 202611130612123037696648268d9d683QdPAXX)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"get_channel_failed\"}}",
   "note": "vn 9 · HTTP 500"
+ },
+ {
+  "t": "06:12:28",
+  "how": "gemini/mp3",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Charon",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612281871036658268d9d6YtPMOA0O)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:28",
+  "how": "gemini/wav",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Charon",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612285926630838268d9d6VvFp6EK8)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:29",
+  "how": "gemini/pcm",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Charon",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612290085546668268d9d6xW3pFR8s)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:29",
+  "how": "gemini/mp3",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Fenrir",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612294104245078268d9d67oYcH4TV)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:29",
+  "how": "gemini/wav",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Fenrir",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612298089392938268d9d6f7rdJJoW)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:30",
+  "how": "gemini/pcm",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Fenrir",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612302199111078268d9d6slfa5lWK)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:30",
+  "how": "gemini/mp3",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Puck",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612306324136198268d9d6Fd0mLgya)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:31",
+  "how": "gemini/wav",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Puck",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612310390982208268d9d6x3ColGpW)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:31",
+  "how": "gemini/pcm",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Puck",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612314454537828268d9d6U3C4qXRR)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:31",
+  "how": "gemini/mp3",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Orus",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612318538851818268d9d6WXbqM9a7)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:32",
+  "how": "gemini/wav",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Orus",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612322588863448268d9d6OBYz2iER)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:32",
+  "how": "gemini/pcm",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Orus",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612326554791108268d9d6xHy7NOma)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:33",
+  "how": "gemini/mp3",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Iapetus",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612330556797748268d9d64Vl28j3g)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:33",
+  "how": "gemini/wav",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Iapetus",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612334654385478268d9d6A92WnFhz)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:33",
+  "how": "gemini/pcm",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Iapetus",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612338824962728268d9d6OYXgGStK)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:34",
+  "how": "gemini/mp3",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Algenib",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612342880744808268d9d6ehkzdBGb)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:34",
+  "how": "gemini/wav",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Algenib",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612349207478038268d9d6N5pOUzxV)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
+ },
+ {
+  "t": "06:12:35",
+  "how": "gemini/pcm",
+  "url": "https://apivn.vn/v1/audio/speech",
+  "voice": "Algenib",
+  "status": 500,
+  "ctype": "application/json; charset=utf-8",
+  "body": "{\"error\":{\"message\":\"not implemented (request id: 202611130612353226446878268d9d6vRUuO1Az)\",\"type\":\"new_api_error\",\"param\":\"\",\"code\":\"convert_request_failed\"}}",
+  "note": "gemini-3.1-flash-tts-preview"
  }
 ]
