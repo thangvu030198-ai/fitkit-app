@@ -519,7 +519,9 @@
       const cs = await cloud.myClientsAsPT(); const c = cs.find(x => /Quốc Bảo/.test(x.name)) || cs[0];
       if(c){ TI._cid = c.id; try{ await openClientForm(c.id); }catch(e){ say("client " + e.message); } }
       await TI.settle(1800); }, scroller: "#app-scroll" });
-  shot("ptcal", { setup: async () => { await closeAll(); try{ PTP.openCalendar(); }catch(e){ say("cal " + e.message); } await TI.settle(1300); } });
+  shot("ptcal", { setup: async () => { await closeAll(); try{ PTP.openCalendar(); }catch(e){ say("cal " + e.message); } await TI.settle(1300);
+      /* lịch tự cuộn tới giờ hiện tại → tiêu đề sheet trôi lên trên (QA vùng an toàn lỗi tuỳ giờ chạy): đưa mọi khung cuộn về đầu */
+      for (let k = 0; k < 3; k++) { $a("body *").forEach(e => { if (e.scrollTop > 0) e.scrollTop = 0; }); window.scrollTo(0, 0); await TI.settle(250); } } });
   shot("ptassign", { setup: async () => { await closeAll(); try{ PTP.openAssign(TI._cid); }catch(e){ say("assign " + e.message); } await TI.settle(1300); } });
   shot("ptrevenue", { setup: async () => { await closeAll(); try{ PTP.openRevenue(); }catch(e){ say("rev " + e.message); } await TI.settle(1300); } });
   shot("ptproxy", { setup: async () => { await closeAll(); try{ TEConnect.openProxyLogger(TI._cid); }catch(e){ say("proxy " + e.message); } await TI.settle(1300); } });
