@@ -900,6 +900,14 @@ extendSection("settings", async el=>{
   el.insertAdjacentHTML("beforeend", card(`${ic("adm_gear")}Bật / tắt tính năng`, `<p class="adm-sub">Tắt khi cần bảo trì hoặc xử lý sự cố nội dung. Người dùng thấy thông báo “tạm tắt”; đội ngũ quản trị vẫn vào được để kiểm tra.</p>
       <div class="adm-sws">${Object.entries(CA.FEATURES).map(([k, l])=> `<label class="adm-sw"><input type="checkbox" role="switch" data-adm-feat="${esc(k)}" ${f[k] !== false ? "checked" : ""} ${ed ? "" : "disabled"}><span><b>${esc(l)}</b><small>${esc(FEAT_DESC[k] || "")}</small></span></label>`).join("")}</div>
       ${ed ? `<button class="adm-btn pri" data-adm="feat-save">${ic("check")}Lưu tính năng…</button>` : `<p class="adm-dim">${ic("adm_lock")}Chỉ xem — cần quyền ${esc(R.label("settings.edit"))}.</p>`}`)
+    + (()=>{ const af = (typeof cloud !== "undefined" && cloud.authFlags) ? cloud.authFlags.get() : {};
+        const AF = { emailOtp:["Mã OTP 6 số qua email", "Quên mật khẩu bằng mã gửi về email. Cần gói Blaze + Cloud Functions + dịch vụ gửi mail (gần như 0 đ). Khi tắt: dùng link đặt lại mật khẩu qua email (miễn phí, đang chạy)."],
+          phoneOtp:["Mã OTP qua SMS", "Xác minh / quên mật khẩu bằng tin nhắn. SMS TỐN PHÍ theo từng tin — chỉ bật khi thật cần."],
+          google:["Đăng nhập Google", "Đã bật trong Firebase Console."], facebook:["Đăng nhập Facebook", "Chỉ bật sau khi đã cấu hình Facebook trong Firebase Console → Authentication."],
+          apple:["Đăng nhập Apple", "Chỉ bật sau khi đã cấu hình Apple (cần tài khoản Apple Developer)."] };
+        return card(`${ic("adm_lock")}Cách đăng nhập & xác minh`, `<p class="adm-sub">Bật / tắt các cách đăng nhập và mã xác minh trên màn đăng nhập của MỌI thiết bị — không cần phát hành lại app. Mục đang tắt bị ẩn hẳn với người dùng.</p>
+      <div class="adm-sws">${Object.keys(AF).map(k=> `<label class="adm-sw"><input type="checkbox" role="switch" data-adm-authflag="${esc(k)}" ${af[k] ? "checked" : ""} ${ed ? "" : "disabled"}><span><b>${esc(AF[k][0])}</b><small>${esc(AF[k][1])}</small></span></label>`).join("")}</div>
+      ${ed ? `<button class="adm-btn pri" data-adm="authflags-save">${ic("check")}Lưu cách đăng nhập…</button>` : ""}`); })()
     + card(`${ic("adm_bcast")}Banner thông báo toàn app`, `<p class="adm-sub">Một dòng cố định ở đầu mọi màn chính (khác “Thông báo hệ thống” — thẻ trên Trang chủ, người dùng tự ẩn được). Dùng cho bảo trì, sự cố, thay đổi điều khoản.</p>
       <label class="adm-cb"><input type="checkbox" id="adm-bn-on" ${b.on ? "checked" : ""} ${ed ? "" : "disabled"}><span>Hiện banner</span></label>
       <div class="adm-f"><label for="adm-bn-t">Nội dung (≤ 160 ký tự)</label><input id="adm-bn-t" maxlength="160" value="${esc(b.text || "")}" ${ed ? "" : "readonly"} placeholder="VD: Bảo trì máy chủ 23:00–24:00 hôm nay"></div>
@@ -1085,6 +1093,11 @@ Object.assign(ACT, {
     const a = await ask({ title:"Lưu danh sách từ khoá cấm?", msg:`${words.length} từ / cụm từ. Áp dụng ngay cho bài, review, bình luận MỚI trên mọi thiết bị (sau khi tải lại cài đặt).`, label:"Lưu" });
     if(a) act(()=> CA.saveSettings({ bannedWords: words }), "Đã lưu từ khoá cấm"); },
   /* cài đặt */
+  "authflags-save": async ()=>{ const f = {}; qa("[data-adm-authflag]", A.root).forEach(i=>{ f[i.dataset.admAuthflag] = !!i.checked; });
+    if(!f.google && !f.facebook && !f.apple){ /* vẫn còn email + mật khẩu */ }
+    const on = Object.keys(f).filter(k=> f[k]);
+    const a = await ask({ title:"Lưu cách đăng nhập & xác minh?", msg: `Đang BẬT: ${on.length ? on.join(", ") : "chỉ email + mật khẩu"}. Mục bật mà chưa cấu hình phía máy chủ sẽ báo lỗi khi người dùng bấm.`, label:"Lưu", danger: !!(f.phoneOtp) });
+    if(a) act(async ()=>{ const r = await cloud.authFlags.save(f); try{ document.dispatchEvent(new CustomEvent("fk:authflags")); }catch(e){} return r; }, "Đã lưu cách đăng nhập"); },
   "feat-save": async ()=>{ const f = {}; qa("[data-adm-feat]", A.root).forEach(i=>{ f[i.dataset.admFeat] = !!i.checked; });
     const off = Object.keys(f).filter(k=> !f[k]).map(k=> CA.FEATURES[k]);
     const a = await ask({ title:"Lưu bật / tắt tính năng?", msg: off.length ? `Sẽ TẮT với người dùng: ${off.join(", ")}.` : "Mọi tính năng đều bật.", label:"Lưu", danger: off.length > 0 });

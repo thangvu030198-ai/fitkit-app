@@ -125,9 +125,22 @@ service cloud.firestore {
         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['bank']);
       allow delete: if false;
     }
+    // R3.1: công tắc đăng nhập (OTP email / OTP SMS / Facebook / Apple / Google) — màn đăng nhập đọc TRƯỚC khi có tài khoản → ai cũng đọc được;
+    // chỉ chứa cờ true/false, không có dữ liệu cá nhân. Ghi: quyền settings.edit, đúng kiểu, không thêm trường lạ.
+    match /settings/auth {
+      allow read: if true;
+      allow create, update: if hasPerm('settings.edit')
+        && request.resource.data.keys().hasOnly(['emailOtp', 'phoneOtp', 'facebook', 'apple', 'google', 'updatedAt', 'updatedBy'])
+        && (!('emailOtp' in request.resource.data) || request.resource.data.emailOtp is bool)
+        && (!('phoneOtp' in request.resource.data) || request.resource.data.phoneOtp is bool)
+        && (!('facebook' in request.resource.data) || request.resource.data.facebook is bool)
+        && (!('apple' in request.resource.data) || request.resource.data.apple is bool)
+        && (!('google' in request.resource.data) || request.resource.data.google is bool);
+      allow delete: if false;
+    }
     match /settings/{doc} {                                   // cài đặt nội bộ khác (không công khai)
       allow read: if hasPerm('settings.view');
-      allow write: if doc != 'public' && hasPerm('settings.edit');
+      allow write: if doc != 'public' && doc != 'auth' && hasPerm('settings.edit');
     }
     match /broadcasts/{id} {
       allow read: if signedIn();

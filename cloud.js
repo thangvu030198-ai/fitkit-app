@@ -51,6 +51,22 @@ const cloud = (() => {
     [["phoneOtp", false], ["emailOtp", false], ["cloudSync", true]].forEach(([k, d])=>{ if(typeof f[k] !== "boolean") f[k] = d; });
     return f;
   })();
+  /* R3.1 (14/11): CÔNG TẮC ĐĂNG NHẬP do quản trị bật/tắt (Admin → Cài đặt → "Cách đăng nhập & xác minh") — không cần phát hành lại app.
+     Lưu ở settings/auth (ai cũng đọc được vì màn đăng nhập hiện TRƯỚC khi có tài khoản; chỉ quyền settings.edit được ghi — firestore.rules).
+     Chế độ demo: localStorage. Bản nhớ đệm localStorage "fk_auth_flags" giúp áp ngay khi mở app, sau đó làm mới từ máy chủ. */
+  const AUTH_FLAG_KEYS = ["emailOtp", "phoneOtp", "facebook", "apple", "google"];
+  const AUTH_FLAG_LS = "fk_auth_flags";
+  const AUTH_FLAG_BASE = { emailOtp: !!FEATURES.emailOtp, phoneOtp: !!FEATURES.phoneOtp };
+  ["facebook", "apple", "google"].forEach(k=>{ AUTH_FLAG_BASE[k] = Array.isArray(FEATURES.authProviders) ? FEATURES.authProviders.indexOf(k) >= 0 : true; });
+  function cleanAuthFlags(o){ const out = {}; if(o && typeof o === "object") AUTH_FLAG_KEYS.forEach(k=>{ if(typeof o[k] === "boolean") out[k] = o[k]; }); return out; }
+  function applyAuthFlags(o){
+    const f = Object.assign({}, AUTH_FLAG_BASE, cleanAuthFlags(o));
+    FEATURES.emailOtp = f.emailOtp; FEATURES.phoneOtp = f.phoneOtp;
+    if(Array.isArray(FEATURES.authProviders) || hasConfig) FEATURES.authProviders = ["google", "facebook", "apple"].filter(k=> f[k]);
+    return f;
+  }
+  function readAuthFlagCache(){ try{ return cleanAuthFlags(JSON.parse(localStorage.getItem(AUTH_FLAG_LS) || "{}")); }catch(e){ return {}; } }
+  let authFlags = null;
   const POLICY_VERSION = "2026-11-14";   // phiên bản Điều khoản + Chính sách (đổi khi sửa nội dung → app hỏi đồng ý lại)
 
   const now = () => Date.now();
@@ -566,9 +582,32 @@ const cloud = (() => {
     isLoggedIn(){ return !!user; },
     onAuth(cb){ authListeners.push(cb); },
 
+    /** R3.1: công tắc đăng nhập (OTP email / OTP SMS / Facebook / Apple / Google) — quản trị bật lại được bất cứ lúc nào */
+    authFlags: {
+      keys: AUTH_FLAG_KEYS.slice(),
+      get(){ return Object.assign({}, authFlags || applyAuthFlags(readAuthFlagCache())); },
+      async refresh(){
+        let remote = null;
+        if(mode === "firebase" && fb){ try{ const d = await fb.db.collection("settings").doc("auth").get(); remote = d.exists ? d.data() : {}; }catch(e){ remote = null; } }
+        const next = remote ? cleanAuthFlags(remote) : readAuthFlagCache();
+        if(remote){ try{ localStorage.setItem(AUTH_FLAG_LS, JSON.stringify(next)); }catch(e){} }
+        authFlags = applyAuthFlags(next); return Object.assign({}, authFlags);
+      },
+      async save(partial){
+        const next = Object.assign({}, cleanAuthFlags(authFlags || {}), cleanAuthFlags(partial));
+        if(mode === "firebase" && fb){
+          if(!user) throw niceError({ code: "auth/requires-login" });
+          try{ await fb.db.collection("settings").doc("auth").set(Object.assign({}, next, { updatedAt: Date.now(), updatedBy: user.uid })); }catch(e){ throw niceError(e); }
+        }
+        try{ localStorage.setItem(AUTH_FLAG_LS, JSON.stringify(next)); }catch(e){}
+        authFlags = applyAuthFlags(next); return Object.assign({}, authFlags);
+      },
+    },
+
     init(){
       if(ready) return ready;
       ready = (async ()=>{
+        try{ applyAuthFlags(readAuthFlagCache()); }catch(e){}
         try{ await engine.init(); }
         catch(e){
           /* R3-CLOUD-01: ĐÃ cấu hình Firebase mà không khởi động được (mất mạng lúc mở app, gstatic bị chặn) → vẫn chạy bằng động cơ demo để
@@ -579,6 +618,7 @@ const cloud = (() => {
           mode = "demo"; engine = demo;
           if(degraded){ user = null; profile = null; armRetry(); } else await demo.init();
         }
+        try{ api.authFlags.refresh().then(()=>{ try{ if(typeof document !== "undefined") document.dispatchEvent(new CustomEvent("fk:authflags")); }catch(e){} }).catch(()=>{}); }catch(e){}
         return user;
       })();
       return ready;

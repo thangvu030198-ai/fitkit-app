@@ -908,10 +908,15 @@ function openDeleteAccountSheet(){
 function bindSocialButtons(needAgree){
   /* R3: Firebase thật — chỉ hiện cách đăng nhập ĐÃ bật trong Firebase Console (FK_FEATURES.authProviders; bản native: FK_BUILD.authProviders).
      Nút của nhà cung cấp chưa cấu hình sẽ báo lỗi khi bấm → ẩn hẳn. Chế độ demo giữ đủ 3 nút để thử luồng. */
-  try{
-    const en = (window.FK_BUILD && Array.isArray(FK_BUILD.authProviders) && FK_BUILD.authProviders) || (typeof FK_FEATURES !== "undefined" && FK_FEATURES.authProviders);
-    if(cloud.mode === "firebase" && Array.isArray(en)) $$("[data-social]").forEach(b=>{ if(en.indexOf(b.dataset.social) < 0) b.style.display = "none"; });
-  }catch(_){}
+  const fkApplySocialFlags = ()=>{ try{
+    let en = (typeof FK_FEATURES !== "undefined" && FK_FEATURES.authProviders);
+    /* bản native: chỉ hiện nhà cung cấp vừa được quản trị bật VỪA có trong bản build */
+    if(window.FK_BUILD && Array.isArray(FK_BUILD.authProviders)) en = Array.isArray(en) ? en.filter(k=> FK_BUILD.authProviders.indexOf(k) >= 0) : FK_BUILD.authProviders;
+    if(cloud.mode === "firebase" && Array.isArray(en)) $$("[data-social]").forEach(b=>{ b.style.display = en.indexOf(b.dataset.social) < 0 ? "none" : ""; });
+  }catch(_){} };
+  fkApplySocialFlags();
+  /* R3.1: quản trị đổi công tắc đăng nhập (cloud.authFlags) → cập nhật ngay nếu màn đăng nhập đang mở */
+  if(!window.__fkAuthFlagsBound){ window.__fkAuthFlagsBound = true; document.addEventListener("fk:authflags", ()=>{ try{ fkApplySocialFlags(); }catch(_){} }); }
   $$("[data-social]").forEach(b=> b.addEventListener("click", async ()=>{
     const err = $("#au-err");
     let grants = null;
