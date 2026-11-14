@@ -23,6 +23,15 @@ jobs:
         with: { node-version: 20 }
       - name: Chạy kiểm thử
         run: node tests/run.js
+      # R3-store: kiểm tĩnh bộ đóng gói (không cần Android SDK / Xcode) — cú pháp script, JSON, plist, YAML workflow
+      - name: Kiểm tĩnh bộ đóng gói store
+        run: |
+          bash -n scripts/prepare-www.sh
+          python3 -m py_compile scripts/native-android-patch.py scripts/native-ios-patch.py scripts/store-screenshots.py scripts/build-single-html.py
+          ruby -c scripts/native-ios-xcodeproj.rb
+          node -e 'for (const f of ["package.json","capacitor.config.json","manifest.json","store/metadata.json"]) JSON.parse(require("fs").readFileSync(f,"utf8"))'
+          python3 -c 'import plistlib; plistlib.load(open("store/native/ios/PrivacyInfo.xcprivacy","rb"))'
+          python3 -c 'import glob, yaml; [yaml.safe_load(open(f, encoding="utf8")) for f in glob.glob(".github/workflows/*.yml")]'
       - name: Lưu kết quả chi tiết (last-run.json)
         if: always()
         uses: actions/upload-artifact@v4

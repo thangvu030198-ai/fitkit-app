@@ -1,107 +1,166 @@
 name: Android — APK thử + AAB nộp Google Play
 
 # Luôn tạo:  FitKit-debug.apk  → cài thẳng lên điện thoại Android để thử.
-# Nếu repo có đủ 4 secret ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD,
-# ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD → tạo thêm FitKit-release.aab đã ký
-# để tải lên Google Play Console. (Xem README-store.md, mục Android.)
+# Có đủ 4 secret ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+#   → thêm FitKit-release.aab ĐÃ KÝ (tải lên Google Play Console) + FitKit-release.apk (cùng khoá, để thử đăng nhập Google).
+#   Thiếu → chỉ có APK debug + cảnh báo vàng trong trang tổng kết của lần chạy.
+# Secret tuỳ chọn GOOGLE_SERVICES_JSON_BASE64 (tên cũ ANDROID_GOOGLE_SERVICES_JSON vẫn nhận) = base64 của google-services.json
+#   → bật đăng nhập Google native. Thiếu → build vẫn chạy, đăng nhập mạng xã hội native TẮT (email vẫn dùng được).
+# Biến repo tuỳ chọn (Settings → Secrets and variables → Actions → Variables): ANDROID_VERSION_CODE_OFFSET (cộng vào versionCode),
+#   ANDROID_EXACT_ALARM=1 (xin thêm SCHEDULE_EXACT_ALARM để báo hết giờ nghỉ đúng từng giây — mặc định không xin).
+# Chi tiết từng bước cho chủ dự án: docs/RELEASE-CHECKLIST.md · README-store.md §3.
+#
+# R3-store: vá project bằng scripts/native-android-patch.py — compileSdkVersion = 36 / targetSdkVersion = 36 (Google Play 11/2026;
+#   kiểm lại mức yêu cầu lúc nộp), AGP 8.9.1 + Gradle 8.11.1 (AGP 8.2 của Capacitor 6 không đọc được SDK 35/36), quyền tối thiểu,
+#   edge-to-edge Android 15+, versionCode = run_number + offset, versionName = package.json; ký AAB bằng Gradle; soát quyền thừa sau build.
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      target_sdk:
+        description: "targetSdk/compileSdk (Google Play 11/2026 yêu cầu 36)"
+        default: "36"
+        required: false
   push:
     branches: [ main ]
-    paths-ignore: [ "**.md", "media/**" ]
+    paths-ignore: [ "**.md", "media/**", "docs/**", "store/**", "tests/**" ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-android-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-android:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     env:
       HAS_KEY: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+      HAS_GS: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 != '' || secrets.ANDROID_GOOGLE_SERVICES_JSON != '' }}
+      TARGET_SDK: ${{ github.event.inputs.target_sdk || '36' }}
+      VERSION_CODE_OFFSET: ${{ vars.ANDROID_VERSION_CODE_OFFSET || '0' }}
+      EXACT_ALARM: ${{ vars.ANDROID_EXACT_ALARM == '1' }}     # mặc định KHÔNG xin SCHEDULE_EXACT_ALARM (docs/RELEASE-CHECKLIST.md §A2)
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - uses: actions/setup-java@v4
-        with: { distribution: temurin, java-version: 21 }     # AGP 8.x cho API 36 cần JDK 21 (fix-security / STORE-COMPLIANCE 2.1)
+        with: { distribution: temurin, java-version: 21 }     # AGP 8.9 / API 36 chạy trên JDK 17–21
 
       # QS-16: bản nộp store KHÔNG được chạy "chế độ demo" (bảng quản trị / tài khoản chỉ trên máy).
       #   AAB phát hành (có khoá ký) → firebase-config.js phải có apiKey; APK thử thì chỉ cảnh báo.
-      - name: Kiểm tra cấu hình Firebase
+      - name: Kiểm tra cấu hình Firebase + secrets ký
+        env:
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           if grep -Eq 'apiKey:[[:space:]]*""' firebase-config.js; then
             if [ "$HAS_KEY" = "true" ]; then echo "::error::firebase-config.js trống — bản phát hành không được chạy chế độ demo. Điền cấu hình Firebase rồi build lại."; exit 1; fi
             echo "::warning::firebase-config.js trống — APK thử chạy chế độ demo (không dùng để nộp store)."
           fi
+          if [ "$HAS_KEY" = "true" ]; then
+            for s in KS_PASS KEY_ALIAS KEY_PASS; do
+              [ -n "${!s}" ] || { echo "::error::Có ANDROID_KEYSTORE_BASE64 nhưng thiếu secret đi kèm ($s) — cần đủ ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD."; exit 1; }
+            done
+          else
+            echo "::warning::Chưa có 4 secret ANDROID_KEYSTORE_* → CHỈ tạo APK debug để thử, KHÔNG có AAB nộp Google Play (docs/RELEASE-CHECKLIST.md §E)."
+            echo "### ⚠️ Chưa có khoá ký — chỉ có \`FitKit-debug.apk\` (bản thử). Thêm 4 secret \`ANDROID_KEYSTORE_*\` để có \`FitKit-release.aab\`." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          bash -n scripts/prepare-www.sh
+          python3 -m py_compile scripts/native-android-patch.py
 
       - name: Gom file web vào www/ + tải thư viện bài tập
         # integrator (FIX-ux vòng 2): bản phát hành (có khoá ký) → STORE_BUILD=1 (prepare-www.sh dừng nếu firebase-config.js trống)
-        run: STORE_BUILD=$([ "$HAS_KEY" = "true" ] && echo 1 || echo 0) bash scripts/prepare-www.sh
+        # R3-store: cờ nền tảng window.FK_BUILD = { platform:"android", store:… } (www/fk-build.js)
+        run: FK_PLATFORM=android FK_BUILD_NUMBER=${{ github.run_number }} FK_AUTH_PROVIDERS=$([ "$HAS_GS" = "true" ] && echo "" || echo none) STORE_BUILD=$([ "$HAS_KEY" = "true" ] && echo 1 || echo 0) bash scripts/prepare-www.sh
 
       - name: Cài Capacitor + plugin
-        run: npm install
+        run: npm install --no-audit --no-fund
 
       - name: Tạo project Android
         run: npx cap add android
 
-      # Google Play: từ 31/08/2026 app mới & bản cập nhật phải target Android 16 (API 36) — QA-security §5 [CHẶN]
-      - name: Target API 36 (compileSdk / targetSdk)
+      - name: Icon thích ứng (adaptive) & màn hình chờ
         run: |
-          V=android/variables.gradle
-          sed -i -E 's/compileSdkVersion = [0-9]+/compileSdkVersion = 36/; s/targetSdkVersion = [0-9]+/targetSdkVersion = 36/' $V
-          grep -E "compileSdkVersion|targetSdkVersion|minSdkVersion" $V
-          grep -q "targetSdkVersion = 36" $V || { echo "::error::Không đặt được targetSdkVersion = 36"; exit 1; }
+          if ! npm run assets -- --android; then
+            if [ "$HAS_KEY" = "true" ]; then echo "::error::Không tạo được icon/splash — bản phát hành không được dùng icon mặc định của Capacitor."; exit 1; fi
+            echo "::warning::Không tạo được icon, APK thử dùng icon mặc định"
+          fi
 
-      - name: Icon & màn hình chờ
-        run: npm run assets -- --android || echo "⚠️ Không tạo được icon, dùng icon mặc định"
-
-      - name: Quyền camera/thông báo + số phiên bản
-        run: |
-          M=android/app/src/main/AndroidManifest.xml
-          sed -i 's#<application#<uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <application#' $M
-          V=$(node -p "require('./package.json').version")
-          G=android/app/build.gradle
-          sed -i "s/versionCode [0-9]*/versionCode ${{ github.run_number }}/" $G
-          sed -i "s/versionName \"[^\"]*\"/versionName \"$V\"/" $G
-          grep -n "version" $G
-
-      # Đăng nhập Google native (@capacitor-firebase/authentication — docs/STORE-COMPLIANCE.md §0.2a): secret ANDROID_GOOGLE_SERVICES_JSON
-      #   = base64 của google-services.json (Firebase → app Android vn.thangvu.fitkit, đã thêm SHA-1/SHA-256 của khoá ký + khoá Play App Signing).
-      #   Thiếu → gỡ plugin khỏi bản build (thiếu FirebaseApp là crash lúc mở app); nút Google/Apple báo "chưa cấu hình", email vẫn chạy.
-      #   Có → đặt file (app/build.gradle của Capacitor tự áp plugin com.google.gms.google-services) + bật provider Google của plugin.
+      # Đăng nhập Google native (@capacitor-firebase/authentication — docs/STORE-COMPLIANCE.md §0.2a).
+      #   Thiếu secret → gỡ plugin khỏi bản build (thiếu FirebaseApp là crash lúc mở app); nút Google/Apple báo "chưa cấu hình", email vẫn chạy.
+      #   Có → đặt file (app/build.gradle của Capacitor tự áp plugin com.google.gms.google-services) + bật provider Google của plugin (bước vá bên dưới).
       - name: Firebase native (google-services.json + Google Sign-In)
         env:
-          GS_JSON: ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON }}
+          GS_JSON: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 || secrets.ANDROID_GOOGLE_SERVICES_JSON }}
         run: |
           if [ -z "$GS_JSON" ]; then
-            echo "::warning::Thiếu secret ANDROID_GOOGLE_SERVICES_JSON — bản build KHÔNG có đăng nhập Google native (gỡ plugin để không crash)."
+            echo "::warning::Thiếu secret GOOGLE_SERVICES_JSON_BASE64 — bản build KHÔNG có đăng nhập Google native (gỡ plugin để không crash)."
+            echo "### ⚠️ Thiếu \`GOOGLE_SERVICES_JSON_BASE64\` — đăng nhập Google/Apple native TẮT trong bản này." >> "$GITHUB_STEP_SUMMARY"
             npm uninstall --no-save @capacitor-firebase/authentication
             exit 0
           fi
           echo "$GS_JSON" | base64 -d > android/app/google-services.json
-          V=android/variables.gradle
-          grep -q "rgcfaIncludeGoogle" $V || sed -i 's/^ext {/ext {\n    rgcfaIncludeGoogle = true/' $V
-          grep -n "rgcfaIncludeGoogle = true" $V || { echo "::error::Không bật được rgcfaIncludeGoogle"; exit 1; }
+          node -e '
+            const j = JSON.parse(require("fs").readFileSync("android/app/google-services.json", "utf8"));
+            const pk = (j.client || []).map(c => c.client_info && c.client_info.android_client_info && c.client_info.android_client_info.package_name);
+            if(!pk.includes("vn.thangvu.fitkit")){ console.log("::error::google-services.json không có app Android vn.thangvu.fitkit (đang có: " + pk.join(", ") + ")"); process.exit(1); }
+            console.log("google-services.json: project " + (j.project_info || {}).project_id + " · package OK");
+          '
           grep -n "google-services" android/build.gradle android/app/build.gradle || echo "::warning::Không thấy plugin google-services trong Gradle — kiểm tra docs/STORE-COMPLIANCE.md §0.2a"
 
       - name: Đồng bộ web + plugin vào Android
         run: npx cap sync android
 
+      - name: Vá project Android (target SDK, AGP/Gradle, quyền tối thiểu, edge-to-edge, số phiên bản)
+        run: |
+          V=$(node -p "require('./package.json').version")
+          CODE=$(( ${{ github.run_number }} + VERSION_CODE_OFFSET ))
+          python3 scripts/native-android-patch.py --android-dir android --target-sdk "$TARGET_SDK" \
+            --version-code "$CODE" --version-name "$V" $([ "$HAS_GS" = "true" ] && echo --google) $([ "$EXACT_ALARM" = "true" ] && echo --exact-alarm)
+          echo "versionName $V · versionCode $CODE · targetSdk $TARGET_SDK" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Build APK thử (debug)
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
 
-      - name: Build AAB phát hành (nếu có khoá ký)
+      - name: Build AAB + APK phát hành đã ký (nếu có khoá ký)
         if: env.HAS_KEY == 'true'
         working-directory: android
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > release.keystore
-          ./gradlew bundleRelease --no-daemon
-          jarsigner -sigalg SHA256withRSA -digestalg SHA-256 \
-            -keystore release.keystore -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
-            -keypass "${{ secrets.ANDROID_KEY_PASSWORD }}" \
-            app/build/outputs/bundle/release/app-release.aab "${{ secrets.ANDROID_KEY_ALIAS }}"
-          rm release.keystore
-          cp app/build/outputs/bundle/release/app-release.aab ../FitKit-release.aab
+          KS="$RUNNER_TEMP/release.keystore"
+          echo "$KS_B64" | base64 -d > "$KS"
+          keytool -list -keystore "$KS" -storepass "$KS_PASS" -alias "$KEY_ALIAS" >/dev/null \
+            || { echo "::error::Không mở được keystore bằng mật khẩu/alias trong secrets (ANDROID_KEYSTORE_PASSWORD / ANDROID_KEY_ALIAS sai?)"; rm -f "$KS"; exit 1; }
+          ./gradlew bundleRelease assembleRelease --no-daemon \
+            -Pandroid.injected.signing.store.file="$KS" \
+            -Pandroid.injected.signing.store.password="$KS_PASS" \
+            -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$KEY_PASS"
+          AAB=app/build/outputs/bundle/release/app-release.aab
+          if ! jarsigner -verify "$AAB" | grep -q "jar verified"; then
+            echo "::warning::Gradle chưa ký AAB — ký bổ sung bằng jarsigner"
+            jarsigner -sigalg SHA256withRSA -digestalg SHA-256 -keystore "$KS" -storepass "$KS_PASS" -keypass "$KEY_PASS" "$AAB" "$KEY_ALIAS"
+            jarsigner -verify "$AAB" | grep -q "jar verified" || { echo "::error::AAB không ký được"; rm -f "$KS"; exit 1; }
+          fi
+          echo "Vân tay khoá ký (thêm SHA-1 + SHA-256 này vào Firebase → app Android; khoá Play App Signing lấy ở Play Console → App integrity):"
+          keytool -list -v -keystore "$KS" -storepass "$KS_PASS" -alias "$KEY_ALIAS" | grep -E "SHA1:|SHA256:" || true
+          rm -f "$KS"
+          cp "$AAB" ../FitKit-release.aab
+          APK=$(ls app/build/outputs/apk/release/*.apk 2>/dev/null | grep -v unsigned | head -1 || true)
+          if [ -n "$APK" ]; then cp "$APK" ../FitKit-release.apk; else echo "::warning::Không thấy APK release đã ký (không ảnh hưởng AAB)"; fi
+          echo "### ✅ \`FitKit-release.aab\` đã ký — tải artifact \`FitKit-android\` rồi upload lên Play Console." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Soát quyền trong bản build (không vị trí / danh bạ / bộ nhớ / AD_ID / báo thức chính xác)
+        run: python3 scripts/native-android-patch.py --check-merged --android-dir android $([ "$EXACT_ALARM" = "true" ] && echo --exact-alarm)
 
       - name: Gom file kết quả
         run: cp android/app/build/outputs/apk/debug/app-debug.apk FitKit-debug.apk
@@ -112,5 +171,6 @@ jobs:
           path: |
             FitKit-debug.apk
             FitKit-release.aab
+            FitKit-release.apk
           if-no-files-found: warn
           retention-days: 30

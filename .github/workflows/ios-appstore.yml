@@ -1,117 +1,227 @@
 name: iOS — bản nộp App Store (TestFlight)
 
-# CHỈ chạy khi bạn đã có tài khoản Apple Developer (99 USD/năm) và đã thêm
-# 4 secret vào repo (Settings → Secrets and variables → Actions):
-#   APPSTORE_KEY_ID      — Key ID của App Store Connect API key (quyền Admin)
-#   APPSTORE_ISSUER_ID   — Issuer ID (trang Users and Access → Integrations)
-#   APPSTORE_KEY_P8      — nội dung file AuthKey_XXXX.p8 đã mã hoá base64
-#   APPLE_TEAM_ID        — Team ID 10 ký tự (developer.apple.com → Membership)
-# Xcode tự tạo chứng chỉ + provisioning profile (cloud signing) rồi upload
-# bản build lên TestFlight. Lần chạy đầu có thể cần chỉnh — gửi log cho mình.
-# Secret THÊM (khuyến nghị — đăng nhập Google/Apple native, docs/STORE-COMPLIANCE.md §0.2a):
-#   IOS_GOOGLE_SERVICE_INFO_PLIST — nội dung GoogleService-Info.plist đã mã hoá base64
-# Vòng sửa bảo mật 2 (11/2026): chuỗi quyền "TapEasy" + entitlement Sign in with Apple (App Store 4.8).
+# CHỈ chạy tay (Actions → Run workflow) khi đã có tài khoản Apple Developer (99 USD/năm). Secrets (Settings → Secrets and variables → Actions):
+#   BẮT BUỘC
+#     APPSTORE_KEY_ID      — Key ID của App Store Connect API key (quyền Admin hoặc App Manager)
+#     APPSTORE_ISSUER_ID   — Issuer ID (Users and Access → Integrations → App Store Connect API)
+#     APPSTORE_KEY_P8      — nội dung file AuthKey_XXXX.p8 đã mã hoá base64
+#     APPLE_TEAM_ID        — Team ID 10 ký tự (developer.apple.com → Membership)
+#     IOS_GOOGLE_SERVICE_INFO_PLIST (hoặc GOOGLE_SERVICE_INFO_PLIST_BASE64) — base64 của GoogleService-Info.plist (Firebase → app iOS vn.thangvu.fitkit).
+#         Thiếu → DỪNG: không có nó thì nút "Đăng nhập với Apple / Google" không chạy = bị từ chối (Guideline 2.1 + 4.8).
+#         Chỉ muốn thử nội bộ trên TestFlight: chạy với ô "allow_no_social" = true (plugin bị gỡ, đăng nhập email vẫn chạy).
+#   TUỲ CHỌN — ký tay (mặc định: Xcode tự tạo chứng chỉ + provisioning profile bằng API key, không cần 3 secret này)
+#     IOS_DIST_CERT_P12_BASE64         — chứng chỉ "Apple Distribution" (.p12) base64
+#     IOS_DIST_CERT_PASSWORD           — mật khẩu file .p12
+#     IOS_PROVISIONING_PROFILE_BASE64  — provisioning profile "App Store" của vn.thangvu.fitkit (.mobileprovision) base64, có Sign in with Apple
+# Bản build: bundle id vn.thangvu.fitkit · CHỈ iPhone · mô tả quyền Việt/Anh · ITSAppUsesNonExemptEncryption=false · PrivacyInfo.xcprivacy ·
+#   entitlement com.apple.developer.applesignin (CODE_SIGN_ENTITLEMENTS = App/App.entitlements) · không ATT (app không theo dõi chéo) ·
+#   cờ window.FK_BUILD = { platform:"ios", store:true }. Hướng dẫn từng bước: docs/RELEASE-CHECKLIST.md §E.
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      upload:
+        description: "Tải bản build lên App Store Connect / TestFlight (bỏ chọn = chỉ xuất .ipa làm artifact)"
+        type: boolean
+        default: true
+      allow_no_social:
+        description: "Cho build khi THIẾU GoogleService-Info.plist (chỉ để thử nội bộ — KHÔNG nộp duyệt bản này)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-appstore
+  cancel-in-progress: false
 
 jobs:
   appstore:
     runs-on: macos-latest
-    timeout-minutes: 60
+    timeout-minutes: 75
+    env:
+      HAS_GSI: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 != '' || secrets.IOS_GOOGLE_SERVICE_INFO_PLIST != '' }}
+      MANUAL_SIGN: ${{ secrets.IOS_DIST_CERT_P12_BASE64 != '' && secrets.IOS_PROVISIONING_PROFILE_BASE64 != '' }}
+      DO_UPLOAD: ${{ github.event.inputs.upload != 'false' }}
+      ALLOW_NO_SOCIAL: ${{ github.event.inputs.allow_no_social == 'true' }}
+      APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+      APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
       - name: Kiểm tra secret
+        env:
+          APPSTORE_KEY_P8: ${{ secrets.APPSTORE_KEY_P8 }}
         run: |
           for s in APPSTORE_KEY_ID APPSTORE_ISSUER_ID APPSTORE_KEY_P8 APPLE_TEAM_ID; do
-            [ -n "${!s}" ] || { echo "Thiếu secret $s"; exit 1; }
+            [ -n "${!s}" ] || { echo "::error::Thiếu secret $s (docs/RELEASE-CHECKLIST.md §E)"; exit 1; }
           done
-        env:
-          APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
-          APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
-          APPSTORE_KEY_P8: ${{ secrets.APPSTORE_KEY_P8 }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          if [ "$HAS_GSI" != "true" ] && [ "$ALLOW_NO_SOCIAL" != "true" ]; then
+            echo "::error::Thiếu secret IOS_GOOGLE_SERVICE_INFO_PLIST — bản nộp App Store phải có đăng nhập Apple/Google chạy thật (Guideline 2.1, 4.8). Thêm secret, hoặc chạy lại với allow_no_social = true để thử nội bộ."
+            exit 1
+          fi
 
-      - run: STORE_BUILD=1 bash scripts/prepare-www.sh     # integrator (FIX-ux vòng 2): TestFlight/App Store → không cho chạy chế độ demo
-      - run: npm install
+      - name: Chọn Xcode mới nhất trên máy ảo
+        run: |
+          X=$(ls -d /Applications/Xcode_[0-9]*.app 2>/dev/null | grep -vi beta | sort -V | tail -1 || true)
+          if [ -n "$X" ]; then sudo xcode-select -s "$X"; fi
+          xcodebuild -version
+          MAJOR=$(xcodebuild -version | awk 'NR==1{split($2,a,"."); print a[1]}')
+          if [ "${MAJOR:-0}" -lt 26 ]; then
+            echo "::warning::Xcode $MAJOR — từ 4/2026 App Store Connect yêu cầu build bằng Xcode 26 / iOS 26 SDK trở lên (kiểm lại mức hiện hành). Nếu upload bị ITMS-90725: đổi runs-on sang ảnh macOS mới hơn."
+          fi
+
+      - name: Gom file web vào www/ (bản store, cờ FK_BUILD ios)
+        # integrator (FIX-ux vòng 2): TestFlight/App Store → không cho chạy chế độ demo
+        run: FK_PLATFORM=ios FK_BUILD_NUMBER=${{ github.run_number }} FK_AUTH_PROVIDERS=$([ "$HAS_GSI" = "true" ] && echo "" || echo none) STORE_BUILD=1 bash scripts/prepare-www.sh
+      - run: npm install --no-audit --no-fund
       - run: npx cap add ios
-      - run: npm run assets -- --ios || echo "⚠️ Không tạo được icon, dùng icon mặc định"
+      - name: Icon & màn hình chờ
+        run: npm run assets -- --ios || { echo "::error::Không tạo được icon/splash — bản nộp không được dùng icon mặc định của Capacitor"; exit 1; }
 
-      - name: Info.plist
-        run: |
-          P=ios/App/App/Info.plist
-          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'TapEasy dùng camera để chụp ảnh tiến trình cơ thể khi bạn bấm chụp.'" $P || true
-          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'TapEasy cần truy cập thư viện để bạn chọn ảnh đại diện, ảnh tiến trình và video tập.'" $P || true
-          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryAddUsageDescription string 'TapEasy lưu ảnh tiến trình vào thư viện khi bạn yêu cầu.'" $P || true
-          /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" $P || true
-          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $(node -p "require('./package.json').version")" $P
-          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ github.run_number }}" $P
-
-      # App Store 4.8: nút "Đăng nhập với Apple" phải chạy thật → entitlement com.apple.developer.applesignin cho target App
-      #   (ký tự động -allowProvisioningUpdates bật capability cho App ID; vẫn nên bật tay trong developer.apple.com — README-store.md).
-      - name: Entitlement Sign in with Apple
-        run: |
-          gem list -i xcodeproj >/dev/null || sudo gem install xcodeproj --no-document
-          E=ios/App/App/App.entitlements
-          /usr/libexec/PlistBuddy -c "Add :com.apple.developer.applesignin array" $E 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Print :com.apple.developer.applesignin:0" $E 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :com.apple.developer.applesignin:0 string Default" $E
-          ruby -e 'require "xcodeproj"; p = Xcodeproj::Project.open("ios/App/App.xcodeproj"); t = p.targets.find { |x| x.name == "App" }; t.build_configurations.each { |c| c.build_settings["CODE_SIGN_ENTITLEMENTS"] = "App/App.entitlements" }; p.save'
-          /usr/libexec/PlistBuddy -c "Print" $E
-
-      # Đăng nhập Google/Apple bằng SDK gốc (@capacitor-firebase/authentication — docs/STORE-COMPLIANCE.md §0.2a):
-      #   secret IOS_GOOGLE_SERVICE_INFO_PLIST = base64 của GoogleService-Info.plist (Firebase → Project settings → app iOS vn.thangvu.fitkit).
-      #   Thiếu secret → GỠ plugin khỏi bản build (plugin gọi FirebaseApp.configure() khi mở app — thiếu file là crash ngay);
-      #   nút Google/Apple khi đó báo "chưa cấu hình", đăng nhập email vẫn chạy. Bản nộp App Store NÊN có secret này.
+      # Đăng nhập Google/Apple bằng SDK gốc (@capacitor-firebase/authentication — docs/STORE-COMPLIANCE.md §0.2a).
+      #   Thiếu secret (chỉ khi allow_no_social) → GỠ plugin khỏi bản build (plugin gọi FirebaseApp.configure() khi mở app — thiếu file là crash ngay).
       - name: Firebase native (GoogleService-Info.plist + Google Sign-In)
         env:
-          GSI_PLIST: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_PLIST }}
+          GSI_PLIST: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 || secrets.IOS_GOOGLE_SERVICE_INFO_PLIST }}
         run: |
           if [ -z "$GSI_PLIST" ]; then
-            echo "::warning::Thiếu secret IOS_GOOGLE_SERVICE_INFO_PLIST — bản build KHÔNG có đăng nhập Google/Apple native (gỡ plugin để không crash)."
+            echo "::warning::Thiếu secret IOS_GOOGLE_SERVICE_INFO_PLIST — bản build KHÔNG có đăng nhập Google/Apple native (gỡ plugin để không crash). KHÔNG nộp duyệt bản này."
             npm uninstall --no-save @capacitor-firebase/authentication
             exit 0
           fi
           echo "$GSI_PLIST" | base64 -d > ios/App/App/GoogleService-Info.plist
+          B=$(/usr/libexec/PlistBuddy -c "Print :BUNDLE_ID" ios/App/App/GoogleService-Info.plist)
+          [ "$B" = "vn.thangvu.fitkit" ] || { echo "::error::GoogleService-Info.plist là của bundle '$B', cần vn.thangvu.fitkit"; exit 1; }
+
+      # Ký tay (tuỳ chọn): nhập chứng chỉ .p12 vào keychain tạm + cài provisioning profile. Không có secret → bỏ qua, Xcode ký tự động bằng API key.
+      - name: Chứng chỉ + provisioning profile (ký tay — tuỳ chọn)
+        if: env.MANUAL_SIGN == 'true'
+        env:
+          P12_B64: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
+          P12_PASS: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
+          PROFILE_B64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          KC="$RUNNER_TEMP/signing.keychain-db"; KP=$(uuidgen)
+          security create-keychain -p "$KP" "$KC"
+          security set-keychain-settings -lut 21600 "$KC"
+          security unlock-keychain -p "$KP" "$KC"
+          echo "$P12_B64" | base64 -d > "$RUNNER_TEMP/dist.p12"
+          security import "$RUNNER_TEMP/dist.p12" -P "$P12_PASS" -A -t cert -f pkcs12 -k "$KC"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KP" "$KC" >/dev/null
+          security list-keychain -d user -s "$KC"
+          rm -f "$RUNNER_TEMP/dist.p12"
+          echo "$PROFILE_B64" | base64 -d > "$RUNNER_TEMP/app.mobileprovision"
+          security cms -D -i "$RUNNER_TEMP/app.mobileprovision" > "$RUNNER_TEMP/profile.plist"
+          NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" "$RUNNER_TEMP/profile.plist")
+          UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" "$RUNNER_TEMP/profile.plist")
+          APPID=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" "$RUNNER_TEMP/profile.plist")
+          case "$APPID" in *.vn.thangvu.fitkit) ;; *) echo "::error::Provisioning profile là của '$APPID', cần <TEAM>.vn.thangvu.fitkit"; exit 1;; esac
+          /usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.applesignin" "$RUNNER_TEMP/profile.plist" >/dev/null 2>&1 \
+            || { echo "::error::Provisioning profile chưa có Sign in with Apple — bật capability cho App ID rồi tạo lại profile"; exit 1; }
+          for d in "$HOME/Library/MobileDevice/Provisioning Profiles" "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"; do
+            mkdir -p "$d"; cp "$RUNNER_TEMP/app.mobileprovision" "$d/$UUID.mobileprovision"
+          done
+          echo "PROFILE_NAME=$NAME" >> "$GITHUB_ENV"
+          echo "Ký tay bằng profile: $NAME ($UUID)"
+
+      - name: Vá project iOS (Info.plist, quyền, PrivacyInfo.xcprivacy, Sign in with Apple, chỉ iPhone)
+        env:
+          # Mô tả quyền: CHỈ quyền app thật sự dùng, nêu rõ lý do, Việt + Anh (Guideline 5.1.1). Không khai vị trí / danh bạ / theo dõi.
+          NS_CAMERA: 'TapEasy dùng camera để chụp ảnh tiến trình và quét mã QR của PT hoặc sự kiện khi bạn bấm chụp/quét. / TapEasy uses the camera to take progress photos and scan trainer or event QR codes when you choose to.'
+          NS_MICROPHONE: 'TapEasy chỉ dùng micro để thu tiếng khi bạn tự quay video đăng lên Khoảnh khắc sự kiện. / TapEasy uses the microphone only to record sound when you film a video to post to event Moments.'
+          NS_PHOTO_ADD: 'TapEasy lưu ảnh vào thư viện khi bạn chọn Lưu ảnh. / TapEasy saves an image to your photo library when you choose Save.'
+        run: |
           gem list -i xcodeproj >/dev/null || sudo gem install xcodeproj --no-document
-          ruby -e 'require "xcodeproj"; p = Xcodeproj::Project.open("ios/App/App.xcodeproj"); t = p.targets.find { |x| x.name == "App" }; g = p.main_group.find_subpath("App", false); unless g.files.any? { |f| f.path == "GoogleService-Info.plist" }; t.add_resources([g.new_reference("GoogleService-Info.plist")]); end; p.save'
-          ruby -e 'f = "ios/App/Podfile"; s = File.read(f); l = "  pod %q(CapacitorFirebaseAuthentication/Google), :path => %q(../../node_modules/@capacitor-firebase/authentication)"; s.sub!(/^([ \t]*capacitor_pods[ \t]*)$/) { $1 + "\n" + l } unless s.include?("CapacitorFirebaseAuthentication/Google"); File.write(f, s)'
-          grep -n "CapacitorFirebaseAuthentication" ios/App/Podfile
-          P=ios/App/App/Info.plist
-          REV=$(/usr/libexec/PlistBuddy -c "Print :REVERSED_CLIENT_ID" ios/App/App/GoogleService-Info.plist)
-          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes array" $P 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" $P
-          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" $P
-          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string $REV" $P
+          V=$(node -p "require('./package.json').version")
+          PY_ARGS=(--ios-dir ios/App --version "$V" --build "${{ github.run_number }}" --apple-signin)
+          RB_ARGS=(--ios-dir ios/App --entitlements)
+          if [ "$HAS_GSI" = "true" ]; then PY_ARGS+=(--google-plist ios/App/App/GoogleService-Info.plist); RB_ARGS+=(--google); fi
+          if [ "$MANUAL_SIGN" = "true" ]; then RB_ARGS+=(--manual-profile "$PROFILE_NAME" --team "$APPLE_TEAM_ID"); fi
+          python3 scripts/native-ios-patch.py "${PY_ARGS[@]}"
+          ruby scripts/native-ios-xcodeproj.rb "${RB_ARGS[@]}"
+          /usr/libexec/PlistBuddy -c "Print" ios/App/App/App.entitlements
+          plutil -lint ios/App/App/Info.plist ios/App/App/PrivacyInfo.xcprivacy ios/App/App/App.entitlements
 
       - run: npx cap sync ios
 
-      - name: Archive (ký tự động bằng API key)
+      - name: Archive
         working-directory: ios/App
+        env:
+          APPSTORE_KEY_P8: ${{ secrets.APPSTORE_KEY_P8 }}
         run: |
           mkdir -p ~/private_keys
-          echo "${{ secrets.APPSTORE_KEY_P8 }}" | base64 -d > ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release \
-            -destination "generic/platform=iOS" -archivePath $RUNNER_TEMP/App.xcarchive \
-            DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }} CODE_SIGN_STYLE=Automatic \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
-            -authenticationKeyID ${{ secrets.APPSTORE_KEY_ID }} \
-            -authenticationKeyIssuerID ${{ secrets.APPSTORE_ISSUER_ID }} \
-            archive
+          KEY=~/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8
+          echo "$APPSTORE_KEY_P8" | base64 -d > "$KEY"
+          grep -q "BEGIN PRIVATE KEY" "$KEY" || { echo "::error::APPSTORE_KEY_P8 không phải base64 của file .p8"; exit 1; }
+          if [ "$MANUAL_SIGN" = "true" ]; then
+            xcodebuild -workspace App.xcworkspace -scheme App -configuration Release \
+              -destination "generic/platform=iOS" -archivePath "$RUNNER_TEMP/App.xcarchive" archive
+          else
+            xcodebuild -workspace App.xcworkspace -scheme App -configuration Release \
+              -destination "generic/platform=iOS" -archivePath "$RUNNER_TEMP/App.xcarchive" \
+              DEVELOPMENT_TEAM="$APPLE_TEAM_ID" CODE_SIGN_STYLE=Automatic \
+              -allowProvisioningUpdates \
+              -authenticationKeyPath "$KEY" \
+              -authenticationKeyID "$APPSTORE_KEY_ID" \
+              -authenticationKeyIssuerID "$APPSTORE_ISSUER_ID" \
+              archive
+          fi
+          A="$RUNNER_TEMP/App.xcarchive/Products/Applications/App.app"
+          test -f "$A/PrivacyInfo.xcprivacy" || { echo "::error::Bản archive thiếu PrivacyInfo.xcprivacy"; exit 1; }
+          FAM=$(/usr/libexec/PlistBuddy -c "Print :UIDeviceFamily" "$A/Info.plist" | tr -d ' \n')
+          echo "UIDeviceFamily: $FAM (mong đợi chỉ 1 = iPhone)"
+          codesign -d --entitlements :- "$A" 2>/dev/null | grep -q "com.apple.developer.applesignin" \
+            || echo "::warning::Không đọc được entitlement Sign in with Apple trong bản archive — kiểm tra capability của App ID trên developer.apple.com"
 
-      - name: Xuất & tải lên App Store Connect
+      - name: Xuất .ipa + tải lên App Store Connect
+        env:
+          PROFILE_NAME: ${{ env.PROFILE_NAME }}
         run: |
-          E=$RUNNER_TEMP/ExportOptions.plist
-          /usr/libexec/PlistBuddy -c "Add :method string app-store" $E
-          /usr/libexec/PlistBuddy -c "Add :destination string upload" $E
-          /usr/libexec/PlistBuddy -c "Add :teamID string ${{ secrets.APPLE_TEAM_ID }}" $E
-          /usr/libexec/PlistBuddy -c "Add :signingStyle string automatic" $E
-          xcodebuild -exportArchive -archivePath $RUNNER_TEMP/App.xcarchive \
-            -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist -exportPath $RUNNER_TEMP/export \
+          KEY=~/private_keys/AuthKey_${APPSTORE_KEY_ID}.p8
+          python3 - <<'PY'
+          import os, plistlib
+          manual = os.environ.get("MANUAL_SIGN") == "true"
+          opts = {
+              "method": "app-store-connect",
+              "destination": "upload" if os.environ.get("DO_UPLOAD") == "true" else "export",
+              "teamID": os.environ["APPLE_TEAM_ID"],
+              "signingStyle": "manual" if manual else "automatic",
+              "manageAppVersionAndBuildNumber": False,
+              "uploadSymbols": True,
+          }
+          if manual:
+              opts["signingCertificate"] = "Apple Distribution"
+              opts["provisioningProfiles"] = {"vn.thangvu.fitkit": os.environ["PROFILE_NAME"]}
+          with open(os.path.join(os.environ["RUNNER_TEMP"], "ExportOptions.plist"), "wb") as f:
+              plistlib.dump(opts, f)
+          print(opts)
+          PY
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" -exportPath "$RUNNER_TEMP/export" \
             -allowProvisioningUpdates \
-            -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
-            -authenticationKeyID ${{ secrets.APPSTORE_KEY_ID }} \
-            -authenticationKeyIssuerID ${{ secrets.APPSTORE_ISSUER_ID }}
+            -authenticationKeyPath "$KEY" \
+            -authenticationKeyID "$APPSTORE_KEY_ID" \
+            -authenticationKeyIssuerID "$APPSTORE_ISSUER_ID"
+          if [ "$DO_UPLOAD" = "true" ]; then
+            echo "### ✅ Đã tải build ${{ github.run_number }} lên App Store Connect — 15–30 phút sau sẽ hiện ở TestFlight." >> "$GITHUB_STEP_SUMMARY"
+          else
+            mkdir -p ipa && cp "$RUNNER_TEMP"/export/*.ipa ipa/FitKit-appstore.ipa
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: env.DO_UPLOAD != 'true'
+        with:
+          name: FitKit-appstore-ipa
+          path: ipa/FitKit-appstore.ipa
+          retention-days: 14
+
+      - name: Dọn khoá ký khỏi máy ảo
+        if: always()
+        run: |
+          rm -rf ~/private_keys "$RUNNER_TEMP/app.mobileprovision" "$RUNNER_TEMP/profile.plist"
+          security delete-keychain "$RUNNER_TEMP/signing.keychain-db" 2>/dev/null || true

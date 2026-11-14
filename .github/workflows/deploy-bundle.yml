@@ -1,5 +1,7 @@
 name: Giải nén gói mã nguồn (deploy-bundle.zip)
 
+# LƯU Ý (R3-store): commit do workflow này đẩy lên dùng GITHUB_TOKEN nên KHÔNG tự kích hoạt workflow build Android/iOS.
+#   GitHub Pages (web) vẫn tự cập nhật. Muốn có APK/AAB/IPA mới: Actions → chọn workflow → Run workflow.
 # Cách cập nhật nhanh nhiều file qua giao diện web GitHub:
 #   1. Tải file deploy-bundle.zip lên thư mục gốc của repo (Add file → Upload files).
 #   2. Workflow này giải nén đè vào repo (bỏ qua .github/ — workflow phải tải riêng),
@@ -28,7 +30,13 @@ jobs:
           test -f deploy-bundle.zip || { echo "Không có deploy-bundle.zip"; exit 0; }
           mkdir -p /tmp/bundle
           unzip -q -o deploy-bundle.zip -d /tmp/bundle
-          rm -rf /tmp/bundle/.github /tmp/bundle/media /tmp/bundle/_test /tmp/bundle/node_modules
+          # R3-store: không bao giờ chép đè .git (hook/cấu hình lạ) hay thư mục sinh ra khi build native (www/ android/ ios/)
+          rm -rf /tmp/bundle/.git /tmp/bundle/.github /tmp/bundle/media /tmp/bundle/_test /tmp/bundle/node_modules \
+                 /tmp/bundle/www /tmp/bundle/android /tmp/bundle/ios
+          # không cho khoá ký / tệp bí mật lọt vào repo công khai
+          find /tmp/bundle -type f \( -name "*.keystore" -o -name "*.jks" -o -name "*.p12" -o -name "*.p8" -o -name "*.mobileprovision" \
+               -o -name "google-services.json" -o -name "GoogleService-Info.plist" -o -name ".env" \) -print -delete | sed 's/^/⚠️ Bỏ tệp bí mật khỏi gói: /'
+          if find /tmp/bundle -type l | grep -q .; then echo "::error::Gói chứa symlink — từ chối"; exit 1; fi
           cp -a /tmp/bundle/. .
           git rm -q --cached deploy-bundle.zip || true
           rm -f deploy-bundle.zip

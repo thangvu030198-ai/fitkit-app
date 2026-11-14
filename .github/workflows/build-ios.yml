@@ -1,50 +1,58 @@
 name: iOS — bản thử (unsigned .ipa cho AltStore)
 
-# Máy ảo macOS miễn phí của GitHub build file .ipa CHƯA KÝ → cài thử bằng AltStore.
+# Máy ảo macOS miễn phí của GitHub build file .ipa CHƯA KÝ → cài thử bằng AltStore (README-ios-build.md).
 # Bản nộp App Store dùng workflow "ios-appstore.yml" (cần tài khoản Apple Developer).
+# R3-store: dùng chung bộ vá với bản App Store (scripts/native-ios-patch.py + native-ios-xcodeproj.rb): mô tả quyền Việt/Anh,
+#   ITSAppUsesNonExemptEncryption=false, PrivacyInfo.xcprivacy, chỉ iPhone + màn dọc, cờ window.FK_BUILD.platform = "ios".
 
 on:
   workflow_dispatch: {}
   push:
     branches: [ main ]
-    paths-ignore: [ "**.md", "media/**" ]
+    paths-ignore: [ "**.md", "media/**", "docs/**", "store/**", "tests/**" ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-ios-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-ios:
     runs-on: macos-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
+    env:
+      HAS_GSI: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 != '' || secrets.IOS_GOOGLE_SERVICE_INFO_PLIST != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
+      - name: Chọn Xcode mới nhất trên máy ảo
+        run: |
+          X=$(ls -d /Applications/Xcode_[0-9]*.app 2>/dev/null | grep -vi beta | sort -V | tail -1 || true)
+          if [ -n "$X" ]; then sudo xcode-select -s "$X"; fi
+          xcodebuild -version
+
       - name: Gom file web vào www/ + tải thư viện bài tập
-        run: bash scripts/prepare-www.sh
+        run: FK_PLATFORM=ios FK_BUILD_NUMBER=${{ github.run_number }} FK_AUTH_PROVIDERS=$([ "$HAS_GSI" = "true" ] && echo "" || echo none) bash scripts/prepare-www.sh
 
       - name: Cài Capacitor + plugin
-        run: npm install
+        run: npm install --no-audit --no-fund
 
       - name: Tạo project iOS
         run: npx cap add ios
 
       - name: Icon & màn hình chờ
-        run: npm run assets -- --ios || echo "⚠️ Không tạo được icon, dùng icon mặc định"
+        run: npm run assets -- --ios || echo "::warning::Không tạo được icon, dùng icon mặc định"
 
-      - name: Quyền camera/ảnh + khai báo mã hoá (bắt buộc khi nộp App Store)
-        run: |
-          P=ios/App/App/Info.plist
-          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'TapEasy dùng camera để chụp ảnh tiến trình cơ thể khi bạn bấm chụp.'" $P || true
-          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'TapEasy cần truy cập thư viện để bạn chọn ảnh đại diện, ảnh tiến trình và video tập.'" $P || true
-          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryAddUsageDescription string 'TapEasy lưu ảnh tiến trình vào thư viện khi bạn yêu cầu.'" $P || true
-          /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" $P || true
-          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $(node -p "require('./package.json').version")" $P || true
-          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ github.run_number }}" $P || true
-
-      # Đăng nhập Google/Apple native (@capacitor-firebase/authentication): cần GoogleService-Info.plist (secret IOS_GOOGLE_SERVICE_INFO_PLIST,
-      #   base64). Thiếu → gỡ plugin khỏi bản thử (plugin gọi FirebaseApp.configure() khi mở app — thiếu file là crash). Xem ios-appstore.yml.
+      # Đăng nhập Google/Apple native (@capacitor-firebase/authentication): cần GoogleService-Info.plist (secret IOS_GOOGLE_SERVICE_INFO_PLIST
+      #   hoặc GOOGLE_SERVICE_INFO_PLIST_BASE64, base64). Thiếu → gỡ plugin khỏi bản thử (plugin gọi FirebaseApp.configure() khi mở app —
+      #   thiếu file là crash). Xem ios-appstore.yml.
       - name: Firebase native (GoogleService-Info.plist)
         env:
-          GSI_PLIST: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_PLIST }}
+          GSI_PLIST: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 || secrets.IOS_GOOGLE_SERVICE_INFO_PLIST }}
         run: |
           if [ -z "$GSI_PLIST" ]; then
             echo "::warning::Thiếu secret IOS_GOOGLE_SERVICE_INFO_PLIST — bản thử KHÔNG có đăng nhập Google/Apple native (gỡ plugin để không crash)."
@@ -52,15 +60,18 @@ jobs:
             exit 0
           fi
           echo "$GSI_PLIST" | base64 -d > ios/App/App/GoogleService-Info.plist
+
+      - name: Vá project iOS (Info.plist, PrivacyInfo.xcprivacy, chỉ iPhone, số phiên bản)
+        run: |
           gem list -i xcodeproj >/dev/null || sudo gem install xcodeproj --no-document
-          ruby -e 'require "xcodeproj"; p = Xcodeproj::Project.open("ios/App/App.xcodeproj"); t = p.targets.find { |x| x.name == "App" }; g = p.main_group.find_subpath("App", false); unless g.files.any? { |f| f.path == "GoogleService-Info.plist" }; t.add_resources([g.new_reference("GoogleService-Info.plist")]); end; p.save'
-          ruby -e 'f = "ios/App/Podfile"; s = File.read(f); l = "  pod %q(CapacitorFirebaseAuthentication/Google), :path => %q(../../node_modules/@capacitor-firebase/authentication)"; s.sub!(/^([ \t]*capacitor_pods[ \t]*)$/) { $1 + "\n" + l } unless s.include?("CapacitorFirebaseAuthentication/Google"); File.write(f, s)'
-          P=ios/App/App/Info.plist
-          REV=$(/usr/libexec/PlistBuddy -c "Print :REVERSED_CLIENT_ID" ios/App/App/GoogleService-Info.plist)
-          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes array" $P 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" $P
-          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" $P
-          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string $REV" $P
+          V=$(node -p "require('./package.json').version")
+          if [ "$HAS_GSI" = "true" ]; then
+            python3 scripts/native-ios-patch.py --ios-dir ios/App --version "$V" --build "${{ github.run_number }}" --google-plist ios/App/App/GoogleService-Info.plist
+            ruby scripts/native-ios-xcodeproj.rb --ios-dir ios/App --google
+          else
+            python3 scripts/native-ios-patch.py --ios-dir ios/App --version "$V" --build "${{ github.run_number }}"
+            ruby scripts/native-ios-xcodeproj.rb --ios-dir ios/App
+          fi
 
       - name: Đồng bộ web + plugin vào iOS
         run: npx cap sync ios
@@ -75,6 +86,7 @@ jobs:
       - name: Đóng gói .ipa
         working-directory: ios/App/build/Build/Products/Release-iphoneos
         run: |
+          test -f App.app/PrivacyInfo.xcprivacy || echo "::warning::PrivacyInfo.xcprivacy không nằm trong App.app — kiểm tra scripts/native-ios-xcodeproj.rb"
           mkdir -p Payload && cp -r App.app Payload/
           zip -qr FitKit-unsigned.ipa Payload
 
