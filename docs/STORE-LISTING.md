@@ -8,6 +8,8 @@
 
 ---
 
+> **R3 (14/11/2026):** bản **dán sẵn từng ô** nằm ở thư mục `store/` (`store/README.md`), sinh từ tài liệu này với 3 chỉnh sửa cho bản store: bỏ “Facebook” khỏi câu đăng nhập (SDK Facebook native chưa cấu hình), sửa câu “số liệu sức khoẻ chỉ lưu trên máy” thành “…chỉ gửi cho PT khi bạn chọn chia sẻ” (khớp Data safety), thêm câu miễn trừ y khoa cuối mô tả. Kích thước ảnh + script chụp: `store/screenshots/README.md`. Danh sách kiểm: `docs/RELEASE-CHECKLIST.md`.
+
 ## 0. Kiểm tra trước khi nộp (chặn phát hành nếu chưa xong)
 
 | # | Việc | Vì sao |

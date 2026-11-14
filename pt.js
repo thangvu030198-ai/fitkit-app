@@ -81,7 +81,12 @@ const nativeNotif = {
 
 /* Mỗi lần lưu state → lên lịch lại thông báo native (có debounce) */
 const _saveStateV1 = saveState;
-saveState = function(){ const ok = _saveStateV1(); try{ nativeNotif.syncSoon(); }catch(e){} return ok; };   // QC-11: giữ giá trị trả về (false = chưa lưu được)
+saveState = function(){
+  const ok = _saveStateV1(); try{ nativeNotif.syncSoon(); }catch(e){}
+  /* R3: mỗi lần lưu THÀNH CÔNG → ghi mốc thay đổi + hẹn giờ sao lưu cloud (cloud.sync tự bỏ qua khi chưa đăng nhập / chưa đồng ý) */
+  try{ if(ok !== false) cloud.sync.markDirty(); }catch(e){}
+  return ok;   // QC-11: giữ giá trị trả về (false = chưa lưu được)
+};
 
 /* Nhắc buổi PT khi app đang mở (web + native) */
 function checkCoachReminders(){
@@ -105,6 +110,7 @@ setInterval(checkCoachReminders, 15000);
    2. ĐĂNG NHẬP / ĐĂNG KÝ / CHỌN VAI TRÒ (lớp phủ #auth)
    --------------------------------------------------------------------- */
 function showAuth(view){
+  stopAuthTick();   // R3: dừng bộ đếm "gửi lại sau N giây" của màn trước (không để setInterval chạy ngầm)
   $("#auth").classList.add("open");
   $("#auth").onscroll = null; $("#auth").scrollTop = 0;
   $("#auth").classList.toggle("wl-mode", view==="welcome");
@@ -253,7 +259,7 @@ function showAuth(view){
       ${demoNote}</div>`;
     const submit = async ()=>{
       setAuthBusy(true);
-      try{ await cloud.signIn($("#au-email").value, $("#au-pw").value); postAuthRoute(); }
+      try{ await cloud.signIn($("#au-email").value, $("#au-pw").value); fkAutoLinkToast(); postAuthRoute(); }
       catch(e){ $("#au-err").textContent = e.message; }
       finally{ setAuthBusy(false); }
     };
@@ -275,20 +281,21 @@ function showAuth(view){
       <div class="field"><label>Tên hiển thị</label><input type="text" id="au-name" autocomplete="name" placeholder="VD: Thắng"></div>
       <div class="field"><label>Email</label><input type="email" id="au-email" autocomplete="email" placeholder="ban@email.com"></div>
       <div class="field"><label>Mật khẩu (ít nhất 6 ký tự)</label><input type="password" id="au-pw" autocomplete="new-password" placeholder="••••••"></div>
-      <label class="auth-check"><input type="checkbox" id="au-agree"> <span>Tôi đồng ý với <a id="au-privacy">Điều khoản &amp; Chính sách bảo mật</a></span></label>
-      <p class="auth-err" id="au-err"></p>
+      ${authConsentHTML()}
+      <p class="auth-err" id="au-err" role="alert"></p>
       <button class="btn btn-primary btn-block" id="au-submit">Tạo tài khoản</button>
       <button class="btn btn-ghost btn-block" data-auth="login">Đã có tài khoản? Đăng nhập</button>
       ${demoNote}</div>`;
-    $("#au-privacy").addEventListener("click", (e)=>{ e.preventDefault(); openPrivacySheet(); });
+    bindConsentLinks();
     bindSocialButtons(true);
     $("#au-submit").addEventListener("click", async ()=>{
       const name = $("#au-name").value.trim();
       if(!name){ $("#au-err").textContent = "Vui lòng nhập tên hiển thị."; return; }
-      if(!$("#au-agree").checked){ $("#au-err").textContent = "Bạn cần đồng ý với Điều khoản & Chính sách bảo mật."; return; }
+      const grants = readAuthConsents(); if(!grants) return;
       setAuthBusy(true);
       try{
         await cloud.signUp($("#au-email").value, $("#au-pw").value, name);
+        await cloud.consent.record(grants, "signup");      // nhật ký đồng ý: loại, phiên bản chính sách, thời điểm
         if(!state.profile.name){ state.profile.name = name; }
         postAuthRoute();
       }catch(e){ $("#au-err").textContent = e.message; }
@@ -297,19 +304,34 @@ function showAuth(view){
   }
 
   else if(view==="forgot"){
-    body.innerHTML = `<div class="auth-form"><button class="icon-btn" data-auth="login" style="margin-bottom:6px;"><span class="material-symbols-rounded">arrow_back</span></button>
+    /* R3-A: link email (mặc định) · OTP email (FK_FEATURES.emailOtp) · OTP số điện thoại (FK_FEATURES.phoneOtp) — cờ tắt → KHÔNG hiện */
+    const methods = [cloud.otp.enabled() ? ["otp", "Mã qua email"] : null, ["link", cloud.otp.enabled() ? "Link qua email" : "Email"], cloud.phone.enabled() ? ["phone", "Số điện thoại"] : null].filter(Boolean);
+    body.innerHTML = `<div class="auth-form"><button class="icon-btn" data-auth="login" style="margin-bottom:6px;" aria-label="Quay lại"><span class="material-symbols-rounded">arrow_back</span></button>
       <h2 class="onboard-hero">Quên mật khẩu</h2>
-      <p class="onboard-sub">Nhập email đã đăng ký, TapEasy sẽ gửi link đặt lại mật khẩu.</p>
-      <div class="field"><label>Email</label><input type="email" id="au-email" placeholder="ban@email.com"></div>
-      <p class="auth-err" id="au-err"></p>
-      <button class="btn btn-primary btn-block" id="au-submit">Gửi link đặt lại</button>
-      ${cloud.mode==="demo" ? `<p class="small-note">Bản thử nghiệm không gửi email thật.</p>` : ""}</div>`;
+      ${methods.length > 1 ? `<div class="fk-seg" role="tablist" aria-label="Cách lấy lại mật khẩu">${methods.map(m=>`<button type="button" role="tab" data-fg="${m[0]}">${m[1]}</button>`).join("")}</div>` : ""}
+      <div id="fg-body" class="fk-fg-body"></div></div>`;
+    $$("[data-fg]", body).forEach(b=> b.addEventListener("click", ()=> renderForgot(b.dataset.fg)));
+    renderForgot(methods[0][0]);
+  }
+
+  else if(view==="consent"){
+    /* R3-E: tài khoản vừa đăng nhập chưa có nhật ký đồng ý (đăng nhập Google/Apple/Facebook lần đầu từ màn Đăng nhập, hoặc chính sách đổi phiên bản) */
+    body.innerHTML = `<div class="auth-form">
+      <h2 class="onboard-hero">Trước khi bắt đầu</h2>
+      <p class="onboard-sub">TapEasy cần bạn xác nhận các mục dưới đây (phiên bản ${escapeHtml(cloud.policyVersion)}).</p>
+      ${authConsentHTML()}
+      <p class="auth-err" id="au-err" role="alert"></p>
+      <button class="btn btn-primary btn-block" id="au-submit">Đồng ý & tiếp tục</button>
+      <button class="btn btn-ghost btn-block" id="au-consent-out">Không đồng ý — đăng xuất</button></div>`;
+    bindConsentLinks();
     $("#au-submit").addEventListener("click", async ()=>{
+      const g = readAuthConsents(); if(!g) return;
       setAuthBusy(true);
-      try{ await cloud.resetPassword($("#au-email").value); toast("Đã gửi email đặt lại mật khẩu", "mail"); showAuth("login"); }
+      try{ await cloud.consent.record(g, "login"); postAuthRoute(); }
       catch(e){ $("#au-err").textContent = e.message; }
       finally{ setAuthBusy(false); }
     });
+    $("#au-consent-out").addEventListener("click", async ()=>{ try{ await cloud.signOut(); }catch(e){} resetCoachData(); showAuth("welcome"); });
   }
 
   else if(view==="role"){
@@ -319,7 +341,7 @@ function showAuth(view){
       { id:"student", icon:"person_add", title:"Tôi có PT", desc:"Nhập mã 6 ký tự PT gửi để xem buổi tập PT giao và phản hồi." },
       { id:"pt", icon:"sports", title:"Tôi là PT", desc:"Quản lý học viên, thời khoá biểu, giao bài, nhắc nhở hai chiều." },
       { id:"find", icon:"travel_explore", title:"Tìm & Book PT", desc:"Sắp ra mắt.", soon:true },
-    ];
+    ].filter(r=> !(r.soon && window.FK_BUILD && FK_BUILD.store));   // R3-store: bản lên store không hiện mục "Sắp ra mắt" (App Store 2.1)
     body.innerHTML = `<div class="auth-form">
       <h2 class="onboard-hero">Chào ${escapeHtml(name)}!</h2>
       <p class="onboard-sub">Bạn dùng TapEasy để làm gì? (Đổi lại được trong Hồ sơ)</p>
@@ -407,12 +429,21 @@ async function pickRole(role){
 }
 
 /* Sau khi đăng nhập/đăng ký thành công */
-function postAuthRoute(){
+async function postAuthRoute(){
   state.authDone = true; saveState();
   refreshCoachData(true);
+  if(cloud.isLoggedIn()){
+    /* R3-E: chưa có đồng ý Điều khoản + tuổi (theo phiên bản chính sách hiện hành) → hỏi trước khi vào app.
+       Máy mới: kéo nhật ký đồng ý của tài khoản về trước (đã đồng ý ở máy khác thì không hỏi lại). */
+    let cs = cloud.consent.status();
+    if(!cs.base){ try{ cs = await cloud.consent.load(); }catch(e){} }
+    if(cloud.isLoggedIn() && !cs.base){ showAuth("consent"); return; }
+    fkSyncKick();                                  // khôi phục / gộp dữ liệu tập luyện đã sao lưu theo tài khoản
+  }
   if(cloud.isLoggedIn() && !(cloud.profile && cloud.profile.mainRole)){ showAuth("role"); return; }
   finishBoot("coach_if_open");
 }
+function fkAutoLinkToast(){ try{ const k = cloud.linked.takeAutoLinked(); if(k) toast("Đã liên kết " + (cloud.linked.labels[k] || k) + " vào tài khoản của bạn", "link"); }catch(e){} }
 
 /* Vào app chính */
 function finishBoot(target){
@@ -791,6 +822,8 @@ function renderAccountCard(){
         ${pr.isPT ? `<span class="badge-pro">PT</span>` : ""}</div>
       <div class="link-row"><div class="left"><span class="material-symbols-rounded">sports</span><div><div class="name">Chế độ PT</div><div class="sub">Quản lý học viên, giao bài, thời khoá biểu</div></div></div>
         <div class="toggle ${pr.isPT?'on':''}" id="acc-pt-toggle"></div></div>
+      <div class="link-row" id="acc-sync" role="button" tabindex="0" style="cursor:pointer;"><div class="left"><span class="material-symbols-rounded">cloud_sync</span><div><div class="name">Sao lưu & đồng bộ</div><div class="sub" id="acc-sync-sub">${escapeHtml(fkSyncLabel(cloud.sync.status()))}</div></div></div><span class="material-symbols-rounded">chevron_right</span></div>
+      <div class="link-row" id="acc-linked" role="button" tabindex="0" style="cursor:pointer;"><div class="left"><span class="material-symbols-rounded">link</span><div><div class="name">Tài khoản liên kết</div><div class="sub">${escapeHtml(cloud.linked.providers().map(k=> cloud.linked.labels[k] || k).join(" · ") || "Email")}</div></div></div><span class="material-symbols-rounded">chevron_right</span></div>
       <div class="link-row" id="acc-logout" style="cursor:pointer;"><div class="left"><span class="material-symbols-rounded">logout</span><div class="name">Đăng xuất</div></div></div>
       <div class="link-row" id="acc-delete" style="cursor:pointer;"><div class="left"><span class="material-symbols-rounded" style="color:var(--primary);">person_remove</span><div class="name" style="color:var(--primary-soft);">Xoá tài khoản</div></div></div>
     ` : `
@@ -802,19 +835,28 @@ function renderAccountCard(){
     `}
     ${modeNote}
     <div class="divider" style="margin:10px 0;"></div>
+    <div class="link-row" id="acc-export" role="button" tabindex="0" style="cursor:pointer;"><div class="left"><span class="material-symbols-rounded">download</span><div><div class="name">Xuất dữ liệu của tôi</div><div class="sub">Tải toàn bộ dữ liệu về máy (tệp JSON)</div></div></div><span class="material-symbols-rounded">chevron_right</span></div>
     <div class="link-row" onclick="openPrivacySheet()" style="cursor:pointer;"><div class="left"><span class="material-symbols-rounded">shield</span><div class="name">Chính sách bảo mật</div></div><span class="material-symbols-rounded">chevron_right</span></div>
+    <div class="link-row" onclick="openTermsSheet()" style="cursor:pointer;"><div class="left"><span class="material-symbols-rounded">gavel</span><div class="name">Điều khoản sử dụng</div></div><span class="material-symbols-rounded">chevron_right</span></div>
     <div class="link-row" onclick="openMediaSettings()" style="cursor:pointer;"><div class="left"><span class="material-symbols-rounded">video_library</span><div><div class="name">Nguồn video minh hoạ</div><div class="sub">${hasVideoSource() ? "Đã kết nối Pexels / Pixabay" : "Chưa kết nối — chạm để thêm API key"}</div></div></div><span class="material-symbols-rounded">chevron_right</span></div>
     <div class="link-row" onclick="openCreditsSheet()" style="cursor:pointer;"><div class="left"><span class="material-symbols-rounded">copyright</span><div class="name">Nguồn dữ liệu &amp; bản quyền</div></div><span class="material-symbols-rounded">chevron_right</span></div>
     <p class="small-note" style="text-align:center;margin-top:8px;">TapEasy v${APP_VERSION}</p>
   `;
+  const keyClick = (el, fn)=>{ if(!el) return; el.addEventListener("click", fn); el.addEventListener("keydown", e=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); fn(); } }); };
+  keyClick($("#acc-export"), ()=> fkExportMyData());
   if(!u) return;
+  keyClick($("#acc-sync"), openSyncSheet);
+  keyClick($("#acc-linked"), openLinkedSheet);
   $("#acc-pt-toggle").addEventListener("click", async ()=>{
     try{ await cloud.updateMyProfile({ isPT: !pr.isPT }); renderAccountCard(); renderHomeScreen(); toast(pr.isPT ? "Đã bật chế độ PT" : "Đã tắt chế độ PT"); }
     catch(e){ toast(e.message, "error"); }
   });
   $("#acc-logout").addEventListener("click", ()=>{
-    confirmDialog("Đăng xuất?", "Dữ liệu tập cá nhân vẫn giữ trên máy. Bạn cần đăng nhập lại để dùng phần PT.", async ()=>{
-      await cloud.signOut(); resetCoachData(); renderAll(); toast("Đã đăng xuất", "logout");
+    const s = cloud.sync.status();
+    const note = s.enabled && s.pending ? " TapEasy sẽ sao lưu nốt thay đổi mới nhất trước khi thoát." : "";
+    confirmDialog("Đăng xuất?", "Dữ liệu tập cá nhân vẫn giữ trên máy. Bạn cần đăng nhập lại để dùng phần PT." + note, async ()=>{
+      try{ await cloud.signOut(); }catch(e){ toast(e.message, "error"); return; }     // R3-CLOUD-08: lỗi đăng xuất không còn bị nuốt
+      resetCoachData(); renderAll(); toast("Đã đăng xuất", "logout");
     }, "Đăng xuất", "logout");
   });
   $("#acc-delete").addEventListener("click", openDeleteAccountSheet);
@@ -828,22 +870,36 @@ function openDeleteAccountSheet(){
       <li>Tài khoản đăng nhập và hồ sơ của bạn trên máy chủ</li>
       <li>Toàn bộ form học viên bạn tạo (nếu là PT), kèm buổi tập và ghi chú</li>
       <li>Liên kết của bạn với PT (nếu là học viên)</li>
+      <li>Bản sao lưu dữ liệu tập luyện – dinh dưỡng trên cloud và nhật ký đồng ý</li>
+      <li>Bài đăng cộng đồng, đánh giá, đăng ký sự kiện; đơn hàng được ẩn danh (giữ số tiền theo luật kế toán)</li>
       ${cloud.profile && cloud.profile.provider === "apple" ? `<li>Quyền "Đăng nhập với Apple" của TapEasy (app sẽ thu hồi token Apple)</li>` : ""}
     </ul>
-    <p class="small-note">Dữ liệu tập cá nhân trên máy này vẫn giữ — xoá bằng "Đặt lại toàn bộ dữ liệu" nếu muốn.</p>
-    ${cloud.isSocialUser ? `<p class="small-note" style="margin-top:12px;">Bạn đăng nhập bằng ${({facebook:"Facebook",apple:"Apple",google:"Google"})[cloud.profile.provider]||"Google"} — app sẽ hỏi xác nhận lại tài khoản đó.</p>` : `<div class="field" style="margin-top:12px;"><label>Nhập mật khẩu để xác nhận</label><input type="password" id="del-pw" placeholder="••••••"></div>`}
+    <label class="auth-check fk-consent-row" style="margin-top:8px;"><input type="checkbox" id="del-local"> <span>Xoá luôn dữ liệu tập luyện trên máy này (không tích: dữ liệu trên máy vẫn giữ để bạn dùng tiếp không cần tài khoản)</span></label>
+    <p class="small-note">Nên bấm <a id="del-export" role="button" tabindex="0" style="text-decoration:underline;cursor:pointer;">Xuất dữ liệu của tôi</a> trước khi xoá.</p>
+    ${cloud.isSocialUser ? `<p class="small-note" style="margin-top:12px;">Bạn đăng nhập bằng ${escapeHtml(cloud.linked.providers().filter(k=> k !== "phone").map(k=> cloud.linked.labels[k] || k)[0] || "Google")} — app sẽ hỏi xác nhận lại tài khoản đó.</p>` : `<div class="field" style="margin-top:12px;"><label>Nhập mật khẩu để xác nhận</label><input type="password" id="del-pw" placeholder="••••••"></div>`}
     <p class="auth-err" id="del-err"></p>
     <button class="btn btn-primary btn-block" id="del-go" style="margin-top:10px;">Xoá vĩnh viễn tài khoản</button>
   `);
   // RBAC (docs/INTEGRATION-admin.md §6.6): Chủ sở hữu phải chuyển nhượng quyền trước — xoá tài khoản Owner sẽ để app không còn Owner
   const isOwner = ()=>{ try{ return !!(window.TE_RBAC && typeof TE_RBAC.role === "function" && TE_RBAC.role() === "owner"); }catch(e){ return false; } };
+  if($("#del-export")) $("#del-export").addEventListener("click", ()=> fkExportMyData());
   if(isOwner()) $("#del-err").textContent = "Bạn đang là Chủ sở hữu ứng dụng — vào Bảng quản trị → Đội ngũ → Chuyển nhượng trước khi xoá tài khoản.";
   $("#del-go").addEventListener("click", async ()=>{
     if(isOwner()){ $("#del-err").textContent = "Bạn là Chủ sở hữu — chuyển nhượng quyền trong Bảng quản trị trước khi xoá tài khoản."; return; }
     const btn = $("#del-go"); btn.disabled = true; btn.textContent = "Đang xoá...";
+    const wipeLocal = !!($("#del-local") && $("#del-local").checked);
     try{
       await cloud.deleteAccount(($("#del-pw")||{}).value || "");
-      closeSheet(); resetCoachData(); renderAll(); toast("Đã xoá tài khoản", "delete");
+      closeSheet(); resetCoachData();
+      if(wipeLocal){
+        /* = "Đặt lại toàn bộ dữ liệu": xoá state, bộ nhớ thực đơn, bản tạm, video/ảnh trong IndexedDB rồi tải lại app */
+        try{ ["fitkit_np_plans_v1", "fitkit_state_backup_v1", "fitkit_sync_meta_v1", "fitkit_consent_log_v1", STORAGE_KEY].forEach(k=> localStorage.removeItem(k)); }catch(e){}
+        try{ indexedDB.deleteDatabase(DB_NAME); }catch(e){}
+        toast("Đã xoá tài khoản và dữ liệu trên máy", "delete");
+        setTimeout(()=>{ try{ location.reload(); }catch(e){} }, 600);
+        return;
+      }
+      renderAll(); toast("Đã xoá tài khoản", "delete");
     }catch(e){ $("#del-err").textContent = e.message; btn.disabled=false; btn.textContent="Xoá vĩnh viễn tài khoản"; }
   });
 }
@@ -852,12 +908,15 @@ function openDeleteAccountSheet(){
 function bindSocialButtons(needAgree){
   $$("[data-social]").forEach(b=> b.addEventListener("click", async ()=>{
     const err = $("#au-err");
-    if(needAgree && $("#au-agree") && !$("#au-agree").checked){ err.textContent = "Bạn cần đồng ý với Điều khoản & Chính sách bảo mật."; return; }
+    let grants = null;
+    if(needAgree && $("#au-agree")){ grants = readAuthConsents(); if(!grants) return; }
     setAuthBusy(true); err.textContent = "";
     try{
       const k = b.dataset.social;
       if(k==="google") await cloud.signInWithGoogle(); else if(k==="apple") await cloud.signInWithApple(); else await cloud.signInWithFacebook();
       const p = cloud.profile; if(p && p.name && !state.profile.name) state.profile.name = p.name;
+      if(grants) await cloud.consent.record(grants, "signup-" + k);
+      fkAutoLinkToast();
       postAuthRoute();
     }catch(e){ err.textContent = e.message; }
     finally{ setAuthBusy(false); }
@@ -866,15 +925,19 @@ function bindSocialButtons(needAgree){
 
 function openPrivacySheet(){
   openSheet(`
-    <div class="sheet-header"><h3>Chính sách bảo mật</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
+    <div class="sheet-header"><h3>Chính sách bảo mật</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
     <div class="policy-text">
-      <p><b>Dữ liệu lưu trên máy bạn:</b> hồ sơ cơ thể, giáo án, nhật ký ăn uống, giấc ngủ, video và ảnh tiến độ. Không gửi lên máy chủ TapEasy.</p>
-      <p><b>Dữ liệu lưu trên máy chủ (chỉ khi bạn tạo tài khoản):</b> email, tên hiển thị, và nội dung form PT ↔ học viên (lịch buổi tập, bài tập được giao, ghi chú, phản hồi). Chỉ PT và học viên của chính form đó xem được.</p>
+      <p><b>Dữ liệu lưu trên máy bạn:</b> hồ sơ cơ thể, giáo án, nhật ký ăn uống, giấc ngủ, video và ảnh tiến độ. Dùng không cần tài khoản thì các dữ liệu này không rời khỏi máy.</p>
+      <p><b>Dữ liệu sức khoẻ là dữ liệu nhạy cảm.</b> Cân nặng, số đo, nhật ký tập – ăn – ngủ chỉ được sao lưu lên tài khoản khi bạn <b>tích đồng ý riêng</b> (Hồ sơ → Tài khoản → Sao lưu &amp; đồng bộ). Tắt bất cứ lúc nào — bản trên cloud sẽ bị xoá. Video, ảnh tiến độ và khoá API cá nhân không được tải lên.</p>
+      <p><b>Dữ liệu lưu trên máy chủ (chỉ khi bạn tạo tài khoản):</b> email, tên hiển thị, nhật ký đồng ý, nội dung form PT ↔ học viên (lịch buổi tập, bài tập được giao, ghi chú, phản hồi — chỉ PT và học viên của form đó xem được), nội dung bạn đăng ở Cộng đồng / Sự kiện / Tìm PT.</p>
+      <p><b>Nơi lưu:</b> Google Firebase (Google Cloud), trung tâm dữ liệu Singapore (asia-southeast1) — tức dữ liệu được chuyển ra ngoài Việt Nam. Google là bên xử lý dữ liệu theo uỷ quyền của TapEasy.</p>
       <p><b>Video minh hoạ:</b> khi bạn tìm video, từ khoá tìm kiếm (tên bài tập) được gửi tới Pexels/Pixabay để lấy danh sách video. Không gửi thông tin cá nhân.</p>
       <p><b>Phân tích ảnh bằng AI:</b> chỉ chạy khi bạn tự nhập API key của nhà cung cấp AI. Ảnh được gửi thẳng từ máy bạn tới nhà cung cấp đó.</p>
       <p><b>Không quảng cáo, không bán dữ liệu.</b> TapEasy không chia sẻ dữ liệu của bạn cho bên thứ ba để quảng cáo.</p>
-      <p><b>Xoá dữ liệu:</b> Hồ sơ → Tài khoản → Xoá tài khoản (xoá dữ liệu trên máy chủ); Hồ sơ → Đặt lại toàn bộ dữ liệu (xoá dữ liệu trên máy).</p>
+      <p><b>Quyền của bạn:</b> xem, sửa, <b>xuất</b> (Hồ sơ → Tài khoản → Xuất dữ liệu của tôi), rút đồng ý, <b>xoá</b> (Hồ sơ → Tài khoản → Xoá tài khoản — xoá dữ liệu trên máy chủ; Hồ sơ → Đặt lại toàn bộ dữ liệu — xoá dữ liệu trên máy).</p>
+      <p><b>Trẻ em:</b> người dưới 16 tuổi cần có sự đồng ý của cha mẹ/người giám hộ.</p>
       <p><b>Lưu ý sức khoẻ:</b> số liệu calo, năng lượng nghỉ (BMR), năng lượng cả ngày (TDEE) chỉ mang tính ước lượng, không thay thế tư vấn y tế.</p>
+      <p class="small-note">Phiên bản ${escapeHtml(cloud.policyVersion)} · <a href="${attrUrl(fkLegalUrl("privacy-policy.html"))}" target="_blank" rel="noopener">Xem bản đầy đủ (Việt / English)</a></p>
     </div>
   `);
 }
@@ -897,6 +960,419 @@ function openCreditsSheet(){
 }
 
 /* ---------------------------------------------------------------------
+   4b. R3 (14/11/2026) — TÀI KHOẢN "THỰC CHIẾN": đồng ý khi đăng ký, quên mật khẩu (link / OTP email / OTP số điện thoại),
+       sao lưu cloud, tài khoản liên kết, xuất dữ liệu. Lớp dữ liệu: cloud.js (cloud.consent / sync / linked / otp / phone).
+   --------------------------------------------------------------------- */
+const FK_WEB_BASE = "https://thangvu030198-ai.github.io/fitkit-app/";
+/* CSS của phần R3 chèn bằng <style> (chỉ dùng token màu của theme) — không đụng style.css / lớp màu module của agent ux.
+   Vùng chạm ≥ 44 px, chữ ≥ 12 px, input 16 px, co giãn 320–430 px, không tràn ngang. */
+(function fkAccStyle(){
+  try{
+    if(document.getElementById("fk-acc-style")) return;
+    const st = document.createElement("style"); st.id = "fk-acc-style";
+    st.textContent = `
+.fk-consents{ display:flex; flex-direction:column; gap:2px; }
+.fk-consent-row{ min-height:44px; padding:6px 0; align-items:flex-start; line-height:1.45; font-size:13px; cursor:pointer; overflow-wrap:anywhere; }
+.fk-consent-row input[type=checkbox]{ width:22px; height:22px; margin:1px 2px 0 0; flex:0 0 22px; }
+.fk-consent-row a{ text-decoration:underline; cursor:pointer; }
+.fk-consent-row i{ font-style:normal; opacity:.8; }
+.fk-seg{ display:flex; gap:6px; padding:4px; border-radius:999px; background:rgba(127,127,127,.16); }
+.fk-seg button{ flex:1 1 0; min-width:0; min-height:44px; padding:0 8px; border:0; border-radius:999px; background:transparent; color:inherit; font-family:inherit; font-size:13px; font-weight:600; line-height:1.2; cursor:pointer; white-space:normal; }
+.fk-seg button.active{ background:var(--primary); color:var(--on-primary, #fff); }
+.fk-fg-body{ display:flex; flex-direction:column; gap:12px; }
+.fk-otp-input{ font-size:22px !important; letter-spacing:.35em; text-align:center; font-variant-numeric:tabular-nums; }
+.fk-demo-code{ font-size:16px; letter-spacing:.12em; }
+.fk-sent{ display:flex; gap:12px; align-items:flex-start; padding:14px; border-radius:16px; background:rgba(127,127,127,.14); font-size:14px; line-height:1.5; }
+.fk-sent p{ margin:0; overflow-wrap:anywhere; min-width:0; }
+.fk-choice-list{ display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+.fk-choice-list .btn{ min-height:48px; white-space:normal; height:auto; padding-top:10px; padding-bottom:10px; line-height:1.3; }
+.fk-link-row .btn{ min-height:44px; min-width:72px; flex:0 0 auto; }
+.fk-link-row .left{ min-width:0; } .fk-link-row .sub{ overflow-wrap:anywhere; }
+.fk-export-box{ width:100%; box-sizing:border-box; height:38vh; margin:10px 0; padding:10px; border-radius:12px; border:1px solid rgba(127,127,127,.35); background:rgba(0,0,0,.2); color:inherit; font:12px/1.4 ui-monospace, Menlo, monospace; }
+#fk-recaptcha{ position:fixed; bottom:env(safe-area-inset-bottom, 0px); right:0; z-index:5; }`;
+    document.head.appendChild(st);
+  }catch(e){}
+})();
+/* Trang pháp lý đầy đủ: web → file cạnh index.html; app native → mở bản trên web (trình duyệt hệ thống) */
+function fkLegalUrl(page){ return isNative() ? FK_WEB_BASE + page : page; }
+
+/* ---- Ô đồng ý (KHÔNG tích sẵn) — Luật BVDLCN 2025 / NĐ 13/2023: đồng ý riêng cho từng mục đích, dữ liệu sức khoẻ là dữ liệu nhạy cảm ---- */
+function authConsentHTML(ext){
+  /* ext = true (dùng trong sheet): link mở trang đầy đủ ở tab mới — không thay nội dung sheet đang có ô tích */
+  const link = (id, page, text)=> ext
+    ? `<a id="${id}" href="${attrUrl(fkLegalUrl(page))}" target="_blank" rel="noopener">${text}</a>`
+    : `<a id="${id}" role="button" tabindex="0">${text}</a>`;
+  return `<div class="fk-consents" id="au-consents">
+    <label class="auth-check fk-consent-row"><input type="checkbox" id="au-agree"> <span>Tôi đã đọc và đồng ý với ${link("au-terms", "terms.html", "Điều khoản sử dụng")} và ${link("au-privacy", "privacy-policy.html", "Chính sách bảo mật")}. <b>(bắt buộc)</b></span></label>
+    <label class="auth-check fk-consent-row"><input type="checkbox" id="au-age"> <span>Tôi đã đủ 16 tuổi, hoặc đã có sự đồng ý của cha mẹ/người giám hộ. <b>(bắt buộc)</b></span></label>
+    <label class="auth-check fk-consent-row"><input type="checkbox" id="au-health"> <span>Tôi đồng ý cho TapEasy xử lý <b>dữ liệu sức khoẻ</b> của tôi (cân nặng, số đo, nhật ký tập – ăn – ngủ) để sao lưu lên tài khoản và đồng bộ giữa các máy. <i>(tuỳ chọn — không tích thì dữ liệu này chỉ nằm trên máy bạn; đổi lại bất cứ lúc nào trong Hồ sơ)</i></span></label>
+  </div>`;
+}
+function bindConsentLinks(){
+  const t = $("#au-terms"), p = $("#au-privacy");
+  if(t) t.addEventListener("click", e=>{ e.preventDefault(); openTermsSheet(); });
+  if(p) p.addEventListener("click", e=>{ e.preventDefault(); openPrivacySheet(); });
+}
+/** Đọc 3 ô đồng ý; thiếu ô bắt buộc → ghi lỗi vào #au-err và trả null */
+function readAuthConsents(){
+  const g = { terms: !!($("#au-agree") && $("#au-agree").checked), age: !!($("#au-age") && $("#au-age").checked), health: !!($("#au-health") && $("#au-health").checked) };
+  const err = $("#au-err");
+  if(!g.terms){ if(err) err.textContent = "Bạn cần đồng ý với Điều khoản & Chính sách bảo mật."; return null; }
+  if(!g.age){ if(err) err.textContent = "Bạn cần xác nhận đã đủ 16 tuổi hoặc có sự đồng ý của cha mẹ/người giám hộ."; return null; }
+  return g;
+}
+
+/* ---- Đếm ngược "gửi lại sau N giây" (1 bộ đếm cho cả màn #auth; showAuth() tự dừng khi đổi màn) ---- */
+let _authTick = null;
+function stopAuthTick(){ if(_authTick){ clearInterval(_authTick); _authTick = null; } }
+function startResendTick(btn, kind, id, label){
+  stopAuthTick();
+  const paint = ()=>{
+    if(!btn || btn.isConnected === false){ stopAuthTick(); return false; }
+    const left = cloud.resendWait(kind, id);
+    btn.disabled = left > 0; btn.style.opacity = left > 0 ? .6 : 1;
+    btn.textContent = left > 0 ? `${label} (${left}s)` : label;
+    if(left <= 0) stopAuthTick();
+    return left > 0;
+  };
+  if(paint()) _authTick = setInterval(paint, 1000);
+}
+const FK_DEMO_NOTE = `<p class="small-note auth-demo"><span class="material-symbols-rounded" style="font-size:14px;">science</span> Bản dùng thử — không gửi thật.</p>`;
+
+/* ---- Quên mật khẩu: 3 cách (2 cách sau ẩn hoàn toàn khi cờ tắt) ---- */
+function renderForgot(method, step, ctx){
+  stopAuthTick();
+  const box = $("#fg-body"); if(!box) return;
+  ctx = ctx || {};
+  $$("[data-fg]").forEach(b=>{ const on = b.dataset.fg === method; b.classList.toggle("active", on); b.setAttribute("aria-selected", on ? "true" : "false"); });
+  const err = `<p class="auth-err" id="au-err" role="alert"></p>`;
+  const setErr = e=>{ const el = $("#au-err"); if(el) el.textContent = (e && e.message) || ""; };
+  const busy = async fn=>{ setAuthBusy(true); setErr(null); try{ await fn(); }catch(e){ setErr(e); }finally{ setAuthBusy(false); } };
+  const codeField = `<div class="field"><label for="fg-code">Mã 6 số</label><input type="text" id="fg-code" class="fk-otp-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*" placeholder="••••••"></div>`;
+  const pwField = `<div class="field"><label for="fg-pw">Mật khẩu mới (ít nhất 6 ký tự)</label><input type="password" id="fg-pw" autocomplete="new-password" placeholder="••••••"></div>`;
+  const demoCode = c=> c ? `<p class="small-note auth-demo"><span class="material-symbols-rounded" style="font-size:14px;">science</span> Bản dùng thử — không gửi thật. Mã thử của bạn: <b class="fk-demo-code">${escapeHtml(c)}</b></p>` : "";
+
+  if(method === "link"){
+    if(step === "sent"){
+      box.innerHTML = `<div class="fk-sent" role="status"><span class="material-symbols-rounded">mark_email_read</span>
+          <p>Nếu <b>${escapeHtml(ctx.email)}</b> đã đăng ký, TapEasy vừa gửi một link đặt lại mật khẩu tới hộp thư đó. Hãy kiểm tra cả mục Thư rác. Link có hiệu lực trong 1 giờ.</p></div>
+        ${ctx.simulated ? FK_DEMO_NOTE : ""}${err}
+        <button class="btn btn-outline btn-block" id="fg-resend">Gửi lại</button>
+        <button class="btn btn-primary btn-block" data-auth="login">Quay lại đăng nhập</button>`;
+      $("#fg-resend").addEventListener("click", async ()=>{
+        try{ await cloud.resetPassword(ctx.email); toast("Đã gửi lại (nếu email có đăng ký)", "mail"); }catch(e){ setErr(e); }
+        startResendTick($("#fg-resend"), "reset", ctx.email, "Gửi lại");
+      });
+      startResendTick($("#fg-resend"), "reset", ctx.email, "Gửi lại");
+      $$("[data-auth]", box).forEach(el=> el.addEventListener("click", ()=> showAuth(el.dataset.auth)));
+      return;
+    }
+    box.innerHTML = `<p class="onboard-sub">Nhập email đã đăng ký, TapEasy sẽ gửi link đặt lại mật khẩu.</p>
+      <div class="field"><label for="au-email">Email</label><input type="email" id="au-email" autocomplete="email" placeholder="ban@email.com" value="${escapeHtml(ctx.email || "")}"></div>
+      ${err}<button class="btn btn-primary btn-block" id="au-submit">Gửi link đặt lại</button>
+      ${cloud.mode==="demo" ? FK_DEMO_NOTE : ""}`;
+    const go = ()=> busy(async ()=>{
+      const email = $("#au-email").value.trim();
+      const r = await cloud.resetPassword(email);
+      renderForgot("link", "sent", { email, simulated: r && r.simulated });
+    });
+    $("#au-submit").addEventListener("click", go);
+    $("#au-email").addEventListener("keydown", e=>{ if(e.key === "Enter") go(); });
+    return;
+  }
+
+  if(method === "otp"){
+    if(step === "code"){
+      box.innerHTML = `<p class="onboard-sub">Nếu <b>${escapeHtml(ctx.email)}</b> đã đăng ký, một mã 6 số vừa được gửi tới hộp thư đó (hiệu lực 10 phút, tối đa 5 lần nhập).</p>
+        ${demoCode(ctx.demoCode)}${codeField}${pwField}${err}
+        <button class="btn btn-primary btn-block" id="au-submit">Đặt mật khẩu mới</button>
+        <button class="btn btn-ghost btn-block" id="fg-resend">Gửi lại mã</button>`;
+      $("#au-submit").addEventListener("click", ()=> busy(async ()=>{
+        await cloud.otp.verify(ctx.email, $("#fg-code").value, $("#fg-pw").value);
+        toast("Đã đặt mật khẩu mới — hãy đăng nhập", "lock_reset"); showAuth("login");
+        const em = $("#au-email"); if(em) em.value = ctx.email;
+      }));
+      $("#fg-resend").addEventListener("click", async ()=>{
+        try{ const r = await cloud.otp.request(ctx.email); renderForgot("otp", "code", { email: ctx.email, demoCode: r.demoCode }); }catch(e){ setErr(e); }
+      });
+      startResendTick($("#fg-resend"), "otp", ctx.email, "Gửi lại mã");
+      return;
+    }
+    box.innerHTML = `<p class="onboard-sub">Nhập email đã đăng ký, TapEasy sẽ gửi mã 6 số để bạn đặt mật khẩu mới ngay trong app.</p>
+      <div class="field"><label for="au-email">Email</label><input type="email" id="au-email" autocomplete="email" placeholder="ban@email.com" value="${escapeHtml(ctx.email || "")}"></div>
+      ${err}<button class="btn btn-primary btn-block" id="au-submit">Gửi mã</button>
+      ${cloud.mode==="demo" ? FK_DEMO_NOTE : ""}`;
+    $("#au-submit").addEventListener("click", ()=> busy(async ()=>{
+      const email = $("#au-email").value.trim();
+      const r = await cloud.otp.request(email);
+      renderForgot("otp", "code", { email, demoCode: r.demoCode });
+    }));
+    return;
+  }
+
+  if(method === "phone"){
+    if(step === "code"){
+      box.innerHTML = `<p class="onboard-sub">Nhập mã 6 số vừa gửi tới <b>${escapeHtml(ctx.phone)}</b>.</p>
+        ${demoCode(ctx.demoCode)}${codeField}${err}
+        <button class="btn btn-primary btn-block" id="au-submit">Xác nhận</button>
+        <button class="btn btn-ghost btn-block" id="fg-resend">Gửi lại mã</button>`;
+      $("#au-submit").addEventListener("click", ()=> busy(async ()=>{ await cloud.phone.confirm($("#fg-code").value); renderForgot("phone", "newpw", ctx); }));
+      $("#fg-resend").addEventListener("click", async ()=>{
+        try{ const r = await cloud.phone.start(ctx.phone); renderForgot("phone", "code", { phone: r.phone, demoCode: r.demoCode }); }catch(e){ setErr(e); }
+      });
+      startResendTick($("#fg-resend"), "sms", ctx.phone, "Gửi lại mã");
+      return;
+    }
+    if(step === "newpw"){
+      box.innerHTML = `<p class="onboard-sub">Đã xác minh số điện thoại. Đặt mật khẩu mới cho tài khoản <b>${escapeHtml((cloud.user && cloud.user.email) || "")}</b>.</p>
+        ${pwField}${err}
+        <button class="btn btn-primary btn-block" id="au-submit">Lưu mật khẩu & vào app</button>
+        <button class="btn btn-ghost btn-block" id="fg-skip">Bỏ qua, vào app</button>`;
+      $("#au-submit").addEventListener("click", ()=> busy(async ()=>{ await cloud.setPassword($("#fg-pw").value); toast("Đã đặt mật khẩu mới", "lock_reset"); postAuthRoute(); }));
+      $("#fg-skip").addEventListener("click", ()=> postAuthRoute());
+      return;
+    }
+    box.innerHTML = `<p class="onboard-sub">Nhập số điện thoại bạn đã liên kết với tài khoản. TapEasy gửi mã 6 số qua SMS.</p>
+      <div class="field"><label for="fg-phone">Số điện thoại</label><input type="tel" id="fg-phone" autocomplete="tel" inputmode="tel" placeholder="0912 345 678" value="${escapeHtml(ctx.phone || "")}"></div>
+      ${err}<button class="btn btn-primary btn-block" id="au-submit">Gửi mã</button>
+      ${cloud.mode==="demo" ? FK_DEMO_NOTE : ""}`;
+    $("#au-submit").addEventListener("click", ()=> busy(async ()=>{
+      const r = await cloud.phone.start($("#fg-phone").value);
+      renderForgot("phone", "code", { phone: r.phone, demoCode: r.demoCode });
+    }));
+  }
+}
+
+/* ---- Điều khoản sử dụng (tóm tắt trong app; bản đầy đủ: terms.html) ---- */
+function openTermsSheet(){
+  openSheet(`
+    <div class="sheet-header"><h3>Điều khoản sử dụng</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
+    <div class="policy-text">
+      <p><b>Không phải tư vấn y khoa.</b> Giáo án, thực đơn, số liệu calo/BMR/TDEE chỉ để tham khảo. Hãy hỏi bác sĩ trước khi tập nếu bạn có bệnh nền, đang mang thai hoặc từng chấn thương. Dừng tập ngay khi đau ngực, chóng mặt, khó thở.</p>
+      <p><b>Tài khoản.</b> Bạn đủ 16 tuổi (hoặc có sự đồng ý của cha mẹ/người giám hộ), dùng thông tin thật và tự giữ an toàn mật khẩu.</p>
+      <p><b>Cộng đồng.</b> Không đăng nội dung vi phạm pháp luật Việt Nam, xúc phạm, quấy rối, khiêu dâm, lừa đảo, quảng cáo thuốc/thực phẩm chức năng như thuốc chữa bệnh, hay xâm phạm bản quyền. Nội dung bị báo cáo được xem xét và gỡ trong 24 giờ nếu vi phạm; tài khoản tái phạm có thể bị khoá.</p>
+      <p><b>PT & học viên.</b> TapEasy là công cụ kết nối. Thoả thuận, thanh toán và chất lượng buổi tập do PT và học viên tự chịu trách nhiệm — TapEasy không giữ tiền, không là bên trong hợp đồng dịch vụ.</p>
+      <p><b>Gian hàng.</b> Sản phẩm hiển thị kèm người bán, giá và chính sách đổi trả. Thực phẩm bổ sung không phải là thuốc và không có tác dụng thay thế thuốc chữa bệnh.</p>
+      <p><b>Dữ liệu.</b> Xem Chính sách bảo mật. Bạn có thể xuất hoặc xoá dữ liệu bất cứ lúc nào trong Hồ sơ → Tài khoản.</p>
+      <p class="small-note">Phiên bản ${escapeHtml(cloud.policyVersion)} · <a href="${attrUrl(fkLegalUrl("terms.html"))}" target="_blank" rel="noopener">Xem bản đầy đủ (Việt / English)</a></p>
+    </div>
+  `);
+}
+
+/* ---- Sao lưu cloud: bộ nối giữa state của app và cloud.sync ---- */
+function fkApplyCloudState(next){
+  if(!next || typeof next !== "object") return;
+  const d = defaultState();
+  const merged = normalizeState(Object.assign(d, next, {
+    profile: Object.assign(defaultState().profile, next.profile || {}),
+    reminders: Object.assign(defaultState().reminders, next.reminders || {}),
+    aiSettings: Object.assign(defaultState().aiSettings, next.aiSettings || {}),
+    driveSettings: Object.assign(defaultState().driveSettings, next.driveSettings || {}),
+  }));
+  /* Giữ NGUYÊN đối tượng `state` (module khác đang giữ tham chiếu). Khoá mà bản mới không có: đối tượng/mảng → làm rỗng (không rò dữ liệu
+     của tài khoản trước, module vẫn thấy đúng kiểu); kiểu khác → bỏ. */
+  Object.keys(state).forEach(k=>{
+    if(k in merged) return;
+    const v = state[k];
+    if(Array.isArray(v)) state[k] = []; else if(v && typeof v === "object") state[k] = {}; else delete state[k];
+  });
+  Object.assign(state, merged);
+  state.authDone = true;
+  state.coachSeen = state.coachSeen || {};
+  state.coachPrefs = Object.assign({ remind:true }, state.coachPrefs || {});
+  state.coachUpcoming = state.coachUpcoming || [];
+  state.selectedDay = todayDayKey();
+  try{ ensureReminderDefaults(); ensurePlans(); recomputeProfile(); }catch(e){ console.warn("[sync] chuẩn hoá", e); }
+  _saveStateV1();
+  try{
+    const ob = $("#onboarding");
+    if(state.onboarded && ob && ob.classList.contains("open")){ ob.classList.remove("open"); goto("home"); }
+    else renderAll();
+    renderAccountCard();
+  }catch(e){ console.warn("[sync] vẽ lại", e); }
+}
+/** Hỏi người dùng TRƯỚC KHI ghi đè: dữ liệu trên máy chưa thuộc tài khoản này mà cloud đã có bản sao lưu */
+function fkSyncChoose(info){
+  return new Promise(resolve=>{
+    let done = false;
+    const fin = v=>{ if(done) return; done = true; onSheetCloseHook = null; resolve(v); };
+    const when = info.remoteAt ? new Date(info.remoteAt).toLocaleString("vi-VN") : "";
+    const claim = info.kind === "claim";
+    openSheet(`
+      <div class="sheet-header"><h3>${claim ? "Dùng dữ liệu trên máy cho tài khoản này?" : "Chọn dữ liệu muốn giữ"}</h3></div>
+      <p class="small-note">${claim
+        ? "Dữ liệu tập luyện trên máy này được tạo khi dùng một tài khoản khác. Tài khoản bạn vừa đăng nhập chưa có bản sao lưu nào."
+        : info.kind === "switch"
+          ? `Máy này đang có dữ liệu tập luyện của một tài khoản khác, còn tài khoản bạn vừa đăng nhập đã có bản sao lưu trên cloud (${escapeHtml(when)}).`
+          : `Máy này đang có dữ liệu tập luyện bạn tạo khi chưa đăng nhập, còn tài khoản của bạn đã có bản sao lưu trên cloud (${escapeHtml(when)}).`}</p>
+      <div class="fk-choice-list">
+        ${claim ? "" : `<button class="btn btn-primary btn-block" data-sc="merge">Gộp cả hai (khuyên dùng)</button>
+        <button class="btn btn-outline btn-block" data-sc="cloud">Dùng bản trên cloud · thay dữ liệu máy này</button>`}
+        <button class="btn btn-outline btn-block" data-sc="local">${claim ? "Sao lưu dữ liệu máy này vào tài khoản" : "Giữ dữ liệu máy này · ghi đè bản cloud"}</button>
+        <button class="btn btn-ghost btn-block" data-sc="later">Để sau — chưa sao lưu</button>
+      </div>
+      <p class="small-note" style="margin-top:8px;">Trước khi thay đổi, TapEasy lưu một bản tạm của dữ liệu trên máy — khôi phục được trong Hồ sơ → Sao lưu & đồng bộ.</p>
+    `);
+    $$("[data-sc]").forEach(b=> b.addEventListener("click", ()=>{ const v = b.dataset.sc; fin(v); closeSheet(); }));
+    onSheetCloseHook = ()=> fin("later");
+  });
+}
+function fkSyncKick(){
+  try{ if(cloud.isLoggedIn()) cloud.sync.syncNow().then(r=>{ if(r === "pulled" || r === "merged") toast("Đã đồng bộ dữ liệu từ tài khoản", "cloud_done"); }).catch(()=>{}); }catch(e){}
+}
+function fkSyncLabel(s){
+  const t = s.lastSyncedAt ? new Date(s.lastSyncedAt).toLocaleString("vi-VN", { hour:"2-digit", minute:"2-digit", day:"2-digit", month:"2-digit" }) : "";
+  return ({
+    on: s.error ? "Lỗi: " + s.error : s.pending ? "Có thay đổi chưa sao lưu" + (t ? " · lần cuối " + t : "") : (t ? "Đã sao lưu · " + t : "Đang bật"),
+    "no-consent": "Đang tắt — chạm để bật",
+    paused: "Tạm dừng — chạm để chọn dữ liệu",
+    offline: "Chưa kết nối máy chủ",
+    off: "Bản app này chưa bật sao lưu cloud",
+    "no-login": "Đăng nhập để sao lưu", "no-host": "Đang khởi động…",
+  })[s.state] || "";
+}
+function openSyncSheet(){
+  const s = cloud.sync.status(), cs = cloud.consent.status();
+  openSheet(`
+    <div class="sheet-header"><h3>Sao lưu & đồng bộ</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
+    <p class="small-note">Sao lưu hồ sơ, giáo án, nhật ký tập – ăn – ngủ lên tài khoản của bạn để đăng nhập máy khác là có lại. Video, ảnh tiến độ và khoá API cá nhân <b>không</b> được tải lên.</p>
+    ${cloud.mode==="demo" ? `<p class="small-note" style="color:var(--warn);">Bản dùng thử — "cloud" là bộ nhớ của chính máy này, không đồng bộ sang máy khác.</p>` : ""}
+    <div class="link-row"><div class="left"><span class="material-symbols-rounded">health_and_safety</span><div><div class="name">Cho phép sao lưu dữ liệu sức khoẻ</div><div class="sub">Cân nặng, số đo, nhật ký là dữ liệu nhạy cảm — chỉ tải lên khi bạn đồng ý</div></div></div>
+      <div class="toggle ${cs.health ? "on" : ""}" id="sy-consent" role="switch" tabindex="0" aria-checked="${cs.health ? "true" : "false"}" aria-label="Cho phép sao lưu dữ liệu sức khoẻ"></div></div>
+    <p class="small-note" id="sy-status" role="status">${escapeHtml(fkSyncLabel(s))}</p>
+    <p class="auth-err" id="sy-err" role="alert"></p>
+    ${s.state === "on" ? `<button class="btn btn-primary btn-block" id="sy-now">Sao lưu ngay</button>` : ""}
+    ${s.state === "paused" ? `<button class="btn btn-primary btn-block" id="sy-resume">Chọn dữ liệu & bật sao lưu</button>` : ""}
+    ${s.hasBackup ? `<button class="btn btn-outline btn-block" id="sy-restore" style="margin-top:8px;">Khôi phục bản tạm trước lần ghi đè gần nhất</button>` : ""}
+  `);
+  const err = e=>{ const el = $("#sy-err"); if(el) el.textContent = (e && e.message) || ""; };
+  const tg = $("#sy-consent");
+  const flip = async ()=>{
+    if(cloud.consent.status().health){
+      confirmDialog("Tắt sao lưu & rút đồng ý?", "TapEasy sẽ ngừng tải dữ liệu sức khoẻ lên tài khoản và XOÁ bản sao lưu trên cloud. Dữ liệu trên máy này vẫn giữ nguyên.", async ()=>{
+        try{ await cloud.sync.purgeCloud(); }catch(e){ toast(e.message, "error"); return; }
+        await cloud.consent.record({ health:false }, "settings");
+        toast("Đã tắt sao lưu và xoá bản trên cloud", "cloud_off"); renderAccountCard();
+      }, "Tắt & xoá bản cloud", "cloud_off", { text:true });
+    } else {
+      await cloud.consent.record({ health:true }, "settings");
+      toast("Đã bật sao lưu cloud", "cloud_done"); fkSyncKick(); renderAccountCard(); openSyncSheet();
+    }
+  };
+  if(tg){ tg.addEventListener("click", flip); tg.addEventListener("keydown", e=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); flip(); } }); }
+  const run = async fn=>{ err(null); try{ await fn(); renderAccountCard(); openSyncSheet(); }catch(e){ err(e); } };
+  if($("#sy-now")) $("#sy-now").addEventListener("click", ()=> run(async ()=>{ cloud.sync.markDirty(); await cloud.sync.syncNow(); toast("Đã sao lưu", "cloud_done"); }));
+  if($("#sy-resume")) $("#sy-resume").addEventListener("click", ()=>{ closeSheet(); cloud.sync.resume().then(()=> renderAccountCard()).catch(e=> toast(e.message, "error")); });
+  if($("#sy-restore")) $("#sy-restore").addEventListener("click", ()=> run(async ()=>{ cloud.sync.restoreBackup(); toast("Đã khôi phục bản tạm", "restore"); }));
+}
+
+/* ---- Tài khoản liên kết ---- */
+function openLinkedSheet(){
+  const list = cloud.linked.list();
+  const icon = { password:"mail", google:"account_circle", apple:"phone_iphone", facebook:"group", phone:"smartphone" };
+  openSheet(`
+    <div class="sheet-header"><h3>Tài khoản liên kết</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
+    <p class="small-note">Liên kết thêm cách đăng nhập để không mất tài khoản khi quên mật khẩu. Luôn phải còn ít nhất 1 cách.</p>
+    ${cloud.mode==="demo" ? `<p class="small-note" style="color:var(--warn);">Bản dùng thử — liên kết được mô phỏng trên máy này.</p>` : ""}
+    ${list.map(p=>`
+      <div class="link-row fk-link-row"><div class="left"><span class="material-symbols-rounded">${icon[p.id] || "link"}</span><div><div class="name">${escapeHtml(p.label)}</div><div class="sub">${p.linked ? escapeHtml(p.detail || "Đã liên kết") : "Chưa liên kết"}</div></div></div>
+        ${p.linked
+          ? `<button class="btn btn-ghost btn-sm" data-unlink="${escapeHtml(p.id)}" ${p.canUnlink ? "" : "disabled"} aria-label="Huỷ liên kết ${escapeHtml(p.label)}">Huỷ</button>`
+          : `<button class="btn btn-outline btn-sm" data-link="${escapeHtml(p.id)}" aria-label="Liên kết ${escapeHtml(p.label)}">${p.id === "password" ? "Đặt mật khẩu" : "Liên kết"}</button>`}
+      </div>`).join("")}
+    <div id="lk-extra"></div>
+    <p class="auth-err" id="lk-err" role="alert"></p>
+  `);
+  const err = e=>{ const el = $("#lk-err"); if(el) el.textContent = (e && e.message) || ""; };
+  const extra = $("#lk-extra");
+  $$("[data-link]").forEach(b=> b.addEventListener("click", async ()=>{
+    const k = b.dataset.link; err(null);
+    if(k === "password"){
+      extra.innerHTML = `<div class="field" style="margin-top:10px;"><label for="lk-pw">Mật khẩu mới (ít nhất 6 ký tự)</label><input type="password" id="lk-pw" autocomplete="new-password" placeholder="••••••"></div>
+        <button class="btn btn-primary btn-block" id="lk-pw-go">Lưu mật khẩu</button>`;
+      $("#lk-pw-go").addEventListener("click", async ()=>{ try{ await cloud.setPassword($("#lk-pw").value); toast("Đã đặt mật khẩu", "lock"); openLinkedSheet(); renderAccountCard(); }catch(e){ err(e); } });
+      return;
+    }
+    if(k === "phone"){
+      extra.innerHTML = `<div class="field" style="margin-top:10px;"><label for="lk-phone">Số điện thoại</label><input type="tel" id="lk-phone" autocomplete="tel" inputmode="tel" placeholder="0912 345 678"></div>
+        <button class="btn btn-primary btn-block" id="lk-phone-go">Gửi mã xác minh</button>`;
+      $("#lk-phone-go").addEventListener("click", async ()=>{
+        try{
+          const r = await cloud.phone.start($("#lk-phone").value, { link:true });
+          extra.innerHTML = `<p class="small-note" style="margin-top:10px;">Nhập mã 6 số vừa gửi tới <b>${escapeHtml(r.phone)}</b>.</p>
+            ${r.simulated ? `<p class="small-note" style="color:var(--warn);">Bản dùng thử — không gửi thật. Mã thử của bạn: <b>${escapeHtml(r.demoCode)}</b></p>` : ""}
+            <div class="field"><label for="lk-code">Mã 6 số</label><input type="text" id="lk-code" class="fk-otp-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••"></div>
+            <button class="btn btn-primary btn-block" id="lk-code-go">Xác nhận</button>`;
+          $("#lk-code-go").addEventListener("click", async ()=>{ try{ await cloud.phone.confirm($("#lk-code").value); toast("Đã liên kết số điện thoại", "smartphone"); openLinkedSheet(); }catch(e){ err(e); } });
+        }catch(e){ err(e); }
+      });
+      return;
+    }
+    b.disabled = true;
+    try{ await cloud.linked.link(k); toast("Đã liên kết " + cloud.linked.labels[k], "link"); openLinkedSheet(); }
+    catch(e){ err(e); b.disabled = false; }
+  }));
+  $$("[data-unlink]").forEach(b=> b.addEventListener("click", ()=>{
+    const k = b.dataset.unlink;
+    confirmDialog("Huỷ liên kết?", `Bạn sẽ không đăng nhập được bằng ${cloud.linked.labels[k] || k} nữa.`, async ()=>{
+      try{ await cloud.linked.unlink(k); toast("Đã huỷ liên kết", "link_off"); renderAccountCard(); openLinkedSheet(); }
+      catch(e){ toast(e.message, "error"); openLinkedSheet(); }
+    }, "Huỷ liên kết", "link_off", { text:true });
+  }));
+}
+
+/* ---- Xuất dữ liệu của tôi (JSON) ---- */
+async function fkExportMyData(){
+  let json, name;
+  try{
+    toast("Đang gom dữ liệu của bạn…", "hourglass_top");
+    const data = await cloud.exportMyData();
+    json = JSON.stringify(data, null, 2); name = `tapeasy-du-lieu-${todayStr()}.json`;
+  }catch(e){ toast(e.message || "Chưa xuất được dữ liệu", "error"); return false; }
+  try{
+    if(typeof File === "function" && navigator.canShare){
+      const f = new File([json], name, { type:"application/json" });
+      if(navigator.canShare({ files:[f] })){ await navigator.share({ files:[f], title:"Dữ liệu TapEasy của tôi" }); return true; }
+    }
+  }catch(e){ if(e && e.name === "AbortError") return false; }
+  if(!isNative()){
+    try{
+      const url = URL.createObjectURL(new Blob([json], { type:"application/json" }));
+      const a = document.createElement("a"); a.href = url; a.download = name; a.style.display = "none";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(e){} }, 800);
+      toast("Đã tải file " + name, "download"); return true;
+    }catch(e){}
+  }
+  /* App native không có chia sẻ file / trình duyệt chặn tải → hiện nội dung để sao chép */
+  openSheet(`
+    <div class="sheet-header"><h3>Dữ liệu của tôi</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
+    <p class="small-note">Sao chép nội dung dưới đây và dán vào ghi chú / email của bạn để lưu.</p>
+    <textarea id="ex-json" readonly class="fk-export-box" aria-label="Dữ liệu JSON"></textarea>
+    <button class="btn btn-primary btn-block" id="ex-copy">Sao chép</button>`);
+  $("#ex-json").value = json;
+  $("#ex-copy").addEventListener("click", async ()=>{ try{ await navigator.clipboard.writeText(json); toast("Đã sao chép", "content_copy"); }catch(e){ try{ $("#ex-json").select(); }catch(_){} toast("Hãy giữ để chọn rồi sao chép", "info"); } });
+  return true;
+}
+
+/* ---- Tài khoản cũ (trước 14/11/2026) hoặc chính sách đổi phiên bản: hỏi đồng ý lại, không chặn việc dùng app ---- */
+function openConsentSheet(){
+  if(!cloud.isLoggedIn()) return;
+  openSheet(`
+    <div class="sheet-header"><h3>Cập nhật điều khoản</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
+    <p class="small-note">TapEasy đã cập nhật Điều khoản sử dụng và Chính sách bảo mật (phiên bản ${escapeHtml(cloud.policyVersion)}). Vui lòng xem và xác nhận để tiếp tục dùng tài khoản.</p>
+    ${authConsentHTML(true)}
+    <p class="auth-err" id="au-err" role="alert"></p>
+    <button class="btn btn-primary btn-block" id="cs-go">Đồng ý & tiếp tục</button>`);
+  if(cloud.consent.status().health && $("#au-health")) $("#au-health").checked = true;   // đã đồng ý từ trước → giữ lựa chọn của người dùng
+  $("#cs-go").addEventListener("click", async ()=>{
+    const g = readAuthConsents(); if(!g) return;
+    await cloud.consent.record(g, "update");
+    closeSheet(); toast("Cảm ơn bạn đã xác nhận", "verified_user"); fkSyncKick(); renderAccountCard();
+  });
+}
+
+/* ---------------------------------------------------------------------
    5. KHỞI ĐỘNG
    --------------------------------------------------------------------- */
 /* QU-02: appBoot vẽ ĐÚNG 1 màn (Trang chủ) rồi nhường luồng; việc phụ (đồng bộ PT, lịch thông báo native, service worker,
@@ -908,6 +1384,9 @@ async function appBoot(){
   ensurePlans();
   $("#auth").classList.add("open");
   $("#auth-body").innerHTML = `<div class="splash"><div class="splash-brand"><img class="splash-logo on-dark" src="assets/brand/logo-lockup-light.svg" alt="TapEasy" data-no-fallback onerror="this.onerror=null;this.outerHTML='<div class=&quot;logo-big&quot;>Tap<b>Easy</b></div>'"><img class="splash-logo on-light" src="assets/brand/logo-lockup-dark.svg" alt="" aria-hidden="true" data-no-fallback onerror="this.onerror=null;this.remove()"></div><div class="spinner"></div></div>`;
+  /* R3: gắn state của app vào lớp sao lưu cloud TRƯỚC khi khởi động (cloud.sync chỉ chạy khi đã đăng nhập + đã đồng ý) */
+  try{ cloud.sync.attach({ getState: ()=> state, applyState: fkApplyCloudState, choose: fkSyncChoose }); }catch(e){ console.warn("[sync] attach", e); }
+  try{ cloud.sync.onChange(s=>{ const el = document.getElementById("acc-sync-sub"); if(el) el.textContent = fkSyncLabel(s); }); }catch(e){}
   await cloud.init();
   cloud.onAuth(()=>{ coachTab = null; ptData = EMPTY_PT(); refreshCoachData(true); renderAccountCard(); });
   if(!state.authDone){ showAuth("welcome"); return; }
@@ -916,5 +1395,14 @@ async function appBoot(){
   await fkYield();                 // QU-02: Trang chủ đã vẽ → nhường luồng (trình duyệt vẽ khung đầu, nhận chạm) rồi mới đồng bộ
   refreshCoachData(true);
   fkIdle(()=> nativeNotif.syncSoon(), 3000);
+  /* R3: lúc rảnh — kéo nhật ký đồng ý, đồng bộ dữ liệu tài khoản; tài khoản cũ chưa xác nhận điều khoản bản mới → hỏi (không chặn app) */
+  if(cloud.isLoggedIn()) fkIdle(async ()=>{
+    try{
+      let cs = cloud.consent.status();
+      if(!cs.base) cs = await cloud.consent.load();
+      if(!cs.base){ const bd = $("#sheet-backdrop"); if(!(bd && bd.classList.contains("open")) && !$("#auth").classList.contains("open")) openConsentSheet(); }
+      fkSyncKick();
+    }catch(e){ console.warn("[boot] đồng ý / đồng bộ", e); }
+  }, 3500);
 }
 appBoot();

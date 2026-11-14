@@ -25,8 +25,11 @@ function food(id){
 const r1 = n => Math.round(n*10)/10;
 function itemsMacros(items){
   const o = { k:0, p:0, c:0, f:0, fb:0, g:0 };
-  (items||[]).forEach(([id, g])=>{
-    const f = food(id); if(!f) return;
+  /* R3-NUT-06: dòng hỏng (không phải mảng), gam âm / NaN / chuỗi (bộ nhớ thực đơn, sao lưu) → bỏ qua, không ném lỗi / ra NaN */
+  (Array.isArray(items) ? items : []).forEach(row=>{
+    if(!Array.isArray(row)) return;
+    const id = row[0], g = Number(row[1]);
+    const f = food(id); if(!f || !Number.isFinite(g) || g <= 0) return;
     const k = g/100;
     o.k += f.kcal*k; o.p += f.protein*k; o.c += f.carbs*k; o.f += f.fat*k; o.fb += (f.fiber||0)*k; o.g += g;
   });
@@ -38,6 +41,7 @@ function recipeBase(r){
   if(!b){ b = itemsMacros(r.items); _baseCache.set(r, b); }
   return b;
 }
+const NP_KCAL_MAX = 6000;                // R3-NUT-07: trần calo mục tiêu dùng cho thực đơn
 const NP_FIBER_PER_1000 = 14;            // g chất xơ / 1.000 kcal (IOM 2005, Dietary Guidelines for Americans)
 /* QN-23: trần chất xơ = AI của IOM (nam 38 / nữ 25 g; > 50 tuổi 30 / 21 g) + 10 g — 4.000 kcal không còn đòi 56 g/ngày */
 function npFiberCap(p){
@@ -49,13 +53,16 @@ function npFiberCap(p){
    macro tự chỉnh không khớp calo (> ±10 %) hoặc đạm > 35 % năng lượng → chuẩn hoá và báo cho người dùng (T.floored / T.macroFixed). */
 function npTargets(p){
   p = p || {};
-  const raw = Number(p.goalKcal) > 0 ? Number(p.goalKcal) : 2000;
+  /* R3-NUT-07: trần 6.000 kcal (= giới hạn ô "Mục tiêu calo" của app.js) — hồ sơ hỏng / đồng bộ ra 13.784 hay 99.999 kcal
+     không còn sinh thực đơn 4.700 kcal + đạm 8.749 g; NaN / Infinity → 2.000 */
+  const raw = Number.isFinite(Number(p.goalKcal)) && Number(p.goalKcal) > 0 ? Number(p.goalKcal) : 2000;
   const floor = p.gender === "male" ? 1500 : 1200;
-  const K = Math.max(floor, Math.round(raw));
-  let P = Number(p.protein) > 0 ? Number(p.protein) : Math.round(K*0.25/4);
-  let F = Number(p.fat) > 0 ? Number(p.fat) : Math.round(K*0.25/9);
+  const K = Math.min(NP_KCAL_MAX, Math.max(floor, Math.round(raw)));
+  const fin = v => Number.isFinite(Number(v)) && Number(v) > 0;
+  let P = fin(p.protein) ? Number(p.protein) : Math.round(K*0.25/4);
+  let F = fin(p.fat) ? Number(p.fat) : Math.round(K*0.25/9);
   let C = Number(p.carbs);
-  if(!(C > 0)) C = Math.max(60, Math.round((K - P*4 - F*9)/4));
+  if(!fin(C)) C = Math.max(60, Math.round((K - P*4 - F*9)/4));
   let macroFixed = false;
   const macroK = P*4 + C*4 + F*9;
   if(P*4 > K*0.35){ P = Math.floor(K*0.35/4); macroFixed = true; }
@@ -65,7 +72,7 @@ function npTargets(p){
     macroFixed = true;
   }
   return { K, P, C, F, FB: Math.min(Math.round(K/1000*NP_FIBER_PER_1000), npFiberCap(p)),
-    floored: raw < floor ? Math.round(raw) : 0, macroFixed, macroK: Math.round(macroK) };
+    floored: raw < floor ? Math.round(raw) : 0, capped: raw > NP_KCAL_MAX ? Math.round(raw) : 0, macroFixed, macroK: Math.round(macroK) };
 }
 /* QN-01/03/16: cờ an toàn của người dùng hiện tại (health-safety.js). prefs.health ghi đè khi kiểm thử. */
 function npSafety(prefs){
@@ -413,7 +420,13 @@ function npStoreGet(key){
   for(const meal of Object.keys(c.m)){
     const x = c.m[meal], r = Array.isArray(x) && recipeById(x[0]);
     if(!r || !Array.isArray(x[1])) return null;
-    plan[meal] = Object.assign({}, r, { items: x[1], baseItems: x[2] || [], extras: x[3] || [], factor: Number(x[4]) || 1, forced: !!x[5] });
+    /* R3-NUT-10: bộ nhớ thực đơn nằm ở localStorage (người dùng / tiện ích / bản lỗi có thể làm hỏng) → kiểm từng dòng:
+       [mã thực phẩm có thật, gam 0–5.000]; sai bất kỳ dòng nào → bỏ bản nhớ này, tính lại (trước: màn Dinh dưỡng ném lỗi mãi) */
+    const okRows = a => Array.isArray(a) && a.every(row=> Array.isArray(row) && typeof row[0] === "string" && !!food(row[0]) && Number.isFinite(row[1]) && row[1] > 0 && row[1] <= 5000);
+    const okExtras = a => Array.isArray(a) && a.every(e=> e && typeof e === "object" && typeof e.id === "string" && !!food(e.id) && Number.isFinite(e.g) && e.g > 0 && e.g <= 5000);
+    if(!x[1].length || !okRows(x[1]) || !okRows(x[2] || []) || !okExtras(x[3] || [])) return null;
+    if(!MEAL_TYPES.some(mt=> mt.id === meal)) return null;
+    plan[meal] = Object.assign({}, r, { items: x[1], baseItems: x[2] || [], extras: x[3] || [], factor: Math.min(5, Math.max(0.1, Number(x[4]) || 1)), forced: !!x[5] });
   }
   Object.defineProperty(plan, "_meta", { value:{ err: c.e, cached:true }, enumerable:false });
   return plan;
@@ -661,7 +674,8 @@ function npProteinWhy(p, h){
 
 G.NutriPro = { buildDayPlan:npBuildDayPlan, pool:npPool, targets:npTargets, itemsMacros, planTotals, fillers:NP_FILLERS, food,
   safety:npSafety, effGoal:npEffGoal, parseNum:npParseNum, num:npNum, search:npSearch, pregRisk:npPregRisk, weekKey:npWeekKey, fiberCap:npFiberCap,
-  planCtx:npPlanCtx, planCached:npPlanCached, clearPlanCache:npStoreClear, flushStore:npStoreSave, proteinWhy:npProteinWhy, _storeKey:NP_STORE_KEY };
+  planCtx:npPlanCtx, planCached:npPlanCached, clearPlanCache:npStoreClear, flushStore:npStoreSave, proteinWhy:npProteinWhy, _storeKey:NP_STORE_KEY,
+  cleanCustom: c=> npCleanCustom(c), KCAL_MAX: NP_KCAL_MAX };
 
 /* =====================================================================
    3. GIAO DIỆN (chỉ chạy trong trình duyệt, sau khi app đã khởi động)
@@ -688,8 +702,59 @@ function NPS(){
   if(!Array.isArray(s.recent)) s.recent = [];
   if(!Array.isArray(s.fav)) s.fav = [];
   if(!Array.isArray(s.custom)) s.custom = [];
-  if(!s.shopPeople) s.shopPeople = 1;
+  if(!(Number(s.shopPeople) >= 1 && Number(s.shopPeople) <= 20)) s.shopPeople = 1;
+  if(!_npCleaned.has(s.custom) || !_npCleaned.has(s.recent) || !_npCleaned.has(s.fav)) npCleanState(s);
   return s;
+}
+/* =====================================================================
+   R3-NUT-01/02 (14/11/2026) — LÀM SẠCH state.nutriPro (món tự tạo, gần đây, yêu thích)
+   Nguồn: localStorage cũ, khôi phục Google Drive, đồng bộ cloud → KHÔNG tin kiểu dữ liệu.
+   Trước: 1 phần tử null trong `custom` làm nutrition-pro.js ném lỗi NGAY LÚC NẠP (mất cả thực đơn Pro);
+   `emoji`, `units[].g`, `recent[].g` kiểu chuỗi được chèn thô vào HTML (XSS lưu trữ qua bản sao lưu).
+   Quy ước món tự tạo: id "cf-…" (không được trùng mã thực phẩm có sẵn), tên ≤ 60 ký tự, /100 g: kcal 0–900,
+   đạm/tinh bột/béo/xơ 0–100 g; đơn vị ≤ 6, nhãn ≤ 24 ký tự, 1–3.000 g. Mỗi mảng chỉ làm sạch 1 lần (WeakSet).
+   ===================================================================== */
+const _npCleaned = new WeakSet();
+const NP_CF_ID = /^cf-[a-z0-9-]{1,40}$/;
+function npClampNum(v, min, max, dflt){
+  const n = typeof v === "number" ? v : (typeof v === "string" && v.trim() !== "" ? Number(v.trim().replace(",", ".")) : NaN);
+  return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : dflt;
+}
+function npCleanCustom(c){
+  if(!c || typeof c !== "object" || Array.isArray(c)) return null;
+  if(typeof c.id !== "string" || !NP_CF_ID.test(c.id)) return null;
+  const name = String(c.name == null ? "" : c.name).replace(/\s+/g, " ").trim().slice(0, 60);
+  if(!name) return null;
+  const out = { id: c.id, name,
+    kcal: npClampNum(c.kcal, 0, 900, 0), protein: npClampNum(c.protein, 0, 100, 0), carbs: npClampNum(c.carbs, 0, 100, 0),
+    fat: npClampNum(c.fat, 0, 100, 0), fiber: npClampNum(c.fiber, 0, 100, 0) };
+  const units = (Array.isArray(c.units) ? c.units : []).filter(u=> u && typeof u === "object")
+    .map(u=> ({ label: String(u.label == null ? "" : u.label).replace(/\s+/g, " ").trim().slice(0, 24), g: npClampNum(u.g, 1, 3000, NaN) }))
+    .filter(u=> u.label && Number.isFinite(u.g)).slice(0, 6);
+  out.units = units.length ? units : [{ label:"1 phần", g:100 }];
+  return out;
+}
+function npCleanState(s){
+  /* món tự tạo: sửa TẠI CHỖ (giữ tham chiếu `ex` đang mở trong form), bỏ phần tử hỏng / trùng id */
+  const seen = new Set();
+  for(let i = s.custom.length - 1; i >= 0; i--){
+    const c = s.custom[i], ok = npCleanCustom(c);
+    if(!ok || seen.has(ok.id)){ s.custom.splice(i, 1); continue; }
+    seen.add(ok.id);
+    Object.keys(c).forEach(k=>{ if(!(k in ok)) delete c[k]; });
+    Object.assign(c, ok);
+  }
+  if(s.custom.length > 300) s.custom.length = 300;
+  s.recent = s.recent.filter(e=> e && typeof e === "object" && (e.t === "f" || e.t === "r") && typeof e.id === "string" && e.id.length <= 80).slice(0, 24).map(e=>{
+    const o = { t: e.t, id: e.id, ts: npClampNum(e.ts, 0, 4e12, 0), g: Math.round(npClampNum(e.g, 0, 10000, 0)) };
+    if(e.t === "r") o.f = npClampNum(e.f, 0.1, 5, 1);
+    else { const q = npClampNum(e.q, 0, 1000, 0); if(typeof e.u === "string" && e.u && q > 0){ o.u = e.u.slice(0, 24); o.q = q; } else { o.u = null; o.q = null; } }
+    return o;
+  });
+  s.fav = s.fav.filter(k=> typeof k === "string" && /^[fr]:.{1,80}$/.test(k)).slice(0, 60);
+  if(s.shopDone != null && (typeof s.shopDone !== "object" || Array.isArray(s.shopDone))) delete s.shopDone;
+  if(s.hideKcal != null && typeof s.hideKcal !== "boolean") delete s.hideKcal;
+  _npCleaned.add(s.custom); _npCleaned.add(s.recent); _npCleaned.add(s.fav);
 }
 function save(){ try{ saveState(); }catch(e){} }
 const esc = s => (typeof escapeHtml === "function" ? escapeHtml(String(s == null ? "" : s)) : String(s == null ? "" : s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])));
@@ -710,12 +775,14 @@ function syncCustomFoods(){
   const list = NPS().custom;
   for(let i=FOODS.length-1; i>=0; i--) if(FOODS[i].custom && !list.some(c=>c.id===FOODS[i].id)) FOODS.splice(i, 1);
   list.forEach(c=>{
-    const obj = Object.assign({ emoji:"🍽️" }, c, { custom:true });
+    if(!c || typeof c !== "object" || !NP_CF_ID.test(String(c.id))) return;          // R3-NUT-02: không ghi đè thực phẩm có sẵn
+    const obj = Object.assign({}, c, { emoji:"🍽️", custom:true });
     const ex = FOODS.find(f=>f.id===c.id);
+    if(ex && !ex.custom) return;
     if(ex) Object.assign(ex, obj); else FOODS.push(obj);
   });
 }
-syncCustomFoods();
+try{ syncCustomFoods(); }catch(e){ try{ console.warn("nutrition-pro: món tự tạo", e); }catch(_){} }   // R3-NUT-01: không để dữ liệu hỏng chặn cả file
 
 /* Thẻ lọc "Thuần chay" trong danh sách món */
 try{
@@ -737,7 +804,7 @@ try{
 try{
   if(typeof recipeMacros === "function"){
     const _rm = recipeMacros;
-    recipeMacros = function(r){ const m = _rm(r); m.fiber = r1(itemsMacros(r.items).fb); return m; };
+    recipeMacros = function(r){ const m = _rm(r); m.fiber = r1(itemsMacros(r && r.items).fb); return m; };
   }
 }catch(e){}
 
@@ -934,6 +1001,7 @@ nuPlanCardHTML = function(){
   const bmiTxt = a.bmi && !a.hideBmi ? vn(a.bmi) : "—";                // QN-20: 22,6 thay vì 22.6
   const hk = hideK();                                                   // vòng 2: "Ẩn số calo"
   const notes = [];
+  if(T.capped) notes.push(hk ? "Mục tiêu năng lượng trong hồ sơ cao bất thường — thực đơn gợi ý dùng mức tối đa của app. Hãy kiểm tra lại chiều cao, cân nặng trong Hồ sơ." : `Mục tiêu <b>${vn(T.capped)} kcal</b> cao bất thường — thực đơn gợi ý dùng tối đa <b>${vn(T.K)} kcal</b>. Hãy kiểm tra lại chiều cao, cân nặng trong Hồ sơ.`);
   if(T.floored) notes.push(hk ? "Mục tiêu bạn tự đặt thấp hơn mức an toàn tối thiểu — thực đơn gợi ý dùng mức an toàn." : `Mục tiêu bạn tự đặt (<b>${vn(T.floored)} kcal</b>) thấp hơn mức an toàn tối thiểu — thực đơn gợi ý dùng <b>${vn(T.K)} kcal</b>.`);
   if(T.macroFixed) notes.push(hk ? "Đạm/tinh bột/béo tự chỉnh chưa cân đối — thực đơn dùng tỉ lệ cân bằng." : `Đạm/tinh bột/béo tự chỉnh cộng lại ≈ ${vn(T.macroK)} kcal, không khớp ${vn(T.K)} kcal — thực đơn dùng đạm ${T.P} g · tinh bột ${T.C} g · béo ${T.F} g.`);
   const nn = p.nutriNotes || [];
@@ -1223,8 +1291,8 @@ function openShoppingList(){
 /* ---------- 3.7 Thêm món: Gần đây · Yêu thích · Tất cả · Món tự tạo ---------- */
 function foodSub(f){
   const u = f.units && f.units[0];
-  if(hideK()) return u ? `${esc(u.label)} ≈ ${u.g} g` : "100 g";
-  return u ? `${esc(u.label)} ≈ ${u.g}g · ${Math.round(f.kcal*u.g/100)} kcal` : `100 g · đạm ${vn(f.protein)} · tinh bột ${vn(f.carbs)} · béo ${vn(f.fat)}`;
+  if(hideK()) return u ? `${esc(u.label)} ≈ ${esc(vn(Number(u.g) || 0))} g` : "100 g";
+  return u ? `${esc(u.label)} ≈ ${esc(vn(Number(u.g) || 0))}g · ${Math.round(f.kcal*u.g/100) || 0} kcal` : `100 g · đạm ${vn(f.protein)} · tinh bột ${vn(f.carbs)} · béo ${vn(f.fat)}`;
 }
 function foodRow(f, opt){
   opt = opt || {};
@@ -1251,8 +1319,9 @@ function recipeRow(r, opt){
   </div>`;
 }
 function recentSub(e, f){
-  if(e.u && e.q) return `${vn(e.q)} × ${esc(e.u)} · ${e.g} g`;
-  return `${e.g} g${f && unitHint(f.id, e.g) ? " · " + esc(unitHint(f.id, e.g)) : ""}`;
+  const eg = esc(Math.round(Number(e.g) || 0));                                    // R3-NUT-02
+  if(e.u && e.q) return `${esc(vn(Number(e.q) || 0))} × ${esc(e.u)} · ${eg} g`;
+  return `${eg} g${f && unitHint(f.id, e.g) ? " · " + esc(unitHint(f.id, e.g)) : ""}`;
 }
 try{
 openAddFood = function(mealId, opts){
@@ -1273,13 +1342,13 @@ openAddFood = function(mealId, opts){
     }
     if(tab === "recent"){
       const list = S.recent.map((e, i)=>{
-        if(e.t === "r"){ const r = RECIPES.find(x=>x.id===e.id); return r ? recipeRow(r, { ri:i, quick:true, f:e.f||1, sub:`Món · ${e.g||Math.round(recipeBase(r).g*(e.f||1))} g${(e.f||1)!==1 ? ` · khẩu phần ×${vn(e.f)}` : ""}` }) : ""; }
+        if(e.t === "r"){ const r = RECIPES.find(x=>x.id===e.id); return r ? recipeRow(r, { ri:i, quick:true, f:Number(e.f)||1, sub:`Món · ${esc(Math.round(Number(e.g) || recipeBase(r).g*(Number(e.f)||1)))} g${(Number(e.f)||1)!==1 ? ` · khẩu phần ×${esc(vn(Number(e.f)||1))}` : ""}` }) : ""; }
         const f = food(e.id); return f ? foodRow(f, { ri:i, quick:true, g:e.g, sub: recentSub(e, f) }) : "";
       }).join("");
       return list || `<p class="empty-hint">Chưa có món gần đây — món bạn thêm sẽ hiện ở đây để thêm lại 1 chạm.</p>`;
     }
     if(tab === "fav"){
-      const list = S.fav.map(k=>{ const [t, ...rest] = k.split(":"); const id = rest.join(":");
+      const list = S.fav.map(k=>{ const [t, ...rest] = String(k).split(":"); const id = rest.join(":");
         if(t === "r"){ const r = RECIPES.find(x=>x.id===id); return r ? recipeRow(r) : ""; }
         const f = food(id); return f ? foodRow(f) : ""; }).join("");
       return list || `<p class="empty-hint">Chạm ${ICON("favorite")} ở món bất kỳ để lưu vào Yêu thích.</p>`;
@@ -1398,7 +1467,7 @@ function pregWarnHTML(item){
 try{
 openFoodQuantity = function(f, mealId, preset){
   if(!f) return;
-  const units = [{ label:"gram", g:1, gram:true }].concat(f.units || []);
+  const units = [{ label:"gram", g:1, gram:true }].concat((Array.isArray(f.units) ? f.units : []).filter(u=> u && typeof u === "object" && typeof u.label === "string" && Number(u.g) > 0));
   let ui = 0, qty = 100;
   if(preset && preset.u){ const k = units.findIndex(u=>u.label===preset.u); if(k > 0){ ui = k; qty = preset.q || 1; } else qty = preset.g || 100; }
   else if(preset && preset.g){ qty = preset.g; }
@@ -1416,7 +1485,7 @@ openFoodQuantity = function(f, mealId, preset){
         <div>${hk ? `<b>${Math.round(g)}</b><small>gam</small>` : `<b>${m.kcal}</b><small>kcal · ${Math.round(g)} g</small>`}</div></div>
       ${pregWarnHTML(f)}
       <div class="np-sec">Đơn vị</div>
-      <div class="np-units" role="radiogroup">${units.map((u,i)=>`<button role="radio" aria-checked="${i===ui}" class="${i===ui?'on':''}" data-np-unit="${i}">${esc(u.label)}${u.gram ? "" : `<small>${u.g} g</small>`}</button>`).join("")}</div>
+      <div class="np-units" role="radiogroup">${units.map((u,i)=>`<button role="radio" aria-checked="${i===ui}" class="${i===ui?'on':''}" data-np-unit="${i}">${esc(u.label)}${u.gram ? "" : `<small>${esc(vn(Number(u.g) || 0))} g</small>`}</button>`).join("")}</div>
       <div class="np-qty">
         <button class="np-step" data-np-step="-1" aria-label="Giảm">${ICON("remove")}</button>
         <label class="np-qty-in"><input type="text" id="qty-input" inputmode="decimal" autocomplete="off" pattern="[0-9]*[.,]?[0-9]*" value="${esc(units[ui].gram ? Math.round(qty) : vn(qty))}" aria-label="Số lượng (có thể gõ 1,5)"><span>${units[ui].gram ? "g" : esc(units[ui].label.replace(/^1 /,""))}</span></label>
@@ -1500,7 +1569,7 @@ function openCustomFood(mealId, editId){
     <div class="field"><label for="np-c-name">Tên món</label><input id="np-c-name" maxlength="60" placeholder="VD: Cơm gà mẹ nấu, Bánh protein X" value="${ex ? esc(ex.name) : ""}"></div>
     <div class="field-row" style="margin-top:10px;">
       <div class="field"><label for="np-c-unit">Đơn vị</label><input id="np-c-unit" maxlength="24" placeholder="1 phần / 1 hộp / 1 thanh" value="${esc(u0.label)}"></div>
-      <div class="field"><label for="np-c-g">1 đơn vị = (g)</label><input id="np-c-g" type="text" inputmode="decimal" autocomplete="off" min="1" max="3000" value="${u0.g}"></div>
+      <div class="field"><label for="np-c-g">1 đơn vị = (g)</label><input id="np-c-g" type="text" inputmode="decimal" autocomplete="off" min="1" max="3000" value="${esc(vn(Number(u0.g) || 100))}"></div>
     </div>
     <div class="field" style="margin-top:10px;"><label for="np-c-kcal">Năng lượng (kcal / 1 đơn vị)</label><input id="np-c-kcal" type="text" inputmode="decimal" autocomplete="off" min="0" max="5000" value="${per(ex ? ex.kcal : 0)}" placeholder="VD: 450"></div>
     <div class="field-row" style="margin-top:10px;">
@@ -1532,6 +1601,10 @@ function openCustomFood(mealId, editId){
     if(!kcal) kcal = P*4 + C*4 + F*9;
     if(!(kcal > 0)){ toast("Nhập kcal hoặc macro", "error"); return; }
     if(kcal > 5000 || P > 500 || C > 800 || F > 500){ toast("Giá trị quá lớn — kiểm tra lại", "error"); return; }
+    /* R3-NUT-11: kiểm tra tính hợp lý vật lý — 1 g thức ăn tối đa 9 kcal (chất béo nguyên chất); đạm + tinh bột + béo + xơ không thể nặng hơn
+       chính khẩu phần. Trước: "1 đơn vị = 1 g, 450 kcal" được nhận → 45.000 kcal/100 g, làm hỏng tổng ngày và thực đơn. */
+    if(kcal > g*9 + 0.5){ toast(`${vn(g)} g thức ăn không thể chứa quá ${vn(Math.round(g*9))} kcal — kiểm tra lại khối lượng 1 đơn vị hoặc số kcal`, "error"); return; }
+    if(P + C + F + FB > g*1.02 + 0.5){ toast(`Tổng đạm + tinh bột + béo + xơ (${vn(P+C+F+FB)} g) lớn hơn khối lượng 1 đơn vị (${vn(g)} g) — kiểm tra lại`, "error"); return; }
     const k = 100/g;
     const obj = { id: ex ? ex.id : "cf-" + Date.now().toString(36) + Math.random().toString(36).slice(2,5), name,
       kcal: Math.round(kcal*k*10)/10, protein: r1(P*k), carbs: r1(C*k), fat: r1(F*k), fiber: r1(FB*k), units:[{ label: /^\d/.test(label) ? label : "1 " + label, g }] };

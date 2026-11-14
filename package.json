@@ -5,7 +5,11 @@
   "description": "TapEasy — app tập luyện cá nhân + PT (tiếng Việt), đóng gói iOS/Android bằng Capacitor (build trên GitHub Actions, không cần Mac).",
   "scripts": {
     "prepare:www": "bash scripts/prepare-www.sh",
-    "assets": "capacitor-assets generate --iconBackgroundColor '#02A69E' --iconBackgroundColorDark '#061A24' --splashBackgroundColor '#F7FBFA' --splashBackgroundColorDark '#061A24'"
+    "assets": "capacitor-assets generate --iconBackgroundColor '#02A69E' --iconBackgroundColorDark '#061A24' --splashBackgroundColor '#F7FBFA' --splashBackgroundColorDark '#061A24'",
+    "prepare:www:android": "FK_PLATFORM=android bash scripts/prepare-www.sh",
+    "prepare:www:ios": "FK_PLATFORM=ios bash scripts/prepare-www.sh",
+    "store:screenshots": "python3 scripts/store-screenshots.py",
+    "store:check": "bash -n scripts/prepare-www.sh && python3 -m py_compile scripts/native-android-patch.py scripts/native-ios-patch.py scripts/store-screenshots.py && node tests/run.js --only 85-r3-store"
   },
   "dependencies": {
     "@capacitor-firebase/authentication": "^6.0.0",
@@ -23,5 +27,6 @@
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.1.2"
   },
-  "//haptics": "@capacitor/haptics 6.x: rung xúc giác cho press-feel.js (Capacitor.Plugins.Haptics). Chưa npm install — CI chạy npm ci + npx cap sync sẽ cài; thiếu plugin thì app tự dùng navigator.vibrate/không rung (docs/PRESS-FEEL.md)."
+  "//haptics": "@capacitor/haptics 6.x: rung xúc giác cho press-feel.js (Capacitor.Plugins.Haptics). Chưa npm install — CI chạy npm ci + npx cap sync sẽ cài; thiếu plugin thì app tự dùng navigator.vibrate/không rung (docs/PRESS-FEEL.md).",
+  "//capacitorHttp": "R3-store: capacitor.config.json đặt CapacitorHttp.enabled=false — bật sẽ vá fetch/XHR toàn cục sang HTTP gốc (không stream) làm hỏng kênh realtime của Firestore JS SDK và tải ảnh/clip lên Storage. Mọi API app gọi đều có CORS (đang chạy trên bản web)."
 }

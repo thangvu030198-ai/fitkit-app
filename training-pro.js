@@ -428,7 +428,7 @@ function ctxFor(item){
   state.setLog = state.setLog || {};
   const last = state.setLog[key];
   const timed = isTimedReps(item.reps);
-  const nSets = Math.max(1, num(item.sets) || 1);
+  const nSets = Math.min(20, Math.max(1, Math.round(num(item.sets)) || 1));   // R3-CORE-05: kẹp 1–20 hiệp
   const top = repTop(item.reps);
   const prog = progressionFor(item, meta, last, timed, nSets);
   return { meta, key, last, timed, nSets, top, prog };
@@ -864,7 +864,8 @@ function afterRecord(s, item, key, name){
   const rows = (s.sets||{})[item.uid] || [];
   if(isTimedReps(item.reps)) return;
   const idx = amrapRows(item, rows.length); if(!idx.length) return;
-  const st = store(); const today = dstr(new Date());
+  /* R3-CORE-16: buổi qua nửa đêm — ghi theo ngày chốt lúc bắt đầu (session.date, QT-07) cho khớp setHist / nhật ký */
+  const st = store(); const today = (typeof s.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s.date)) ? s.date : dstr(new Date());
   const L = st.amrap[key] = (st.amrap[key] || []).filter(x=> x.date !== today);
   idx.forEach(i=>{
     const r = rows[i]; if(!r || !r.done) return;

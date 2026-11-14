@@ -1,0 +1,5 @@
+{
+  "onboarded": true,
+  "authDone": true,
+  "profile": { "name": "Minh", "gender": "male", "age": 26, "height": 172, "weight": 74, "activity": "moderate", "goal": "lose", "autoTargets": true }
+}

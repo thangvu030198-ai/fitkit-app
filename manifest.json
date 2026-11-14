@@ -8,6 +8,10 @@
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "portrait",
   "background_color": "#061A24",
   "theme_color": "#061A24",
@@ -16,6 +20,13 @@
     "fitness",
     "lifestyle"
   ],
+  "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": [
+      "navigate-existing",
+      "auto"
+    ]
+  },
   "icons": [
     {
       "src": "assets/icon-192.png",
@@ -30,6 +41,12 @@
       "purpose": "any"
     },
     {
+      "src": "assets/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
       "src": "assets/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
@@ -38,7 +55,8 @@
     {
       "src": "assets/apple-touch-icon-180.png",
       "sizes": "180x180",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "assets/favicon.svg",
@@ -69,6 +87,19 @@
       "icons": [
         {
           "src": "assets/shortcut-meal-96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Tiến độ của tôi",
+      "short_name": "Tiến độ",
+      "description": "Xem kỷ lục, ảnh tiến độ và chỉ số InBody",
+      "url": "./index.html?go=progress",
+      "icons": [
+        {
+          "src": "assets/shortcut-progress-96.png",
           "sizes": "96x96",
           "type": "image/png"
         }

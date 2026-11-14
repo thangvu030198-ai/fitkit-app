@@ -525,3 +525,38 @@ html.tsx-lock, html.tsx-lock body{ overflow:hidden !important; }
 .tsx-modal-box.tsx-co .tsx-row2 .tsx-btn{ flex:1; min-height:48px; }
 .tsx-grid > .tsx-tile{ content-visibility:auto; contain-intrinsic-size:auto 340px; }
 @media (min-width:900px){ .tsx-toast{ bottom:calc(28px + env(safe-area-inset-bottom)); } }
+
+/* =========================================================================
+   R3-ADMIN-01 (14/11/2026) — GIAN HÀNG CHƯA MỞ BÁN
+   Khung lưới dạng xương vẫn hiển thị nhưng bị làm mờ + tối nhẹ; thẻ kính nổi ở giữa.
+   Phần phía sau: inert + aria-hidden (shop.js), không cuộn (overflow hidden), không bấm (pointer-events none).
+   ========================================================================= */
+.tsx.tsx-soon-on{ overflow:hidden; overscroll-behavior:contain; }
+.tsx.tsx-soon-on .tsx-hd, .tsx.tsx-soon-on .tsx-cats, .tsx-soon-bg{ filter:blur(7px) brightness(.82) saturate(.9); pointer-events:none; -webkit-user-select:none; user-select:none; }
+.tsx-soon-bg{ min-height:100vh; min-height:100dvh; overflow:hidden; }
+.tsx-soon-bg .tsx-tile.sk .tsx-tile-im{ animation:none; }
+.tsx-soon{ position:fixed; inset:0; z-index:40; display:flex; align-items:center; justify-content:center;
+  padding:calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+  background:rgba(17,17,17,.28); overflow-y:auto; }
+.tsx-soon-card{ width:min(360px, 100%); margin:auto; display:flex; flex-direction:column; align-items:stretch; gap:12px; text-align:center;
+  padding:26px 20px 20px; border-radius:22px; color:#111;
+  background:rgba(255,255,255,.78); -webkit-backdrop-filter:blur(22px) saturate(1.5); backdrop-filter:blur(22px) saturate(1.5);
+  border:1px solid rgba(255,255,255,.7); box-shadow:0 24px 60px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.8); animation:tsx-fade .25s; }
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){ .tsx-soon-card{ background:rgba(255,255,255,.96); } }
+.tsx-soon-ic{ align-self:center; width:56px; height:56px; border-radius:50%; display:grid; place-items:center; background:rgba(17,17,17,.06); }
+.tsx-soon-ic .tsx-i{ width:26px; height:26px; }
+.tsx-soon-card h2{ font-size:clamp(17px, 5vw, 20px); line-height:1.25; font-weight:600; letter-spacing:0; text-transform:none; margin:2px 0 0; outline:none; overflow-wrap:anywhere; }
+.tsx-soon-card > p{ font-size:14px; line-height:1.5; color:#444; margin:0; }
+.tsx-soon-card .tsx-soon-note{ font-size:12px; min-height:0; color:#555; }
+.tsx-soon-card .tsx-soon-note:empty{ display:none; }
+.tsx-soon-card .tsx-btn{ min-height:48px; width:100%; border-radius:14px; white-space:normal; line-height:1.25; padding:10px 14px; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+.tsx-soon-card .tsx-btn:focus-visible{ outline:2px solid #111; outline-offset:2px; }
+@media (max-height:480px){ .tsx-soon-card{ padding:16px 16px 14px; gap:8px; } .tsx-soon-ic{ display:none; } }
+@media (prefers-reduced-motion: reduce){ .tsx-soon-card{ animation:none; } }
+.tsx-live{ padding:10px 12px; border:1px solid var(--line); border-left:3px solid #B26A00; background:#FFF8EC; }
+.tsx-live.on{ border-left-color:#1B7F4B; background:#F0FAF4; }
+/* Thẻ "Cửa hàng" trong Sự kiện & Thi đua khi chưa mở bán */
+.sx-soon-card{ display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding:16px; border-radius:16px; border:1px dashed var(--border, rgba(127,127,127,.35)); }
+.sx-soon-card p{ margin:0; font-size:13px; opacity:.8; }
+.sx-soon-card .btn{ min-height:44px; }
+.tsx-soon-card .tsx-btn{ letter-spacing:.06em; font-size:13px; }

@@ -102,14 +102,22 @@ function hsFlags(h, p){
   const cleared = !!h.clearedVigorous;
   const hideNow = hideVeryHigh && !cleared;
   const postEarly = post && !ppLate;                        // < 12 tuần sau sinh
-  const cautionVeryHigh = screened && (hideVeryHigh || cardio === "htn_ok" || !!q.heart || preg || postEarly || hypo || kidney !== "none");
+  const cautionVeryHigh0 = screened && (hideVeryHigh || cardio === "htn_ok" || !!q.heart || preg || postEarly || hypo || kidney !== "none");
   const valsalva = screened && (cardio !== "none" || !!q.heart || preg || kidney === "dialysis" || (diab !== "none" && diab !== "pre"));
 
+  /* R3-NUT-09: BMI người lớn (≥ 18 tuổi, không mang thai, số đo hợp lý 80–250 cm / 10–400 kg).
+     < 18,5 → không thâm hụt calo (kể cả mục tiêu TỰ ĐẶT → cảnh báo); < 16 (WHO: gầy độ III) → nên đi khám + thận trọng cường độ rất cao */
+  const hCm = Number(p.height), wKg = Number(p.weight);
+  const bmi = Number.isFinite(hCm) && Number.isFinite(wKg) && hCm >= 80 && hCm <= 250 && wKg >= 10 && wKg <= 400 ? wKg / ((hCm/100)*(hCm/100)) : 0;
+  const adultBmi = bmi > 0 && !minor && !preg && (age === 0 || age >= 18);
+  const underweight = adultBmi && bmi < 18.5;
+  const lowBmi = adultBmi && bmi < 16;
   const noDeficitReasons = [];
   if(preg) noDeficitReasons.push("pregnant");
   if(bf) noDeficitReasons.push("breastfeeding");
   if(minor) noDeficitReasons.push("minor");
   if(ed) noDeficitReasons.push("ed");
+  if(underweight) noDeficitReasons.push("underweight");
   const noDeficit = noDeficitReasons.length > 0;
   /* cho bú: sau sinh ≤ 6 tháng → +500; > 6 tháng (hoặc không khai báo sau sinh — thường đã > 12 tháng) → +400 */
   const kcalExtra = preg ? KCAL_PREG[tri-1] : bf ? (post && ppWeeks !== "gt26" ? KCAL_LACT[0] : KCAL_LACT[1]) : 0;
@@ -138,13 +146,15 @@ function hsFlags(h, p){
   if(ed) doctor.push("ed");
   if(injuries.length) doctor.push("injury");
   if(minor) doctor.push("minor");
+  if(lowBmi) doctor.push("lowBmi");
 
   const urgent = screened && (symptom || supervised || pregComp);
   const preCheck = screened && (cardio !== "none" || symptom || hypo || preg || post || kidney !== "none" || supervised);
 
   return {
+    underweight, lowBmi,
     screened, female, age, minor, preg, post, tri, ppWeeks, postEarly, bf, ed, diab, hypo, cardio, kidney, injuries,
-    symptom, supervised, pregComp, parqYes, hideVeryHigh, hideNow, cleared, cautionVeryHigh, valsalva,
+    symptom, supervised, pregComp, parqYes, hideVeryHigh, hideNow, cleared, cautionVeryHigh: cautionVeryHigh0 || (screened && lowBmi), valsalva,
     noDeficit, noDeficitReasons, kcalExtra, ppk, doctor, urgent, preCheck,
     /* QN-01/03/07/16: cờ cho thực đơn & nước — proteinCap: đạm là TRẦN cứng (bệnh thận mạn chưa lọc máu);
        noSuppl: không gợi ý bột đạm/whey; noRare: không gợi ý món tái/sống; waterExtra (L); fluidLimit: lọc máu → hạn chế dịch */
@@ -378,6 +388,12 @@ const TIPS = {
     "Đau khi tập ≤ 3/10 và hết trong 24 giờ thường chấp nhận được; đau tăng, sưng, tê hoặc đau sang hôm sau → giảm tải / đổi bài và hỏi bác sĩ hoặc chuyên viên vật lý trị liệu.",
     "Các bài tải lên vùng bạn khai báo sẽ có cờ cảnh báo trong giáo án và khi tập.",
   ],
+  lowBmi: [
+    "BMI dưới 16 là mức <b>thiếu cân nặng</b> — nên đi khám bác sĩ / chuyên gia dinh dưỡng để tìm nguyên nhân trước khi tập nặng hoặc tự tăng cân.",
+    "Tăng lượng ăn <b>từ từ</b> (thêm bữa phụ, không ăn dồn đột ngột); TapEasy không đặt mục tiêu thâm hụt calo cho bạn.",
+    "Ưu tiên đi bộ và tập kháng lực nhẹ; tạm tránh cardio cường độ rất cao, tập khi đói hoặc tập kéo dài cho tới khi cân nặng cải thiện.",
+    "Chóng mặt, ngất, tim đập nhanh / loạn nhịp, mất kinh hoặc sụt cân tiếp → dừng tập và đi khám.",
+  ],
   minor: [
     "Dưới 18 tuổi: tập dưới sự giám sát của huấn luyện viên có chuyên môn hoặc người lớn; ưu tiên kỹ thuật đúng hơn mức tạ.",
     "Không thử tạ tối đa (1RM) khi chưa có giám sát. Ăn đủ năng lượng để phát triển — TapEasy không đặt mục tiêu thâm hụt calo.",
@@ -387,9 +403,9 @@ const TIPS = {
 const DOCTOR_LABEL = {
   symptom:"Đau ngực / choáng ngất", supervised:"Cần giám sát y tế", pregComp:"Biến chứng thai kỳ", parq:"Có câu PAR-Q+ trả lời \"Có\"",
   pregnant:"Đang mang thai", postpartum:"Sau sinh (chưa khám hậu sản / sinh mổ)", cardio:"Tim mạch / huyết áp", diabetes:"Tiểu đường",
-  kidney:"Bệnh thận", ed:"Tiền sử rối loạn ăn uống", injury:"Chấn thương", minor:"Dưới 18 tuổi",
+  kidney:"Bệnh thận", ed:"Tiền sử rối loạn ăn uống", injury:"Chấn thương", minor:"Dưới 18 tuổi", lowBmi:"BMI rất thấp (dưới 16)",
 };
-const REASON_LABEL = { pregnant:"đang mang thai", breastfeeding:"đang cho con bú", minor:"dưới 18 tuổi", ed:"tiền sử rối loạn ăn uống" };
+const REASON_LABEL = { pregnant:"đang mang thai", breastfeeding:"đang cho con bú", minor:"dưới 18 tuổi", ed:"tiền sử rối loạn ăn uống", underweight:"đang thiếu cân (BMI dưới 18,5)" };
 
 const DISCLAIMER_SHORT = "TapEasy là ứng dụng hỗ trợ tập luyện và dinh dưỡng phổ thông, <b>không phải thiết bị y tế</b>, không chẩn đoán hay điều trị bệnh. Mọi số liệu chỉ là ước lượng tham khảo. Hãy hỏi bác sĩ trước khi bắt đầu chương trình tập hoặc chế độ ăn mới.";
 const DISCLAIMER_FULL = [
@@ -799,6 +815,7 @@ function tipBlocks(f){
   if(f.ed) add("favorite", "Ăn uống lành mạnh", TIPS.ed);
   if(f.injuries.length) add("healing", `Chấn thương: ${f.injuries.map(k=>INJ[k].toLowerCase()).join(", ")}${H().injuryNote?` — ${esc(H().injuryNote)}`:""}`, TIPS.injury);
   if(f.minor) add("school", "Dưới 18 tuổi", TIPS.minor);
+  if(f.lowBmi && !f.ed) add("monitor_weight", "Thiếu cân nặng (BMI dưới 16)", TIPS.lowBmi, "urgent");
   if(f.parqYes && !f.symptom && !f.supervised) add("stethoscope", "PAR-Q+", TIPS.parq);
   add("info", "Nguyên tắc chung", TIPS.general);
   return blocks.join("");
@@ -1081,10 +1098,11 @@ function decorateNutrition(){
       : `Đang mang thai (tam cá nguyệt ${f.tri}): calo = mức duy trì${f.kcalExtra?` + ${f.kcalExtra} kcal`:""} = <b>${(p.goalKcal||0).toLocaleString("vi-VN")} kcal</b>. Tăng cân nên theo dõi cùng bác sĩ sản khoa.`);
     else if(f.bf) lines.push(hk ? "Đang cho con bú: app không đặt thâm hụt và đã cộng thêm năng lượng cho việc tạo sữa. Muốn giảm cân: đợi ≥ 6–8 tuần sau sinh khi sữa đã ổn định, giảm từ từ và hỏi bác sĩ."
       : `Đang cho con bú: calo = mức duy trì + ${f.kcalExtra} kcal = <b>${(p.goalKcal||0).toLocaleString("vi-VN")} kcal</b>. Muốn giảm cân: đợi ≥ 6–8 tuần sau sinh khi sữa đã ổn định, giảm ≤ 0,5 kg/tuần (thâm hụt ≤ 500 kcal/ngày) và hỏi bác sĩ.`);
-    else if(why.length && !(why.length === 1 && f.minor && p.goalBlocked)) lines.push(`Không áp dụng thâm hụt calo vì ${why.join(", ")}.`);
+    else if(why.length && !(why.length === 1 && f.minor && p.goalBlocked) && !(why.length === 1 && a.reasons[0] === "underweight" && p.goal !== "lose" && p.autoTargets !== false)) lines.push(`Không áp dụng thâm hụt calo vì ${why.join(", ")}.`);
     if(f.minor && a.eer) lines.push(`Dưới 18 tuổi: calo không thấp hơn nhu cầu cho tuổi đang lớn (EER, IOM 2005${hk ? "" : ` ≈ <b>${a.eer.toLocaleString("vi-VN")} kcal</b>`}); đạm ~${String(a.ppk).replace(".",",")} g/kg, không dùng bột đạm/whey khi chưa hỏi bác sĩ.`);
     if(a.ppk != null && f.kidney !== "none") lines.push(`Đạm giới hạn ~${String(a.ppk).replace(".",",")} g/kg (<b>${p.protein} g</b>/ngày) vì ${f.kidney==="dialysis"?"đang lọc máu":"bệnh thận mạn"} — lượng chính xác do bác sĩ thận quyết định.${f.proteinCap?" Thực đơn gợi ý giữ đạm <b>không vượt</b> mức này, phần năng lượng còn lại bù bằng tinh bột và chất béo tốt; không gợi ý bột đạm/whey.":""}`);
   }
+  if(f.lowBmi && !f.ed) lines.push("BMI của bạn dưới 16 (thiếu cân nặng): nên đi khám bác sĩ / chuyên gia dinh dưỡng; tăng lượng ăn từ từ, không ăn dồn đột ngột.");
   if(f.kidney !== "none") lines.push(`Thực đơn gợi ý <b>chưa tính</b> kali, phốt pho, natri, nước. ${f.kidney==="dialysis"?"Không theo mục tiêu nước của app nếu bác sĩ dặn hạn chế nước.":""}`);
   if(f.diab !== "none" && f.diab !== "pre") lines.push("Thực đơn chưa thiết kế riêng cho tiểu đường — chia đều tinh bột trong ngày, ưu tiên ngũ cốc nguyên hạt, hỏi bác sĩ về lượng tinh bột mỗi bữa.");
   if(f.preg) lines.push(`Tránh đồ sống / tái (bò tái, gỏi cá, sushi, trứng lòng đào), pate, phô mai mềm / sữa chưa tiệt trùng, rượu bia; caffeine ≤ 200 mg/ngày.${f.waterExtra ? " Mục tiêu nước đã cộng thêm 0,3 L." : ""} Thực đơn gợi ý đã bỏ các món tái.`);

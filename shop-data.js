@@ -37,6 +37,7 @@ function add(p){
   p.stockBy = stockBy(p.colors, p.sizes || [], p._base || 10, p._out);
   p.stock = Object.values(p.stockBy).reduce((a, b)=> a + b, 0);
   delete p._base; delete p._out;
+  p.demo = true;                 // R3-ADMIN-01: sản phẩm MẪU — shop.js không bán / không hiện cho khách như hàng thật
   P.push(p);
 }
 
@@ -163,8 +164,12 @@ const HOW = {
   foot:"Bàn chân: đứng lên tờ giấy, đánh dấu gót và đầu ngón dài nhất, đo khoảng cách.",
 };
 
+/* R3 (14/11/2026): toàn bộ danh mục dưới đây là DỮ LIỆU MẪU (demo:true) để dựng giao diện / kiểm thử.
+   Khách chỉ thấy sản phẩm do quản trị tạo hoặc "Sửa → Lưu" (demo:false) VÀ khi gian hàng được bật mở bán
+   (Bảng quản trị → Cửa hàng → "Mở bán"). Giữ version = 4 để dữ liệu đã đồng bộ không bị ghi đè. */
 G.TAPEASY_SHOP_DATA = {
   version: 4,
+  demo: true,
   imgBase: "assets/shop/",
   products: P,
   sizeCharts: SIZE_CHARTS,

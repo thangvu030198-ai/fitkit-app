@@ -6,7 +6,8 @@
   "ios": {
     "contentInset": "never",
     "scheme": "FitKit",
-    "backgroundColor": "#061A24"
+    "backgroundColor": "#061A24",
+    "preferredContentMode": "mobile"
   },
   "android": {
     "backgroundColor": "#061A24",
@@ -22,7 +23,7 @@
       "iconColor": "#02BCB3"
     },
     "CapacitorHttp": {
-      "enabled": true
+      "enabled": false
     },
     "FirebaseAuthentication": {
       "skipNativeAuth": true,

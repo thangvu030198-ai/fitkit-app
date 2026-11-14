@@ -55,8 +55,11 @@ function ppBlockedView(uid, name, onBack, onUnblocked){
   el.innerHTML = `<div class="pp-loading pp-blocked">${blkHTML}
     <button type="button" class="btn btn-ghost btn-sm" id="pp-blk-back"><span class="material-symbols-rounded">arrow_back</span>Quay lại</button></div>`;
   const b = $("#pp-blk-back"); if(b) b.addEventListener("click", ()=> typeof onBack === "function" ? onBack() : goto("coach"));
-  const h = ()=>{ document.removeEventListener("fk:blocks-changed", h); try{ const a = $(".screen.active"); if(a && a.id === "screen-ptprofile" && typeof FKBlock !== "undefined" && !FKBlock.is(uid) && typeof onUnblocked === "function") onUnblocked(); }catch(e){} };
-  try{ document.addEventListener("fk:blocks-changed", h); }catch(e){}
+  /* R3-CLOUD-10: mỗi lần vẽ khối "đã chặn" trước đây gắn THÊM 1 trình nghe fk:blocks-changed (chỉ tự gỡ khi sự kiện bắn) → xem N hồ sơ đã chặn
+     = N trình nghe treo, lúc bỏ chặn gọi onUnblocked N lần. Giờ luôn gỡ trình nghe của lần vẽ trước. */
+  try{ if(ppBlockedView._h) document.removeEventListener("fk:blocks-changed", ppBlockedView._h); }catch(e){}
+  const h = ()=>{ document.removeEventListener("fk:blocks-changed", h); if(ppBlockedView._h === h) ppBlockedView._h = null; try{ const a = $(".screen.active"); if(a && a.id === "screen-ptprofile" && typeof FKBlock !== "undefined" && !FKBlock.is(uid) && typeof onUnblocked === "function") onUnblocked(); }catch(e){} };
+  try{ document.addEventListener("fk:blocks-changed", h); ppBlockedView._h = h; }catch(e){}
 }
 
 /* Chặn ngay trên hồ sơ đang mở → thay bằng khối "Bạn đã chặn…" */

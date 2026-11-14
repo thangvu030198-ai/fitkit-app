@@ -1193,6 +1193,8 @@ async function ensureBlocks(force){
     await cloud.listBlocked(); _blkTs = Date.now();
   }catch(e){ warn(e); }
 }
+/* R3-ADMIN-04: ghi nhận người dùng đã đồng ý Tiêu chuẩn cộng đồng (dòng điều khoản hiện ngay cạnh nút gửi) */
+function ugcAgree(){ try{ const T = G.TECommunity || (typeof window !== "undefined" && window.TECommunity); if(T && typeof T.acceptTerms === "function") T.acceptTerms(); }catch(e){} }
 function blockedUid(uid){ try{ return !!(uid && typeof cloud !== "undefined" && cloud && typeof cloud.isBlockedSync === "function" && cloud.isBlockedSync(String(uid))); }catch(e){ return false; } }
 const notBlocked = x=> !blockedUid(x && x.uid);
 function canBlock(uid){ return !!(uid && uid !== cloudEvents.me().uid && typeof cloud !== "undefined" && cloud && typeof cloud.blockUser === "function"); }
@@ -1383,6 +1385,7 @@ async function openReview(id, opt){
     <div class="field"><label for="te-rv-t">Cảm nhận của bạn (ít nhất 20 ký tự)</label><textarea id="te-rv-t" rows="4" maxlength="2000" placeholder="Điều bạn thích nhất? Ban tổ chức nên cải thiện gì cho lần sau?">${esc(mine ? mine.text || "" : "")}</textarea></div>
     ${ed ? ed.html() : mediaMissingHTML()}
     <p class="small-note">Ảnh tự nén còn ≤ 1600 px; video ≤ 60 giây, ≤ 25 MB. Chỉ đăng ảnh/clip có sự đồng ý của người xuất hiện trong đó. Bài nhận từ 3 báo cáo sẽ tạm ẩn chờ kiểm duyệt.</p>
+    <p class="small-note te-ugc-note">Đăng bài là bạn đồng ý với Tiêu chuẩn cộng đồng TapEasy: không nội dung phản cảm, quấy rối, spam. Bài vi phạm bị gỡ trong 24 giờ, tài khoản có thể bị khoá.</p>
     <button class="btn btn-primary btn-block" id="te-rv-go">${icon("tm_send")}${mine ? "Cập nhật" : "Đăng review"}${Points.has("rv_" + ev.id) ? "" : " · +50 điểm"}</button>`, { id:"rv:" + ev.id });
   const root = q("#sheet-content");
   if(ed) ed.mount(root);
@@ -1399,7 +1402,7 @@ async function openReview(id, opt){
     try{
       const up = await ed.commit(`moments/${ev.id}/${u.uid}`, (k, n)=>{ btn.textContent = `Đang tải ảnh/video ${k}/${n}…`; });
       btn.textContent = "Đang đăng…";
-      await cloudEvents.addReview(ev.id, { stars, text, media: up.media, coverId: up.coverId });
+      await cloudEvents.addReview(ev.id, { stars, text, media: up.media, coverId: up.coverId }); ugcAgree();
       for(const s of ed.removed()) cloudEvents.deleteMedia(s).catch(()=>{});
       const a = Points.add(30, `Review: ${ev.title}`, "rv_" + ev.id), b = Points.add(20, `Ảnh/clip sự kiện: ${ev.title}`, "rvp_" + ev.id);
       ev.reviewCount = (Number(ev.reviewCount)||0) + (mine ? 0 : 1); ev.momentCount = (Number(ev.momentCount)||0) + (mine ? 0 : 1);
@@ -1536,6 +1539,7 @@ async function openComments(key){
     ${p ? `<div class="te-reg-ev"><b>${esc(p.name || "")}${p.evTitle ? " · " + esc(p.evTitle) : ""}</b><small>${esc(String(p.text || "").slice(0, 140))}${String(p.text || "").length > 140 ? "…" : ""}</small></div>` : ""}
     <div id="te-cmts" class="te-cmts">${typeof fkSkeleton === "function" ? fkSkeleton(2, "list") : ""}</div>
     <div class="te-cmt-form"><textarea id="te-cmt-t" rows="2" maxlength="300" aria-label="Viết bình luận" placeholder="Viết bình luận lịch sự, tích cực…"></textarea><button class="btn btn-primary" id="te-cmt-go" aria-label="Gửi bình luận">${icon("tm_send")}</button></div>
+    <p class="small-note te-ugc-note">Gửi bình luận là bạn đồng ý với Tiêu chuẩn cộng đồng TapEasy: không nội dung phản cảm, quấy rối, spam. Bình luận vi phạm bị gỡ trong 24 giờ.</p>
     <p class="small-note">Bình luận hiển thị công khai với thành viên TapEasy. Không chia sẻ số điện thoại, địa chỉ.</p>`, { id:"cmt:" + key });
   const me = cloudEvents.me().uid;
   const paint = async ()=>{
@@ -1553,7 +1557,7 @@ async function openComments(key){
     const t = q("#te-cmt-t"), text = String(t.value || "").trim();
     if(!text){ say("Viết vài chữ trước khi gửi nhé", "error"); t.focus(); return; }
     go.disabled = true;
-    try{ await cloudEvents.addComment(evId, pid, text); t.value = ""; await paint(); }catch(e){ say(e.message || "Không gửi được bình luận", "error"); }
+    try{ await cloudEvents.addComment(evId, pid, text); t.value = ""; ugcAgree(); await paint(); }catch(e){ say(e.message || "Không gửi được bình luận", "error"); }
     go.disabled = false;
   });
 }

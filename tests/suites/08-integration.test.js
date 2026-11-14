@@ -230,14 +230,14 @@ module.exports = {
       assert.ok(!/fitkit-v3/.test(sw), "chưa tăng tên cache");
       const local = [...html.matchAll(/(?:src|href)="([^"#:]+\.(?:js|css))"/g)].map(m=> m[1]);
       expectNone(local.filter(f=> !sw.includes(`"./${f}"`)), "sw.js thiếu");
-      assert.match(sw, /c\.add\(u\)\.catch/);
+      assert.match(sw, /ASSETS\.map\(u=>[\s\S]{0,200}c\.put\(u, res\)[\s\S]{0,40}\.catch/);   // R3: lưu từng file bằng fetch(cache:reload)+put
       for(const f of ["logo-mark.svg","logo-wordmark-light.svg","logo-wordmark-dark.svg","logo-full.png"]) assert.ok(sw.includes(`./assets/brand/${f}`), "sw.js thiếu " + f);
     });
     t.test("prepare-www.sh: chép đủ mọi JS/CSS mà index.html nạp + assets/brand", ()=>{
       const sh = read("scripts/prepare-www.sh"), html = read("index.html");
       const words = new Set(sh.split(/\s+/));
       const local = [...html.matchAll(/(?:src|href)="([^"#:]+\.(?:js|css))"/g)].map(m=> m[1]);
-      expectNone(local.filter(f=> !words.has(f)), "prepare-www.sh thiếu");
+      expectNone(local.filter(f=> !words.has(f) && !(/^i18n[\w.-]*\.js$/.test(f) && /for f in i18n\*\.js/.test(sh))), "prepare-www.sh thiếu");   // R3: i18n*.js chép bằng glob
       assert.match(sh, /assets\/brand/);
     });
     t.test("themes-modules.css đã sinh lại gồm CSS của cả 6 module", ()=>{

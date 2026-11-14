@@ -8,6 +8,8 @@ Chính sách của Apple/Google thay đổi thường xuyên — kiểm tra lạ
 
 > **Vòng sửa bảo mật 11/11/2026** (docs/qa/FIX-security.md, theo docs/qa/QA-security.md §5): bảng App Privacy (§1) và Data safety (§2.2) đã **khai lại** theo dữ liệu thật của Cộng đồng, Tìm PT, Sự kiện, Cửa hàng, chat & ảnh (địa chỉ giao hàng, SĐT + liên hệ khẩn cấp, lịch sử mua, tin nhắn + ảnh, nội dung công khai). Xoá tài khoản = Cloud Function `deleteMyAccount` (dọn toàn bộ dữ liệu, ẩn danh đơn hàng, chặn Owner, thu hồi Apple) — app và `delete-account.html` đều gọi. Có **chặn người dùng** (App Store 1.2). Bảng quản trị **không còn lối vào ẩn** "chạm 7 lần" (2.3.1); app native chạy demo không có quản trị. Workflow Android đặt **targetSdk/compileSdk 36** + JDK 21. Còn lại cho chủ app: mục 0.2, 0.4, 0.6 và docs/qa/FIX-security.md §"Việc chủ app phải làm".
 
+> **Vòng R3 (14/11/2026, agent store — docs/qa/R3-store.md):** danh sách kiểm theo từng store + các bước cho chủ dự án chuyển sang **`docs/RELEASE-CHECKLIST.md`**; câu trả lời dán sẵn ở `store/`. Thay đổi so với nội dung bên dưới: (1) Android giữ Capacitor 6 nhưng bộ vá `scripts/native-android-patch.py` nâng **AGP 8.9.1 + Gradle 8.11.1** để build được compileSdk/targetSdk 36, thêm xử lý **edge-to-edge**, quyền `VIBRATE`, gỡ `AD_ID`, tự soát quyền thừa sau build; secret mới `GOOGLE_SERVICES_JSON_BASE64` (tên cũ `ANDROID_GOOGLE_SERVICES_JSON` vẫn nhận). (2) iOS: **privacy manifest đã có** (`store/native/ios/PrivacyInfo.xcprivacy`), **chỉ iPhone**, chuỗi quyền Việt + Anh gồm Camera, **Microphone** (quay video Khoảnh khắc), Photo Library *Add*; **bỏ** `NSPhotoLibraryUsageDescription`; workflow nộp **dừng** nếu thiếu `GoogleService-Info.plist`. (3) `CapacitorHttp` tắt. (4) Cờ `window.FK_BUILD` cho module ẩn mục "Sắp ra mắt"/gian hàng trống/nút Facebook trên bản store.
+
 ---
 
 ## 0. Việc phải làm trước khi nộp (ưu tiên)
@@ -105,8 +107,8 @@ Bằng chứng trong code giúp qua 4.2:
 - [KHUYẾN NGHỊ] Bảng câu hỏi xếp hạng tuổi mới của App Store có câu về nội dung y tế/sức khoẻ và tính năng AI/chat — trả lời đúng thực tế (dự kiến 13+).
 
 ### Khác
-- [CẦN LÀM] **Privacy manifest** `PrivacyInfo.xcprivacy` cho target app (NSPrivacyTracking = false, NSPrivacyCollectedDataTypes theo bảng App Privacy dưới). Capacitor/Firebase pod có manifest riêng; kiểm tra cảnh báo "ITMS-91053 Missing API declaration" sau khi upload TestFlight.
-- [ĐẠT] Info.plist: `NSCameraUsageDescription`, `NSPhotoLibraryUsageDescription`, `NSPhotoLibraryAddUsageDescription` tiếng Việt, `ITSAppUsesNonExemptEncryption = false`.
+- [ĐẠT — R3] **Privacy manifest** `PrivacyInfo.xcprivacy` cho target app (`store/native/ios/PrivacyInfo.xcprivacy`, workflow thêm vào target + kiểm trong bản archive): NSPrivacyTracking = false, NSPrivacyCollectedDataTypes theo bảng App Privacy dưới, required-reason API UserDefaults `CA92.1` + File timestamp `C617.1`. Capacitor/Firebase pod có manifest riêng; kiểm tra cảnh báo "ITMS-91053 Missing API declaration" sau khi upload TestFlight.
+- [ĐẠT — R3] Info.plist: `NSCameraUsageDescription`, `NSMicrophoneUsageDescription`, `NSPhotoLibraryAddUsageDescription` (Việt + Anh), `ITSAppUsesNonExemptEncryption = false`; không có `NSPhotoLibraryUsageDescription` / `NSUserTrackingUsageDescription` (không cần ATT).
 - [KHUYẾN NGHỊ] 1.2 Nội dung người dùng tạo: ghi chú PT ↔ học viên là kênh riêng (vào bằng mã mời). Đã có "rời PT" / PT xoá form; nên thêm "Báo cáo" để gửi email hỗ trợ.
 
 ### App Privacy (nhãn dinh dưỡng quyền riêng tư) — khai lại 11/2026 (QA-security §5)
@@ -187,7 +189,7 @@ Lưu ý: Firebase Analytics / PostHog (13/11/2026) đã khai ở dòng "App inte
 - Trang web chỉ hoạt động khi `firebase-config.js` có giá trị → kiểm tra trước khi điền URL.
 
 ### 2.5 Quyền Android
-- [ĐẠT] `CAMERA`, `POST_NOTIFICATIONS` (workflow thêm vào manifest).
+- [ĐẠT — R3] `CAMERA` (uses-feature `required=false`), `POST_NOTIFICATIONS`, `VIBRATE` (bộ vá thêm vào manifest); `AD_ID` bị gỡ; bước "Soát quyền" của workflow đọc merged manifest và làm đỏ build nếu có quyền thừa (exact alarm, READ_MEDIA_*, vị trí, danh bạ…).
 - [CẦN LÀM] Kiểm tra *merged manifest* sau `npx cap sync`: nếu có `USE_EXACT_ALARM` → Play chỉ cho app báo thức/lịch, phải gỡ; `SCHEDULE_EXACT_ALARM` cần khai báo lý do. Nếu xuất hiện `READ_MEDIA_IMAGES/VIDEO` → phải khai báo theo *Photo and Video Permissions policy* hoặc gỡ (app chọn ảnh bằng `<input type=file>` = trình chọn hệ thống, không cần quyền này).
 
 ### 2.6 AI-generated content — [KHUYẾN NGHỊ mạnh]

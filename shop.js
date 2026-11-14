@@ -19,6 +19,7 @@ const TapEv = G.TapEv || {};
 function settingsCache(){
   try{ const s = JSON.parse(localStorage.getItem("tapeasy_settings_cache_v1") || "null") || {}; const o = {};
     ["shippingFee", "freeShipFrom", "giftFundPct", "hotline"].forEach(k=>{ if(s[k] != null && s[k] !== "") o[k] = s[k]; });
+    o.shopOpen = s.shopOpen === true;                              // R3: công tắc "mở bán toàn cửa hàng" (Bảng quản trị)
     if(s.bank && s.bank.accountNo) o.bank = s.bank;
     return o; }catch(e){ return {}; }
 }
@@ -132,6 +133,7 @@ function mergeCatalog(dbList, data){
     if(d.deleted){ m = Object.assign({}, d); }
     else if(isEdited(d)){
       m = Object.assign({}, c, d);
+      m.demo = d.demo === true;                                    // R3: quản trị đã sửa/lưu → hàng thật (trừ khi tự gắn cờ mẫu)
       if(!d.stockBy){ delete m.stockBy; m.stock = d.stock; }
       if(!arr(d.colors).length) m.colors = c.colors;
     } else {
@@ -144,6 +146,17 @@ function mergeCatalog(dbList, data){
   });
   Object.keys(byId).forEach(k=> list.push(byId[k]));
   return { list, sync };
+}
+/* R3-ADMIN-01: hàng THẬT = có trên máy chủ, không mang cờ demo (danh mục shop-data.js đều demo:true).
+   Cửa hàng "đang bán" khi quản trị bật shopOpen VÀ có ≥ 1 sản phẩm thật đang hiện.
+   TAPEASY_SHOP_CONFIG.demoCatalog = true (chỉ dành cho phát triển / kiểm thử): coi danh mục mẫu như hàng thật. */
+const demoCatalog = ()=>{ try{ return !!(G.TAPEASY_SHOP_CONFIG && G.TAPEASY_SHOP_CONFIG.demoCatalog === true); }catch(e){ return false; } };
+function isReal(p){ return !!p && typeof p === "object" && !p._virtual && p.demo !== true && !p.deleted; }
+function storeStateOf(products, open){
+  if(demoCatalog()) return { live:true, open:true, real: arr(products).filter(p=> p && !p.deleted).length, reason:"", demo:true };
+  const real = arr(products).filter(p=> isReal(p) && !p.hidden).length;
+  const isOpen = open === true;
+  return { live: isOpen && real > 0, open: isOpen, real, reason: real < 1 ? "empty" : (isOpen ? "" : "closed"), demo:false };
 }
 function stockOf(p, color, size){
   p = obj(p);
@@ -270,7 +283,7 @@ function imagesFor(p, colorId){
   return arr(p.images).map(safeImg).filter(Boolean);
 }
 
-const CORE = { REDEEM, totals, shipCfg, crc16, vietQR, art, ascii, CFG, vnd, mergeCatalog, isEdited, stockOf, totalStock, colorStock, applyStock, recommendSize, inCat, genderOf, sortList, normCart, imagesFor, VK, safeImg };
+const CORE = { isReal, storeStateOf, demoCatalog, REDEEM, totals, shipCfg, crc16, vietQR, art, ascii, CFG, vnd, mergeCatalog, isEdited, stockOf, totalStock, colorStock, applyStock, recommendSize, inCat, genderOf, sortList, normCart, imagesFor, VK, safeImg };
 const S = { products:[], loaded:false, loading:null, synced:false };
 const TapShop = G.TapShop = Object.assign(G.TapShop || {}, { core: CORE, art,
   artFor: (pid, size)=>{ const p = (S.products||[]).find(x=> x.id === pid) || { art: String(pid||"").replace(/^p_/, ""), slug: String(pid||"").replace(/^p_/, "") };
@@ -333,9 +346,15 @@ function load(force){
   return S.loading;
 }
 const prod = id=> S.products.find(p=> p.id === id);
-const visible = ()=> S.products.filter(p=> !p.deleted && (!p.hidden || canProducts()));
+const storeState = ()=> storeStateOf(S.products, CFG.shopOpen);
+TapShop.storeState = storeState;
+/* R3-ADMIN-01: khách chỉ thấy HÀNG THẬT khi cửa hàng đang bán; người có quyền shop.products xem trước được hàng thật (kể cả đang ẩn) */
+const visible = ()=>{ const st = storeState(), adm = canProducts();
+  if(!st.live && !adm) return [];
+  return S.products.filter(p=> !p.deleted && (st.demo || isReal(p)) && (!p.hidden || adm)); };
 /* QC-12: dòng giỏ "mồ côi" = sản phẩm đã xoá / đang ẩn / không còn trong danh mục (máy chủ cũng từ chối các dòng này) */
-const sellable = p=> !!p && !p.deleted && !p.hidden;
+const sellableP = p=> !!p && !p.deleted && !p.hidden && (demoCatalog() || isReal(p));          // còn là hàng thật đang bày
+const sellable = p=> sellableP(p) && storeState().live;                                          // …và cửa hàng đang mở bán
 function cartLines(){
   return SH().cart.map(c=>{ const p = prod(c.pid); if(!sellable(p)) return null;
     const col = arr(p.colors).find(x=> x.id === c.color) || arr(p.colors)[0] || {};
@@ -348,7 +367,7 @@ TapShop.cartCount = cartCount;
 /** Bỏ dòng giỏ mồ côi sau khi tải danh mục (chỉ khi danh mục tải được — mất mạng không xoá giỏ) → số dòng đã bỏ */
 function pruneCart(){
   if(!S.loaded || !S.products.length) return 0;
-  const sh = SH(), keep = sh.cart.filter(c=> sellable(prod(c.pid))), n = sh.cart.length - keep.length;
+  const sh = SH(), keep = sh.cart.filter(c=> sellableP(prod(c.pid))), n = sh.cart.length - keep.length;   // tạm đóng bán KHÔNG xoá giỏ
   if(n){ sh.cart = keep; save(); }
   return n;
 }
@@ -495,8 +514,48 @@ function openStore(view, params, opt){
   if(view && (view !== UI.view || JSON.stringify(params||{}) !== JSON.stringify(UI.params))) nav(view, params || {}, true);
   else render();
   if(!S.loaded) load().then(()=>{ if(UI.open) render(true); });
+  refreshOpenFlag();
   syncServerVouchers().then(n=>{ if(n && UI.open) render(true); });       // integrator: ví voucher máy chủ (Firebase)
   if(opt && opt.layer) openLayer(opt.layer, opt.layerP);
+}
+/* R3-ADMIN-01: đọc lại công tắc mở bán từ máy chủ mỗi lần mở cửa hàng (cloud-admin.js áp vào CFG.shopOpen) → lớp phủ tự biến mất khi quản trị mở bán */
+let _openAt = 0;
+function refreshOpenFlag(){
+  try{ const A = G.cloudAdmin; if(!A || typeof A.getSettings !== "function" || Date.now() - _openAt < 20000) return; _openAt = Date.now();
+    const before = storeState().live;
+    Promise.resolve(A.getSettings()).then(()=>{ if(storeState().live !== before){ announceOpen(); if(UI.open) render(true); try{ TapEv.render && TapEv.render(); }catch(e){} } }).catch(()=>{}); }catch(e){}
+}
+/** Cửa hàng "sắp mở": chưa có hàng thật / chưa bật mở bán, và người xem không phải quản trị cửa hàng */
+const gated = ()=> S.loaded && !storeState().live && !canAdmin();
+const notifyOn = ()=> !!obj(SH().notifyOpen).on;
+function setNotify(on){
+  const sh = SH(); sh.notifyOpen = on ? { on:true, at: Date.now() } : { on:false, at: Date.now() };
+  if(!save()){ toast(FULL_MSG); return false; }
+  try{ if(G.FKAnalytics && typeof G.FKAnalytics.track === "function") G.FKAnalytics.track("shop_notify_optin", { on: !!on }); }catch(e){}
+  return true;
+}
+/* Người đã bấm "Nhận thông báo khi mở bán" → báo đúng 1 lần khi cửa hàng mở */
+function announceOpen(){
+  try{ const sh = SH(), n = obj(sh.notifyOpen); if(!n.on || n.told || !storeState().live) return false;
+    sh.notifyOpen = Object.assign({}, n, { told: Date.now() }); save();
+    if(typeof G.toast === "function") G.toast("Cửa hàng TapEasy đã mở bán — vào xem ngay nhé!", "storefront");
+    return true; }catch(e){ return false; }
+}
+function soonHTML(){
+  const on = notifyOn();
+  return `<div class="tsx-soon-bg" aria-hidden="true" inert>
+      <section class="tsx-sec"><div class="tsx-sec-h"><h2>Sản phẩm</h2></div>${skeletonGrid(8)}</section>
+    </div>
+    <div class="tsx-soon" id="tsx-soon">
+      <section class="tsx-soon-card" role="group" aria-labelledby="tsx-soon-t" aria-describedby="tsx-soon-d">
+        <span class="tsx-soon-ic" aria-hidden="true">${svg("bag")}</span>
+        <h2 id="tsx-soon-t" tabindex="-1">Chưa có sản phẩm nào mở bán</h2>
+        <p id="tsx-soon-d">Cửa hàng TapEasy đang chuẩn bị. Quay lại sau nhé!</p>
+        <button type="button" class="tsx-btn ${on ? "ghost" : ""}" data-sx="soon-notify" aria-pressed="${on}">${on ? svg("check") + "Đã bật thông báo mở bán" : "Nhận thông báo khi mở bán"}</button>
+        <p class="tsx-soon-note" role="status" aria-live="polite">${on ? "Bạn sẽ thấy thông báo trong app khi cửa hàng mở bán. Bấm lại để tắt." : ""}</p>
+        <button type="button" class="tsx-btn ghost" data-sx="exit">${svg("back")}Quay lại</button>
+      </section>
+    </div>`;
 }
 function exitStore(){
   if(!root) return;
@@ -557,6 +616,17 @@ function render(keepScroll){
   q("#tsx-hd").innerHTML = headerHTML();
   q("#tsx-cats").innerHTML = catsHTML();
   const box = q("#tsx-main");
+  /* R3-ADMIN-01: cửa hàng chưa mở bán → khung xương mờ + thẻ kính ở giữa; phần phía sau không cuộn / bấm / đọc được */
+  const gate = gated();
+  root.classList.toggle("tsx-soon-on", gate);
+  [q("#tsx-hd"), q("#tsx-cats")].forEach(n=>{ if(!n) return; if(gate){ n.setAttribute("inert", ""); n.setAttribute("aria-hidden", "true"); } else { n.removeAttribute("inert"); n.removeAttribute("aria-hidden"); } });
+  if(gate){
+    const had = !!q("#tsx-soon", box);
+    closeLayer(true); UI.stack = []; root.dataset.view = "soon"; root.scrollTop = 0;
+    box.innerHTML = soonHTML();
+    if(!had){ try{ q("#tsx-soon-t", box).focus({ preventScroll:true }); }catch(e){} }
+    return;
+  }
   root.dataset.view = UI.view;
   let html = "";
   try{ html = (VIEWS[UI.view] || VIEWS.home)(UI.params); }catch(e){ warn(e); html = `<div class="tsx-pad"><p class="tsx-note">Có lỗi khi hiển thị. <button class="tsx-tl" data-sx="home">Về trang đầu</button></p></div>`; }
@@ -677,7 +747,8 @@ function selFor(p){
 }
 function chartOf(p){ const C = obj(D().sizeCharts); return p.sizeChart && C[p.sizeChart] ? C[p.sizeChart] : null; }
 VIEWS.product = prm=>{
-  const p = prod(prm.id);
+  let p = prod(prm.id);
+  if(p && S.loaded && !visible().includes(p)) p = null;             // R3-ADMIN-01: sản phẩm mẫu / đang ẩn không mở được bằng liên kết thẳng
   if(!p) return S.loaded ? `<div class="tsx-pad"><p class="tsx-empty">Sản phẩm không còn bán.</p><button class="tsx-btn" data-sx="home">Về cửa hàng</button></div>` : `<div class="tsx-pd sk"><div class="tsx-pd-gal"><div class="tsx-gal"><div class="tsx-gal-i"></div></div></div></div>`;
   const s = selFor(p), cols = arr(p.colors), col = cols.find(c=> c.id === s.color) || cols[0] || {};
   const ims = imagesFor(p, col.id), sizes = arr(p.sizes), chart = chartOf(p);
@@ -726,6 +797,7 @@ AFTER.product = ()=>{
 };
 function addToCart(pid){
   const p = prod(pid); if(!p) return;
+  if(!sellable(p)){ toast(storeState().live ? "Sản phẩm này chưa mở bán" : "Cửa hàng chưa mở bán"); return; }
   const s = selFor(p), sizes = arr(p.sizes);
   if(sizes.length && !s.size){ const e = q("#tsx-sz-err"); if(e){ e.hidden = false; } const z = q("#tsx-sizes"); if(z){ z.classList.remove("shake"); void z.offsetWidth; z.classList.add("shake"); z.scrollIntoView({ block:"center", behavior: reduceMotion() ? "auto" : "smooth" }); } toast("Vui lòng chọn size"); return; }
   const st = stockOf(p, s.color, s.size); if(st <= 0){ toast("Size/màu này đã hết hàng"); return; }
@@ -1092,12 +1164,13 @@ VIEWS.admin = prm=>{
   const tab = prm.id === "orders" || !canProducts() ? "orders" : "products";
   const tabs = `<div class="tsx-chips">${canProducts() ? `<button class="${tab === "products" ? "on" : ""}" data-sx="admin" data-id="products">Sản phẩm</button>` : ""}${canOrders() ? `<button class="${tab === "orders" ? "on" : ""}" data-sx="admin" data-id="orders">Đơn hàng</button>` : ""}</div>`;
   if(tab === "products"){
-    const L = S.products.filter(p=> !p.deleted);
+    const L = S.products.filter(p=> !p.deleted), SS = storeState();
     return `<section class="tsx-sec top"><h1 class="tsx-h1">Quản trị cửa hàng</h1>${tabs}
+      <p class="tsx-note tsx-live ${SS.live ? "on" : ""}" role="status">${SS.demo ? "Chế độ phát triển: danh mục MẪU đang được coi như hàng thật (TAPEASY_SHOP_CONFIG.demoCatalog)." : SS.live ? `Cửa hàng ĐANG MỞ BÁN · ${SS.real} sản phẩm thật.` : SS.real ? `Cửa hàng CHƯA mở bán (${SS.real} sản phẩm thật đã sẵn sàng) — khách đang thấy màn “Chưa có sản phẩm nào mở bán”. Bật “Mở bán” trong Bảng quản trị → Cửa hàng.` : "Chưa có sản phẩm thật. Sản phẩm gắn nhãn MẪU không hiện cho khách: bấm Sửa → Lưu để dùng làm hàng thật, hoặc Thêm sản phẩm."}</p>
       <div class="tsx-row2 left"><button class="tsx-btn sm" data-sx="a-edit" data-id="">${svg("plus")}Thêm sản phẩm</button>${S.pendingSync ? `<button class="tsx-btn sm ghost" data-sx="a-sync">Đồng bộ ${S.pendingSync} sản phẩm mẫu lên máy chủ</button>` : ""}</div>
       ${cloudEvents.mode === "firebase" ? `<p class="tsx-note">Firebase: quyền ghi thật do <code>admins/{uid}</code> + rules quyết định.</p>` : ""}
       <table class="tsx-atbl"><thead><tr><th scope="col">Sản phẩm</th><th scope="col">Giá</th><th scope="col">Tồn</th><th scope="col"></th></tr></thead><tbody>
-      ${L.map(p=>{ const im = imagesFor(p, (arr(p.colors)[0]||{}).id)[0]; const ts = totalStock(p); return `<tr class="${p.hidden ? "dim" : ""}"><td><span class="tsx-at">${im ? `<img src="${escAttr(im)}" alt="" width="42" height="56" loading="lazy">` : art(p, (arr(p.colors)[0]||{}).hex, 42)}<span><b>${esc(p.name)}</b><small>${esc(p.id)}${p.hidden ? " · ẩn" : ""}${p._virtual ? " · chưa đồng bộ" : ""}${p.edited ? " · đã sửa" : ""}</small></span></span></td>
+      ${L.map(p=>{ const im = imagesFor(p, (arr(p.colors)[0]||{}).id)[0]; const ts = totalStock(p); return `<tr class="${p.hidden ? "dim" : ""}"><td><span class="tsx-at">${im ? `<img src="${escAttr(im)}" alt="" width="42" height="56" loading="lazy">` : art(p, (arr(p.colors)[0]||{}).hex, 42)}<span><b>${esc(p.name)}</b><small>${esc(p.id)}${p.demo === true ? " · MẪU (khách không thấy)" : ""}${p.hidden ? " · ẩn" : ""}${p._virtual ? " · chưa đồng bộ" : ""}${p.edited ? " · đã sửa" : ""}</small></span></span></td>
         <td>${vnd(p.price)}</td><td class="${ts <= 5 ? "low" : ""}">${nf(ts)}</td><td><button class="tsx-ul sm" data-sx="a-edit" data-id="${escAttr(p.id)}">Sửa</button></td></tr>`; }).join("")}
       </tbody></table></section>`;
   }
@@ -1192,18 +1265,20 @@ function readForm(){
 }
 async function saveEdit(){
   readForm(); const E = UI.edit, d = E.d;
-  const err = d.name.length < 3 ? "Tên sản phẩm quá ngắn" : !(d.price >= 1000) ? "Giá tối thiểu 1.000 ₫" : !d.colors.length ? "Cần ít nhất 1 màu" : "";
+  const err = d.name.length < 3 ? "Tên sản phẩm quá ngắn" : !(d.price >= 1000) ? "Giá tối thiểu 1.000 ₫" : d.price > 100000000 ? "Giá tối đa 100.000.000 ₫" : (d.compareAt && d.compareAt < d.price) ? "Giá gốc gạch phải lớn hơn giá bán (hoặc để trống)" : !d.colors.length ? "Cần ít nhất 1 màu" : "";
   if(err){ toast(err); return; }
   const bytes = JSON.stringify(d.colors.map(c=> c.images)).length;
   if(cloudEvents.mode === "firebase" && bytes > 850000){ toast("Ảnh quá nặng cho 1 sản phẩm (> 850 KB) — bớt ảnh hoặc dùng Firebase Storage"); return; }
-  const data = Object.assign({}, d, { id: E.id || undefined, stock: sum(d.stockBy), edited: true, catalogV: (catalogData() || {}).version || 0 });
+  const data = Object.assign({}, d, { id: E.id || undefined, stock: sum(d.stockBy), edited: true, demo: false, catalogV: (catalogData() || {}).version || 0 });   // R3: quản trị lưu = hàng thật
   delete data._virtual;
   try{ const r = await cloudEvents.saveProduct(data); toast("Đã lưu sản phẩm"); await load(true); UI.edit = null; UI.stack.pop(); nav("admin", { id:"products" }, false); return r; }
   catch(e){ toast(e && e.message || "Không lưu được"); }
 }
+const PHOTO_MAX_BYTES = 15 * 1024 * 1024;
 function compressPhoto(file){
   return new Promise((resolve, reject)=>{
-    if(!file || !/^image\//.test(file.type)) return reject(new Error("Tệp không phải ảnh"));
+    if(!file || !/^image\/(jpeg|png|webp|heic|heif|gif|bmp)$/i.test(file.type)) return reject(new Error("Chỉ nhận ảnh JPG, PNG, WebP hoặc HEIC"));   // R3-ADMIN-06: không nhận SVG / tệp lạ
+    if(file.size > PHOTO_MAX_BYTES) return reject(new Error("Ảnh quá lớn (tối đa 15 MB)"));
     const url = URL.createObjectURL(file), img = new Image();
     img.onload = ()=>{ try{
       const W = 900, H = 1200, r = 3/4, iw = img.naturalWidth, ih = img.naturalHeight;
@@ -1288,6 +1363,9 @@ const ACT = {
     for(const p of L){ try{ const c = Object.assign({}, p); delete c._virtual; await cloudEvents.saveProduct(c); n++; }catch(e){ toast(e && e.message || "Lỗi đồng bộ"); break; } }
     toast(`Đã đồng bộ ${n} sản phẩm`); await load(true); render(true); },
   "a-ost": id=>{ UI.adm.ost = id; render(true); },
+  "soon-notify": ()=>{ const on = !notifyOn(); if(!setNotify(on)) return; render(true);
+    try{ const b = q('[data-sx="soon-notify"]'); if(b) b.focus({ preventScroll:true }); }catch(e){}
+    toast(on ? "Đã bật — TapEasy sẽ báo khi cửa hàng mở bán" : "Đã tắt thông báo mở bán"); },
   "a-csv": ()=> exportCSV(arr(UI.adm.list)),
 };
 function onClick(e){
@@ -1348,10 +1426,17 @@ TapShop.close = exitStore;
 TapShop.isOpen = ()=> UI.open;
 TapShop._ui = UI; TapShop._S = S; TapShop._act = ACT; TapShop.reload = ()=> load(true).then(()=> render(true));
 /* kiểm thử (tests/suites/64-fix-commerce.test.js) */
-TapShop._t = { placeOrder, confirmOrder, orderPayload, nextStatuses, ostSelect, pruneCart, payOf, qtyOf, toastOff, pickVoucher: id=>{ _voucherId = id || ""; },
+TapShop.refresh = ()=>{ return load(true).then(()=>{ announceOpen(); if(UI.open) render(true); try{ TapEv.render && TapEv.render(); }catch(e){} return storeState(); }); };
+TapShop.notify = { isOn: notifyOn, set: setNotify };
+TapShop.editProduct = id=>{ if(!canProducts()) return false; return load().then(()=>{ UI.edit = editDraft(id || ""); UI.adm.list = null; openStore("admin-edit", { id: id || "" }); return true; }); };
+TapShop._t = { gated, soonHTML, compressPhoto, announceOpen, placeOrder, confirmOrder, orderPayload, nextStatuses, ostSelect, pruneCart, payOf, qtyOf, toastOff, pickVoucher: id=>{ _voucherId = id || ""; },
   redeemNow: id=> redeemNow(REDEEM.find(x=> x.id === id)) };
 
 function hubTeaser(){
+  if(S.loaded && !storeState().live && !canAdmin()){                 // R3-ADMIN-01: không bày ảnh / giá mẫu khi chưa mở bán
+    return `<div class="sx-teaser sx-soon"><div class="sx-soon-card"><b>Chưa có sản phẩm nào mở bán</b><p>Cửa hàng TapEasy đang chuẩn bị. Quay lại sau nhé!</p>
+      <button class="btn btn-outline btn-sm" data-te="sx-open">Xem cửa hàng</button></div></div>`;
+  }
   const top = sortList(visible(), "featured").slice(0, 4), n = cartCount();
   return `<div class="sx-teaser">
     <button class="sx-hero" data-te="sx-open" aria-label="Vào Cửa hàng TapEasy"><img src="${escAttr(IMG("hero-1m.webp"))}" alt="" width="900" height="1200" loading="lazy"><span class="sx-hero-t"><small>Cửa hàng TapEasy</small><b>Bộ sưu tập<br>Thu — Đông 2026</b><em>Vào cửa hàng →</em></span></button>
@@ -1385,5 +1470,5 @@ function hookBack(){
 }
 hookBack();
 
-ensureData().then(()=> load()).then(()=>{ try{ TapEv.render && TapEv.render(); }catch(e){} });
+ensureData().then(()=> load()).then(()=>{ try{ announceOpen(); }catch(e){} try{ TapEv.render && TapEv.render(); }catch(e){} });
 })(typeof window !== "undefined" ? window : globalThis);

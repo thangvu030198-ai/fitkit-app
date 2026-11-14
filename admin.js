@@ -64,6 +64,7 @@ function addIcons(){
       adm_crown:"M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z", adm_chart:"M4 20V10|M10 20V4|M16 20v-7|M3 20h18",
       adm_voucher:"M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z|M9 9h.01|M15 15h.01|M15 9l-6 6",
       adm_back:"M15 5l-7 7 7 7",
+      adm_chat:"M4 5h16v11H9l-5 4z|M8 9h8|M8 12.5h5",
     };
     if(!FK_LINE.lock) add.lock = add.adm_lock;
     Object.keys(add).forEach(k=>{ if(!FK_LINE[k]) FK_LINE[k] = add[k]; });
@@ -84,6 +85,7 @@ function registerSection(def){
 }
 const visibleSections = ()=> SECTIONS.filter(s=> any(arr(s.perms)));
 
+const PG = {};                 // R3: trang hiện tại theo khoá danh sách
 const A = { open:false, sec:"overview", root:null, users:[], uf:"all", uq:"", ptTab:"pending", ordSt:"", aq:"", ag:"", tkSt:"open", timer:null, lastTouch:0, prevHash:"" };
 
 /* ---------------------------------------------------------------------
@@ -169,7 +171,7 @@ async function renderSection(){
   try{ await sec.render(body); }
   catch(e){ if(token === A.renderTok) body.innerHTML = errBox(e); }
   if(token !== A.renderTok) return;
-  try{ body.focus({ preventScroll:true }); }catch(e){}
+  try{ const rf = A._refocus && q(A._refocus, body); A._refocus = null; if(rf){ rf.focus(); rf.setSelectionRange(rf.value.length, rf.value.length); } else body.focus({ preventScroll:true }); }catch(e){}
   try{ updateBadges(); }catch(e){}
 }
 const errBox = e=> `<div class="adm-card adm-err">${ic("adm_x")}<div><b>Không tải được dữ liệu</b><p>${esc(e && e.message || e)}</p>${e && e.code === "rbac/session" ? `<button class="adm-btn" data-adm="relogin">Đăng nhập lại</button>` : ""}</div></div>`;
@@ -332,7 +334,11 @@ registerSection({ id:"overview", title:"Tổng quan", icon:"adm_dash", order:10,
   const k = [];
   if(st.users != null) k.push(kpi("Người dùng", nf(st.users), st.new7 != null ? `+${nf(st.new7)} trong 7 ngày` : "", can("users.view") ? "users" : ""));
   if(st.pts != null) k.push(kpi("PT", nf(st.pts), st.ptPending ? `${nf(st.ptPending)} chờ xác minh` : "", any(["pt.view","pt.verify"]) ? "pt" : "", st.ptPending ? "hot" : ""));
-  if(st.reportsOpen != null) k.push(kpi("Cần kiểm duyệt", nf(st.reportsOpen), "báo cáo / nội dung bị gắn cờ", "moderation", st.reportsOpen ? "hot" : ""));
+  if(st.reportsOpen != null) k.push(kpi("Báo cáo chờ xử lý", nf(st.reportsOpen), st.reportsOverdue ? `${nf(st.reportsOverdue)} mục quá hạn 24 giờ` : "báo cáo / nội dung bị gắn cờ", "moderation", st.reportsOpen ? "hot" : ""));
+  if(st.posts != null) k.push(kpi("Bài đăng cộng đồng", nf(st.posts), "giáo án chia sẻ + Khoảnh khắc", any(["community.moderate","reviews.moderate","community.feature","reports.view"]) ? "community" : ""));
+  if(st.events != null) k.push(kpi("Sự kiện", nf(st.events), `${nf(st.eventsUpcoming)} sắp tới · ${nf(st.regs)} lượt đăng ký`, "events"));
+  if(st.products != null) k.push(kpi("Sản phẩm", nf(st.products), st.shopLive ? "cửa hàng đang mở bán" : "cửa hàng CHƯA mở bán", "shop", st.shopLive ? "" : "hot"));
+  if(st.feedbackNew != null) k.push(kpi("Phản hồi mới", nf(st.feedbackNew), "góp ý chưa xem", "support", st.feedbackNew ? "hot" : ""));
   if(st.ticketsOpen != null) k.push(kpi("Yêu cầu hỗ trợ mở", nf(st.ticketsOpen), "", "support", st.ticketsOpen ? "hot" : ""));
   if(st.ordersPending != null) k.push(kpi("Đơn chờ xử lý", nf(st.ordersPending), `${nf(st.orders)} đơn tất cả`, "shop", st.ordersPending ? "hot" : ""));
   if(st.revenueMonth != null) k.push(kpi("Doanh thu tháng", money(st.revenueMonth), "đơn đặt (trừ huỷ)", any(["shop.orders","orders.view"]) ? "shop" : ""));
@@ -340,7 +346,9 @@ registerSection({ id:"overview", title:"Tổng quan", icon:"adm_dash", order:10,
   if(st.staff != null) k.push(kpi("Đội ngũ quản trị", nf(st.staff), "", "team"));
   const todo = [];
   if(st.ptPending && any(["pt.verify"])) todo.push(["pt", "adm_pt", `${st.ptPending} hồ sơ PT chờ xác minh`]);
-  if(st.reportsOpen && any(["reports.resolve","community.moderate","reviews.moderate"])) todo.push(["moderation", "adm_flag", `${st.reportsOpen} mục cần kiểm duyệt`]);
+  if(st.reportsOpen && any(["reports.resolve","community.moderate","reviews.moderate"])) todo.push(["moderation", "adm_flag", `${st.reportsOpen} mục cần kiểm duyệt${st.reportsOverdue ? ` (${st.reportsOverdue} quá hạn 24 giờ)` : ""}`]);
+  if(st.products != null && !st.shopLive && can("shop.products")) todo.push(["shop", "adm_shop", st.products ? "Cửa hàng chưa mở bán — bật “Mở bán” khi sẵn sàng" : "Cửa hàng chưa có sản phẩm thật — thêm sản phẩm"]);
+  if(st.feedbackNew && can("support.tickets")) todo.push(["support", "adm_help", `${st.feedbackNew} phản hồi người dùng chưa xem`]);
   if(st.ticketsOpen && can("support.tickets")) todo.push(["support", "adm_help", `${st.ticketsOpen} yêu cầu hỗ trợ chưa trả lời`]);
   if(st.ordersPending && can("shop.orders")) todo.push(["shop", "adm_shop", `${st.ordersPending} đơn hàng chờ xác nhận`]);
   let chart = "";
@@ -365,7 +373,7 @@ registerSection({ id:"users", title:"Người dùng", icon:"adm_users", order:20
     <div class="adm-seg" role="tablist">${[["all","Tất cả"],["pt","PT"],["staff","Đội ngũ"],["banned","Bị khoá"]].map(([k,l])=> `<button role="tab" class="${A.uf === k ? "on" : ""}" aria-selected="${A.uf === k}" data-adm="uf" data-id="${k}">${l}</button>`).join("")}</div>
     ${can("data.export") ? `<button class="adm-btn sm" data-adm="u-csv">${ic("adm_down")}CSV</button>` : ""}</div><div id="adm-u-list"><div class="adm-skel"></div></div>`;
   const inp = q("#adm-u-q", el); let t = 0;
-  inp.addEventListener("input", ()=>{ clearTimeout(t); t = setTimeout(()=>{ A.uq = inp.value; drawUsers(); }, 220); });
+  inp.addEventListener("input", ()=>{ clearTimeout(t); t = setTimeout(()=>{ A.uq = inp.value; PG.u = 1; drawUsers(); }, 220); });
   await drawUsers();
 } });
 async function drawUsers(){
@@ -374,12 +382,12 @@ async function drawUsers(){
   const list = A.users;
   box.innerHTML = list.length ? `<p class="adm-count">${nf(list.length)} tài khoản</p><div class="adm-table" role="table" aria-label="Danh sách người dùng">
     <div class="adm-tr adm-th" role="row"><span>Người dùng</span><span>Vai trò</span><span>PT</span><span>Tham gia</span><span>Trạng thái</span></div>
-    ${list.slice(0, 300).map(u=> `<button class="adm-tr" role="row" data-adm="user" data-id="${esc(u.uid)}">
+    ${pageOf(list, "u").map(u=> `<button class="adm-tr" role="row" data-adm="user" data-id="${esc(u.uid)}">
       <span class="adm-td-u" data-l="Người dùng"><span class="adm-av">${esc(initial(u.name))}</span><span><b>${esc(u.name || "(chưa đặt tên)")}</b><small>${esc(u.email || u.uid)}</small></span></span>
       <span data-l="Vai trò">${roleBadge(u.role)}</span>
       <span data-l="PT">${u.isPT ? (u.ptStatus === "verified" ? `<span class="adm-pill ok">${ic("adm_pt")}Đã xác minh</span>` : u.ptStatus === "pending" ? `<span class="adm-pill warn">Chờ duyệt</span>` : `<span class="adm-pill">PT</span>`) : "—"}</span>
       <span data-l="Tham gia">${esc(fd(u.createdAt))}</span>
-      <span data-l="Trạng thái">${u.banned ? `<span class="adm-pill bad">${ic("adm_lock")}Bị khoá</span>` : `<span class="adm-pill ok">Hoạt động</span>`}</span></button>`).join("")}</div>`
+      <span data-l="Trạng thái">${u.banned ? `<span class="adm-pill bad">${ic("adm_lock")}Bị khoá</span>` : `<span class="adm-pill ok">Hoạt động</span>`}</span></button>`).join("")}</div>${pager("u", list.length)}`
     : empty(A.uq ? "Không tìm thấy người dùng phù hợp." : "Chưa có người dùng.");
 }
 async function openUser(uid){
@@ -413,6 +421,7 @@ async function openUser(uid){
       ${!banChk.ok ? `<p class="adm-note">${ic("adm_lock")}${esc(banChk.msg)}</p>` : u.banned ? `<button class="adm-btn" data-adm="unban" data-id="${esc(uid)}">${ic("adm_unlock")}Mở khoá</button>` :
         `<div class="adm-row"><div class="adm-f"><label for="adm-b-days">Thời hạn</label><select id="adm-b-days"><option value="1">1 ngày</option><option value="7" selected>7 ngày</option><option value="30">30 ngày</option><option value="0">Vĩnh viễn</option></select></div></div>
         <button class="adm-btn danger" data-adm="ban" data-id="${esc(uid)}">${ic("adm_lock")}Khoá tài khoản…</button>`}</section>` : ""}
+    ${userExtraHTML(u)}
     ${notes ? `<section class="adm-sub-card"><h4>${ic("adm_log")}Ghi chú nội bộ</h4>${notes}</section>` : ""}`, { wide:true });
   if(!m || !canEdit) return;
   const sel = q("#adm-r-sel", m), box = q("#adm-px-box", m), chk = q("#adm-r-chk", m);
@@ -483,16 +492,19 @@ registerSection({ id:"moderation", title:"Kiểm duyệt", icon:"adm_flag", orde
   const permFor = it=> it.type === "routine" ? "community.moderate" : it.type === "review" ? "reviews.moderate" : "reports.resolve";
   const TYPE = { routine:"Routine cộng đồng", review:"Đánh giá sự kiện", report:"Báo cáo" };
   el.innerHTML = `<p class="adm-note">${ic("adm_flag")}Ẩn / xoá khi nội dung <b>vi phạm</b>: xúc phạm, quấy rối, spam quảng cáo, thông tin sức khoẻ sai lệch nguy hiểm, lộ thông tin cá nhân. <b>Không</b> ẩn đánh giá chỉ vì chê.</p>
-    <div class="adm-cards">${list.map((it, i)=> `<article class="adm-card adm-mod">
-      <div class="adm-ch"><h3><span class="adm-pill">${esc(TYPE[it.type] || it.type)}</span>${esc(cleanText(it.title))}${it.sample ? ` <span class="adm-pill">mẫu</span>` : ""}</h3>${it.count ? `<span class="adm-pill bad">${nf(it.count)} báo cáo</span>` : ""}</div>
+    ${list.some(x=> x.overdue) ? `<p class="adm-note warn" role="alert">${ic("adm_flag")}<b>${nf(list.filter(x=> x.overdue).length)} mục đã quá hạn 24 giờ</b> — quy định yêu cầu gỡ nội dung vi phạm trong 24 giờ kể từ khi nhận báo cáo. Xử lý các mục gắn nhãn “Quá 24 giờ” trước.</p>` : ""}
+    <div class="adm-cards">${pageOf(list, "mod", 10).map(it=>{ const i = list.indexOf(it); return `<article class="adm-card adm-mod ${it.overdue ? "overdue" : ""}">
+      <div class="adm-ch"><h3><span class="adm-pill">${esc(TYPE[it.type] || it.type)}</span>${esc(cleanText(it.title))}${it.sample ? ` <span class="adm-pill">mẫu</span>` : ""}</h3>${it.overdue ? `<span class="adm-pill bad">Quá 24 giờ</span>` : ""}${it.count ? `<span class="adm-pill bad">${nf(it.count)} báo cáo</span>` : ""}</div>
       ${it.text ? `<p class="adm-quote">${esc(cleanText(String(it.text).slice(0, 400)))}</p>` : ""}
       <p class="adm-dim">${it.author ? "Tác giả: " + esc(it.author) + " · " : ""}${esc(ago(it.ts))}${it.hidden ? " · đang tạm ẩn" : ""}</p>
-      ${arr(it.reasons).length ? `<div class="adm-chips sm">${arr(it.reasons).slice(0, 6).map(r=> `<span class="adm-chip">${esc(r)}</span>`).join("")}</div>` : ""}
+      ${arr(it.reasons).length ? `<div class="adm-chips sm" aria-label="Lý do báo cáo">${arr(it.reasons).slice(0, 6).map(r=> `<span class="adm-chip">${esc(r)}</span>`).join("")}</div>` : ""}
+      ${arr(it.reporters).length ? `<p class="adm-dim">Người báo cáo: ${arr(it.reporters).slice(0, 5).map(esc).join(", ")}${arr(it.reporters).length > 5 ? "…" : ""}</p>` : ""}
       ${can(permFor(it)) ? `<div class="adm-acts"><button class="adm-btn sm" data-adm="mod" data-i="${i}" data-a="keep">${ic("check")}${it.type === "report" ? "Bỏ qua" : "Giữ / khôi phục"}</button>
         ${it.type !== "report" ? `<button class="adm-btn sm" data-adm="mod" data-i="${i}" data-a="hide">${ic("adm_eye_off")}Ẩn</button>` : `<button class="adm-btn sm" data-adm="mod" data-i="${i}" data-a="hide">${ic("check")}Đã xử lý</button>`}
         ${it.type !== "report" ? `<button class="adm-btn sm danger" data-adm="mod" data-i="${i}" data-a="delete">${ic("delete")}Xoá</button>` : ""}</div>` : `<p class="adm-dim">${ic("adm_lock")}Chỉ xem — cần quyền ${esc(R.label(permFor(it)))}.</p>`}
-    </article>`).join("") || empty("Hàng đợi trống — cộng đồng đang ổn.")}</div>`;
+    </article>`; }).join("") || empty("Hàng đợi trống — cộng đồng đang ổn.")}</div>${pager("mod", list.length, 10)}`;
   A._mod = list;
+  el.insertAdjacentHTML("beforeend", await areaLog(["mod", "community", "user.mute", "user.unmute"], "Nhật ký kiểm duyệt"));
 } });
 
 /* 6.6 Nội dung */
@@ -529,7 +541,9 @@ registerSection({ id:"events", title:"Sự kiện & thử thách", icon:"adm_cal
     ${can("events.checkin") ? card(`${ic("check")}Check-in nhanh tại quầy`, `<div class="adm-row"><div class="adm-f"><label for="adm-ci-ev">Sự kiện</label><select id="adm-ci-ev">${upEv.map(e=> `<option value="${esc(e.id)}">${esc(e.title)} · ${esc(String(e.start).slice(0, 10))}</option>`).join("")}</select></div>
       <div class="adm-f"><label for="adm-ci-code">Mã vé 6 ký tự</label><input id="adm-ci-code" maxlength="6" autocapitalize="characters" autocomplete="off"></div></div><button class="adm-btn" data-adm="ev-ci">Check-in</button>`) : ""}
     ${card(`${ic("adm_chart")}Thử thách (${chs.length})`, `<div class="adm-list">${chs.slice().sort((a,b)=> String(b.start).localeCompare(String(a.start))).slice(0, 20).map(c=> `<div class="adm-li"><div><b>${esc(c.title)}</b><small>${esc(fd(c.start))} → ${esc(fd(c.end))} · mục tiêu ${esc(c.target)} ${esc(c.unit || "")}${c.hidden ? " · đang ẩn" : ""}</small></div><span class="adm-pill ${c.start <= today && c.end >= today ? "ok" : ""}">${c.start > today ? "Sắp tới" : c.end < today ? "Đã kết thúc" : "Đang chạy"}</span></div>`).join("") || empty("Chưa có thử thách.")}</div>`)}
-    ${card(`${ic("adm_cal")}Sự kiện offline (${evs.length})`, `<div class="adm-list">${evs.slice().sort((a,b)=> String(b.start).localeCompare(String(a.start))).slice(0, 20).map(e=> `<div class="adm-li"><div><b>${esc(e.title)}</b><small>${esc(String(e.start).replace("T", " "))} · ${esc(e.city || "")} · ${nf(e.regCount)}/${nf(e.capacity)} chỗ${e.hidden ? " · đang ẩn" : ""}</small></div></div>`).join("") || empty("Chưa có sự kiện.")}</div>`)}`;
+    ${evManageHTML(evs)}`;
+  el.insertAdjacentHTML("beforeend", await areaLog(["event", "challenge", "gift"], "Nhật ký sự kiện & thử thách"));
+  const ei = q("#adm-ev-q", el); if(ei){ let t = 0; ei.addEventListener("input", ()=>{ clearTimeout(t); t = setTimeout(()=>{ A.evQ = ei.value; PG.ev = 1; const box = q("#adm-ev-list", A.root); if(box) box.innerHTML = evListHTML(A._evs); }, 220); }); }
 } });
 
 /* 6.8 Cửa hàng & đơn hàng */
@@ -565,7 +579,7 @@ registerSection({ id:"shop", title:"Cửa hàng & đơn hàng", icon:"adm_shop",
       <button class="adm-btn pri" data-adm="v-save">${ic("adm_voucher")}Tạo mã</button>
       <div class="adm-list">${vs.map(v=> `<div class="adm-li"><div><b class="adm-mono">${esc(v.code)}</b><small>${v.kind === "percent" ? esc(v.value) + "%" : v.kind === "freeship" ? "Miễn ship" : esc(money(v.value))} · đơn từ ${esc(money(v.min))} · ${nf(v.used || 0)}/${nf(v.uses)} lượt · HSD ${esc(fd(v.exp))}${v.revoked ? " · ĐÃ THU HỒI" : ""}</small></div>${v.revoked ? "" : `<button class="adm-btn sm ghost" data-adm="v-revoke" data-id="${esc(v.code)}">Thu hồi</button>`}</div>`).join("")}</div>`);
   }
-  if(G.TapEv && G.TapEv.open && any(["shop.products","gifts.manage"])) html += card(`${ic("adm_shop")}Sản phẩm & quà tặng`, `<p class="adm-sub">Sửa sản phẩm (giá, màu, size, tồn kho) và trạng thái giao quà trong công cụ Gian hàng.</p><button class="adm-btn" data-adm="ev-open">Mở công cụ sản phẩm / quà</button>`);
+  if(G.TapEv && G.TapEv.open && any(["shop.products","gifts.manage"])) html += card(`${ic("adm_shop")}Sản phẩm & quà tặng`, `<p class="adm-sub">Sửa sản phẩm (giá, màu, size, tồn kho) và trạng thái giao quà trong công cụ Cửa hàng.</p><button class="adm-btn" data-adm="ev-open">Mở công cụ sản phẩm / quà</button>`);
   el.innerHTML = html || empty("Không có dữ liệu cửa hàng.");
   qa("[data-adm-ord]", el).forEach(s=> s.addEventListener("change", async ()=>{ const prev = (A._orders.find(o=> o.id === s.dataset.admOrd) || {}).status;
     const ok = await act(()=> G.cloudEvents.updateOrder(s.dataset.admOrd, { status: s.value }), "Đã cập nhật đơn"); if(ok === null && prev) s.value = prev; }));
@@ -636,7 +650,7 @@ async function renderFeedbackPanel(el){
 
 /* 6.10 Thông báo toàn hệ thống */
 const AUD = { all:"Tất cả người dùng", pt:"Chỉ PT", member:"Chỉ học viên / thành viên", staff:"Chỉ đội ngũ quản trị" };
-const LINKS = { "":"Không có nút", events:"Mở Sự kiện & Thi đua", shop:"Mở Gian hàng", community:"Mở Cộng đồng", findpt:"Mở Tìm PT", kb:"Mở Kho kiến thức" };
+const LINKS = { "":"Không có nút", events:"Mở Sự kiện & Thi đua", shop:"Mở Cửa hàng", community:"Mở Cộng đồng", findpt:"Mở Tìm PT", kb:"Mở Kho kiến thức" };
 registerSection({ id:"broadcast", title:"Thông báo hệ thống", icon:"adm_bcast", order:90, perms:["broadcast.send"], render: async el=>{
   const list = await CA.listBroadcasts();
   el.innerHTML = `<div class="adm-grid2">${card(`${ic("adm_bcast")}Soạn thông báo`, `
@@ -669,7 +683,7 @@ registerSection({ id:"settings", title:"Cài đặt app", icon:"adm_gear", order
       <div class="adm-f"><label for="adm-s-fund">% doanh thu cho quỹ quà</label><input id="adm-s-fund" type="number" min="0" max="50" value="${esc(s.giftFundPct != null ? s.giftFundPct : 10)}" ${ro(ed)}></div>
       <div class="adm-f"><label for="adm-s-hot">Hotline / Zalo</label><input id="adm-s-hot" maxlength="40" value="${esc(s.hotline || "")}" ${ro(ed)}></div>
       <div class="adm-f"><label for="adm-s-mail">Email hỗ trợ</label><input id="adm-s-mail" type="email" maxlength="80" value="${esc(s.supportEmail || "")}" ${ro(ed)}></div></div>
-      <div class="adm-f"><label for="adm-s-notice">Dòng thông báo cố định trong Gian hàng (tuỳ chọn)</label><input id="adm-s-notice" maxlength="200" value="${esc(s.notice || "")}" ${ro(ed)}></div>
+      <div class="adm-f"><label for="adm-s-notice">Dòng thông báo cố định trong Cửa hàng (tuỳ chọn)</label><input id="adm-s-notice" maxlength="200" value="${esc(s.notice || "")}" ${ro(ed)}></div>
       ${ed ? `<button class="adm-btn pri" data-adm="set-gen">Lưu cài đặt</button>` : `<p class="adm-dim">${ic("adm_lock")}Chỉ xem.</p>`}
       ${s.updatedAt ? `<p class="adm-dim">Cập nhật lần cuối ${esc(fdt(s.updatedAt))}</p>` : ""}`)}`;
 } });
@@ -684,27 +698,235 @@ const ACTION_VI = {
   "community.feature":"Ghim routine", "community.unfeature":"Bỏ ghim routine", "ticket.reply":"Trả lời hỗ trợ", "ticket.close":"Đóng yêu cầu hỗ trợ",
   "broadcast.send":"Gửi thông báo hệ thống", "broadcast.retract":"Thu hồi thông báo", "settings.update":"Sửa cài đặt", "settings.payment":"Sửa tài khoản nhận tiền",
   "voucher.save":"Lưu mã giảm giá", "voucher.revoke":"Thu hồi mã giảm giá", "data.export":"Xuất CSV",
+  "user.mute":"Cấm đăng có thời hạn", "user.unmute":"Gỡ cấm đăng", "shop.open":"Mở bán cửa hàng", "shop.close":"Tạm đóng cửa hàng", "community.keywords":"Sửa từ khoá cấm",
   "challenge.save":"Lưu thử thách", "challenge.delete":"Xoá thử thách", "event.save":"Lưu sự kiện", "event.delete":"Xoá sự kiện", "event.checkin":"Check-in hộ",
   "product.save":"Lưu sản phẩm", "product.delete":"Xoá sản phẩm", "order.update":"Cập nhật đơn hàng", "gift.create":"Trao quà", "gift.update":"Cập nhật quà",
 };
-function actionVi(a){ if(ACTION_VI[a]) return ACTION_VI[a]; const m = /^mod\.(\w+)\.(\w+)$/.exec(a || ""); if(m) return `Kiểm duyệt ${({ routine:"routine", review:"đánh giá", report:"báo cáo" })[m[1]] || m[1]}: ${({ keep:"giữ", hide:"ẩn", delete:"xoá" })[m[2]] || m[2]}`; return a || ""; }
+function actionVi(a){ if(ACTION_VI[a]) return ACTION_VI[a]; const m = /^mod\.(\w+)\.(\w+)$/.exec(a || ""); if(m) return `Kiểm duyệt ${({ routine:"giáo án chia sẻ", review:"đánh giá", report:"báo cáo", post:"bài đăng", comment:"bình luận" })[m[1]] || m[1]}: ${({ keep:"giữ", hide:"ẩn", delete:"xoá" })[m[2]] || m[2]}`; return a || ""; }
 function detailText(d){ if(d == null) return ""; try{ if(typeof d !== "object") return String(d);
   if(Array.isArray(d.changed)) return d.changed.map(c=> `${c.key}: ${JSON.stringify(c.before)} → ${JSON.stringify(c.after)}`).join("; ");
   return Object.entries(d).filter(([,v])=> v != null && v !== "").map(([k,v])=> `${k}: ${typeof v === "object" ? JSON.stringify(v) : v}`).join(" · "); }catch(e){ return ""; } }
 registerSection({ id:"audit", title:"Nhật ký kiểm toán", icon:"adm_log", order:99, perms:["audit.view"], render: async el=>{
   const [list, ver] = await Promise.all([CA.listAudit({ q:A.aq, group:A.ag, limit:500 }), CA.verifyAudit()]);
-  const groups = ["", "admin", "role", "owner", "user", "pt", "mod", "settings", "broadcast", "order", "product", "event", "challenge", "gift", "voucher", "data", "access", "ticket", "community", "listing"];
+  const groups = ["", "admin", "role", "owner", "user", "pt", "mod", "settings", "broadcast", "order", "product", "event", "challenge", "gift", "voucher", "data", "access", "ticket", "community", "listing", "shop"];
   A._audit = list;
   el.innerHTML = `<div class="adm-integrity ${ver.ok ? "ok" : "bad"}">${ic(ver.ok ? "adm_shield" : "adm_x")}<div><b>${ver.ok ? `Toàn vẹn: ${nf(ver.count)} bản ghi, chuỗi băm khớp` : `PHÁT HIỆN SỬA ĐỔI tại bản ghi #${ver.brokenAt + 1}`}</b><small>${esc(ver.ok ? (ver.note || "Mỗi bản ghi chứa băm SHA-256 của bản trước — sửa / xoá một bản ghi làm đứt chuỗi.") : ver.reason)}</small></div></div>
     <div class="adm-toolbar"><div class="adm-search">${ic("search")}<input id="adm-a-q" type="search" placeholder="Tìm người thực hiện, hành động, đối tượng…" value="${esc(A.aq)}" aria-label="Tìm trong nhật ký"></div>
       <select id="adm-a-g" aria-label="Nhóm hành động">${groups.map(g=> `<option value="${g}" ${A.ag === g ? "selected" : ""}>${g ? esc(g) : "Mọi nhóm"}</option>`).join("")}</select>
       ${can("data.export") ? `<button class="adm-btn sm" data-adm="a-csv">${ic("adm_down")}CSV</button>` : ""}</div>
-    <div class="adm-log">${list.map(e=> `<div class="adm-log-i ${/denied|failed/.test(e.action) ? "warn" : ""}"><span class="adm-log-t">${esc(fdt(e.ts))}${e.seq ? `<small>#${esc(e.seq)}</small>` : ""}</span>
+    <div class="adm-log">${pageOf(list, "audit", 50).map(e=> `<div class="adm-log-i ${/denied|failed/.test(e.action) ? "warn" : ""}"><span class="adm-log-t">${esc(fdt(e.ts))}${e.seq ? `<small>#${esc(e.seq)}</small>` : ""}</span>
       <div><b>${esc(actionVi(e.action))}</b> <code>${esc(e.action)}</code><p>${esc(e.actor && e.actor.name || "—")} ${e.actor && e.actor.role ? roleBadge(e.actor.role) : ""}${e.target ? ` → <span>${esc(e.target.type || "")} ${esc(e.target.name || e.target.id || "")}</span>` : ""}</p>
-      ${e.details ? `<small class="adm-dim">${esc(detailText(e.details)).slice(0, 400)}</small>` : ""}</div></div>`).join("") || empty("Không có bản ghi phù hợp.")}</div>`;
-  const inp = q("#adm-a-q", el); let t = 0; inp.addEventListener("input", ()=>{ clearTimeout(t); t = setTimeout(()=>{ A.aq = inp.value; renderSection(); }, 350); });
-  q("#adm-a-g", el).addEventListener("change", e=>{ A.ag = e.target.value; renderSection(); });
+      ${e.details ? `<small class="adm-dim">${esc(detailText(e.details).slice(0, 400))}</small>` : ""}</div></div>`).join("") || empty("Không có bản ghi phù hợp.")}</div>${pager("audit", list.length, 50)}`;
+  const inp = q("#adm-a-q", el); let t = 0; inp.addEventListener("input", ()=>{ clearTimeout(t); t = setTimeout(()=>{ A.aq = inp.value; PG.audit = 1; A._refocus = "#adm-a-q"; renderSection(); }, 350); });
+  q("#adm-a-g", el).addEventListener("change", e=>{ A.ag = e.target.value; PG.audit = 1; renderSection(); });
 } });
+
+/* =====================================================================
+   R3 (14/11/2026) — QUẢN TRỊ SÂU TỪNG MẢNG
+   Mỗi mảng: danh sách + tìm/lọc + phân trang + hành động (có xác nhận) + nhật ký thao tác của mảng.
+   · Cộng đồng: bài đăng (giáo án chia sẻ, Khoảnh khắc/review), bình luận, từ khoá cấm, cấm đăng có thời hạn
+   · Cửa hàng: trạng thái mở bán, sản phẩm thật / mẫu   · Sự kiện: ẩn / huỷ, người tham gia
+   · Cài đặt: bật/tắt tính năng, banner toàn app          · Người dùng: cấm đăng, xác minh PT ngay trong hồ sơ
+   ===================================================================== */
+const PAGE = 20;
+function pageOf(list, key, size){
+  size = size || PAGE; const pages = Math.max(1, Math.ceil(arr(list).length / size));
+  PG[key] = Math.max(1, Math.min(pages, Number(PG[key]) || 1));
+  return arr(list).slice((PG[key] - 1) * size, PG[key] * size);
+}
+function pager(key, total, size, cur){
+  size = size || PAGE; total = Number(total) || 0;
+  const pages = Math.max(1, Math.ceil(total / size)), p = Math.max(1, Math.min(pages, Number(cur) || Number(PG[key]) || 1));
+  if(pages <= 1) return total ? `<p class="adm-count">${nf(total)} mục</p>` : "";
+  return `<nav class="adm-pager" aria-label="Phân trang"><button class="adm-btn sm" data-adm="pg" data-id="${esc(key)}" data-v="${p - 1}" ${p <= 1 ? "disabled" : ""}>${ic("adm_back")}Trước</button>
+    <span aria-live="polite">Trang ${p}/${pages} · ${nf(total)} mục</span>
+    <button class="adm-btn sm" data-adm="pg" data-id="${esc(key)}" data-v="${p + 1}" ${p >= pages ? "disabled" : ""}>Sau${ic("chevron_right")}</button></nav>`;
+}
+/** Nhật ký thao tác của 1 mảng (ai · lúc nào · làm gì) — chỉ hiện với người có audit.view */
+async function areaLog(groups, title){
+  if(!can("audit.view")) return "";
+  try{
+    const a = (await CA.listAudit({ groups, limit: 500 })).slice(0, 8);
+    return card(`${ic("adm_log")}${esc(title || "Nhật ký thao tác")}`, a.length ? `<ul class="adm-mini adm-arealog">${a.map(e=> `<li><div><b>${esc(actionVi(e.action))}</b><small>${esc(e.actor && e.actor.name || "—")}${e.target && (e.target.name || e.target.id) ? " → " + esc(String(e.target.name || e.target.id).slice(0, 60)) : ""}</small></div><span>${esc(fdt(e.ts))}</span></li>`).join("")}</ul>` : empty("Chưa có thao tác nào được ghi."),
+      `<button class="adm-btn sm ghost" data-adm="log-all" data-id="${esc(String(groups[0]).split(".")[0])}">Xem tất cả</button>`);
+  }catch(e){ return ""; }
+}
+function extendSection(id, fn){
+  const s = SECTIONS.find(x=> x.id === id); if(!s || s.__r3) return; const orig = s.render; s.__r3 = true;
+  s.render = async el=>{ await orig(el); try{ await fn(el); }catch(e){ warn(e); el.insertAdjacentHTML("beforeend", errBox(e)); } };
+}
+const fdUntil = t=> fdt(t);
+
+/* ---------- R3.1 Sự kiện: tìm · phân trang · ẩn / huỷ · người tham gia ---------- */
+function evListHTML(evs){
+  const k = String(A.evQ || "").trim().toLowerCase();
+  const list = arr(evs).filter(e=> !k || [e.title, e.city, e.id].join(" ").toLowerCase().includes(k)).sort((a, b)=> String(b.start).localeCompare(String(a.start)));
+  if(!list.length) return empty(k ? "Không có sự kiện khớp từ khoá." : "Chưa có sự kiện.");
+  return `<div class="adm-list">${pageOf(list, "ev", 10).map(e=> `<div class="adm-li adm-li-wrap"><div><b>${esc(e.title)}</b><small>${esc(String(e.start).replace("T", " "))} · ${esc(e.city || "")} · ${nf(e.regCount)}/${nf(e.capacity)} chỗ${e.cancelled ? " · ĐÃ HUỶ" : e.hidden ? " · đang ẩn" : ""}</small></div>
+      <div class="adm-acts">${any(["events.checkin", "events.manage"]) ? `<button class="adm-btn sm" data-adm="ev-part" data-id="${esc(e.id)}">${ic("adm_users")}Người tham gia</button>` : ""}
+        ${can("events.manage") ? `<button class="adm-btn sm ghost" data-adm="ev-hide" data-id="${esc(e.id)}" data-v="${e.hidden ? 0 : 1}">${ic(e.hidden ? "visibility" : "adm_eye_off")}${e.hidden ? "Hiện" : "Ẩn"}</button>
+          ${e.cancelled ? `<button class="adm-btn sm" data-adm="ev-restore" data-id="${esc(e.id)}">Mở lại</button>` : `<button class="adm-btn sm danger" data-adm="ev-cancel" data-id="${esc(e.id)}">Huỷ…</button>`}
+          ${G.TapEv && G.TapEv.open ? `<button class="adm-btn sm ghost" data-adm="ev-open">Sửa</button>` : ""}` : ""}</div></div>`).join("")}</div>${pager("ev", list.length, 10)}`;
+}
+function evManageHTML(evs){
+  A._evs = arr(evs);
+  return card(`${ic("adm_cal")}Sự kiện offline (${A._evs.length})`, `<div class="adm-toolbar"><div class="adm-search">${ic("search")}<input id="adm-ev-q" type="search" placeholder="Tìm tên sự kiện, thành phố…" value="${esc(A.evQ || "")}" aria-label="Tìm sự kiện"></div></div>
+    <div id="adm-ev-list">${evListHTML(A._evs)}</div>
+    <p class="adm-dim">Sự kiện do đội ngũ tạo nên không qua bước duyệt. Tạo / sửa nội dung, ảnh, clip trong “công cụ Sự kiện đầy đủ”. Huỷ = ẩn khỏi app và ghi lý do vào nhật ký.</p>`);
+}
+async function openParticipants(evId, page){
+  const prev = A._part && A._part.evId === evId ? A._part : { q:"" };
+  let r; try{ r = await CA.listParticipants(evId, { page: page || 1, size: 20, q: prev.q }); }catch(e){ say(e.message, "adm_x", "err"); return; }
+  A._part = { evId, q: prev.q, page: r.page };
+  const ev = arr(A._evs).find(e=> e.id === evId) || {};
+  const m = modal(`${mHead(ic("adm_users") + "Người tham gia", esc(ev.title || evId))}
+    <div class="adm-toolbar"><div class="adm-search">${ic("search")}<input id="adm-part-q" type="search" placeholder="Tìm tên, SĐT, mã tài khoản…" value="${esc(prev.q)}" aria-label="Tìm người tham gia"></div>
+      ${can("data.export") ? `<button class="adm-btn sm" data-adm="part-csv">${ic("adm_down")}CSV</button>` : ""}</div>
+    ${r.items.length ? `<div class="adm-list">${r.items.map(p=> `<div class="adm-li"><div><b>${esc(p.name || "(chưa đặt tên)")}${p.sample ? ` <span class="adm-pill">mẫu</span>` : ""}</b><small>${esc(p.phone || "")}${p.createdAt ? " · đăng ký " + esc(fd(p.createdAt)) : ""}</small></div>
+      <span class="adm-pill ${p.status === "cancelled" ? "bad" : p.checkedIn ? "ok" : ""}">${p.status === "cancelled" ? "Đã huỷ" : p.checkedIn ? "Đã check-in" : "Đã đăng ký"}</span></div>`).join("")}</div>` : empty("Chưa có người đăng ký.")}
+    ${pager("m:part", r.total, 20, r.page)}`, { wide:true });
+  const inp = m && q("#adm-part-q", m); if(inp){ let t = 0; inp.addEventListener("input", ()=>{ clearTimeout(t); t = setTimeout(()=>{ A._part.q = inp.value; openParticipants(evId, 1).then(()=>{ const i2 = q("#adm-part-q", A.root); if(i2){ try{ i2.focus(); i2.setSelectionRange(i2.value.length, i2.value.length); }catch(e){} } }); }, 300); }); }
+}
+
+/* ---------- R3.2 Cửa hàng: trạng thái mở bán + sản phẩm ---------- */
+extendSection("shop", async el=>{
+  if(!any(["shop.products", "orders.view", "shop.orders"])) return;
+  const r = await CA.listProducts({ q: A.pQ || "", filter: A.pF || "", page: PG.prod || 1, size: 10 });
+  A._prod = r; PG.prod = r.page;
+  const st = r.store || {}, canOpen = any(["settings.edit", "shop.products"]), edit = can("shop.products");
+  const F = [["", `Tất cả (${r.counts.all})`], ["real", `Hàng thật (${r.counts.real})`], ["demo", `Mẫu (${r.counts.demo})`], ["hidden", `Đang ẩn (${r.counts.hidden})`], ["low", `Sắp hết (${r.counts.low})`]];
+  const status = st.demo ? `<p class="adm-note warn">${ic("adm_shop")}Chế độ phát triển (demoCatalog): danh mục mẫu đang được coi như hàng thật.</p>`
+    : st.live ? `<div class="adm-integrity ok">${ic("adm_shop")}<div><b>Cửa hàng ĐANG MỞ BÁN</b><small>${nf(st.real)} sản phẩm thật đang hiển thị cho khách.</small></div></div>`
+    : `<div class="adm-integrity bad">${ic("adm_lock")}<div><b>Cửa hàng CHƯA mở bán</b><small>${st.real ? `${nf(st.real)} sản phẩm thật đã sẵn sàng — bấm “Mở bán” để khách thấy.` : "Chưa có sản phẩm thật."} Khách đang thấy khung cửa hàng mờ + thẻ “Chưa có sản phẩm nào mở bán”.</small></div></div>`;
+  const html = card(`${ic("adm_shop")}Trạng thái cửa hàng`, `${status}
+      <div class="adm-acts">${canOpen && !st.demo ? (st.open ? `<button class="adm-btn danger" data-adm="shop-open" data-v="0">${ic("adm_lock")}Tạm đóng cửa hàng…</button>` : `<button class="adm-btn pri" data-adm="shop-open" data-v="1" ${st.real ? "" : "disabled"}>${ic("adm_unlock")}Mở bán…</button>`) : ""}
+        ${edit && G.TapShop && G.TapShop.editProduct ? `<button class="adm-btn" data-adm="prod-edit" data-id="">${ic("adm_shop")}Thêm sản phẩm</button>` : ""}</div>
+      <p class="adm-dim">Thanh toán: COD / chuyển khoản / VietQR cho <b>hàng hoá vật lý</b> (được phép ngoài hệ thống mua trong ứng dụng của App Store / Google Play). Không bán nội dung số qua kênh này.</p>`)
+    + card(`${ic("adm_shop")}Sản phẩm`, `<div class="adm-toolbar"><div class="adm-search">${ic("search")}<input id="adm-p-q" type="search" placeholder="Tìm tên, mã sản phẩm…" value="${esc(A.pQ || "")}" aria-label="Tìm sản phẩm"></div>
+        <div class="adm-seg">${F.map(([k, l])=> `<button class="${(A.pF || "") === k ? "on" : ""}" data-adm="p-f" data-id="${k}">${esc(l)}</button>`).join("")}</div></div>
+      ${r.items.length ? `<div class="adm-list">${r.items.map(p=> `<div class="adm-li adm-li-wrap"><div><b>${esc(p.name || p.id)}</b><small>${esc(money(p.price))} · tồn ${nf(p.stock)} · ${esc(p.type || p.cat || "")} · <span class="adm-mono">${esc(p.id)}</span></small>
+          <div class="adm-chips sm">${p.demo ? `<span class="adm-chip rm">MẪU — khách không thấy</span>` : `<span class="adm-chip add">Hàng thật</span>`}${p.hidden ? `<span class="adm-chip">Đang ẩn</span>` : ""}${!p.demo && p.stock <= 5 ? `<span class="adm-chip rm">Sắp hết</span>` : ""}</div></div>
+        ${edit ? `<div class="adm-acts"><button class="adm-btn sm" data-adm="prod-edit" data-id="${esc(p.id)}">${p.demo ? "Sửa → dùng thật" : "Sửa"}</button>
+          ${p.demo ? "" : `<button class="adm-btn sm ghost" data-adm="prod-hide" data-id="${esc(p.id)}" data-v="${p.hidden ? 0 : 1}">${ic(p.hidden ? "visibility" : "adm_eye_off")}${p.hidden ? "Hiện" : "Ẩn"}</button>`}</div>` : ""}</div>`).join("")}</div>` : empty("Không có sản phẩm khớp bộ lọc.")}
+      ${pager("prod", r.total, 10, r.page)}
+      <p class="adm-dim">Sản phẩm <b>MẪU</b> (shop-data.js) chỉ để dựng giao diện — không hiển thị, không đặt mua được. “Sửa → Lưu” để biến thành hàng thật, hoặc “Thêm sản phẩm”.</p>`);
+  el.insertAdjacentHTML("afterbegin", html);
+  el.insertAdjacentHTML("beforeend", await areaLog(["product", "order", "shop", "voucher"], "Nhật ký cửa hàng"));
+  const inp = q("#adm-p-q", el); if(inp){ let t = 0; inp.addEventListener("input", ()=>{ clearTimeout(t); t = setTimeout(()=>{ A.pQ = inp.value; PG.prod = 1; A._refocus = "#adm-p-q"; renderSection(); }, 350); }); }
+});
+
+/* ---------- R3.3 Cộng đồng: bài đăng · bình luận · từ khoá cấm · cấm đăng ---------- */
+const CM_TYPE = { routine:"Giáo án chia sẻ", post:"Khoảnh khắc / review" };
+const cmPerm = it=> it.type === "routine" ? can("community.moderate") : any(["community.moderate", "reviews.moderate"]);
+registerSection({ id:"community", title:"Bài đăng cộng đồng", icon:"adm_chat", order:55, perms:["community.moderate", "reviews.moderate", "community.feature"], render: async el=>{
+  const tab = A.cmTab || "content";
+  const tabs = `<div class="adm-toolbar"><div class="adm-seg" role="tablist" aria-label="Cộng đồng">${[["content", "Bài đăng"], ["words", "Từ khoá cấm"], ["mutes", "Cấm đăng"]].map(([k, l])=> `<button role="tab" aria-selected="${tab === k}" class="${tab === k ? "on" : ""}" data-adm="cm-tab" data-id="${k}">${l}</button>`).join("")}</div></div>`;
+  if(tab === "words"){
+    const words = CA.bannedWords(), ed = any(["settings.edit", "community.moderate"]);
+    el.innerHTML = tabs + card(`${ic("adm_flag")}Từ khoá cấm (lọc tự động)`, `<p class="adm-sub">Bài chia sẻ, review, bình luận chứa các từ / cụm từ này sẽ <b>bị từ chối khi đăng</b> và bị che khi hiển thị. So khớp không dấu, không phân biệt hoa thường, theo nguyên từ. Bộ lọc từ thô tục tiếng Việt có sẵn vẫn luôn bật.</p>
+        <div class="adm-f"><label for="adm-bw">Mỗi dòng một từ / cụm từ (≤ 200 mục, 2–40 ký tự)</label><textarea id="adm-bw" rows="8" maxlength="9000" ${ed ? "" : "readonly"} spellcheck="false" placeholder="VD: thuốc giảm cân cấp tốc">${esc(words.join("\n"))}</textarea></div>
+        ${ed ? `<button class="adm-btn pri" data-adm="bw-save">${ic("check")}Lưu danh sách…</button>` : `<p class="adm-dim">${ic("adm_lock")}Chỉ xem.</p>`}
+        <div class="adm-f" style="margin-top:14px"><label for="adm-bw-test">Thử bộ lọc</label><input id="adm-bw-test" maxlength="200" placeholder="Nhập một câu để xem từ nào bị bắt"></div><p class="adm-check" id="adm-bw-out" aria-live="polite"></p>`)
+      + await areaLog(["community.keywords", "settings"], "Nhật ký từ khoá cấm");
+    const t = q("#adm-bw-test", el), o = q("#adm-bw-out", el);
+    if(t) t.addEventListener("input", ()=>{ const bad = t.value.trim() ? CA.findBanned(t.value) : null; o.className = "adm-check " + (bad && bad.length ? "bad" : "ok"); o.textContent = bad == null ? "" : bad.length ? "Bị chặn: " + bad.join(", ") : "Hợp lệ — không có từ bị chặn."; });
+    return;
+  }
+  if(tab === "mutes"){
+    const list = await CA.listMutes(), ed = can("community.moderate");
+    el.innerHTML = tabs + (ed ? card(`${ic("adm_lock")}Cấm đăng có thời hạn`, `<p class="adm-sub">Người bị cấm vẫn dùng app bình thường nhưng <b>không đăng bài, review, bình luận</b> được cho tới hết hạn. Nặng hơn: khoá tài khoản ở mục Người dùng.</p>
+        <div class="adm-row wrap"><div class="adm-f"><label for="adm-mu-uid">Mã tài khoản (UID)</label><input id="adm-mu-uid" maxlength="128" autocomplete="off" spellcheck="false"></div>
+          <div class="adm-f"><label for="adm-mu-days">Thời hạn</label><select id="adm-mu-days"><option value="1">1 ngày</option><option value="3">3 ngày</option><option value="7" selected>7 ngày</option><option value="30">30 ngày</option></select></div></div>
+        <button class="adm-btn danger" data-adm="mute" data-id="">${ic("adm_lock")}Cấm đăng…</button>`) : "")
+      + card(`${ic("adm_log")}Danh sách cấm đăng (${list.length})`, list.length ? `<div class="adm-list">${pageOf(list, "mu", 10).map(m=> `<div class="adm-li adm-li-wrap"><div><b>${esc(m.name || m.uid)}</b><small><span class="adm-mono">${esc(m.uid)}</span> · ${esc(m.reason || "")} · bởi ${esc(m.byName || m.by || "")}</small>
+          <small>${m.active ? "Đến " + esc(fdUntil(m.until)) : m.liftedAt ? "Đã gỡ " + esc(ago(m.liftedAt)) : "Hết hạn " + esc(fd(m.until))}</small></div>
+          ${m.active ? `<span class="adm-pill bad">Đang cấm</span>${ed ? `<button class="adm-btn sm" data-adm="unmute" data-id="${esc(m.uid)}">Gỡ cấm</button>` : ""}` : `<span class="adm-pill">Hết hiệu lực</span>`}</div>`).join("")}</div>${pager("mu", list.length, 10)}` : empty("Chưa cấm đăng ai."))
+      + await areaLog(["user.mute", "user.unmute"], "Nhật ký cấm đăng");
+    return;
+  }
+  const r = await CA.listContent({ q: A.cmQ || "", type: A.cmType || "", status: A.cmSt || "", page: PG.cm || 1, size: 10 });
+  A._cm = r.items; PG.cm = r.page;
+  const c = r.counts;
+  el.innerHTML = tabs + `<div class="adm-toolbar"><div class="adm-search">${ic("search")}<input id="adm-cm-q" type="search" placeholder="Tìm tiêu đề, nội dung, tác giả, mã…" value="${esc(A.cmQ || "")}" aria-label="Tìm bài đăng"></div>
+      <div class="adm-seg">${[["", `Tất cả (${c.all})`], ["routine", `Giáo án (${c.routine})`], ["post", `Khoảnh khắc (${c.post})`]].map(([k, l])=> `<button class="${(A.cmType || "") === k ? "on" : ""}" data-adm="cm-type" data-id="${k}">${esc(l)}</button>`).join("")}</div>
+      <select id="adm-cm-st" aria-label="Trạng thái">${[["", "Mọi trạng thái"], ["visible", "Đang hiện"], ["hidden", `Đang ẩn (${c.hidden})`], ["reported", `Bị báo cáo (${c.reported})`], ["pinned", `Đang ghim (${c.pinned})`]].map(([k, l])=> `<option value="${k}" ${(A.cmSt || "") === k ? "selected" : ""}>${esc(l)}</option>`).join("")}</select></div>
+    <p class="adm-note">${ic("adm_flag")}Hàng đợi <b>báo cáo vi phạm</b> (lý do, người báo cáo, hạn 24 giờ) nằm ở mục <button class="adm-link" data-adm="nav" data-id="moderation">Kiểm duyệt</button>. Ở đây là toàn bộ bài để chủ động rà soát.</p>
+    <div class="adm-cards">${r.items.map((it, i)=> `<article class="adm-card adm-mod">
+      <div class="adm-ch"><h3><span class="adm-pill">${esc(CM_TYPE[it.type] || it.type)}</span>${esc(cleanText(it.title || "(không tiêu đề)"))}</h3>
+        <span class="adm-pills">${it.sample ? `<span class="adm-pill">mẫu</span>` : ""}${it.pinned ? `<span class="adm-pill ok">${ic("adm_pin")}Ghim</span>` : ""}${it.hidden ? `<span class="adm-pill warn">Đang ẩn</span>` : ""}${it.reports ? `<span class="adm-pill bad">${nf(it.reports)} báo cáo</span>` : ""}</span></div>
+      ${it.text ? `<p class="adm-quote">${esc(cleanText(String(it.text).slice(0, 300)))}${String(it.text).length > 300 ? "…" : ""}</p>` : ""}
+      <p class="adm-dim">${it.author ? "Tác giả: " + esc(it.author) + " · " : ""}${esc(ago(it.ts))}${it.type === "post" ? ` · ${nf(it.comments)} bình luận` : ` · ${nf(it.likes)} lượt thích`}</p>
+      <div class="adm-acts">${cmPerm(it) ? (it.hidden ? `<button class="adm-btn sm" data-adm="cm-act" data-i="${i}" data-a="keep">${ic("check")}Duyệt / khôi phục</button>` : `<button class="adm-btn sm" data-adm="cm-act" data-i="${i}" data-a="hide">${ic("adm_eye_off")}Ẩn…</button>`)
+          + `<button class="adm-btn sm danger" data-adm="cm-act" data-i="${i}" data-a="delete">${ic("delete")}Gỡ…</button>` : ""}
+        ${it.type === "routine" && can("community.feature") && !it.hidden ? `<button class="adm-btn sm ${it.pinned ? "pri" : "ghost"}" data-adm="feat" data-id="${esc(it.id)}" data-v="${it.pinned ? 0 : 1}">${ic("adm_pin")}${it.pinned ? "Bỏ ghim" : "Ghim"}</button>` : ""}
+        ${it.type === "post" ? `<button class="adm-btn sm ghost" data-adm="cm-cmts" data-i="${i}">Bình luận (${nf(it.comments)})</button>` : ""}
+        ${it.authorUid && !it.sample && !it.staff && can("community.moderate") ? `<button class="adm-btn sm ghost" data-adm="mute" data-id="${esc(it.authorUid)}" data-v="${esc(it.author || "")}">${ic("adm_lock")}Cấm đăng tác giả…</button>` : ""}</div>
+    </article>`).join("") || empty("Không có bài nào khớp bộ lọc.")}</div>${pager("cm", r.total, 10, r.page)}`
+    + await areaLog(["mod", "community", "user.mute", "user.unmute"], "Nhật ký cộng đồng");
+  const inp = q("#adm-cm-q", el); if(inp){ let t = 0; inp.addEventListener("input", ()=>{ clearTimeout(t); t = setTimeout(()=>{ A.cmQ = inp.value; PG.cm = 1; A._refocus = "#adm-cm-q"; renderSection(); }, 350); }); }
+  const sel = q("#adm-cm-st", el); if(sel) sel.addEventListener("change", ()=>{ A.cmSt = sel.value; PG.cm = 1; renderSection(); });
+} });
+async function openComments(it){
+  let list; try{ list = await CA.listComments(it.parentId, it.id); }catch(e){ say(e.message, "adm_x", "err"); return; }
+  A._cmts = { it, list };
+  modal(`${mHead("Bình luận", esc(cleanText(it.title || "")))}
+    ${list.length ? `<div class="adm-list">${list.slice(0, 200).map(c=> `<div class="adm-li adm-li-wrap"><div><b>${esc(c.name || c.uid || "")}</b><small>${esc(fdt(c.ts))}</small><p class="adm-quote">${esc(cleanText(c.text || ""))}</p></div>
+      ${can("community.moderate") ? `<div class="adm-acts"><button class="adm-btn sm danger" data-adm="cmt-del" data-id="${esc(c.id)}">${ic("delete")}Gỡ…</button>${c.uid ? `<button class="adm-btn sm ghost" data-adm="mute" data-id="${esc(c.uid)}" data-v="${esc(c.name || "")}">Cấm đăng…</button>` : ""}</div>` : ""}</div>`).join("")}</div>` : empty("Chưa có bình luận.")}`, { wide:true });
+}
+
+/* ---------- R3.4 Hồ sơ người dùng: cấm đăng có thời hạn + xác minh PT ---------- */
+function userExtraHTML(u){
+  let h = ""; const me = R.current() || {};
+  try{
+    if(can("community.moderate") && u.uid !== me.uid){
+      const m = CA.muteOf(u.uid);
+      h += `<section class="adm-sub-card"><h4>${ic("adm_flag")}Cấm đăng có thời hạn</h4>${m ? `<p class="adm-note warn">${ic("adm_lock")}Đang bị cấm đăng đến ${esc(fdUntil(m.until))}${m.reason ? " · " + esc(m.reason) : ""}</p><button class="adm-btn" data-adm="unmute" data-id="${esc(u.uid)}">${ic("adm_unlock")}Gỡ cấm đăng</button>`
+        : `<p class="adm-dim">Không đăng bài, review, bình luận được trong thời hạn — tài khoản vẫn dùng app bình thường.</p><div class="adm-row"><div class="adm-f"><label for="adm-mu-days">Thời hạn</label><select id="adm-mu-days"><option value="1">1 ngày</option><option value="3">3 ngày</option><option value="7" selected>7 ngày</option><option value="30">30 ngày</option></select></div></div>
+          <button class="adm-btn danger" data-adm="mute" data-id="${esc(u.uid)}" data-v="${esc(u.name || "")}">${ic("adm_lock")}Cấm đăng…</button>`}</section>`;
+    }
+    if(u.isPT && can("pt.verify")){
+      h += `<section class="adm-sub-card"><h4>${ic("adm_pt")}Xác minh PT</h4><p class="adm-dim">Trạng thái: ${u.ptStatus === "verified" ? "đã xác minh (tích xanh)" : u.ptStatus === "pending" ? "đang chờ duyệt hồ sơ" : "chưa gửi hồ sơ / bị từ chối"}.</p>
+        <div class="adm-acts">${u.ptStatus === "pending" ? `<button class="adm-btn pri sm" data-adm="pt-ok" data-id="${esc(u.uid)}">${ic("check")}Xác minh</button>` : ""}${u.ptStatus === "pending" || u.ptStatus === "verified" ? `<button class="adm-btn sm" data-adm="pt-no" data-id="${esc(u.uid)}">${u.ptStatus === "verified" ? "Thu hồi tích xanh…" : "Từ chối…"}</button>` : ""}
+          <button class="adm-btn sm ghost" data-adm="nav" data-id="pt">Mở mục Duyệt PT</button></div></section>`;
+    }
+  }catch(e){ warn(e); }
+  return h;
+}
+
+/* ---------- R3.5 Cài đặt: bật/tắt tính năng + banner toàn app ---------- */
+const FEAT_DESC = { community:"Bảng tin giáo án chia sẻ, chia sẻ giáo án", shop:"Cửa hàng TapEasy (tắt = khách thấy màn “chưa mở bán”)", events:"Sự kiện, thử thách, Khoảnh khắc", findpt:"Danh bạ Tìm PT" };
+extendSection("settings", async el=>{
+  const s = await CA.getSettings(), ed = can("settings.edit"), f = obj(s.features), b = obj(s.banner);
+  el.insertAdjacentHTML("beforeend", card(`${ic("adm_gear")}Bật / tắt tính năng`, `<p class="adm-sub">Tắt khi cần bảo trì hoặc xử lý sự cố nội dung. Người dùng thấy thông báo “tạm tắt”; đội ngũ quản trị vẫn vào được để kiểm tra.</p>
+      <div class="adm-sws">${Object.entries(CA.FEATURES).map(([k, l])=> `<label class="adm-sw"><input type="checkbox" role="switch" data-adm-feat="${esc(k)}" ${f[k] !== false ? "checked" : ""} ${ed ? "" : "disabled"}><span><b>${esc(l)}</b><small>${esc(FEAT_DESC[k] || "")}</small></span></label>`).join("")}</div>
+      ${ed ? `<button class="adm-btn pri" data-adm="feat-save">${ic("check")}Lưu tính năng…</button>` : `<p class="adm-dim">${ic("adm_lock")}Chỉ xem — cần quyền ${esc(R.label("settings.edit"))}.</p>`}`)
+    + card(`${ic("adm_bcast")}Banner thông báo toàn app`, `<p class="adm-sub">Một dòng cố định ở đầu mọi màn chính (khác “Thông báo hệ thống” — thẻ trên Trang chủ, người dùng tự ẩn được). Dùng cho bảo trì, sự cố, thay đổi điều khoản.</p>
+      <label class="adm-cb"><input type="checkbox" id="adm-bn-on" ${b.on ? "checked" : ""} ${ed ? "" : "disabled"}><span>Hiện banner</span></label>
+      <div class="adm-f"><label for="adm-bn-t">Nội dung (≤ 160 ký tự)</label><input id="adm-bn-t" maxlength="160" value="${esc(b.text || "")}" ${ed ? "" : "readonly"} placeholder="VD: Bảo trì máy chủ 23:00–24:00 hôm nay"></div>
+      <div class="adm-row"><div class="adm-f"><label for="adm-bn-l">Mức</label><select id="adm-bn-l" ${ed ? "" : "disabled"}><option value="info" ${b.level !== "warn" ? "selected" : ""}>Thông tin</option><option value="warn" ${b.level === "warn" ? "selected" : ""}>Cảnh báo</option></select></div>
+        <div class="adm-f"><label for="adm-bn-k">Nút hành động</label><select id="adm-bn-k" ${ed ? "" : "disabled"}>${Object.entries(LINKS).map(([k, l])=> `<option value="${k}" ${(b.link || "") === k ? "selected" : ""}>${esc(l)}</option>`).join("")}</select></div></div>
+      ${ed ? `<button class="adm-btn pri" data-adm="banner-save">${ic("adm_bcast")}Lưu banner…</button>` : ""}`)
+    + await areaLog(["settings", "broadcast", "shop"], "Nhật ký cài đặt & thông báo"));
+});
+
+/* ---------- R3.6 Phía người dùng: banner toàn app + chặn lối vào tính năng đang tắt ---------- */
+const FEAT_SCREEN = { community:"community", events:"events", findpt:"findpt" };
+function featureBlocked(screen){
+  const f = FEAT_SCREEN[screen]; if(!f) return false;
+  try{ return !CA.featureOn(f) && !R.role(); }catch(e){ return false; }
+}
+function appBanner(){
+  try{
+    qa(".adm-appbar").forEach(n=> n.remove());
+    const b = CA.banner(); if(!b) return false;
+    const host = q(".screen.active .content") || q(".screen.active"); if(!host) return false;
+    const el = document.createElement("div"); el.className = "adm-appbar " + (b.level === "warn" ? "warn" : "info"); el.setAttribute("role", b.level === "warn" ? "alert" : "status");
+    el.innerHTML = `${ic(b.level === "warn" ? "adm_flag" : "adm_bcast")}<span>${esc(b.text)}</span>${b.link && LINKS[b.link] ? `<button type="button" data-adm-bn-go="${esc(b.link)}">${esc("Xem")}</button>` : ""}`;
+    const g = q("[data-adm-bn-go]", el); if(g) g.addEventListener("click", ()=> goLink(g.dataset.admBnGo));
+    host.insertBefore(el, host.firstChild); return true;
+  }catch(e){ return false; }
+}
+function applyFeatureClasses(){ try{ Object.keys(CA.FEATURES).forEach(k=> document.documentElement.classList.toggle("te-off-" + k, !CA.featureOn(k) && !R.role())); }catch(e){} }
 
 const _hooks = {};
 function extraHook(id){ return arr(_hooks[id]).map(fn=>{ try{ return fn() || ""; }catch(e){ return ""; } }).join(""); }
@@ -719,7 +941,7 @@ const ACT = {
   login: (id, b)=> doLogin("session", b), "login-full": (id, b)=> doLogin("full", b), bootstrap: (id, b)=> doLogin("bootstrap", b),
   copy: (id, b)=>{ const v = b.dataset.v || ""; try{ navigator.clipboard.writeText(v).then(()=> say("Đã chép", "adm_copy"), ()=> say(v, "adm_copy")); }catch(e){ say(v, "adm_copy"); } },
   mclose: ()=> closeModal(),
-  uf: id=>{ A.uf = id; qa('[data-adm="uf"]', A.root).forEach(b=>{ b.classList.toggle("on", b.dataset.id === id); b.setAttribute("aria-selected", String(b.dataset.id === id)); }); drawUsers(); },
+  uf: id=>{ A.uf = id; PG.u = 1; qa('[data-adm="uf"]', A.root).forEach(b=>{ b.classList.toggle("on", b.dataset.id === id); b.setAttribute("aria-selected", String(b.dataset.id === id)); }); drawUsers(); },
   user: id=> openUser(id),
   "u-csv": ()=> exportCSV("nguoi-dung.csv", A.users, [{ label:"UID", key:"uid" }, { label:"Tên", key:"name" }, { label:"Email", get:u=> can("users.pii") ? u.email : "" }, { label:"PT", get:u=> u.isPT ? "Có" : "" },
     { label:"Xác minh PT", key:"ptStatus" }, { label:"Vai trò", get:u=> u.role ? R.roleLabel(u.role) : "" }, { label:"Bị khoá", get:u=> u.banned ? "Có" : "" }, { label:"Tham gia", get:u=> fd(u.createdAt) }], "users"),
@@ -814,6 +1036,64 @@ const ACT = {
     { label:"Vai trò", get:e=> e.actor && e.actor.role }, { label:"Hành động", key:"action" }, { label:"Mô tả", get:e=> actionVi(e.action) }, { label:"Đối tượng", get:e=> e.target ? `${e.target.type} ${e.target.name || e.target.id}` : "" },
     { label:"Chi tiết", get:e=> detailText(e.details) }, { label:"Băm", key:"hash" }], "audit"),
 };
+Object.assign(ACT, {
+  pg: (key, b)=>{ const p = Number(b.dataset.v) || 1;
+    if(key === "m:part"){ if(A._part) openParticipants(A._part.evId, p); return; }
+    PG[key] = p; if(key === "u") drawUsers(); else if(key === "ev"){ const box = q("#adm-ev-list", A.root); if(box) box.innerHTML = evListHTML(A._evs); } else renderSection();
+    try{ const bd = q("#adm-body", A.root); if(bd && key !== "ev") bd.scrollTop = 0; }catch(e){} },
+  "log-all": id=>{ A.sec = "audit"; A.ag = id || ""; A.aq = ""; renderShell(); },
+  /* sự kiện */
+  "ev-part": id=> openParticipants(id, 1),
+  "ev-hide": async (id, b)=>{ const hide = b.dataset.v === "1";
+    if(hide){ const a = await ask({ title:"Ẩn sự kiện khỏi app?", msg:"Người dùng không còn thấy sự kiện này; người đã đăng ký vẫn giữ vé. Hiện lại bất cứ lúc nào.", label:"Ẩn", danger:true }); if(!a) return; }
+    act(()=> CA.setEventState(id, { hidden: hide }), hide ? "Đã ẩn sự kiện" : "Đã hiện sự kiện"); },
+  "ev-cancel": async id=>{ const a = await ask({ title:"Huỷ sự kiện?", msg:"Sự kiện bị ẩn khỏi app và đánh dấu ĐÃ HUỶ. Hãy gửi Thông báo hệ thống cho người đã đăng ký.", label:"Huỷ sự kiện", danger:true, reason:{ label:"Lý do huỷ", min:4, ph:"VD: Thời tiết xấu, dời sang tháng sau" } });
+    if(a) act(()=> CA.setEventState(id, { cancelled:true, reason:a.reason }), "Đã huỷ sự kiện"); },
+  "ev-restore": id=> act(()=> CA.setEventState(id, { cancelled:false, hidden:false }), "Đã mở lại sự kiện"),
+  "part-csv": async ()=>{ const P = A._part; if(!P) return; let rows = [];
+    try{ for(let p = 1; p <= 50; p++){ const r = await CA.listParticipants(P.evId, { page:p, size:100, q:P.q }); rows = rows.concat(r.items); if(p >= r.pages) break; } }catch(e){ say(e.message, "adm_x", "err"); return; }
+    exportCSV("nguoi-tham-gia.csv", rows, [{ label:"Tên", key:"name" }, { label:"SĐT", key:"phone" }, { label:"Trạng thái", get:r=> r.status === "cancelled" ? "Đã huỷ" : r.checkedIn ? "Đã check-in" : "Đã đăng ký" }, { label:"Ngày đăng ký", get:r=> fd(r.createdAt) }], "event-participants"); },
+  /* cửa hàng */
+  "p-f": id=>{ A.pF = id || ""; PG.prod = 1; renderSection(); },
+  "prod-edit": id=>{ if(!R.require("shop.products", ()=> say("Bạn không có quyền sửa sản phẩm", "adm_lock", "err"))) return; const T = G.TapShop; if(!T || !T.editProduct){ say("Chưa cài module Cửa hàng", "adm_x", "err"); return; } close(); try{ T.editProduct(id || ""); }catch(e){ warn(e); } },
+  "prod-hide": async (id, b)=>{ const hide = b.dataset.v === "1";
+    if(hide){ const a = await ask({ title:"Ẩn sản phẩm?", msg:"Khách không còn thấy và không đặt mua được sản phẩm này. Đơn cũ không bị ảnh hưởng.", label:"Ẩn", danger:true }); if(!a) return; }
+    act(()=> CA.setProductHidden(id, hide), hide ? "Đã ẩn sản phẩm" : "Đã hiện sản phẩm"); },
+  "shop-open": async (id, b)=>{ const on = b.dataset.v === "1";
+    const a = await ask(on ? { title:"Mở bán cửa hàng?", msg:"Khách sẽ thấy và đặt mua được các sản phẩm thật đang hiện. Kiểm tra lại giá, tồn kho, phí ship và tài khoản nhận tiền trước khi mở.", label:"Mở bán" }
+      : { title:"Tạm đóng cửa hàng?", msg:"Khách sẽ thấy màn “Chưa có sản phẩm nào mở bán” và không đặt hàng được. Đơn đang xử lý không bị ảnh hưởng.", label:"Tạm đóng", danger:true });
+    if(a) act(()=> CA.setShopOpen(on), on ? "Cửa hàng đã mở bán" : "Đã tạm đóng cửa hàng"); },
+  /* cộng đồng */
+  "cm-tab": id=>{ A.cmTab = id; renderSection(); },
+  "cm-type": id=>{ A.cmType = id || ""; PG.cm = 1; renderSection(); },
+  "cm-act": async (id, b)=>{ const it = arr(A._cm)[Number(b.dataset.i)]; if(!it) return; const a = b.dataset.a;
+    const run = note=> it.type === "routine" ? CA.moderate({ type:"routine", id:it.id, title:it.title }, a, note) : CA.moderatePost(it, a, note);
+    if(a === "delete"){ const r = await ask({ title:"Gỡ vĩnh viễn nội dung này?", msg:"Không khôi phục được. Bình luận, lượt thích kèm theo cũng bị xoá. Cân nhắc dùng Ẩn nếu chưa chắc.", label:"Gỡ", danger:true, reason:{ label:"Lý do gỡ (ghi nhật ký)", min:4, ph:"VD: Quảng cáo thuốc giảm cân" } }); if(r) act(()=> run(r.reason), "Đã gỡ nội dung"); return; }
+    if(a === "hide"){ const r = await ask({ title:"Ẩn nội dung?", msg:"Nội dung biến mất khỏi bảng tin, tác giả vẫn thấy. Khôi phục lại được.", label:"Ẩn", danger:true, reason:{ label:"Lý do", min:2 } }); if(r) act(()=> run(r.reason), "Đã ẩn nội dung"); return; }
+    act(()=> run(""), "Đã duyệt / khôi phục"); },
+  "cm-cmts": (id, b)=>{ const it = arr(A._cm)[Number(b.dataset.i)]; if(it) openComments(it); },
+  "cmt-del": async id=>{ const C0 = A._cmts; if(!C0) return; const it = C0.it;
+    const r = await ask({ title:"Gỡ bình luận?", msg:"Bình luận bị xoá vĩnh viễn.", label:"Gỡ", danger:true, reason:{ label:"Lý do", min:2 } });
+    if(r && await act(()=> CA.removeComment(it.parentId, it.id, id, r.reason), "Đã gỡ bình luận", { rerender:false })){ openComments(it); } },
+  mute: async (id, b)=>{
+    const uid = String(id || (q("#adm-mu-uid", A.root) || {}).value || "").trim(); if(!uid){ say("Nhập mã tài khoản (UID)", "adm_x", "err"); return; }
+    const days = Number((q("#adm-mu-days", A.root) || {}).value || 7), name = b && b.dataset.v || "";
+    const a = await ask({ title:`Cấm đăng ${days} ngày?`, msg:`${name || uid} sẽ không đăng bài, review, bình luận được trong ${days} ngày. Tài khoản vẫn dùng app bình thường.`, label:"Cấm đăng", danger:true, reason:{ label:"Lý do (người dùng thấy)", min:4, ph:"VD: Bình luận quấy rối nhiều lần" } });
+    if(a) act(()=> CA.mute(uid, { days, reason:a.reason, name }), "Đã cấm đăng"); },
+  unmute: async id=>{ const a = await ask({ title:"Gỡ cấm đăng?", msg:"Người dùng đăng bài, bình luận lại được ngay.", label:"Gỡ cấm" }); if(a) act(()=> CA.unmute(id, {}), "Đã gỡ cấm đăng"); },
+  "bw-save": async ()=>{ const words = CA.normWords((q("#adm-bw", A.root) || {}).value || "");
+    const a = await ask({ title:"Lưu danh sách từ khoá cấm?", msg:`${words.length} từ / cụm từ. Áp dụng ngay cho bài, review, bình luận MỚI trên mọi thiết bị (sau khi tải lại cài đặt).`, label:"Lưu" });
+    if(a) act(()=> CA.saveSettings({ bannedWords: words }), "Đã lưu từ khoá cấm"); },
+  /* cài đặt */
+  "feat-save": async ()=>{ const f = {}; qa("[data-adm-feat]", A.root).forEach(i=>{ f[i.dataset.admFeat] = !!i.checked; });
+    const off = Object.keys(f).filter(k=> !f[k]).map(k=> CA.FEATURES[k]);
+    const a = await ask({ title:"Lưu bật / tắt tính năng?", msg: off.length ? `Sẽ TẮT với người dùng: ${off.join(", ")}.` : "Mọi tính năng đều bật.", label:"Lưu", danger: off.length > 0 });
+    if(a) act(async ()=>{ const r = await CA.saveSettings({ features: f }); applyFeatureClasses(); return r; }, "Đã lưu tính năng"); },
+  "banner-save": async ()=>{ const v = id=> (q(id, A.root) || {}).value || "";
+    const d = { on: !!(q("#adm-bn-on", A.root) || {}).checked, text: v("#adm-bn-t"), level: v("#adm-bn-l"), link: v("#adm-bn-k") };
+    const a = await ask({ title: d.on ? "Hiện banner cho mọi người dùng?" : "Tắt banner?", msg: d.on ? `Nội dung: “${d.text}”` : "Banner biến mất khỏi app.", label:"Lưu" });
+    if(a) act(async ()=>{ const r = await CA.saveSettings({ banner: d }); appBanner(); return r; }, "Đã lưu banner"); },
+});
 function onClick(e){
   const b = e.target.closest && e.target.closest("[data-adm]"); if(!b || !A.root.contains(b)) return;
   const k = b.dataset.adm; if(!ACT[k]) return;
@@ -914,8 +1194,11 @@ function curScreen(){ const a = q(".screen.active"); return a ? a.id.replace("sc
 function integrate(){
   addIcons();
   wrapFn("renderProfileScreen", old=> function(){ const r = old.apply(this, arguments); try{ profileCard(); }catch(e){ warn(e); } return r; });
-  wrapFn("goto", old=> function(s){ const r = old.apply(this, arguments); try{ if(s === "profile") profileCard(); }catch(e){ warn(e); } return r; });
-  wrapFn("renderHomeScreen", old=> function(){ const r = old.apply(this, arguments); try{ homeBroadcast(); loadBroadcasts().then(()=>{ if(curScreen() === "home") homeBroadcast(); }); }catch(e){ warn(e); } return r; });
+  wrapFn("goto", old=> function(s){
+    /* R3: tính năng bị quản trị tắt → không vào màn đó (nhân sự vẫn vào được để kiểm tra) */
+    if(featureBlocked(s)){ try{ toast("Tính năng này đang tạm tắt để bảo trì. Quay lại sau nhé!", "adm_lock"); }catch(e){} return; }
+    const r = old.apply(this, arguments); try{ if(s === "profile") profileCard(); appBanner(); }catch(e){ warn(e); } return r; });
+  wrapFn("renderHomeScreen", old=> function(){ const r = old.apply(this, arguments); try{ homeBroadcast(); appBanner(); loadBroadcasts().then(()=>{ if(curScreen() === "home"){ homeBroadcast(); appBanner(); } }); }catch(e){ warn(e); } return r; });
   wrapFn("openSheet", old=> function(html){
     const r = old.apply(this, arguments);
     try{ if(typeof html === "string" && html.indexOf("goto('reminders');closeSheet();") >= 0 && R.role()){
@@ -935,10 +1218,13 @@ function integrate(){
   try{ R.ensureAttached(); }catch(e){}
   try{ if(curScreen() === "profile") profileCard(); }catch(e){}
   loadBroadcasts(true).then(()=>{ try{ if(curScreen() === "home") homeBroadcast(); }catch(e){} });
+  /* R3: banner toàn app + lớp te-off-<tính năng> (sau khi cài đặt tải xong) */
+  try{ appBanner(); applyFeatureClasses(); }catch(e){}
+  Promise.resolve().then(()=> CA.getSettings()).then(()=>{ try{ appBanner(); applyFeatureClasses(); }catch(e){} }).catch(()=>{});
   try{ if(typeof location !== "undefined" && location.hash === "#admin" && !(CA.demoAdminBlocked && CA.demoAdminBlocked())) setTimeout(()=> open(), 300); }catch(e){}
 }
 
 G.TE_ADMIN = { __v:1, open, close, render: ()=> A.open && (R.active() ? renderShell() : renderLogin()), registerSection, sections: SECTIONS, isOpen: ()=> A.open,
-  addHook: (id, fn)=>{ (_hooks[id] = _hooks[id] || []).push(fn); }, _A: A, _ACT: ACT, renderFeedbackPanel, actionVi, toCSV, matrixHTML, visibleSections };
+  addHook: (id, fn)=>{ (_hooks[id] = _hooks[id] || []).push(fn); }, _A: A, _ACT: ACT, renderFeedbackPanel, actionVi, toCSV, matrixHTML, visibleSections, pageOf, pager, areaLog, appBanner, featureBlocked, applyFeatureClasses, userExtraHTML, _PG: PG };
 try{ integrate(); }catch(e){ warn(e); }
 })(typeof window !== "undefined" ? window : globalThis);

@@ -1,0 +1,41 @@
+{
+  "bundleId": "vn.thangvu.fitkit",
+  "packageName": "vn.thangvu.fitkit",
+  "version": "2.0.0",
+  "primaryCategory": "Health & Fitness",
+  "secondaryCategoryAppStore": "Food & Drink",
+  "price": "Free",
+  "containsAds": false,
+  "inAppPurchases": false,
+  "urls": {
+    "privacyPolicy": "https://thangvu030198-ai.github.io/fitkit-app/privacy-policy.html",
+    "deleteAccount": "https://thangvu030198-ai.github.io/fitkit-app/delete-account.html",
+    "marketing": "https://thangvu030198-ai.github.io/fitkit-app/landing.html",
+    "support": "https://thangvu030198-ai.github.io/fitkit-app/landing.html"
+  },
+  "supportEmail": "[ĐIỀN EMAIL HỖ TRỢ]",
+  "copyright": "© 2026 TapEasy",
+  "vi": {
+    "name": "TapEasy: Tập Gym, Calo & PT",
+    "subtitle": "Giáo án, ghi tạ, thực đơn Việt",
+    "shortDescription": "Giáo án gym hiện đại, ghi tạ tự tăng tiến, tính calo món Việt và kết nối PT.",
+    "promotionalText": "Miễn phí cho người tập. 15 giáo án hiện đại, app tự tăng tạ khi bạn đủ sức, thực đơn món Việt theo BMI và kết nối PT bằng mã 6 ký tự.",
+    "keywords": "giảm,cân,tăng,cơ,mỡ,tính,đếm,TDEE,BMI,dinh,dưỡng,huấn,luyện,viên,lịch,thể,hình,nhà,mông,eat,clean"
+  },
+  "en": {
+    "name": "TapEasy: Gym Log, Diet & Coach",
+    "subtitle": "Workout plans, meals & lifts",
+    "shortDescription": "Modern gym plans, auto-progressing lift log, Vietnamese meal plans & PT link.",
+    "promotionalText": "Free for lifters. 15 modern programs, auto weight progression, Vietnamese meal plans by BMI, and a 6-character code to connect with your personal trainer.",
+    "keywords": "workout,planner,tracker,calorie,counter,weight,loss,muscle,trainer,personal,macro,strength,1RM,home"
+  },
+  "limits": {
+    "name": 30,
+    "subtitle": 30,
+    "shortDescription": 80,
+    "promotionalText": 170,
+    "keywords": 100,
+    "fullDescription": 4000,
+    "playReleaseNotes": 500
+  }
+}

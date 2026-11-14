@@ -334,3 +334,51 @@ button.adm-li{ width:100%; background:none; border:0; border-bottom:1px solid va
 @media (prefers-reduced-motion: reduce){
   .adm *, .adm *::before, .adm *::after{ animation:none !important; transition:none !important; }
 }
+
+/* =========================================================================
+   R3 (14/11/2026) — quản trị sâu từng mảng: phân trang, công tắc tính năng, nhật ký theo mảng, banner toàn app.
+   Co giãn 320–430 px · vùng chạm ≥ 44 px · input 16 px · safe-area.
+   ========================================================================= */
+.adm-seg button{ min-height:44px; }                                   /* R3-ADMIN-10: trước 40 px */
+.adm-pager{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.adm-pager span{ flex:1 1 120px; text-align:center; font-size:13px; color:var(--a-muted); }
+.adm-pager .adm-btn{ min-width:92px; }
+.adm-pager .adm-btn:disabled{ opacity:.4; cursor:not-allowed; }
+.adm-li-wrap{ flex-wrap:wrap; align-items:flex-start; }
+.adm-li-wrap > div:first-child{ flex:1 1 220px; min-width:0; }
+.adm-li-wrap > div:first-child b, .adm-li-wrap > div:first-child small{ display:block; overflow-wrap:anywhere; }
+.adm-li-wrap .adm-acts{ flex:0 1 auto; }
+.adm-li-wrap .adm-quote{ margin-top:6px; }
+.adm-pills{ display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; }
+.adm-mod.overdue{ border-color:rgba(255,107,107,.55); box-shadow:inset 3px 0 0 var(--a-red); }
+.adm-mod .adm-ch h3{ overflow-wrap:anywhere; min-width:0; }
+.adm-arealog li > div{ min-width:0; display:flex; flex-direction:column; gap:2px; }
+.adm-arealog li small{ color:var(--a-dim); font-size:12.5px; overflow-wrap:anywhere; }
+.adm-link{ display:inline; min-height:0; padding:0; border:0; background:none; color:var(--a-mint); font:inherit; font-weight:600; text-decoration:underline; text-underline-offset:3px; }
+.adm-note .adm-link{ padding:10px 2px; margin:-10px 0; }
+.adm-sws{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:10px; margin:12px 0; }
+.adm-sw{ display:flex; align-items:center; gap:12px; min-height:56px; padding:10px 12px; border:1px solid var(--a-line); border-radius:12px; cursor:pointer; background:var(--a-panel); }
+.adm-sw input{ flex:0 0 auto; width:24px; height:24px; min-height:0; accent-color:var(--a-mint); }
+.adm-sw span{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+.adm-sw small{ color:var(--a-dim); font-size:12.5px; }
+.adm-f textarea#adm-bw{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:16px; line-height:1.5; }
+.adm select#adm-cm-st{ min-height:44px; font-size:16px; max-width:100%; }
+@media (max-width: 719px){
+  .adm-li-wrap .adm-acts{ flex:1 1 100%; }
+  .adm-li-wrap .adm-acts .adm-btn{ flex:1 1 auto; }
+  .adm-pager .adm-btn{ min-width:0; flex:1 1 0; }
+  .adm-pager span{ order:-1; flex:1 1 100%; }
+  .adm-acts .adm-btn{ flex:1 1 auto; }
+  .adm-ch{ flex-wrap:wrap; }
+  .adm-sws{ grid-template-columns:1fr; }
+}
+
+/* Banner thông báo toàn app (phía người dùng — đầu mỗi màn chính) */
+.adm-appbar{ display:flex; align-items:center; gap:10px; margin:0 0 12px; padding:10px 12px; min-height:44px; border-radius:14px; font-size:13.5px; line-height:1.4;
+  color:var(--text, #fff); background:rgba(var(--mint-rgb, 51,214,201),.14); border:1px solid rgba(var(--mint-rgb, 51,214,201),.4); }
+.adm-appbar.warn{ background:rgba(255,122,69,.16); border-color:rgba(255,122,69,.55); }
+.adm-appbar > span:nth-child(2){ flex:1; min-width:0; overflow-wrap:anywhere; }
+.adm-appbar .material-symbols-rounded{ flex:0 0 auto; }
+.adm-appbar button{ flex:0 0 auto; min-height:44px; min-width:44px; padding:0 12px; border-radius:10px; border:1px solid currentColor; background:transparent; color:inherit; font:inherit; font-weight:600; }
+/* Tính năng bị tắt: ẩn lối vào do các module này tự chèn (người dùng thường) */
+html.te-off-community .cm-home, html.te-off-community [data-cm-menu], html.te-off-community .cm-tpl-cta{ display:none !important; }

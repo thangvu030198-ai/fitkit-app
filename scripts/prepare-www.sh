@@ -70,6 +70,17 @@ cp assets/brand/*.svg assets/brand/*.png www/assets/brand/ 2>/dev/null || echo "
 # Ảnh sản phẩm Gian hàng (shop-data.js → assets/shop/<slug>-<màu>-1|2.webp; không chép _build/)
 if ls assets/shop/*.webp >/dev/null 2>&1; then mkdir -p www/assets/shop && cp assets/shop/*.webp www/assets/shop/; else echo "⚠️ Chưa có assets/shop/*.webp — Gian hàng dùng hình minh hoạ SVG"; fi
 
+# R3-store (R3-STORE-22): module MỚI của các vòng sau (vd i18n.js + từ điển i18n-*.js, terms.html) không còn làm hỏng bản native:
+#   · tự chép mọi JS/CSS cục bộ mà index.html tham chiếu (kể cả thẻ nạp lười) nhưng chưa có trong danh sách cp ở trên
+#   · tự chép từ điển dịch i18n*.js (i18n.js nạp theo tên lúc chạy) và trang pháp lý terms.html (pt.js liên kết tới) nếu có
+for f in $(grep -oE '(src|href)="[^"#:?]+\.(js|css)"' index.html | sed -E 's/^(src|href)="//; s/"$//' | sort -u); do
+  case "$f" in /*|*..*) continue;; esac
+  if [ ! -f "www/$f" ] && [ -f "$f" ]; then mkdir -p "www/$(dirname "$f")"; cp "$f" "www/$f"; echo "• tự chép $f (chưa có trong danh sách cp của prepare-www.sh)"; fi
+done
+for f in i18n*.js terms.html; do
+  if [ -f "$f" ] && [ ! -f "www/$f" ]; then cp "$f" www/; echo "• tự chép $f"; fi
+done
+
 # Kiểm tra: mọi <script src>/<link href> cục bộ trong index.html đều có trong www/
 missing=0
 for f in $(grep -oE '(src|href)="[^"#:]+\.(js|css)"' index.html | sed -E 's/^(src|href)="//; s/"$//'); do
@@ -85,6 +96,75 @@ if ls assets/shop/*.webp >/dev/null 2>&1; then
 fi
 [ "$missing" = 0 ] && echo "✅ Đủ mọi file JS/CSS/ảnh mà index.html, manifest.json, sw.js, Gian hàng cần"
 [ "$missing" = 0 ] || { echo "❌ www/ thiếu file — dừng (xem danh sách ở trên)"; exit 1; }
+
+# =====================================================================================
+# R3-store (D) — CỜ NỀN TẢNG: www/fk-build.js đặt window.FK_BUILD + thuộc tính trên <html> để module ẩn thứ không hợp lệ trên store.
+#   FK_PLATFORM=web|android|ios   (mặc định web)        STORE_BUILD=1 → store:true (bản nộp Google Play / App Store)
+#   FK_BUILD_NUMBER=<số build>    (CI: github.run_number)    FK_AUTH_PROVIDERS="apple,google"|"none" (ghi đè danh sách đăng nhập native)
+#   Module đọc:  (window.FK_BUILD || {}).store / .platform / .hide.comingSoon / .hide.externalDigitalPay / .authProviders
+#   Không cần JS: gắn  data-store-hide  (ẩn trên mọi bản store) hoặc  data-store-hide="ios" | "android"  vào phần tử.
+#   Bản web GitHub Pages chạy thẳng từ gốc repo (không qua script này) ⇒ FK_BUILD = undefined = web, không ẩn gì.
+#   File riêng (không phải script nội tuyến) để vẫn chạy khi CSP bỏ 'unsafe-inline'. Chi tiết: docs/RELEASE-CHECKLIST.md §D.
+# =====================================================================================
+FK_PLATFORM="${FK_PLATFORM:-web}"
+case "$FK_PLATFORM" in web|android|ios) ;; *) echo "❌ FK_PLATFORM phải là web|android|ios (đang là '$FK_PLATFORM')"; exit 1;; esac
+if command -v node >/dev/null 2>&1; then
+  FK_PLATFORM="$FK_PLATFORM" STORE_BUILD="${STORE_BUILD:-0}" FK_BUILD_NUMBER="${FK_BUILD_NUMBER:-0}" FK_AUTH_PROVIDERS="${FK_AUTH_PROVIDERS:-}" node - <<'FKBUILD_EOF' || { echo "❌ Không tạo được www/fk-build.js — dừng"; exit 1; }
+const fs = require("fs");
+const E = process.env, platform = E.FK_PLATFORM || "web", store = E.STORE_BUILD === "1";
+let version = "0.0.0", providers = [];
+try{ version = String(JSON.parse(fs.readFileSync("package.json", "utf8")).version || version); }catch(e){}
+try{ providers = (((JSON.parse(fs.readFileSync("capacitor.config.json", "utf8")).plugins || {}).FirebaseAuthentication || {}).providers || []).map(p => String(p).replace(/\.com$/, "")); }catch(e){}
+const B = {
+  platform, store, version, build: String(E.FK_BUILD_NUMBER || "0"),
+  // nhà cung cấp đăng nhập mạng xã hội ĐÃ cấu hình SDK gốc (capacitor.config.json); web: null = không giới hạn
+  //   FK_AUTH_PROVIDERS="apple,google" | "none" ghi đè (workflow đặt "none" khi thiếu secret GoogleService → plugin bị gỡ)
+  authProviders: platform === "web" ? null
+    : (E.FK_AUTH_PROVIDERS ? (E.FK_AUTH_PROVIDERS === "none" ? [] : E.FK_AUTH_PROVIDERS.split(",").map(x => x.trim()).filter(Boolean)) : providers),
+  hide: {
+    comingSoon: store,                                  // App Store 2.1 / Play "Minimum functionality": không để mục "Sắp ra mắt"
+    emptyShop: store,                                   // gian hàng chưa có sản phẩm thật → ẩn lối vào trên bản store
+    externalDigitalPay: store && platform === "ios",    // App Store 3.1.1: hàng số/gói trong app không dẫn ra thanh toán ngoài
+  },
+};
+const js = `/* SINH TỰ ĐỘNG bởi scripts/prepare-www.sh (R3-store) — ĐỪNG sửa tay. Cờ nền tảng cho bản đóng gói. */
+(function(){
+  var B = ${JSON.stringify(B)};
+  try{ Object.freeze(B.hide); Object.freeze(B); }catch(e){}
+  window.FK_BUILD = B;
+  try{
+    var r = document.documentElement;
+    r.setAttribute("data-fk-platform", B.platform);
+    if(B.store){
+      r.setAttribute("data-fk-store", "1");
+      var s = document.createElement("style"); s.setAttribute("data-fk-build", "");
+      s.textContent = 'html[data-fk-store] [data-store-hide=""],html[data-fk-store] [data-store-hide="all"],' +
+        'html[data-fk-store][data-fk-platform="ios"] [data-store-hide~="ios"],' +
+        'html[data-fk-store][data-fk-platform="android"] [data-store-hide~="android"],' +
+        'html[data-fk-store] .role-card.soon{display:none !important}';
+      (document.head || r).appendChild(s);
+    }
+  }catch(e){}
+})();
+`;
+try{ new Function(js); }catch(e){ console.log("❌ fk-build.js sinh ra không hợp lệ: " + e.message); process.exit(1); }
+fs.writeFileSync("www/fk-build.js", js);
+let html = fs.readFileSync("www/index.html", "utf8");
+if(!/<script src="fk-build\.js"><\/script>/.test(html)){
+  const tag = '<script src="fk-build.js"></script>  <!-- R3-store: cờ nền tảng (prepare-www.sh) — phải là script ĐẦU TIÊN -->\n';
+  const i = html.search(/<script\b[^>]*\bsrc="/);
+  const j = i >= 0 ? html.lastIndexOf("\n", i) + 1 : -1;
+  if(j >= 0) html = html.slice(0, j) + tag + html.slice(j);
+  else if(/<head[^>]*>/.test(html)) html = html.replace(/<head[^>]*>/, m => m + "\n" + tag);
+  else { console.log("❌ www/index.html không có <head>/<script> để chèn fk-build.js"); process.exit(1); }
+  fs.writeFileSync("www/index.html", html);
+}
+console.log(`• FK_BUILD: platform=${B.platform} store=${B.store} version=${B.version} build=${B.build}` + (B.authProviders ? ` authProviders=${B.authProviders.join("+") || "(không)"}` : ""));
+FKBUILD_EOF
+else
+  echo "⚠️ Không có node — bỏ qua cờ nền tảng FK_BUILD (app coi như bản web)"
+  if [ "${STORE_BUILD:-0}" = 1 ]; then echo "❌ STORE_BUILD=1 cần node để chèn cờ FK_BUILD — dừng"; exit 1; fi
+fi
 
 # =====================================================================================
 # Tối ưu bản phát hành (vòng sửa UX — QU-01 / QU-09, docs/qa/FIX-ux.md)
@@ -185,6 +265,7 @@ const refs = [...html.matchAll(/(?:src|href)="([^"]+)"/g)].map(m => m[1].replace
 const old = (sw.match(/const ASSETS = \[([\s\S]*?)\];/) || [, ""])[1];
 const oldAssets = [...old.matchAll(/"\.\/([^"]+)"/g)].map(m => m[1]).filter(h => /^assets\//.test(h));
 const extra = ["manifest.json", "theme-packs.js", "theme-accent.js", "ui-signature.js", "vendor/morphicons.min.js"];      // + icon biến hình (nạp lười, nếu đã vendor) · tài nguyên phụ luôn có
+for(const f of fs.readdirSync(W)) if(/^i18n[\w.-]*\.js$/.test(f) && !extra.includes(f)) extra.push(f);                 // R3-store: từ điển dịch nạp theo tên lúc chạy → precache để đổi ngôn ngữ khi offline
 const all = [...new Set(["index.html", ...refs, ...extra, ...oldAssets])].filter(f => fs.existsSync(path.join(W, f)));
 const ver = hash(all.map(f => f + ":" + crypto.createHash("sha1").update(fs.readFileSync(path.join(W, f))).digest("hex")).join("|"));
 sw = sw.replace(/const ASSETS = \[[\s\S]*?\];/, "const ASSETS = [  // SINH TỰ ĐỘNG bởi scripts/prepare-www.sh từ www/index.html\n  " +

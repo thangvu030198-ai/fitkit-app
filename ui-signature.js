@@ -313,7 +313,7 @@ function decorateHome(){
   let food = {};
   try{ food = typeof getDayFoodLog === "function" ? getDayFoodLog() : {}; }catch(e){}
   const tot = { kcal:0, p:0, c:0, f:0 };
-  Object.values(food || {}).forEach(l=> (Array.isArray(l) ? l : []).forEach(i=>{ tot.kcal += +i.kcal || 0; tot.p += +i.protein || 0; tot.c += +i.carbs || 0; tot.f += +i.fat || 0; }));
+  Object.values(food || {}).forEach(l=> (Array.isArray(l) ? l : []).forEach(i=>{ if(!i || typeof i !== "object") return; tot.kcal += +i.kcal || 0; tot.p += +i.protein || 0; tot.c += +i.carbs || 0; tot.f += +i.fat || 0; }));
   const d = { kcal:tot.kcal, goal:Number(p.goalKcal) || 0, p:tot.p, c:tot.c, f:tot.f, pt:p.protein, ct:p.carbs, ft:p.fat };
   let card = q(".sig-gauge-card", grid);
   const sigKey = [Math.round(d.kcal), d.goal, Math.round(d.p), Math.round(d.c), Math.round(d.f), d.pt, d.ct, d.ft].join("|");

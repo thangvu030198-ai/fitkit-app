@@ -285,3 +285,8 @@ html.lowfx .cm-card, html.lowfx .cm-hero, html.lowfx .cm-home{ -webkit-backdrop-
 .cm-blocked-row b{ display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .cm-blocked-row small{ color:var(--text-muted, rgba(255,255,255,.78)); font-size:12px; }
 .cm-blocked-row .btn{ min-height:44px; flex:none; }
+/* R3-ADMIN-04: tiêu chuẩn cộng đồng (điều khoản UGC — App Store 1.2) */
+.cm-terms{ margin:8px 0 12px; padding-left:20px; display:flex; flex-direction:column; gap:8px; font-size:14px; line-height:1.5; }
+.cm-terms-ok{ display:flex; align-items:center; gap:6px; }
+.cm-agree{ display:flex; align-items:flex-start; gap:10px; min-height:44px; margin:12px 0 4px; padding:10px 12px; border-radius:14px; border:1px solid var(--cm-line, rgba(255,255,255,.16)); font-size:13px; line-height:1.45; cursor:pointer; }
+.cm-agree input{ flex:0 0 auto; width:22px; height:22px; margin-top:1px; accent-color:var(--mint, #5EE6C7); }

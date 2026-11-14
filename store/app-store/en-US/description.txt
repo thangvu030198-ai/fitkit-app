@@ -1,0 +1,48 @@
+TapEasy is a gym app built for both self-trainers and personal trainers: modern workout programs, set-by-set lift logging, Vietnamese calorie tracking and a PT-to-client link, all in one app. Training on your own is free and needs no account.
+
+★ MODERN GYM PROGRAMS, READY TO GO
+• 15 programs for men, women and everyone, across 3 levels: Beginner, Intermediate, Advanced.
+• Full Body, Upper/Lower, ULPPL, 6-day PPL, Powerbuilding, Glute Focus, Hybrid lifting + running, Zone 2, 12-3-30 incline walking, and home workouts with dumbbells.
+• Built on current training principles: stop 1–2 reps short of failure (RIR), double progression, a deload every 5–6 weeks.
+• Tap "Add to my week" and TapEasy builds your 7-day schedule and attaches technique videos where available.
+• Prefer your own plan? Create programs, add exercises, set sets, reps and rest.
+
+★ SMART LIFT LOG WITH AUTO PROGRESSION
+• Log kg × reps × RPE for every set, pre-filled from your last session.
+• Hit the top of the rep range on every set and the app adds one weight step. Miss your target two sessions in a row and it drops 10% so you can rebuild momentum.
+• Rest timer with vibration and sound that still alerts you when the phone is locked.
+• Warm-up set calculator and a barbell plate calculator (20 kg bar).
+• Estimated 1RM chart, personal records and workout streaks.
+
+★ VIETNAMESE FOOD CALORIES AND BMI-BASED MEAL PLANS
+• BMR (Mifflin-St Jeor), TDEE, calorie target and protein, carbs and fat for fat loss, maintenance or muscle gain.
+• Log meals from nearly 100 foods and everyday dishes: pho, bun bo, com tam, banh mi, sticky rice, bubble tea… Search works without Vietnamese accents.
+• 45 recipes (27 Vietnamese, 18 Western) with gram-level portions and air fryer, rice cooker, steaming or boiling methods. Includes vegetarian, vegan and budget student options.
+• A 7-day meal plan suggested from your BMI (Asian cut-offs) and your goal. Choose Vietnamese or Western dishes, filter vegetarian, and log a whole day in one tap.
+• Water and 7-day sleep tracking.
+
+★ PERSONAL TRAINER AND CLIENT IN ONE FORM
+For trainers:
+• Add a client and get a 6-character invite code to send via Zalo or Messenger.
+• Each client has a 7-tab form: Info, Today's session, Schedule, History, Reminders, Notes, Progress.
+• Build sessions from the exercise library, repeat weekly for up to 12 weeks, in the gym or online.
+• Track session packages (with a low-balance warning), attendance and an 8-week chart.
+For clients:
+• Enter your trainer's code to see your schedule and assigned exercises with videos, mark sessions done and send feedback.
+
+★ 800+ EXERCISE LIBRARY AND TECHNIQUE VIDEOS
+• Over 800 illustrated exercises grouped by muscle, filterable by equipment and level.
+• Technique videos play right inside the exercise. You can also upload your own clips and attach them to any exercise.
+
+★ PROGRESS AND REMINDERS
+• Progress photos with an angle guide and before/after comparison. Log InBody results and view the chart.
+• Workout, meal, bedtime and PT-session reminders as native phone notifications, even when the app is closed.
+
+★ PRIVACY
+• Health data (weight, calories, sleep, photos) stays on your device and is shared with your trainer only when you choose to.
+• An account is only needed to connect with a trainer. Sign in with email, Google or Apple, and delete your account in the app.
+• No ads, no data selling.
+
+TapEasy uses evidence-based formulas and guidelines (Mifflin-St Jeor, ISSN, USDA). All numbers are estimates and do not replace advice from a doctor or dietitian.
+
+TapEasy is not a medical device and does not replace professional medical advice. Consult your doctor before starting a new exercise or diet program.

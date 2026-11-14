@@ -1,0 +1,48 @@
+TapEasy là app tập gym tiếng Việt cho cả người tự tập và PT: giáo án gym hiện đại, ghi tạ từng hiệp, tính calo món Việt và kết nối PT với học viên trong cùng một app. Tập cá nhân miễn phí, không cần tạo tài khoản.
+
+★ GIÁO ÁN GYM HIỆN ĐẠI: CHỌN LÀ TẬP
+• 15 giáo án mẫu cho Nam, Nữ và Nam & Nữ, đủ 3 cấp độ: Mới tập, Trung bình, Nâng cao.
+• Full Body, Upper/Lower, ULPPL, PPL 6 buổi, Powerbuilding, Glute Focus (tập mông), Hybrid tạ + chạy, Zone 2, đi bộ dốc 12-3-30, tập tại nhà với tạ đơn.
+• Soạn theo nguyên tắc tập hiện đại: dừng cách thất bại 1–2 lần (RIR), tăng tiến kép, giảm tải mỗi 5–6 tuần.
+• Bấm "Thêm vào tuần tập", app tạo lịch 7 ngày và tự gắn video hướng dẫn cho các bài có video.
+• Muốn tự soạn? Tạo chương trình riêng, thêm bài, đổi số hiệp, số lần, thời gian nghỉ.
+
+★ GHI TẠ THÔNG MINH, TỰ TĂNG TIẾN
+• Ghi kg × số lần × RPE cho từng hiệp, số liệu buổi trước được điền sẵn.
+• Đạt đỉnh khoảng lần ở mọi hiệp thì app tự tăng 1 nấc tạ. Trượt mục tiêu 2 buổi liền thì app giảm 10% để bạn lấy lại đà.
+• Đồng hồ nghỉ giữa hiệp có rung và âm báo, vẫn báo khi điện thoại đã khoá màn hình.
+• Tính sẵn các hiệp khởi động và cách lắp đĩa tạ cho thanh đòn 20 kg.
+• Biểu đồ 1RM ước tính, kỷ lục cá nhân, chuỗi ngày tập liên tiếp.
+
+★ TÍNH CALO MÓN VIỆT, THỰC ĐƠN THEO BMI
+• Tính BMR (Mifflin-St Jeor), TDEE, calo mục tiêu và đạm, tinh bột, chất béo cho mục tiêu giảm mỡ, duy trì hoặc tăng cơ.
+• Ghi bữa ăn với gần 100 thực phẩm và món quen thuộc: phở, bún bò, cơm tấm, bánh mì, xôi, trà sữa… Gõ không dấu cũng tìm được: "uc ga" ra "Ức gà".
+• 45 công thức (27 món Việt, 18 món Âu) có định lượng theo gram và cách làm bằng nồi chiên không dầu, nồi cơm điện, hấp, luộc. Có món chay, thuần chay và món rẻ cho sinh viên.
+• Thực đơn 7 ngày gợi ý theo BMI chuẩn người châu Á và mục tiêu của bạn. Chọn món Việt hoặc món Âu, lọc món chay, ghi cả ngày vào nhật ký chỉ bằng 1 chạm.
+• Theo dõi nước uống và giấc ngủ 7 ngày.
+
+★ PT VÀ HỌC VIÊN: GỌN TRONG MỘT FORM
+Dành cho PT:
+• Thêm học viên, app tạo mã mời 6 ký tự để gửi qua Zalo, Messenger.
+• Mỗi học viên có một form 7 mục: Thông tin, Buổi này tập gì, Thời khoá biểu, Lịch sử, Nhắc nhở, Ghi chú, Tiến độ.
+• Soạn buổi tập từ thư viện bài tập, lặp lịch hằng tuần đến 12 tuần, chọn tập tại phòng hoặc online.
+• Theo dõi gói buổi (báo khi gói sắp hết), chuyên cần và biểu đồ số buổi 8 tuần.
+Dành cho học viên:
+• Nhập mã PT là thấy lịch tập, bài được giao kèm video, đánh dấu hoàn thành buổi và gửi phản hồi cho PT.
+
+★ THƯ VIỆN 800+ BÀI TẬP VÀ VIDEO HƯỚNG DẪN
+• Hơn 800 bài tập có hình minh hoạ, chia theo nhóm cơ, lọc theo dụng cụ và cấp độ.
+• Video hướng dẫn kỹ thuật xem ngay trong bài tập. Bạn cũng có thể tải clip tự quay để gắn vào từng bài.
+
+★ TIẾN TRÌNH VÀ NHẮC NHỞ
+• Ảnh tiến trình có khung căn góc chụp, so sánh trước và sau. Lưu chỉ số InBody và xem biểu đồ.
+• Nhắc giờ tập, giờ ăn, giờ ngủ và buổi với PT bằng thông báo của điện thoại, kể cả khi app đã đóng.
+
+★ QUYỀN RIÊNG TƯ
+• Số liệu sức khoẻ (cân nặng, calo, giấc ngủ, ảnh) lưu trên máy của bạn; chỉ gửi cho PT khi bạn chọn chia sẻ.
+• Chỉ cần tài khoản khi kết nối PT. Đăng nhập bằng email, Google hoặc Apple. Xoá tài khoản ngay trong app.
+• Không quảng cáo, không bán dữ liệu.
+
+TapEasy dùng công thức và khuyến nghị có cơ sở khoa học (Mifflin-St Jeor, ISSN, USDA). Các con số chỉ là ước lượng tham khảo, không thay thế tư vấn của bác sĩ hay chuyên gia dinh dưỡng.
+
+TapEasy không phải thiết bị y tế và không thay thế tư vấn, chẩn đoán của bác sĩ. Hãy hỏi ý kiến bác sĩ trước khi bắt đầu chương trình tập luyện hoặc ăn kiêng mới.

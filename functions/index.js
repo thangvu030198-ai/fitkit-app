@@ -38,6 +38,8 @@ Object.assign(exports, require("./findpt"));
    liên kết PT ↔ học viên chỉ qua joinByCode, quyền đánh giá & số liệu PT có xác minh */
 Object.assign(exports, require("./commerce"));
 Object.assign(exports, require("./social"));
+/* Vòng R3 (functions/account.js): OTP 6 số qua email để đặt lại mật khẩu (requestEmailOtp / verifyEmailOtp) + exportMyData (xuất dữ liệu của tôi) */
+Object.assign(exports, require("./account"));
 
 const REGION = "asia-southeast1";                 // cùng vùng Firestore (Singapore) — client gọi functions("asia-southeast1")
 const RECENT_LOGIN_SEC = 15 * 60;                 // chỉ cho thu hồi ngay sau khi xác thực lại
@@ -114,6 +116,7 @@ const CLEANUP_PLAN = [
   { what: "Quyền đánh giá, liên kết SĐT PT ↔ học viên, voucher cá nhân (đổi điểm / hoàn thành thử thách), lượt dùng, giữ chỗ mã", col: "reviewRights,ptLinks,vouchers,voucherUses,voucherHolds,voucherGrants", by: "uid / lid / owner", action: "delete" },
   { what: "Người khác chặn mình (bản ghi trỏ tới uid đã xoá)", col: "blocks/*/list", by: "uid", action: "delete" },
   { what: "Đơn hàng & quà đã gửi: giữ mã đơn / số tiền / mặt hàng (nghĩa vụ kế toán – thuế, 10 năm) nhưng XOÁ tên, SĐT, địa chỉ, ghi chú", col: "orders,gifts", by: "uid", action: "anonymize" },
+  { what: "Bản sao lưu dữ liệu tập luyện – dinh dưỡng (appState), nhật ký đồng ý (consents), mã OTP email đang chờ", col: "users/{uid}/appState,users/{uid}/consents,email_otps,otp_rate", by: "doc id = uid / băm email", action: "delete" },
   { what: "Ảnh / clip Khoảnh khắc trên Firebase Storage", col: "storage: media/moments/*/{uid}/", by: "đường dẫn", action: "delete" },
 ];
 const ORDER_PII = ["address", "name", "phone", "note", "email"];
@@ -214,6 +217,11 @@ async function cleanupUserData(db, uid, email){
     if(snap.exists) out.userDocs++;
     await db.recursiveDelete(ref);
   }
+  // h2) R3: mã OTP email đang chờ + bộ đếm xuất dữ liệu (bản sao lưu users/{uid}/appState và nhật ký users/{uid}/consents đã xoá ở bước h — recursiveDelete)
+  try{
+    if(email) await db.collection("email_otps").doc(require("crypto").createHash("sha256").update(String(email).trim().toLowerCase()).digest("hex")).delete();
+    await db.collection("otp_rate").doc("export_" + uid).delete();
+  }catch(e){ logger.warn("Dọn OTP / bộ đếm thất bại (bỏ qua)", { message: e.message }); }
   // i) Storage: ảnh / clip Khoảnh khắc media/moments/{evId}/{uid}/…
   try{
     const bucket = admin.storage().bucket();

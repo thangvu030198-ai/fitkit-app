@@ -55,6 +55,21 @@ const SERVER_AUDITED = /^(role\.|owner\.|user\.(ban|unban|pii_)|settings\.paymen
 const FB_VERSION = "10.12.2", REGION = "asia-southeast1";
 const DAY = 86400000;
 const BROADCAST_PER_DAY = 5;
+/* R3 — cài đặt mở rộng: công tắc mở bán, bật/tắt tính năng, banner toàn app, từ khoá cấm */
+const FEATURES = { community:"Cộng đồng", shop:"Cửa hàng", events:"Sự kiện & thi đua", findpt:"Tìm PT" };
+const FEATURE_KEYS = Object.keys(FEATURES);
+const BANNER_LINKS = ["", "events", "shop", "community", "findpt", "kb"];
+const SETTING_PERMS = { shopOpen:["settings.edit", "shop.products"], bannedWords:["settings.edit", "community.moderate"] };
+const MAX_WORDS = 200;
+/** Chuẩn hoá danh sách từ khoá cấm: bỏ ký tự điều khiển / thẻ, 2–40 ký tự, không trùng (không phân biệt hoa thường), ≤ 200 mục */
+function normWords(list){
+  const out = [], seen = new Set();
+  (Array.isArray(list) ? list : String(list == null ? "" : list).split(/[\n,;]+/)).forEach(w=>{
+    w = String(w == null ? "" : w).replace(/[\u0000-\u001f\u007f<>`"']/g, " ").replace(/\s+/g, " ").trim().slice(0, 40);
+    const k = w.toLowerCase(); if(w.length < 2 || seen.has(k) || out.length >= MAX_WORDS) return; seen.add(k); out.push(w); });
+  return out;
+}
+const MUTE_KEY = "tapeasy_mute_cache_v1";
 const now = ()=> Date.now();
 const rid = (p="id")=> `${p}${now().toString(36)}${Math.random().toString(36).slice(2,8)}`;
 const clone = o=> JSON.parse(JSON.stringify(o == null ? null : o));
@@ -98,7 +113,7 @@ const can = p=> R.can(p);
 /* ---------------------------------------------------------------------
    1. ĐỘNG CƠ DEMO
    --------------------------------------------------------------------- */
-const EMPTY = ()=> ({ v:1, owner:null, roles:{}, bans:{}, audit:[], settings:{}, broadcasts:[], ptVerify:{}, listings:{}, notes:{}, vouchers:{}, tickets:[], reports:[], featured:{}, seeded:0 });
+const EMPTY = ()=> ({ v:1, owner:null, roles:{}, bans:{}, audit:[], settings:{}, broadcasts:[], ptVerify:{}, listings:{}, notes:{}, vouchers:{}, tickets:[], reports:[], featured:{}, mutes:{}, seeded:0 });
 function load(){ try{ return Object.assign(EMPTY(), JSON.parse(localStorage.getItem(KEY) || "{}")); }catch(e){ return EMPTY(); } }
 function save(d){ try{ localStorage.setItem(KEY, JSON.stringify(d)); }catch(e){ throw err("Bộ nhớ máy đầy — không lưu được dữ liệu quản trị.", "admin/quota"); } }
 function cloudDemo(){ try{ return Object.assign({ users:{}, accounts:{} }, JSON.parse(localStorage.getItem("fitkit_cloud_demo_v1") || "{}")); }catch(e){ return { users:{}, accounts:{} }; } }
@@ -162,6 +177,14 @@ async function fbCount(q){ try{ if(typeof q.count === "function"){ const s = awa
    3. API CÔNG KHAI
    --------------------------------------------------------------------- */
 let _settings = null, _users = null, _ptCache = {};
+let _myMute = null;
+/** Phân trang chung: { items, total, page, pages, size } */
+function paginate(list, page, size){
+  size = Math.max(5, Math.min(100, Math.round(Number(size) || 20)));
+  const total = list.length, pages = Math.max(1, Math.ceil(total / size));
+  page = Math.max(1, Math.min(pages, Math.round(Number(page) || 1)));
+  return { items: clone(list.slice((page - 1) * size, page * size)), total, page, pages, size };
+}
 const api = {
   __v: 1,
   get mode(){ return isFb() ? "firebase" : "demo"; },
@@ -394,6 +417,8 @@ const api = {
     actor(["reports.view", "reviews.moderate", "community.moderate"]);
     const out = [];
     const S = cloud.social, prof = t=> (S && S.moderation && S.moderation.findProfanity) ? S.moderation.findProfanity(t) : [];
+    /* R3: tên người báo cáo (demo đọc hồ sơ cục bộ; firebase chỉ có uid — tra ở mục Người dùng) */
+    const cdU = isFb() ? {} : obj(cloudDemo().users), nameOf = uid=>{ const u = cdU[uid]; return u && u.name ? `${String(u.name).slice(0, 40)} (${String(uid).slice(0, 10)})` : String(uid || "").slice(0, 28); };
     /* a) Routine cộng đồng bị báo cáo / bị ẩn */
     try{
       if(isFb()){
@@ -402,7 +427,7 @@ const api = {
       } else if(S && S._demo){
         const sd = S._demo.load();
         Object.values(sd.routines || {}).filter(r=> r && ((Number(r.reports)||0) > 0 || r.hidden) && !r.approved && !r.removed).forEach(r=> out.push({ key:"routine:" + r.id, type:"routine", id:r.id, title:r.title || "", text:r.desc || "",
-          author:r.authorName || "", authorUid:r.authorUid, count:Number(r.reports)||0, reasons:Object.values(obj(sd.reports[r.id])).map(x=> x && x.reason).filter(Boolean), hidden:!!r.hidden, ts:r.updatedAt || r.createdAt || 0, bad: prof([r.title, r.desc].join(" ")) }));
+          author:r.authorName || "", authorUid:r.authorUid, count:Number(r.reports)||0, reasons:Object.values(obj(sd.reports[r.id])).map(x=> x && x.reason).filter(Boolean), reporters: Object.keys(obj(sd.reports[r.id])).slice(0, 10).map(nameOf), hidden:!!r.hidden, ts:r.updatedAt || r.createdAt || 0, bad: prof([r.title, r.desc].join(" ")) }));
       }
     }catch(e){ console.warn("[cloud-admin] routines", e); }
     /* b) Đánh giá sự kiện: từ ngữ thô tục, ≤ 2 sao, hoặc bị báo cáo */
@@ -412,16 +437,20 @@ const api = {
         Object.keys(obj(ed.reviews)).forEach(evId=> arr(ed.reviews[evId]).forEach(rv=>{
           const bad = prof(rv.text || ""); if(rv.modOk || rv.hidden) return;
           if(!(bad.length || rv.stars <= 2 || rv.reported)) return;
-          out.push({ key:`review:${evId}:${rv.uid}`, type:"review", id:rv.uid, parentId:evId, title:`Đánh giá ${rv.stars}★ · ${(evs[evId] || {}).title || evId}`, text: rv.text || "", author: rv.name || "", authorUid: rv.uid, count: rv.reported ? 1 : 0, reasons: bad.length ? ["Từ ngữ không phù hợp: " + bad.join(", ")] : rv.stars <= 2 ? ["Đánh giá thấp — kiểm tra nội dung"] : [], hidden: !!rv.hidden, ts: rv.ts || 0, bad });
+          const MR = obj(obj(ed.mreports)[`${evId}/${rv.id}`]);                       // R3: lý do + người báo cáo của bài Khoảnh khắc / review
+          out.push({ userReasons: Object.values(MR).map(x=> x && x.reason).filter(Boolean).slice(0, 6), reporters: Object.keys(MR).slice(0, 10).map(nameOf), key:`review:${evId}:${rv.uid}`, type:"review", id:rv.uid, parentId:evId, title:`Đánh giá ${rv.stars}★ · ${(evs[evId] || {}).title || evId}`, text: rv.text || "", author: rv.name || "", authorUid: rv.uid, count: rv.reported ? 1 : 0, reasons: bad.length ? ["Từ ngữ không phù hợp: " + bad.join(", ")] : rv.stars <= 2 ? ["Đánh giá thấp — kiểm tra nội dung"] : [], hidden: !!rv.hidden, ts: rv.ts || 0, bad });
         }));
       }
     }catch(e){ console.warn("[cloud-admin] reviews", e); }
     /* c) Báo cáo chung */
     try{
       const reps = isFb() ? qd(await fdb().collection("reports").where("status", "==", "open").limit(100).get()) : load().reports.filter(r=> r.status === "open");
-      reps.forEach(r=> out.push({ key:"report:" + r.id, type:"report", id:r.id, refType:r.type, refId:r.refId, parentId:r.parentId, title: r.title || `Báo cáo ${r.type}: ${r.refId}`, text: r.reason || "", author:"", count:1, reasons:[r.reason], ts: tsOf(r.createdAt), sample: !!r.sample }));
+      reps.forEach(r=> out.push({ key:"report:" + r.id, type:"report", id:r.id, refType:r.type, refId:r.refId, parentId:r.parentId, title: r.title || `Báo cáo ${r.type}: ${r.refId}`, text: r.reason || "", author:"", count:1, reasons:[r.reason], reporters: r.by ? [nameOf(r.by)] : [], ts: tsOf(r.createdAt), sample: !!r.sample }));
     }catch(e){ console.warn("[cloud-admin] reports", e); }
-    return out.sort((a,b)=> (b.count - a.count) || (b.ts - a.ts));
+    /* R3: hạn xử lý 24 giờ (yêu cầu gỡ nội dung vi phạm) — quá hạn xếp lên đầu */
+    out.forEach(it=>{ if(it.userReasons && it.userReasons.length) it.reasons = arr(it.reasons).concat(it.userReasons); delete it.userReasons;
+      it.ageH = it.ts ? Math.floor((now() - it.ts) / 3600000) : 0; it.overdue = !it.hidden && !it.sample && it.ageH >= 24 && (it.count > 0 || it.type === "report"); });
+    return out.sort((a,b)=> (b.overdue - a.overdue) || (b.count - a.count) || (b.ts - a.ts));
   }),
   /** action: "keep" (giữ / bỏ qua) · "hide" · "delete" */
   moderate: wrap(async (item, action, note)=>{
@@ -547,7 +576,10 @@ const api = {
     return clone(s);
   }),
   saveSettings: wrap(async partial=>{
-    const c = actor("settings.edit"); partial = obj(partial);
+    partial = obj(partial);
+    /* R3: mỗi khoá có quyền riêng — công tắc mở bán: settings.edit HOẶC shop.products; từ khoá cấm: settings.edit HOẶC community.moderate */
+    let c = null; const keys = Object.keys(partial);
+    (keys.length ? keys : [""]).forEach(k=>{ c = actor(SETTING_PERMS[k] || "settings.edit"); });
     const cur = Object.assign({ bank:{} }, clone(_settings || (isFb() ? {} : load().settings) || {}));
     const next = clone(cur); next.bank = obj(next.bank);
     const errs = [];
@@ -567,6 +599,12 @@ const api = {
     if("hotline" in partial) next.hotline = str(partial.hotline, 40);
     if("supportEmail" in partial){ const e = str(partial.supportEmail, 80); if(e && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) errs.push("Email hỗ trợ không hợp lệ."); else next.supportEmail = e; }
     if("notice" in partial) next.notice = str(partial.notice, 200);
+    if("shopOpen" in partial) next.shopOpen = partial.shopOpen === true;
+    if("features" in partial){ const f = obj(partial.features), nf = Object.assign({}, obj(cur.features)); FEATURE_KEYS.forEach(k=>{ if(k in f) nf[k] = f[k] !== false; }); next.features = nf; }
+    if("banner" in partial){ const b = obj(partial.banner), text = str(b.text, 160);
+      if(b.on && text.length < 4) errs.push("Nhập nội dung banner (≥ 4 ký tự).");
+      else next.banner = { on: !!b.on && !!text, text, level: b.level === "warn" ? "warn" : "info", link: BANNER_LINKS.includes(b.link) ? b.link : "" }; }
+    if("bannedWords" in partial) next.bannedWords = normWords(partial.bannedWords);
     if(errs.length) throw err(errs.join(" "), "admin/invalid");
     const changed = Object.keys(next).filter(k=> core.canonical(next[k]) !== core.canonical(cur[k]));
     if(!changed.length) return clone(cur);
@@ -582,15 +620,23 @@ const api = {
     _settings = next; try{ localStorage.setItem(SETTINGS_CACHE, JSON.stringify(next)); }catch(e){}
     api.applySettings(next);
     const show = (k, v)=> k === "bank" ? { bankName: v.bankName, bankBin: v.bankBin, accountNo: core.mask(v.accountNo), accountName: v.accountName } : v;
-    await api.appendAudit({ action: changed.includes("bank") ? "settings.payment" : "settings.update", target:{ type:"settings", id:"public" },
+    const real = changed.filter(k=> !["updatedAt","updatedBy"].includes(k));
+    const act = changed.includes("bank") ? "settings.payment" : isFb() ? "settings.update"
+      : real.length === 1 && real[0] === "shopOpen" ? (next.shopOpen ? "shop.open" : "shop.close") : real.length === 1 && real[0] === "bannedWords" ? "community.keywords" : "settings.update";
+    await api.appendAudit({ action: act, target:{ type:"settings", id:"public" },
       details:{ changed: changed.filter(k=> !["updatedAt","updatedBy"].includes(k)).map(k=> ({ key:k, before: show(k, obj(cur)[k] || (k === "bank" ? {} : null)), after: show(k, next[k]) })) } });
     return clone(next);
   }),
-  /** Áp cài đặt vào gian hàng đang chạy (TapShop.core.CFG — shop.js đọc mỗi lần vẽ) */
+  /** Áp cài đặt vào cửa hàng đang chạy (TapShop.core.CFG — shop.js đọc mỗi lần vẽ) */
   applySettings(s){
     s = obj(s);
+    /* R3: từ khoá cấm do quản trị nhập → bộ lọc cộng đồng (community.js MOD.setCustom) */
+    try{ const M = G.TECommunity && G.TECommunity.moderation; if(M && typeof M.setCustom === "function") M.setCustom(normWords(s.bannedWords)); }catch(e){}
     try{
       const CFG = G.TapShop && G.TapShop.core && G.TapShop.core.CFG; if(!CFG) return false;
+      /* R3: mở bán toàn cửa hàng = công tắc shopOpen VÀ tính năng Cửa hàng không bị tắt */
+      const was = CFG.shopOpen === true; CFG.shopOpen = s.shopOpen === true && obj(s.features).shop !== false;
+      if(was !== CFG.shopOpen){ try{ if(G.TapShop.refresh && G.TapShop._S && G.TapShop._S.loaded) G.TapShop.refresh(); }catch(e){} }
       ["shippingFee", "freeShipFrom", "giftFundPct"].forEach(k=>{ if(typeof s[k] === "number") CFG[k] = s[k]; });
       if(s.hotline) CFG.hotline = s.hotline;
       const b = obj(s.bank); if(b.accountNo || b.bankBin) CFG.bank = Object.assign({}, CFG.bank, Object.fromEntries(Object.entries(b).filter(([,v])=> v)));
@@ -653,6 +699,7 @@ const api = {
     const q = str(opts.q, 60).toLowerCase();
     if(q) list = list.filter(e=> [e.action, e.actor && e.actor.name, e.actor && e.actor.uid, e.target && e.target.name, e.target && e.target.id].join(" ").toLowerCase().includes(q));
     if(opts.group) list = list.filter(e=> String(e.action).split(".")[0] === opts.group);
+    if(Array.isArray(opts.groups) && opts.groups.length) list = list.filter(e=> opts.groups.some(g=> String(e.action) === g || String(e.action).indexOf(g + ".") === 0));   // R3: nhật ký theo mảng
     return list;
   }),
   /** Kiểm tra toàn vẹn chuỗi băm (demo cục bộ; firebase: so seq/hash do Function chainAudit gán) */
@@ -688,6 +735,15 @@ const api = {
       if(P("roles.view")) out.staff = Object.keys(d.roles).length;
       out.broadcasts7 = d.broadcasts.filter(b=> b.ts > now() - 7 * DAY).length;
     }
+    /* R3: bài đăng cộng đồng · báo cáo quá hạn 24 giờ · sản phẩm · góp ý mới */
+    try{ if(P("community.moderate") || P("reviews.moderate") || P("community.feature") || P("analytics.view")){
+      let n = 0; const S2 = cloud.social;
+      if(isFb()) n = (await fbCount(fdb().collection("routines"))) || 0; else if(S2 && S2._demo) n = Object.values(obj(S2._demo.load().routines)).filter(r=> r && !r.removed).length;
+      try{ if(G.cloudEvents && G.cloudEvents.listMoments) n += (await G.cloudEvents.listMoments({ all:true, limit:300 })).length; }catch(e){}
+      out.posts = n; } }catch(e){}
+    try{ if(!isFb() && (P("reports.view") || P("community.moderate") || P("reviews.moderate"))) out.reportsOverdue = (await api.modQueue()).filter(x=> x.overdue).length; }catch(e){}
+    try{ if(P("shop.products") || P("orders.view") || P("analytics.view")){ const st = G.TapShop && G.TapShop.storeState ? G.TapShop.storeState() : null; if(st){ out.products = st.real; out.shopLive = !!st.live; } } }catch(e){}
+    try{ if(P("support.tickets") && cloud.feedback && typeof cloud.feedback.list === "function") out.feedbackNew = arr(await cloud.feedback.list(300)).filter(f=> f && f.kind !== "nps" && (f.status || "new") === "new").length; }catch(e){}
     /* Sự kiện & cửa hàng (dùng cloudEvents) */
     const CE = G.cloudEvents;
     if(CE){
@@ -696,7 +752,7 @@ const api = {
         const [chs, evs] = await Promise.all([CE.listChallenges(), CE.listEvents()]);
         out.challengesActive = chs.filter(x=> !x.hidden && x.start <= today && x.end >= today).length;
         out.eventsUpcoming = evs.filter(e=> !e.hidden && String(e.start).slice(0, 10) >= today).length;
-        out.regs = evs.reduce((a, e)=> a + (Number(e.regCount) || 0), 0);
+        out.regs = evs.reduce((a, e)=> a + (Number(e.regCount) || 0), 0); out.events = evs.length;
       } }catch(e){}
       try{ if(P("shop.orders") || P("orders.view") || P("analytics.view")){
         const orders = await (rawCE.allOrders || CE.allOrders)();
@@ -707,6 +763,178 @@ const api = {
       } }catch(e){}
     }
     return out;
+  }),
+
+  /* =====================================================================
+     R3 (14/11/2026) — QUẢN TRỊ SÂU TỪNG MẢNG: tính năng bật/tắt · banner · từ khoá cấm · cấm đăng có thời hạn ·
+     danh sách nội dung cộng đồng (giáo án chia sẻ + Khoảnh khắc/review + bình luận) · sản phẩm · người tham gia sự kiện.
+     Mọi thao tác ghi: actor(quyền) + appendAudit (ai · lúc nào · làm gì).
+     ===================================================================== */
+  FEATURES, normWords,
+  /** Tính năng còn bật? (mặc định bật; quản trị tắt ở Cài đặt app) */
+  featureOn(k){ return obj(obj(_settings).features)[k] !== false; },
+  /** Banner thông báo toàn app đang bật → { text, level, link } | null */
+  banner(){ const b = obj(obj(_settings).banner); return b.on && b.text ? { text: str(b.text, 160), level: b.level === "warn" ? "warn" : "info", link: BANNER_LINKS.includes(b.link) ? b.link : "" } : null; },
+  bannedWords(){ return normWords(obj(_settings).bannedWords); },
+  /** Từ ngữ vi phạm trong 1 đoạn văn (bộ lọc thô tục + từ khoá cấm của quản trị) */
+  findBanned(text){
+    const t = String(text == null ? "" : text); let out = [];
+    try{ const M = cloud.social && cloud.social.moderation; if(M && typeof M.findProfanity === "function") out = arr(M.findProfanity(t)); }catch(e){}
+    const flat = s0=> " " + (String(s0).normalize("NFC").toLowerCase().match(/[\p{L}\p{N}]+/gu) || []).join(" ") + " ";
+    const low = flat(t), had = out.map(x=> flat(x));
+    api.bannedWords().forEach(w=>{ const k = flat(w); if(k.trim() && low.includes(k) && !had.includes(k)) out.push(w); });
+    return out;
+  },
+
+  /* ---------- Cấm đăng có thời hạn (bài, review, bình luận) ---------- */
+  mute: wrap(async (uid, opts)=>{
+    const c = actor("community.moderate"); opts = obj(opts); uid = str(uid, 128);
+    const reason = str(opts.reason, 300); if(reason.length < 4) throw err("Nhập lý do cấm đăng (tối thiểu 4 ký tự).", "admin/reason");
+    const days = Math.max(1, Math.min(365, Math.round(Number(opts.days) || 0)));
+    if(!uid || uid === "tapeasy" || /^(bot_|sample_)/.test(uid)) throw err("Không áp dụng cho tài khoản hệ thống / mẫu.", "admin/invalid");
+    if(uid === c.uid) throw err("Không tự cấm đăng chính mình.", "admin/self");
+    const doc = { uid, by: c.uid, byName: c.name || "", at: now(), reason, until: now() + days * DAY, name: str(opts.name, 80), liftedAt: 0 };
+    if(isFb()) await fdb().collection("mutes").doc(uid).set(doc);
+    else {
+      const d = load(); const chk = core.checkBan(c, { uid, role: d.roles[uid] ? d.roles[uid].role : null });
+      if(!chk.ok) throw err(chk.msg, "admin/" + chk.code);
+      d.mutes = obj(d.mutes); d.mutes[uid] = doc; save(d);
+    }
+    await api.appendAudit({ action:"user.mute", target:{ type:"user", id:uid, name: doc.name }, details:{ reason, days } });
+    return clone(doc);
+  }),
+  unmute: wrap(async (uid, opts)=>{
+    const c = actor("community.moderate"); uid = str(uid, 128);
+    if(isFb()) await fdb().collection("mutes").doc(uid).update({ liftedAt: now(), liftedBy: c.uid });
+    else { const d = load(); d.mutes = obj(d.mutes); if(!d.mutes[uid]) return false; Object.assign(d.mutes[uid], { liftedAt: now(), liftedBy: c.uid }); save(d); }
+    await api.appendAudit({ action:"user.unmute", target:{ type:"user", id:uid }, details:{ reason: str(obj(opts).reason, 300) } });
+    return true;
+  }),
+  listMutes: wrap(async ()=>{
+    actor(["community.moderate", "users.view"]);
+    const list = isFb() ? qd(await fdb().collection("mutes").limit(300).get()) : Object.values(obj(load().mutes));
+    return clone(list).map(m=> Object.assign(m, { active: !m.liftedAt && m.until > now() })).sort((a, b)=> (b.at || 0) - (a.at || 0));
+  }),
+  /** Người dùng `uid` (mặc định: mình) đang bị cấm đăng? → { until, reason } | null. Firebase: chỉ biết về CHÍNH MÌNH (bản đã tải). */
+  muteOf(uid){
+    const u = me(); uid = uid || (u && u.uid); if(!uid) return null;
+    let m = null;
+    if(isFb()) m = u && uid === u.uid ? _myMute : null;
+    else m = obj(load().mutes)[uid] || null;
+    return m && !m.liftedAt && Number(m.until) > now() ? { until: Number(m.until), reason: str(m.reason, 300) } : null;
+  },
+  async refreshMyMute(){
+    _myMute = null; const u = me(); if(!u || !isFb()) return null;
+    try{ _myMute = dd(await fdb().collection("mutes").doc(u.uid).get()); }catch(e){ _myMute = null; }
+    return api.muteOf();
+  },
+
+  /* ---------- Nội dung cộng đồng: giáo án chia sẻ + bài Khoảnh khắc / review ---------- */
+  /** opts: { type:""|"routine"|"post", status:""|"visible"|"hidden"|"reported"|"pinned", q, page, size } → { items, total, page, pages, counts } */
+  listContent: wrap(async opts=>{
+    actor(["community.moderate", "reviews.moderate", "community.feature", "reports.view"]); opts = obj(opts);
+    const S = cloud.social, items = [], pins = new Set(api.featuredIds());
+    const hid = r=>{ try{ return !!(S && S.moderation && S.moderation.isHidden ? S.moderation.isHidden(r) : r.hidden); }catch(e){ return !!r.hidden; } };
+    try{
+      let rs = [];
+      if(isFb()){ try{ rs = qd(await fdb().collection("routines").orderBy("createdAt", "desc").limit(300).get()); }catch(e){ rs = S && S.listRoutines ? await S.listRoutines() : []; } }
+      else if(S && S._demo) rs = Object.values(obj(S._demo.load().routines)).filter(r=> r && !r.removed);
+      rs.forEach(r=> items.push({ key:"routine:" + r.id, type:"routine", id:r.id, title: str(r.title, 140), text: str(r.desc, 600), author: str(r.authorName, 80), authorUid: r.authorUid || "",
+        ts: tsOf(r.updatedAt || r.createdAt), hidden: hid(r), reports: Number(r.reports) || 0, pinned: !!r.featured || pins.has(r.id), likes: Number(r.likes) || 0, sample: r.authorUid === "tapeasy" || r.authorRole === "team" }));
+    }catch(e){ console.warn("[cloud-admin] listContent routines", e); }
+    try{
+      const CE = G.cloudEvents;
+      if(CE && typeof CE.listMoments === "function"){
+        (await CE.listMoments({ all:true, limit:300 })).forEach(p=> items.push({ key:`post:${p.evId}:${p.id}`, type:"post", id:p.id, parentId:p.evId,
+          title: (p.kind === "recap" ? "Bài ban tổ chức" : `Review ${Number(p.stars) || 0}★`) + (p.evTitle ? " · " + str(p.evTitle, 100) : ""), text: str(p.text, 600), author: str(p.name, 80), authorUid: p.uid || "",
+          ts: tsOf(p.ts), hidden: p.hidden === true || (!p.modOk && (p.reportWeight != null ? Number(p.reportWeight) : Number(p.reportCount) || 0) >= 3), reports: Number(p.reportCount) || 0, comments: Number(p.commentCount) || 0,
+          pinned:false, sample: /^(bot_|tapeasy$)/.test(String(p.uid || "")), staff: !!p.staff }));
+      }
+    }catch(e){ console.warn("[cloud-admin] listContent posts", e); }
+    const counts = { all: items.length, routine: items.filter(x=> x.type === "routine").length, post: items.filter(x=> x.type === "post").length,
+      hidden: items.filter(x=> x.hidden).length, reported: items.filter(x=> x.reports > 0).length, pinned: items.filter(x=> x.pinned).length };
+    const q = str(opts.q, 60).toLowerCase(), st = opts.status || "";
+    let list = items.filter(x=> (!opts.type || x.type === opts.type)
+      && (!st || (st === "hidden" ? x.hidden : st === "visible" ? !x.hidden : st === "reported" ? x.reports > 0 : st === "pinned" ? x.pinned : true))
+      && (!q || [x.title, x.text, x.author, x.authorUid, x.id].join(" ").toLowerCase().includes(q)));
+    list.sort((a, b)=> (b.ts || 0) - (a.ts || 0));
+    return Object.assign(paginate(list, opts.page, opts.size), { counts });
+  }),
+  /** Ẩn / khôi phục / gỡ bài Khoảnh khắc – review sự kiện. action: "hide" | "keep" | "delete" */
+  moderatePost: wrap(async (item, action, note)=>{
+    item = obj(item); note = str(note, 300);
+    if(!["keep", "hide", "delete"].includes(action)) throw err("Hành động không hợp lệ.", "admin/invalid");
+    actor(["community.moderate", "reviews.moderate"]);
+    if(action !== "keep" && note.length < 2) throw err("Nhập lý do (ghi vào nhật ký).", "admin/reason");
+    const CE = G.cloudEvents; if(!CE || typeof CE.moderate !== "function") throw err("Chưa cài module Sự kiện.", "admin/missing");
+    await CE.moderate(str(item.parentId, 128), str(item.id, 128), action === "keep" ? "restore" : action);
+    await api.appendAudit({ action:`mod.post.${action}`, target:{ type:"post", id:item.id, name: str(item.title, 100) }, details:{ note, parentId: item.parentId || null, authorUid: item.authorUid || null } });
+    return true;
+  }),
+  listComments: wrap(async (evId, pid)=>{
+    actor(["community.moderate", "reviews.moderate", "reports.view"]);
+    const CE = G.cloudEvents; if(!CE || typeof CE.listComments !== "function") return [];
+    return arr(await CE.listComments(str(evId, 128), str(pid, 128)));
+  }),
+  removeComment: wrap(async (evId, pid, cid, note)=>{
+    actor("community.moderate"); note = str(note, 300);
+    if(note.length < 2) throw err("Nhập lý do gỡ bình luận.", "admin/reason");
+    const CE = G.cloudEvents; if(!CE || typeof CE.deleteComment !== "function") throw err("Chưa cài module Sự kiện.", "admin/missing");
+    await CE.deleteComment(str(evId, 128), str(pid, 128), str(cid, 128));
+    await api.appendAudit({ action:"mod.comment.delete", target:{ type:"comment", id: str(cid, 128) }, details:{ note, evId, pid } });
+    return true;
+  }),
+
+  /* ---------- Sản phẩm (cửa hàng) ---------- */
+  /** opts: { q, filter:""|"real"|"demo"|"hidden"|"low", page, size } → { items, total, page, pages, store:{ live, open, real }, counts } */
+  listProducts: wrap(async opts=>{
+    actor(["shop.products", "orders.view", "shop.orders"]); opts = obj(opts);
+    const TS = G.TapShop, CE = G.cloudEvents;
+    let list = [];
+    if(TS && TS._S){ try{ if(TS.reload && !TS._S.loaded) await TS.reload(); }catch(e){} list = arr(TS._S.products).filter(p=> p && !p.deleted); }
+    else if(CE) list = arr(await CE.listProducts()).filter(p=> p && !p.deleted);
+    const core2 = TS && TS.core, total = p=> core2 && core2.totalStock ? core2.totalStock(p) : Number(p.stock) || 0, real = p=> core2 && core2.isReal ? core2.isReal(p) : p.demo !== true;
+    const rows = list.map(p=> ({ id:p.id, name: str(p.name, 80), price: Number(p.price) || 0, stock: total(p), hidden: !!p.hidden, demo: !real(p), type: str(p.type, 24), cat: str(p.gender || p.cat, 20), updatedAt: Number(p.updatedAt) || 0 }));
+    const counts = { all: rows.length, real: rows.filter(r=> !r.demo).length, demo: rows.filter(r=> r.demo).length, hidden: rows.filter(r=> r.hidden).length, low: rows.filter(r=> !r.demo && r.stock <= 5).length };
+    const q = str(opts.q, 60).toLowerCase(), f = opts.filter || "";
+    const out = rows.filter(r=> (!f || (f === "real" ? !r.demo : f === "demo" ? r.demo : f === "hidden" ? r.hidden : f === "low" ? (!r.demo && r.stock <= 5) : true)) && (!q || [r.name, r.id, r.type].join(" ").toLowerCase().includes(q)))
+      .sort((a, b)=> (a.demo - b.demo) || a.name.localeCompare(b.name, "vi"));
+    const store = TS && TS.storeState ? TS.storeState() : { live:false, open: obj(_settings).shopOpen === true, real: counts.real };
+    return Object.assign(paginate(out, opts.page, opts.size), { counts, store: clone(store) });
+  }),
+  /** Ẩn / hiện 1 sản phẩm (shop.products) — ghi audit product.save qua lớp bọc cloudEvents */
+  setProductHidden: wrap(async (id, hidden)=>{
+    actor("shop.products"); const CE = G.cloudEvents; if(!CE) throw err("Chưa cài module Cửa hàng.", "admin/missing");
+    const p = arr(await CE.listProducts()).find(x=> x.id === id); if(!p) throw err("Sản phẩm chưa có trên máy chủ — mở Sửa → Lưu trước.", "not-found");
+    await CE.saveProduct({ id: p.id, name: p.name, hidden: !!hidden });
+    try{ if(G.TapShop && G.TapShop.refresh) await G.TapShop.refresh(); }catch(e){}
+    return !!hidden;
+  }),
+  /** Bật / tắt mở bán toàn cửa hàng (settings.edit hoặc shop.products). Bật khi chưa có hàng thật → từ chối. */
+  setShopOpen: wrap(async on=>{
+    actor(SETTING_PERMS.shopOpen); on = on === true;
+    if(on){ const st = G.TapShop && G.TapShop.storeState ? G.TapShop.storeState() : null; if(st && !st.demo && st.real < 1) throw err("Chưa có sản phẩm thật nào đang hiện — thêm sản phẩm (hoặc Sửa → Lưu sản phẩm mẫu) trước khi mở bán.", "admin/no-products"); }
+    await api.saveSettings({ shopOpen: on });
+    return on;
+  }),
+  /** Người tham gia 1 sự kiện (events.checkin / events.manage) — phân trang + tìm */
+  listParticipants: wrap(async (evId, opts)=>{
+    actor(["events.checkin", "events.manage"]); opts = obj(opts);
+    const CE = G.cloudEvents; if(!CE) return paginate([], 1);
+    const pii = can("users.pii") || can("events.checkin"), q = str(opts.q, 60).toLowerCase();
+    const rows = arr(await CE.listRegs(str(evId, 128))).map(r=> ({ uid: r.uid || "", name: str(r.name, 80), phone: pii ? str(r.phone, 20) : core.mask(str(r.phone, 20), 3), status: r.status || "registered", paid: !!r.paid, checkedIn: !!(r.checkedIn || r.checkinAt || r.status === "checked_in"), createdAt: tsOf(r.createdAt), sample: /^(bot_|fake_|sample_)/.test(String(r.uid || "")) || !!r.fake }))
+      .filter(r=> !q || [r.name, r.uid, r.phone].join(" ").toLowerCase().includes(q)).sort((a, b)=> (b.createdAt || 0) - (a.createdAt || 0));
+    return paginate(rows, opts.page, opts.size);
+  }),
+  /** Ẩn / hiện / huỷ sự kiện (events.manage) — ghi audit event.save qua lớp bọc */
+  setEventState: wrap(async (evId, patch)=>{
+    actor("events.manage"); patch = obj(patch);
+    const CE = G.cloudEvents; const ev = arr(await CE.listEvents()).find(e=> e.id === evId); if(!ev) throw err("Sự kiện không còn tồn tại.", "not-found");
+    const next = Object.assign({}, ev);
+    if("hidden" in patch) next.hidden = !!patch.hidden;
+    if("cancelled" in patch){ next.cancelled = !!patch.cancelled; next.cancelReason = str(patch.reason, 300); if(next.cancelled) next.hidden = true; }
+    await CE.saveEvent(next);
+    return true;
   }),
 
   _demo: { load, save, reset(){ try{ localStorage.removeItem(KEY); }catch(e){} }, users: demoUsers },
@@ -773,14 +1001,38 @@ function guardAuth(){
   });
 }
 
+/* ---------------------------------------------------------------------
+   5b. R3 — CHẶN ĐĂNG khi bị cấm đăng có thời hạn + lọc từ khoá cấm (bài chia sẻ, review, bài BTC, bình luận)
+       Demo: lớp này là "máy chủ" giả lập. Firebase: chỉ là lớp UX — rules/Function phải kiểm lại (docs/qa/R3-admin.md §Chuyển giao).
+   --------------------------------------------------------------------- */
+function mutedErr(m){ const d = new Date(m.until), p = n=> String(n).padStart(2, "0");
+  return err(`Tài khoản đang bị tạm dừng đăng bài / bình luận đến ${p(d.getHours())}:${p(d.getMinutes())} ngày ${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}${m.reason ? ". Lý do: " + m.reason : ""}. Liên hệ hỗ trợ nếu bạn cho rằng đây là nhầm lẫn.`, "admin/muted"); }
+function checkPost(text){
+  const m = api.muteOf(); if(m) throw mutedErr(m);
+  if(text != null){ const bad = api.findBanned(text); if(bad.length) throw err(`Nội dung có từ ngữ không phù hợp ("${bad.slice(0, 3).join('", "')}"). Vui lòng sửa lại trước khi đăng.`, "admin/banned-word"); }
+}
+function guardPosting(){
+  let n = 0;
+  const wrapOn = (host, name, textOf)=>{ if(!host || typeof host[name] !== "function" || host[name].__r3) return; const orig = host[name];
+    const f = async function(...a){ let t = null; try{ t = textOf ? textOf(a) : null; }catch(e){} checkPost(t); return orig.apply(this, a); };
+    f.__r3 = true; host[name] = f; n++; };
+  const CE = G.cloudEvents;
+  wrapOn(CE, "addComment", a=> a[2]); wrapOn(CE, "addReview", a=> obj(a[1]).text); wrapOn(CE, "addPost", a=> obj(a[1]).text);
+  const S = cloud.social;
+  wrapOn(S, "publishRoutine", null);          // chỉ kiểm cấm đăng — từ ngữ do community.js MOD.validate kiểm (gồm từ khoá cấm, mã lỗi social/invalid)
+  return n;
+}
+try{ guardPosting(); }catch(e){ console.warn("[cloud-admin] guardPosting", e); }
+try{ if(typeof cloud.onAuth === "function") cloud.onAuth(()=>{ api.refreshMyMute().catch(()=>{}); }); }catch(e){}
 try{ guardEvents(); }catch(e){ console.warn("[cloud-admin] guardEvents", e); }
 try{ guardAuth(); }catch(e){ console.warn("[cloud-admin] guardAuth", e); }
 G.cloudAdmin = api;
-api._raw = rawCE; api._guardEvents = guardEvents;
+api._raw = rawCE; api._guardEvents = guardEvents; api._guardPosting = guardPosting; api._paginate = paginate;
 /* Áp cài đặt đã lưu ngay (không chờ mạng) rồi khởi động */
 try{ const s = JSON.parse(localStorage.getItem(SETTINGS_CACHE) || "null"); if(s) api.applySettings(s); }catch(e){}
 Promise.resolve().then(()=> cloud.init ? cloud.init() : null).then(()=>{
   if(!isFb() && cloud.user && api.isBanned(cloud.user.uid)){ cloud.signOut().catch(()=>{}); try{ toast("Tài khoản đã bị khoá", "lock"); }catch(e){} }
+  api.refreshMyMute().catch(()=>{});
   return api.init();
 }).catch(e=> console.warn("[cloud-admin] init", e));
 })(typeof window !== "undefined" ? window : globalThis);

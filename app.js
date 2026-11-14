@@ -80,21 +80,54 @@ function defaultState(){
   };
 }
 
+const STORAGE_CORRUPT_KEY = STORAGE_KEY + "_corrupt";      // khai báo TRƯỚC loadState() (const không được dùng trước khi khai báo)
+const FK_TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 let state = loadState();
 
+/* R3-CORE-01: dữ liệu lưu bị hỏng (JSON cụt do hết pin giữa lúc ghi, tiện ích dọn rác…) trước đây bị thay âm thầm bằng
+   trạng thái trống rồi lần saveState() kế tiếp GHI ĐÈ mất hẳn. Nay giữ bản gốc ở key phụ (1 bản, ≤ 2 MB) để còn cứu được
+   và báo người dùng 1 lần lúc khởi động (fkStorageNotice). Không đổi key chính. */
+function fkKeepCorrupt(raw){
+  loadState.corrupt = true;
+  try{ if(typeof raw === "string" && raw.length <= 2000000) localStorage.setItem(STORAGE_CORRUPT_KEY, JSON.stringify({ at: Date.now(), raw })); }catch(e){}
+}
 function loadState(){
+  let raw = null;
+  try{ raw = localStorage.getItem(STORAGE_KEY); }
+  catch(e){ loadState.blocked = true; return defaultState(); }      // Safari riêng tư / cookie bị chặn: localStorage ném SecurityError
   try{
-    const raw = localStorage.getItem(STORAGE_KEY);
     if(!raw) return defaultState();
-    const parsed = JSON.parse(raw);
-    if(!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return defaultState();
+    let parsed;
+    try{ parsed = JSON.parse(raw); }catch(e){ fkKeepCorrupt(raw); return defaultState(); }
+    if(!parsed || typeof parsed !== "object" || Array.isArray(parsed)){ fkKeepCorrupt(raw); return defaultState(); }
     return normalizeState(Object.assign(defaultState(), parsed, {
       profile: Object.assign(defaultState().profile, parsed.profile||{}),
       reminders: Object.assign(defaultState().reminders, parsed.reminders||{}),
       aiSettings: Object.assign(defaultState().aiSettings, parsed.aiSettings||{}),
       driveSettings: Object.assign(defaultState().driveSettings, parsed.driveSettings||{}),
     }));
-  }catch(e){ return defaultState(); }
+  }catch(e){ fkKeepCorrupt(raw); return defaultState(); }
+}
+/* R3-CORE-04: số đo hồ sơ sai kiểu / NaN / âm / phi lý (bản cũ, sao lưu, đồng bộ) → BMR/TDEE/macro ra NaN khắp app.
+   Ép về số hữu hạn trong khoảng hợp lý; ngoài khoảng → giá trị mặc định. Không đụng trường khác của hồ sơ. */
+function fkCleanNum(v, min, max, dflt){
+  const n = typeof v === "number" ? v : (typeof v === "string" && v.trim() !== "" ? Number(v.trim().replace(",", ".")) : NaN);
+  return Number.isFinite(n) && n >= min && n <= max ? n : dflt;
+}
+function fkSanitizeProfile(p){
+  if(!p || typeof p !== "object") return p;
+  p.age = Math.round(fkCleanNum(p.age, 5, 120, 25));
+  p.height = fkCleanNum(p.height, 50, 260, 170);
+  p.weight = fkCleanNum(p.weight, 15, 400, 65);
+  p.bodyfat = p.bodyfat == null || p.bodyfat === "" ? null : fkCleanNum(p.bodyfat, 2, 75, null);
+  if(p.gender !== "male" && p.gender !== "female") p.gender = "male";
+  ["bmr","tdee","goalKcal","protein","carbs","fat"].forEach(k=>{ p[k] = fkCleanNum(p[k], 0, 20000, 0); });
+  p.sleepGoalHours = fkCleanNum(p.sleepGoalHours, 4, 12, 8);
+  if(p.waterTargetOverride != null) p.waterTargetOverride = fkCleanNum(p.waterTargetOverride, 0.5, 6, null);
+  if(typeof p.name !== "string") p.name = p.name == null ? "" : String(p.name);
+  if(p.name.length > 60) p.name = p.name.slice(0, 60);
+  if(p.avatarData != null && !(typeof p.avatarData === "string" && /^data:image\/(png|jpe?g|gif|webp);base64,/i.test(p.avatarData))) p.avatarData = null;
+  return p;
 }
 /* QT-11: dữ liệu cũ / thiếu trường / sai kiểu (bản cũ, khôi phục sao lưu, đồng bộ) không được làm vỡ app.
    Chỉ VÁ chỗ hỏng (mảng/đối tượng mặc định) — không xoá dữ liệu hợp lệ, không đổi key. Gọi lại nhiều lần không đổi kết quả. */
@@ -110,6 +143,49 @@ function normalizeState(s){
   if(!isObj(s.reminders)) s.reminders = defaultState().reminders;
   if(!isObj(s.reminders.workout)) s.reminders.workout = {};
   if(!isObj(s.reminders.meal)) s.reminders.meal = {};
+  /* R3-CORE-04 / R3-CORE-07: số đo hồ sơ + các trường số/chuỗi được chèn vào HTML (giờ nhắc, InBody, ảnh, video, nhật ký ăn,
+     nhà cung cấp AI) phải đúng kiểu — bản sao lưu/dữ liệu cũ bị sửa tay không thể mang HTML vào app. */
+  fkSanitizeProfile(s.profile);
+  /* R3 (chuyển giao từ nutrition): lọc dòng nhật ký ăn hỏng (null/không phải object) — khôi phục Drive/đồng bộ cloud có thể mang vào */
+  Object.keys(s.foodLog).forEach(d=>{ const day = s.foodLog[d]; if(!isObj(day)){ delete s.foodLog[d]; return; } Object.keys(day).forEach(m=>{ if(Array.isArray(day[m])) day[m] = day[m].filter(isObj); }); });
+  const numOrNull = (v, min, max)=> v == null || v === "" ? null : fkCleanNum(v, min, max, null);
+  ["workout","meal"].forEach(g=> Object.keys(s.reminders[g]).forEach(k=>{
+    const r = s.reminders[g][k];
+    if(!isObj(r)){ delete s.reminders[g][k]; return; }
+    r.enabled = !!r.enabled;
+    if(typeof r.time !== "string" || !FK_TIME_RE.test(r.time)) r.time = g === "workout" ? "06:00" : "07:00";
+  }));
+  if(typeof s.reminders.bedtimeTime !== "string" || !FK_TIME_RE.test(s.reminders.bedtimeTime)) s.reminders.bedtimeTime = "22:30";
+  s.reminders.master = !!s.reminders.master; s.reminders.bedtimeEnabled = !!s.reminders.bedtimeEnabled;
+  s.inbodyLogs = s.inbodyLogs.filter(isObj).map(l=>{
+    l.id = String(l.id == null ? "" : l.id).replace(/[^\w-]/g, "").slice(0, 64) || ("ib" + Math.random().toString(36).slice(2, 10));
+    l.ts = fkCleanNum(l.ts, 0, 8.64e15, Date.now());
+    l.source = l.source === "ai" ? "ai" : "manual";
+    l.weight = numOrNull(l.weight, 15, 400); l.bodyFatPct = numOrNull(l.bodyFatPct, 2, 75); l.muscleMassKg = numOrNull(l.muscleMassKg, 5, 150);
+    l.bodyWaterPct = numOrNull(l.bodyWaterPct, 20, 85); l.visceralFat = numOrNull(l.visceralFat, 1, 60);
+    l.note = typeof l.note === "string" ? l.note.slice(0, 300) : "";
+    return l;
+  });
+  s.progressPhotos = s.progressPhotos.filter(p=> isObj(p) && Number.isFinite(Number(p.id))).map(p=>{
+    p.id = Number(p.id); p.ts = fkCleanNum(p.ts, 0, 8.64e15, Date.now()); p.weightAtCapture = numOrNull(p.weightAtCapture, 15, 400);
+    p.angle = String(p.angle == null ? "" : p.angle).replace(/[^\w-]/g, "").slice(0, 24);
+    return p;
+  });
+  s.videoLibrary = s.videoLibrary.filter(m=> isObj(m) && Number.isFinite(Number(m.id))).map(m=>{
+    m.id = Number(m.id); m.name = typeof m.name === "string" ? m.name.slice(0, 120) : "";
+    m.category = String(m.category == null ? "" : m.category).replace(/[^\w-]/g, "").slice(0, 24);
+    m.fit = m.fit === "cover" ? "cover" : "contain";
+    return m;
+  });
+  if(isObj(s.aiSettings) && !["openai","gemini","grok"].includes(s.aiSettings.provider)) s.aiSettings.provider = "openai";
+  s.finishedDates = Array.from(new Set(s.finishedDates.filter(d=> /^\d{4}-\d{2}-\d{2}$/.test(d)))).sort();
+  Object.keys(s.sleepLog).forEach(d=>{
+    const l = s.sleepLog[d];
+    if(!isObj(l) || !Number.isFinite(Number(l.hours)) || Number(l.hours) <= 0 || Number(l.hours) > 24){ delete s.sleepLog[d]; return; }
+    l.hours = Number(l.hours); l.quality = fkCleanNum(l.quality, 1, 5, 3);
+  });
+  Object.keys(s.waterLog).forEach(d=>{ s.waterLog[d] = fkCleanNum(s.waterLog[d], 0, 30, 0); });
+  fkPruneFired(s);
   Object.keys(s.workoutLog).forEach(d=>{
     const l = s.workoutLog[d];
     if(!isObj(l)){ delete s.workoutLog[d]; return; }
@@ -142,24 +218,52 @@ function normalizeState(s){
   Object.keys(s.foodLog).forEach(d=>{
     const day = s.foodLog[d];
     if(!isObj(day)){ delete s.foodLog[d]; return; }
-    Object.keys(day).forEach(m=>{ if(!Array.isArray(day[m])) day[m] = []; });
+    Object.keys(day).forEach(m=>{
+      if(!Array.isArray(day[m])){ day[m] = []; return; }
+      day[m] = day[m].filter(isObj);
+      day[m].forEach(it=>{ ["kcal","protein","carbs","fat","grams"].forEach(k=>{ if(it[k] != null && typeof it[k] !== "number") it[k] = fkCleanNum(it[k], 0, 100000, 0); else if(typeof it[k] === "number" && !Number.isFinite(it[k])) it[k] = 0; }); });   // R3-CORE-07
+    });
   });
   return s;
 }
+/* R3-CORE-09: _firedKeys (chống bắn trùng thông báo) trước đây không bao giờ dọn → lớn dần mãi. Chỉ giữ khoá của hôm nay. */
+function fkPruneFired(s){
+  s = s || state; if(!s || !s._firedKeys || typeof s._firedKeys !== "object") return 0;
+  const today = todayStr(); let n = 0;
+  Object.keys(s._firedKeys).forEach(k=>{ if(k.slice(0, 10) !== today){ delete s._firedKeys[k]; n++; } });
+  return n;
+}
 /* QC-11: localStorage đầy → không ném lỗi ra ngoài (trước đây bị nuốt âm thầm), trả false + báo người dùng 1 lần/15 giây.
    Module cần biết đã lưu thật chưa (cộng điểm, voucher…) kiểm giá trị trả về: if(saveState() === false) hoàn tác. */
+/* R3-CORE-09: trước khi báo đầy → dọn phần không quan trọng (khoá thông báo cũ, bản JSON hỏng đã giữ) rồi thử lại 1 lần.
+   Trình duyệt CHẶN lưu trữ (Safari riêng tư, tắt cookie → SecurityError) báo câu khác với "đầy bộ nhớ". */
 function saveState(){
+  let err = null;
   try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }catch(e){
+  }catch(e){ err = e; }
+  if(err){
+    try{
+      fkPruneFired(state);
+      try{ localStorage.removeItem(STORAGE_CORRUPT_KEY); }catch(_){}
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      err = null;
+    }catch(e2){ err = e2; }
+  }
+  if(err){
+    const e = err;
     const now = Date.now();
+    const blocked = !!(e && (e.name === "SecurityError" || e.code === 18)) || loadState.blocked === true;
     if(!saveState._warnAt || now - saveState._warnAt > 15000){
       saveState._warnAt = now;
-      try{ toast("Bộ nhớ máy đầy — chưa lưu được thay đổi. Xoá bớt video/ảnh hoặc sao lưu rồi dọn dữ liệu.", "error"); }catch(_){}
+      try{ toast(blocked ? "Trình duyệt đang chặn lưu dữ liệu (chế độ riêng tư / tắt cookie) — thay đổi sẽ mất khi đóng app. Hãy mở bằng tab thường hoặc cài app."
+        : "Bộ nhớ máy đầy — chưa lưu được thay đổi. Xoá bớt video/ảnh hoặc sao lưu rồi dọn dữ liệu.", "error"); }catch(_){}
     }
     try{ console.warn("[saveState]", e && e.name); }catch(_){}
+    saveState.lastError = (e && e.name) || "Error";
     return false;
   }
+  saveState.lastError = null;
   if(typeof driveDirty !== "undefined") driveDirty = true;
   return true;
 }
@@ -169,16 +273,19 @@ function saveState(){
    --------------------------------------------------------------------- */
 function calcBMR(p){
   // Mifflin-St Jeor Equation (1990)
+  // R3-CORE-04: đầu vào sai kiểu / NaN / âm → dùng giá trị mặc định thay vì trả NaN hay BMR âm
+  p = p || {};
+  p = { gender: p.gender, weight: fkCleanNum(p.weight, 15, 400, 65), height: fkCleanNum(p.height, 50, 260, 170), age: fkCleanNum(p.age, 5, 120, 25) };
   const base = 10*p.weight + 6.25*p.height - 5*p.age;
-  return Math.round(p.gender === "male" ? base + 5 : base - 161);
+  return Math.max(0, Math.round(p.gender === "male" ? base + 5 : base - 161));
 }
 function calcTDEE(bmr, activityId){
   const level = ACTIVITY_LEVELS.find(a=>a.id===activityId) || ACTIVITY_LEVELS[2];
-  return Math.round(bmr * level.factor);
+  return Math.round((Number(bmr) || 0) * level.factor);
 }
 function calcGoalKcal(tdee, goalId){
   const goal = GOALS.find(g=>g.id===goalId) || GOALS[1];
-  return Math.round(tdee * (1 + goal.kcalAdjust));
+  return Math.round((Number(tdee) || 0) * (1 + goal.kcalAdjust));
 }
 /* QN-08: g đạm/kg theo mục tiêu + mức vận động (ISSN 2017, Morton 2018; PROT-AGE ≥ 60 tuổi ≥ 1,2) thay vì 2 g/kg cho mọi người.
    Giảm mỡ / tăng cơ có vận động: 2,0 · ít vận động: 1,6 · duy trì: 1,2 (ít vận động) – 1,4 – 1,6 (vận động nhiều). */
@@ -193,7 +300,8 @@ function proteinPerKg(p){
 function calcMacros(weight, goalKcal, prof){
   // g/kg theo cân nặng điều chỉnh: người thừa cân tính theo ~BMI 25, trần 180 g và ≤ 35 % năng lượng (AMDR 10–35 %)
   const p = prof || state.profile || {};
-  const h = (p.height || 0)/100;
+  weight = fkCleanNum(weight, 15, 400, 65); goalKcal = fkCleanNum(goalKcal, 0, 20000, 0);   // R3-CORE-04
+  const h = (Number(p.height) || 0)/100;
   const ref = h ? Math.min(weight, 25*h*h) : weight;
   const capAmdr = goalKcal > 0 ? Math.floor(0.35 * goalKcal / 4) : 180;
   const protein = Math.max(0, Math.min(180, capAmdr, Math.round(ref * proteinPerKg(p))));
@@ -212,7 +320,7 @@ function calcEER(p){
   return Math.round(male ? 88.5 - 61.9*age + pa*(26.7*w + 903*hm) + 25 : 135.3 - 30.8*age + pa*(10*w + 934*hm) + 25);
 }
 function recomputeProfile(){
-  const p = state.profile;
+  const p = fkSanitizeProfile(state.profile);   // R3-CORE-04
   /* Sàn calo an toàn: nữ ≥1.200, nam ≥1.500 kcal và không dưới BMR */
   p.bmr = calcBMR(p);
   const age = Number(p.age) || 0;
@@ -386,26 +494,34 @@ function fkPlanStartDate(){
   return ps > s ? ps : s;
 }
 function getActivePlan(){ return state.plans[state.activePlanId]; }
+/* R3-CORE-05: giới hạn đầu vào giáo án (gõ tay / nhập từ PT, cộng đồng, sao lưu). Số hiệp 1–20 (gõ 100000 từng làm màn buổi tập
+   dựng 100.000 hàng → treo máy), nghỉ 0–900 giây, thời lượng 0–600 phút, chuỗi số lần ≤ 24 ký tự, tên ≤ 60 ký tự. */
+const FK_MAX_SETS = 20, FK_MAX_REST = 900, FK_MAX_NAME = 60;
+function fkClampSets(v, dflt){ const n = Math.round(Number(v)); return Number.isFinite(n) && n >= 1 ? Math.min(FK_MAX_SETS, n) : (dflt != null ? dflt : 3); }
+function fkClampRest(v, dflt){ const n = Math.round(Number(v)); return Number.isFinite(n) && n >= 0 && String(v).trim() !== "" ? Math.min(FK_MAX_REST, n) : (dflt != null ? dflt : 60); }
+function fkCleanReps(v, dflt){ const t = String(v == null ? "" : v).replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, 24); return t || (dflt != null ? dflt : "12"); }
+function fkCleanName(v, dflt){ const t = String(v == null ? "" : v).replace(/[\u0000-\u001f]/g, " ").replace(/\s+/g, " ").trim().slice(0, FK_MAX_NAME); return t || (dflt || ""); }
 function blankDay(){ return { title:"Chưa đặt tên", intensity:"Vừa", duration: 30, items: [] }; }
 function createBlankPlan(name){
   const id = "plan_"+uid();
   const days = {};
   DAY_KEYS.forEach(k=> days[k] = blankDay());
-  const plan = { id, name: name || "Giáo án mới", tagline: "Giáo án cá nhân hoá", builtin:false, days };
+  const plan = { id, name: fkCleanName(name, "Giáo án mới"), tagline: "Giáo án cá nhân hoá", builtin:false, days };
   state.plans[id] = plan;
   saveState();
   try{ if(typeof fkTrack === "function") fkTrack("plan_created", { source: "blank" }); }catch(e){}
   return plan;
 }
 function duplicatePlan(planId){
-  const src = state.plans[planId];
+  const src = fkEnsurePlanDays(state.plans[planId]);
+  if(!src) return null;
   const id = "plan_"+uid();
   const days = {};
   DAY_KEYS.forEach(k=>{
     days[k] = { title: src.days[k].title, intensity: src.days[k].intensity, duration: src.days[k].duration,
       items: src.days[k].items.map(it=> Object.assign({}, it, { uid: it.exerciseId ? it.exerciseId+"_"+uid() : uid() })) };
   });
-  const plan = { id, name: src.name + " (bản sao)", tagline: src.tagline, builtin:false, days };
+  const plan = { id, name: fkCleanName(String(src.name || "Giáo án").slice(0, FK_MAX_NAME - 10) + " (bản sao)"), tagline: src.tagline, builtin:false, days };
   state.plans[id] = plan;
   saveState();
   return plan;
@@ -425,8 +541,40 @@ function getExerciseMeta(item){
    3. INDEXEDDB — lưu video clip tập luyện & ảnh tiến trình
    --------------------------------------------------------------------- */
 const DB_NAME = "fitkit-db", DB_STORE = "clips", DB_STORE_PHOTOS = "photos";
+/* R3-CORE-15: dùng lại 1 kết nối IndexedDB (trước đây mỗi lần đọc/ghi mở 1 kết nối mới và không bao giờ đóng).
+   IndexedDB không có / bị chặn (một số chế độ riêng tư) → Promise bị từ chối với thông báo tiếng Việt, nơi gọi tự xử lý. */
+let _dbPromise = null;
 function openDB(){
+  if(_dbPromise) return _dbPromise;
+  const p = fkOpenDBRaw().then(db=>{
+    try{ db.onversionchange = ()=>{ try{ db.close(); }catch(e){} if(_dbPromise === p) _dbPromise = null; }; db.onclose = ()=>{ if(_dbPromise === p) _dbPromise = null; }; }catch(e){}
+    return db;
+  });
+  _dbPromise = p;
+  p.catch(()=>{ if(_dbPromise === p) _dbPromise = null; });
+  return p;
+}
+/* R3-CORE-08: 1 URL blob cho mỗi video/ảnh (dùng lại giữa các lần vẽ) — trước đây mỗi lần vẽ lại màn Tập luyện / Giáo án / Tiến độ
+   tạo URL mới cho MỌI video, ảnh và không thu hồi → rò bộ nhớ (video hàng chục MB). Xoá clip/ảnh thì thu hồi URL. */
+const _fkBlobUrls = new Map();
+async function fkBlobUrl(kind, id){
+  const key = kind + ":" + id;
+  if(_fkBlobUrls.has(key)) return _fkBlobUrls.get(key);
+  let rec = null;
+  try{ rec = kind === "photo" ? await dbGetPhoto(id) : await dbGetClip(id); }catch(e){ return null; }
+  if(!rec || !rec.blob) return null;
+  if(_fkBlobUrls.has(key)) return _fkBlobUrls.get(key);
+  let u = null; try{ u = URL.createObjectURL(rec.blob); }catch(e){ return null; }
+  _fkBlobUrls.set(key, u);
+  return u;
+}
+function fkBlobUrlDrop(kind, id){
+  const key = kind + ":" + id, u = _fkBlobUrls.get(key);
+  if(u){ try{ URL.revokeObjectURL(u); }catch(e){} _fkBlobUrls.delete(key); }
+}
+function fkOpenDBRaw(){
   return new Promise((resolve,reject)=>{
+    if(typeof indexedDB === "undefined" || !indexedDB){ reject(new Error("Trình duyệt này không cho lưu video/ảnh trên máy (IndexedDB bị tắt).")); return; }
     const req = indexedDB.open(DB_NAME, 2);
     req.onupgradeneeded = () => {
       const db = req.result;
@@ -435,6 +583,7 @@ function openDB(){
     };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
+    req.onblocked = () => reject(new Error("Kho video/ảnh đang bị một tab TapEasy khác giữ — đóng tab đó rồi thử lại."));
   });
 }
 async function dbAddClip(file, name){
@@ -518,7 +667,8 @@ async function dbPutRaw(storeName, record){
    --------------------------------------------------------------------- */
 const SUB_SCREENS = ["library","plans","progress","client","ptprofile","exlib"];
 function goto(screen){
-  const sc = $(`#screen-${screen}`);
+  let sc = $(`#screen-${screen}`);
+  if(!sc){ screen = "home"; sc = $("#screen-home"); if(!sc) return; }   // R3-CORE-15: màn không tồn tại (liên kết cũ / module chưa nạp) → về Trang chủ thay vì ném lỗi
   /* QU-07: bỏ `void sc.offsetWidth` (ép layout đồng bộ ~0,9 s lúc khởi động ở CPU 4×).
      Màn vừa chuyển từ ẩn (display:none) sang hiện thì CSS animation tự chạy lại khi gắn lớp "enter";
      bấm lại đúng màn đang mở → không chạy lại hiệu ứng vào màn (tránh nháy). */
@@ -1288,8 +1438,8 @@ function renderWorkoutScreen(){
     row.addEventListener("click", ()=> openExerciseDetail(row.dataset.ex, isToday));
   });
   $$("#exercise-list [data-thumb-clip]").forEach(async v=>{
-    const rec = await dbGetClip(Number(v.dataset.thumbClip));
-    if(rec) v.src = URL.createObjectURL(rec.blob);
+    const u = await fkBlobUrl("clip", Number(v.dataset.thumbClip));
+    if(u) v.src = u;
   });
   const linkAdd = $("#link-add-rest-exercise");
   if(linkAdd) linkAdd.addEventListener("click", ()=>{ plansUI = { mode:"edit", planId: plan.id, day: state.selectedDay }; goto("plans"); });
@@ -1475,11 +1625,12 @@ function renderSessionStep(){
   state.setLog = state.setLog || {};
   const last = state.setLog[key];
   const timed = isTimedReps(item.reps);
-  const nSets = Math.max(1, Number(item.sets)||1);
+  const nSets = Math.min(FK_MAX_SETS, Math.max(1, Math.round(Number(item.sets))||1));   // R3-CORE-05
   session.sets = session.sets || {};
   const top = repTop(item.reps);
   const prog = progressionFor(item, meta, last, timed, nSets);
   if(!session.sets[item.uid]) session.sets[item.uid] = fkPrefillRows(item, { meta, last, timed, nSets, top, prog });
+  if(session.sets[item.uid].length > FK_MAX_SETS) session.sets[item.uid].length = FK_MAX_SETS;   // R3-CORE-05 (kể cả hàng do training-pro điền sẵn)
   const rows = session.sets[item.uid];
   const eqc = fkEquipClass(meta);
   const simple = fkSimpleMode();                                   // QU-22: người mới — ẩn cột RPE, có hướng dẫn ghi hiệp
@@ -1566,7 +1717,7 @@ function renderSessionStep(){
       if(prevKg > 0){ r.kg = prevKg; const n = kgInp(i); if(n && n.value !== undefined) n.value = prevKg; }
     }
     b.closest(".set-row").classList.toggle("done", r.done);
-    if(r.done && i < rows.length-1 && item.restSec > 0) startSetRest(item.restSec);
+    if(r.done && i < rows.length-1 && Number(item.restSec) > 0) startSetRest(item.restSec);
   }));
   $("#btn-session-done").addEventListener("click", ()=>{
     let doneRows = rows.filter(r=>r.done);
@@ -1591,20 +1742,48 @@ function renderSessionStep(){
   });
   $("#btn-session-skip").addEventListener("click", ()=>{ stopSetRest(); session.idx++; renderSessionStep(); });
 }
-function stopSetRest(){ clearInterval(window._restTimer); cancelRestNotif(); const el = $("#set-rest"); if(el) el.hidden = true; }
+function stopSetRest(){ clearInterval(window._restTimer); window._restEnd = 0; cancelRestNotif(); const el = $("#set-rest"); if(el) el.hidden = true; }
+/* R3-CORE-06: đồng hồ nghỉ đếm theo MỐC THỜI GIAN (Date.now) thay vì trừ dần mỗi nhịp setInterval — trình duyệt bóp timer khi
+   khoá màn hình / chuyển app nên trước đây nghỉ 90 giây có thể kéo thành vài phút. Quay lại app → tính lại ngay (fkRestSync).
+   Số giây ép về số (restSec dạng chuỗi "60" + 15 từng thành "6015"), kẹp 1–900. */
+function fkRestLeft(){ return window._restEnd ? Math.max(0, Math.ceil((window._restEnd - Date.now()) / 1000)) : 0; }
+function fkRestPaused(){ try{ const b = document.getElementById("fk-rest-pause"); return !!(b && b.getAttribute && b.getAttribute("aria-pressed") === "true"); }catch(e){ return false; } }
+function fkRestSync(){
+  const num = $("#rest-num"), box = $("#set-rest");
+  if(!window._restEnd || fkRestPaused()) return false;
+  if(!session || !num){ clearInterval(window._restTimer); window._restEnd = 0; return false; }
+  const left = fkRestLeft();
+  num.textContent = left;
+  if(left <= 0){ clearInterval(window._restTimer); window._restEnd = 0; if(box) box.hidden = true; beep(); toast("Hết giờ nghỉ — vào hiệp tiếp!", "timer"); return false; }
+  return true;
+}
 function startSetRest(sec){
   const box = $("#set-rest"); if(!box) return;
-  let remain = sec; box.hidden = false; $("#rest-num").textContent = remain;
+  sec = Math.min(FK_MAX_REST, Math.round(Number(sec)) || 0);
+  if(!(sec > 0)) return;
+  window._restEnd = Date.now() + sec * 1000;
+  box.hidden = false; $("#rest-num").textContent = sec;
   scheduleRestNotif(sec);
   clearInterval(window._restTimer);
-  window._restTimer = setInterval(()=>{
-    if(!session || !$("#rest-num")){ clearInterval(window._restTimer); return; }
-    remain--; $("#rest-num").textContent = Math.max(0, remain);
-    if(remain <= 0){ clearInterval(window._restTimer); box.hidden = true; beep(); toast("Hết giờ nghỉ — vào hiệp tiếp!", "timer"); }
-  }, 1000);
-  $("#rest-plus").onclick = ()=>{ remain += 15; $("#rest-num").textContent = remain; scheduleRestNotif(remain); };
+  window._restTimer = setInterval(fkRestSync, 1000);
+  $("#rest-plus").onclick = ()=>{
+    const paused = fkRestPaused();                                    // đang tạm dừng (morph-icons) → cộng vào số đang hiện, không chạy lại
+    const left = (paused || !window._restEnd ? Math.max(0, parseInt($("#rest-num").textContent, 10) || 0) : fkRestLeft()) + 15;
+    const capped = Math.min(FK_MAX_REST, left);
+    if(!paused) window._restEnd = Date.now() + capped * 1000;
+    $("#rest-num").textContent = capped; scheduleRestNotif(capped);
+  };
   $("#rest-skip").onclick = stopSetRest;
 }
+/* Quay lại app sau khi khoá màn hình / chuyển tab: cập nhật ngay đồng hồ nghỉ + xin lại "giữ màn hình sáng" (wake lock tự nhả khi ẩn) */
+try{ document.addEventListener("visibilitychange", ()=>{
+  try{
+    if(document.visibilityState && document.visibilityState !== "visible") return;
+    if(window._restEnd) fkRestSync();
+    if(session && !session.finished && !session.paused && session._awake) keepAwake(true);
+    fkStorageAdopt();
+  }catch(e){}
+}); }catch(e){}
 function restCountdown(sec){
   let remain = sec;
   openSheet(`
@@ -1615,10 +1794,11 @@ function restCountdown(sec){
       <button class="btn btn-outline btn-block" style="margin-top:20px;" id="btn-skip-rest">Bỏ qua nghỉ</button>
     </div>
   `);
-  clearInterval(window._restTimer);
+  clearInterval(window._restTimer); window._restEnd = 0;
+  const endAt = Date.now() + (Math.max(0, Number(sec)) || 0) * 1000;   // R3-CORE-06: theo mốc thời gian
   const timer = window._restTimer = setInterval(()=>{
     if(!session || !$("#rest-num")){ clearInterval(timer); return; }   // đã đóng sheet → dừng đếm
-    remain--;
+    remain = Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
     const numEl = $("#rest-num");
     if(numEl) numEl.textContent = remain;
     if(remain<=0){ clearInterval(timer); session.idx++; renderSessionStep(); }
@@ -1628,7 +1808,7 @@ function restCountdown(sec){
 function finishSession(){
   fkSessionGate(session);
   session.finished = true; onSheetCloseHook = null;
-  keepAwake(false); clearInterval(window._restTimer); cancelRestNotif();
+  keepAwake(false); clearInterval(window._restTimer); window._restEnd = 0; cancelRestNotif();
   // QT-01: khối lượng tính theo kg đã kế thừa (ô trống không còn = 0 kg)
   if(session.sets){ let vol=0; Object.values(session.sets).forEach(rs=>{ if(!Array.isArray(rs)) return; const anyKg = rs.some(r=> Number(r.kg) > 0); const f = anyKg ? fkFillBlankKg(rs, 0) : rs;
     rs.forEach((r, i)=>{ if(r.done) vol += (Number(f[i].kg)||0)*(Number(r.reps)||0); }); }); session.volume = Math.round(vol); }
@@ -1721,17 +1901,17 @@ function renderClips(){
 }
 function clipThumbHTML(m){
   return `
-    <div class="clip-thumb" data-clip="${m.id}">
-      <video muted preload="metadata" data-src-id="${m.id}"></video>
-      <div class="cat-badge">${catLabel(m.category)}</div>
+    <div class="clip-thumb" data-clip="${Number(m.id)}">
+      <video muted preload="metadata" data-src-id="${Number(m.id)}"></video>
+      <div class="cat-badge">${escapeHtml(catLabel(m.category))}</div>
       <div class="play-badge"><span class="material-symbols-rounded">play_circle</span></div>
-      <button class="del-btn" data-del="${m.id}"><span class="material-symbols-rounded" style="font-size:14px;">close</span></button>
+      <button class="del-btn" data-del="${Number(m.id)}" aria-label="Xoá video"><span class="material-symbols-rounded" style="font-size:14px;">close</span></button>
     </div>`;
 }
 function bindClipGrid(grid, onChange){
   grid.querySelectorAll("video[data-src-id]").forEach(async v=>{
-    const rec = await dbGetClip(Number(v.dataset.srcId));
-    if(rec) v.src = URL.createObjectURL(rec.blob);
+    const u = await fkBlobUrl("clip", Number(v.dataset.srcId));
+    if(u) v.src = u;
   });
   grid.querySelectorAll("[data-clip]").forEach(el=>{
     el.addEventListener("click", (e)=>{
@@ -1744,7 +1924,10 @@ function bindClipGrid(grid, onChange){
       e.stopPropagation();
       const id = Number(btn.dataset.del);
       confirmDialog("Xoá video này?", "Video sẽ bị xoá vĩnh viễn khỏi thiết bị và khỏi mọi bài tập đang gắn video này.", async ()=>{
-        await dbDeleteClip(id);
+        try{ await dbDeleteClip(id); }catch(e){}
+        fkBlobUrlDrop("clip", id);
+        /* R3-CORE-08: gỡ luôn video khỏi các bài đang gắn (trước đây bài vẫn trỏ tới clip đã xoá → khung video đen) */
+        Object.values(state.plans || {}).forEach(pl=> Object.values((pl && pl.days) || {}).forEach(d=> (Array.isArray(d && d.items) ? d.items : []).forEach(it=>{ if(it && Number(it.clipId) === id) it.clipId = null; })));
         state.videoLibrary = state.videoLibrary.filter(m=>m.id!==id);
         saveState();
         onChange();
@@ -1754,12 +1937,13 @@ function bindClipGrid(grid, onChange){
   });
 }
 async function openClipPlayer(id){
-  const rec = await dbGetClip(id);
-  if(!rec) return;
+  let rec = null;
+  try{ rec = await dbGetClip(id); }catch(e){}
+  const url = rec ? await fkBlobUrl("clip", id) : null;
+  if(!rec || !url){ toast("Không mở được video — có thể đã bị xoá khỏi bộ nhớ máy.", "error"); return; }
   const meta = state.videoLibrary.find(m=>m.id===id);
-  const url = URL.createObjectURL(rec.blob);
   openSheet(`
-    <video id="player-video" src="${url}" controls autoplay playsinline style="width:100%;aspect-ratio:16/9;max-height:65vh;object-fit:${getClipFit(id)};border-radius:14px;background:#000;"></video>
+    <video id="player-video" src="${attrUrl(url)}" controls autoplay playsinline style="width:100%;aspect-ratio:16/9;max-height:65vh;object-fit:${getClipFit(id)};border-radius:14px;background:#000;"></video>
     <button class="btn btn-outline btn-block" id="player-fit-toggle" style="margin-top:10px;">${fitToggleLabel(getClipFit(id))}</button>
     <div class="chip-row" style="margin-top:12px;">${meta?`<span class="pill hot">${catLabel(meta.category)}</span>`:""}</div>
     <h3 style="margin-top:8px;font-size:16px;">${escapeHtml(rec.name)}</h3>
@@ -1789,7 +1973,7 @@ function openUploadClip(onDone, defaultCategory){
     </div>
     <div class="field" style="margin-top:14px;">
       <label>Đặt tên clip</label>
-      <input type="text" id="clip-name" placeholder="VD: Bench press hôm nay">
+      <input type="text" id="clip-name" maxlength="80" placeholder="VD: Bench press hôm nay">
     </div>
     <div class="field" style="margin-top:10px;">
       <label>Thể loại tập</label>
@@ -1808,6 +1992,9 @@ function openUploadClip(onDone, defaultCategory){
   $("#clip-input").addEventListener("change", (e)=>{
     const file = e.target.files[0];
     if(!file) return;
+    /* R3-CORE-14: chỉ nhận video, ≤ 300 MB (video quá lớn làm đầy bộ nhớ máy và hỏng cả lần lưu khác) */
+    if(file.type && !/^video\//i.test(file.type)){ toast("Hãy chọn một tệp video (MP4, MOV…).", "error"); e.target.value = ""; return; }
+    if(Number(file.size) > 300 * 1024 * 1024){ toast("Video lớn hơn 300 MB — hãy cắt ngắn hoặc giảm chất lượng rồi tải lại.", "error"); e.target.value = ""; return; }
     pickedFile = file;
     const preview = $("#upload-preview");
     preview.src = URL.createObjectURL(file);
@@ -1825,10 +2012,18 @@ function openUploadClip(onDone, defaultCategory){
   });
   confirmBtn.addEventListener("click", async ()=>{
     if(!pickedFile) return;
-    const name = $("#clip-name").value || pickedFile.name;
+    const name = String($("#clip-name").value || pickedFile.name || "Video").trim().slice(0, 80) || "Video";
     const category = $("#clip-cat").value;
     const fit = $("#clip-fit").value;
-    const id = await dbAddClip(pickedFile, name);
+    if(confirmBtn.disabled) return;                      // chống bấm 2 lần → lưu trùng
+    confirmBtn.disabled = true; confirmBtn.textContent = "Đang lưu…";
+    let id;
+    try{ id = await dbAddClip(pickedFile, name); }
+    catch(err){
+      confirmBtn.disabled = false; confirmBtn.textContent = "Lưu video";
+      toast(/quota/i.test(String(err && (err.name || err.message))) ? "Bộ nhớ máy đầy — chưa lưu được video. Xoá bớt video cũ rồi thử lại." : `Chưa lưu được video: ${(err && err.message) || "trình duyệt không cho lưu tệp trên máy"}`, "error");
+      return;
+    }
     state.videoLibrary.push({ id, name, category, createdAt: Date.now(), fit });
     saveState();
     closeSheet();
@@ -1853,8 +2048,9 @@ function mountClipVideo(elId, clipId){
   const videoEl = $(elId);
   if(!videoEl) return;
   videoEl.style.objectFit = getClipFit(clipId);
-  dbGetClip(clipId).then(rec=>{
-    if(rec && videoEl) videoEl.src = URL.createObjectURL(rec.blob);
+  fkBlobUrl("clip", clipId).then(u=>{
+    if(u && videoEl) videoEl.src = u;
+    else if(!u && videoEl && videoEl.insertAdjacentHTML){ try{ videoEl.insertAdjacentHTML("afterend", `<p class="small-note" style="margin:-8px 0 12px;">Không mở được video này trên máy (có thể đã bị xoá khi dọn bộ nhớ). Hãy gắn lại video cho bài tập.</p>`); videoEl.style.display = "none"; }catch(e){} }
   });
   videoEl.addEventListener("loadedmetadata", ()=>{
     if(videoEl.videoWidth && videoEl.videoHeight){
@@ -1905,16 +2101,16 @@ function openClipPicker(onSelect){
       </div>
       <button class="btn btn-soft btn-block" id="picker-upload" style="margin-bottom:12px;"><span class="material-symbols-rounded">upload</span>&nbsp;Tải video mới</button>
       <div class="clip-grid" id="picker-grid">${filtered.length ? filtered.map(v=>`
-        <div class="clip-thumb" data-pick-clip="${v.id}">
+        <div class="clip-thumb" data-pick-clip="${Number(v.id)}">
           <video muted preload="metadata" data-thumb-clip="${escapeHtml(String(v.id))}"></video>
-          <div class="cat-badge">${catLabel(v.category)}</div>
+          <div class="cat-badge">${escapeHtml(catLabel(v.category))}</div>
           <div class="play-badge"><span class="material-symbols-rounded">play_circle</span></div>
         </div>`).join("") : `<p class="empty-hint">Chưa có video nào trong danh mục này. Hãy tải video mới!</p>`}</div>
     `);
     $$("[data-pcat]").forEach(b=> b.addEventListener("click", ()=>{ cat=b.dataset.pcat; render(); }));
     $$("#picker-grid [data-thumb-clip]").forEach(async v=>{
-      const rec = await dbGetClip(Number(v.dataset.thumbClip));
-      if(rec) v.src = URL.createObjectURL(rec.blob);
+      const u = await fkBlobUrl("clip", Number(v.dataset.thumbClip));
+      if(u) v.src = u;
     });
     $$("[data-pick-clip]").forEach(el=> el.addEventListener("click", ()=> onSelect(Number(el.dataset.pickClip))));
     $("#picker-upload").addEventListener("click", ()=> openUploadClip((newId)=> onSelect(newId), cat!=="all"?cat:"gym"));
@@ -1993,7 +2189,7 @@ function bindPlanListEvents(){
   }));
   $$("#plans-content [data-plan-reset]").forEach(b=> b.addEventListener("click", ()=> resetPlanToDefault(b.dataset.planReset)));
   $$("#plans-content [data-plan-dup]").forEach(b=> b.addEventListener("click", ()=>{
-    const p = duplicatePlan(b.dataset.planDup); toast(`Đã nhân bản: ${p.name}`); renderPlansScreen();
+    const p = duplicatePlan(b.dataset.planDup); if(!p){ toast("Không tìm thấy giáo án để nhân bản", "error"); renderPlansScreen(); return; } toast(`Đã nhân bản: ${p.name}`); renderPlansScreen();
   }));
   $$("#plans-content [data-plan-del]").forEach(b=> b.addEventListener("click", ()=>{
     if(Object.keys(state.plans).length<=1){ toast("Cần giữ lại ít nhất 1 giáo án", "error"); return; }
@@ -2020,11 +2216,11 @@ function bindPlanListEvents(){
 function promptCreatePlan(){
   openSheet(`
     <h3 style="margin-bottom:14px;">Tạo giáo án mới</h3>
-    <div class="field"><label>Tên giáo án</label><input type="text" id="new-plan-name" placeholder="VD: Giáo án của tôi"></div>
+    <div class="field"><label>Tên giáo án</label><input type="text" id="new-plan-name" maxlength="60" placeholder="VD: Giáo án của tôi"></div>
     <button class="btn btn-primary btn-block" style="margin-top:16px;" id="btn-create-plan">Tạo &amp; bắt đầu thêm bài tập</button>
   `);
   $("#btn-create-plan").addEventListener("click", ()=>{
-    const name = $("#new-plan-name").value.trim() || "Giáo án mới";
+    const name = fkCleanName($("#new-plan-name").value, "Giáo án mới");
     const plan = createBlankPlan(name);
     closeSheet();
     plansUI = { mode:"edit", planId: plan.id, day: todayDayKey() };
@@ -2036,11 +2232,11 @@ function renamePlanPrompt(planId){
   const plan = state.plans[planId];
   openSheet(`
     <h3 style="margin-bottom:14px;">Đổi tên giáo án</h3>
-    <div class="field"><input type="text" id="rename-plan-input" value="${escapeHtml(plan.name)}"></div>
+    <div class="field"><input type="text" id="rename-plan-input" maxlength="60" value="${escapeHtml(plan.name)}"></div>
     <button class="btn btn-primary btn-block" style="margin-top:16px;" id="btn-save-rename">Lưu</button>
   `);
   $("#btn-save-rename").addEventListener("click", ()=>{
-    plan.name = $("#rename-plan-input").value.trim() || plan.name;
+    plan.name = fkCleanName($("#rename-plan-input").value, plan.name);
     saveState(); closeSheet(); renderPlansScreen();
   });
 }
@@ -2051,12 +2247,12 @@ function renderPlanEditorHTML(plan){
   return `
     <div class="day-tabs" style="margin:0 0 14px;padding:0 0 10px;">${dayTabs}</div>
     <div class="card">
-      <div class="field"><label>Tên buổi tập</label><input type="text" id="pd-title" value="${escapeHtml(day.title)}"></div>
+      <div class="field"><label>Tên buổi tập</label><input type="text" id="pd-title" maxlength="60" value="${escapeHtml(day.title)}"></div>
       <div class="field-row" style="margin-top:10px;">
         <div class="field"><label>Cường độ</label>
           <select id="pd-intensity">${INTENSITY_LEVELS.map(x=>`<option ${x===day.intensity?'selected':''}>${x}</option>`).join("")}</select>
         </div>
-        <div class="field"><label>Thời lượng (phút)</label><input type="number" id="pd-duration" value="${escapeHtml(String(Number(day.duration)||0))}"></div>
+        <div class="field"><label>Thời lượng (phút)</label><input type="number" inputmode="numeric" min="0" max="600" id="pd-duration" value="${escapeHtml(String(Number(day.duration)||0))}"></div>
       </div>
       ${plan.builtin ? `<button class="btn btn-ghost btn-block" style="margin-top:10px;" id="pd-reset-day">Khôi phục ngày này về mặc định</button>` : ""}
     </div>
@@ -2078,9 +2274,9 @@ function renderPlanEditorHTML(plan){
 }
 function bindPlanEditorEvents(plan){
   $$("#plans-content [data-pday]").forEach(b=> b.addEventListener("click", ()=>{ plansUI.day=b.dataset.pday; renderPlansScreen(); }));
-  $("#pd-title").addEventListener("change", ()=>{ plan.days[plansUI.day].title=$("#pd-title").value || plan.days[plansUI.day].title; saveState(); });
+  $("#pd-title").addEventListener("change", ()=>{ plan.days[plansUI.day].title = fkCleanName($("#pd-title").value, plan.days[plansUI.day].title); $("#pd-title").value = plan.days[plansUI.day].title; saveState(); });
   $("#pd-intensity").addEventListener("change", ()=>{ plan.days[plansUI.day].intensity=$("#pd-intensity").value; saveState(); });
-  $("#pd-duration").addEventListener("change", ()=>{ plan.days[plansUI.day].duration=Number($("#pd-duration").value)||0; saveState(); });
+  $("#pd-duration").addEventListener("change", ()=>{ const v = Math.min(600, Math.max(0, Math.round(Number($("#pd-duration").value) || 0))); plan.days[plansUI.day].duration = v; $("#pd-duration").value = v; saveState(); });
   $("#pd-add-exercise").addEventListener("click", ()=> openAddExerciseSheet(plan, plansUI.day));
   const resetDayBtn = $("#pd-reset-day");
   if(resetDayBtn){
@@ -2095,8 +2291,8 @@ function bindPlanEditorEvents(plan){
     });
   }
   $$("#plans-content [data-thumb-clip]").forEach(async v=>{
-    const rec = await dbGetClip(Number(v.dataset.thumbClip));
-    if(rec) v.src = URL.createObjectURL(rec.blob);
+    const u = await fkBlobUrl("clip", Number(v.dataset.thumbClip));
+    if(u) v.src = u;
   });
   $$("#plans-content [data-item]").forEach(row=> row.addEventListener("click", ()=> openPlanItemEditor(plan, plansUI.day, row.dataset.item)));
 }
@@ -2149,24 +2345,24 @@ function openAddExerciseSheet(plan, dayKey){
   const renderCustomTab = ()=>{
     const body = $("#add-ex-body");
     body.innerHTML = `
-      <div class="field"><label>Tên bài tập*</label><input type="text" id="cex-name" placeholder="VD: Đẩy tạ máy Smith"></div>
+      <div class="field"><label>Tên bài tập*</label><input type="text" id="cex-name" maxlength="60" placeholder="VD: Đẩy tạ máy Smith"></div>
       <div class="field" style="margin-top:10px;"><label>Nhóm cơ</label><select id="cex-muscle">${MUSCLE_GROUPS.map(m=>`<option>${m}</option>`).join("")}</select></div>
-      <div class="field" style="margin-top:10px;"><label>Dụng cụ</label><input type="text" id="cex-equip" placeholder="VD: Máy Smith"></div>
+      <div class="field" style="margin-top:10px;"><label>Dụng cụ</label><input type="text" id="cex-equip" maxlength="40" placeholder="VD: Máy Smith"></div>
       <div class="field-row" style="margin-top:10px;">
-        <div class="field"><label>Số hiệp</label><input type="number" id="cex-sets" value="3"></div>
-        <div class="field"><label>Số lần / thời gian</label><input type="text" id="cex-reps" value="12"></div>
-        <div class="field"><label>Nghỉ (giây)</label><input type="number" id="cex-rest" value="60"></div>
+        <div class="field"><label>Số hiệp</label><input type="number" inputmode="numeric" min="1" max="20" id="cex-sets" value="3"></div>
+        <div class="field"><label>Số lần / thời gian</label><input type="text" maxlength="24" id="cex-reps" value="12"></div>
+        <div class="field"><label>Nghỉ (giây)</label><input type="number" inputmode="numeric" min="0" max="900" id="cex-rest" value="60"></div>
       </div>
-      <div class="field" style="margin-top:10px;"><label>Hướng dẫn kỹ thuật (không bắt buộc)</label><textarea id="cex-guide" rows="3" placeholder="Mô tả cách thực hiện đúng..."></textarea></div>
+      <div class="field" style="margin-top:10px;"><label>Hướng dẫn kỹ thuật (không bắt buộc)</label><textarea id="cex-guide" rows="3" maxlength="1000" placeholder="Mô tả cách thực hiện đúng..."></textarea></div>
       <button class="btn btn-primary btn-block" style="margin-top:14px;" id="btn-add-custom-ex">Thêm vào buổi tập</button>
     `;
     $("#btn-add-custom-ex").addEventListener("click", ()=>{
-      const name = $("#cex-name").value.trim();
-      if(!name){ toast("Vui lòng nhập tên bài tập", "error"); return; }
+      const name = fkCleanName($("#cex-name").value);
+      if(!name){ toast("Vui lòng nhập tên bài tập", "error"); try{ $("#cex-name").focus(); }catch(e){} return; }
       plan.days[dayKey].items.push({
         uid: uid(), exerciseId: null,
-        custom: { name, muscle: $("#cex-muscle").value, equipment: $("#cex-equip").value, guide: $("#cex-guide").value },
-        sets: Number($("#cex-sets").value)||3, reps: $("#cex-reps").value||"12", restSec: Number($("#cex-rest").value)||60,
+        custom: { name, muscle: $("#cex-muscle").value, equipment: fkCleanName($("#cex-equip").value).slice(0, 40), guide: String($("#cex-guide").value || "").slice(0, 1000) },
+        sets: fkClampSets($("#cex-sets").value, 3), reps: fkCleanReps($("#cex-reps").value, "12"), restSec: fkClampRest($("#cex-rest").value, 60),
         clipId: null,
       });
       saveState(); closeSheet(); renderPlansScreen(); toast(`Đã thêm ${name}`);
@@ -2185,9 +2381,9 @@ function openPlanItemEditor(plan, dayKey, itemUid){
       <button class="btn btn-outline btn-block" id="pie-attach"><span class="material-symbols-rounded">videocam</span>${item.clipId?'Đổi video':'Gắn video cho bài này'}</button>
       ${item.clipId ? `<button class="btn btn-ghost btn-block" style="margin-top:8px;" id="pie-remove-clip">Gỡ video</button>` : ""}
       <div class="field-row" style="margin-top:16px;">
-        <div class="field"><label>Số hiệp</label><input type="number" id="pie-sets" value="${escapeHtml(String(item.sets))}"></div>
-        <div class="field"><label>Số lần</label><input type="text" id="pie-reps" value="${escapeHtml(String(item.reps))}"></div>
-        <div class="field"><label>Nghỉ (giây)</label><input type="number" id="pie-rest" value="${escapeHtml(String(item.restSec))}"></div>
+        <div class="field"><label>Số hiệp</label><input type="number" inputmode="numeric" min="1" max="20" id="pie-sets" value="${escapeHtml(String(item.sets))}"></div>
+        <div class="field"><label>Số lần</label><input type="text" maxlength="24" id="pie-reps" value="${escapeHtml(String(item.reps))}"></div>
+        <div class="field"><label>Nghỉ (giây)</label><input type="number" inputmode="numeric" min="0" max="900" id="pie-rest" value="${escapeHtml(String(item.restSec))}"></div>
       </div>
       <button class="btn btn-primary btn-block" style="margin-top:14px;" id="pie-save">Lưu thay đổi</button>
       ${item.exerciseId ? `<button class="btn btn-ghost btn-block" style="margin-top:8px;" id="pie-reset-defaults">Đặt lại hiệp/lần/nghỉ mặc định</button>` : ""}
@@ -2209,9 +2405,10 @@ function openPlanItemEditor(plan, dayKey, itemUid){
       $("#pie-remove-clip").addEventListener("click", ()=>{ item.clipId=null; saveState(); render(); renderPlansScreen(); });
     }
     $("#pie-save").addEventListener("click", ()=>{
-      item.sets = Number($("#pie-sets").value)||item.sets;
-      item.reps = $("#pie-reps").value||item.reps;
-      item.restSec = Number($("#pie-rest").value)||item.restSec;
+      /* R3-CORE-05: kẹp 1–20 hiệp, 0–900 giây (trước đây "0 giây nghỉ" không lưu được, số âm / cực lớn lưu nguyên) */
+      item.sets = fkClampSets($("#pie-sets").value, fkClampSets(item.sets, 3));
+      item.reps = fkCleanReps($("#pie-reps").value, fkCleanReps(item.reps, "12"));
+      item.restSec = fkClampRest($("#pie-rest").value, fkClampRest(item.restSec, 60));
       saveState(); closeSheet(); renderPlansScreen(); toast("Đã lưu thay đổi");
     });
     if(item.exerciseId){
@@ -2378,7 +2575,9 @@ function openCapturePhoto(onDone, defaultAngle){
     $("#cap-retake").addEventListener("click", ()=> render());
     $("#cap-save").addEventListener("click", async ()=>{
       if(!capturedBlob) return;
-      const id = await dbAddPhoto(capturedBlob, `progress_${angle}_${Date.now()}`);
+      let id;
+      try{ id = await dbAddPhoto(capturedBlob, `progress_${angle}_${Date.now()}`); }
+      catch(err){ toast(/quota/i.test(String(err && (err.name || err.message))) ? "Bộ nhớ máy đầy — chưa lưu được ảnh. Xoá bớt video/ảnh cũ rồi thử lại." : `Chưa lưu được ảnh: ${(err && err.message) || "trình duyệt không cho lưu tệp trên máy"}`, "error"); return; }
       state.progressPhotos.push({ id, ts: Date.now(), angle, weightAtCapture: state.profile.weight, note:"" });
       saveState();
       stopCamera();
@@ -2461,23 +2660,23 @@ function renderProgressRecordsTab(){
 function photoRowHTML(p){
   const checked = progressUI.compareSel.includes(p.id);
   return `
-    <div class="card" style="padding:10px;display:flex;gap:12px;align-items:center;" data-prow="${p.id}">
+    <div class="card" style="padding:10px;display:flex;gap:12px;align-items:center;" data-prow="${Number(p.id)}">
       <div class="thumb-wrap" style="width:64px;height:84px;">
-        <img data-pimg="${p.id}" style="object-fit:cover;">
+        <img data-pimg="${Number(p.id)}" alt="" style="object-fit:cover;">
         <div class="cam-badge" style="background:var(--surface-3);"><span class="material-symbols-rounded" style="font-size:12px;">photo_camera</span></div>
       </div>
       <div style="flex:1;min-width:0;">
         <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-          <span class="pill hot" style="padding:3px 8px;">${angleLabel(p.angle)}</span>
+          <span class="pill hot" style="padding:3px 8px;">${escapeHtml(angleLabel(p.angle))}</span>
           <span class="small-note">${new Date(p.ts).toLocaleDateString("vi-VN")}</span>
         </div>
-        <p class="small-note" style="margin-top:4px;">${p.weightAtCapture ? `Cân nặng lúc chụp: ${p.weightAtCapture}kg` : ""}</p>
+        <p class="small-note" style="margin-top:4px;">${p.weightAtCapture ? `Cân nặng lúc chụp: ${escapeHtml(fmtKg(p.weightAtCapture))}kg` : ""}</p>
         <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center;">
           <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-muted);">
-            <input type="checkbox" data-pcompare="${p.id}" ${checked?'checked':''}> So sánh
+            <input type="checkbox" data-pcompare="${Number(p.id)}" ${checked?'checked':''}> So sánh
           </label>
-          <button class="btn btn-ghost btn-sm" data-pai="${p.id}" style="padding:4px 10px;">Phân tích AI</button>
-          <button class="btn btn-ghost btn-sm" data-pdel="${p.id}" style="padding:4px 10px;color:var(--warn);">Xoá</button>
+          <button class="btn btn-ghost btn-sm" data-pai="${Number(p.id)}" style="padding:4px 10px;">Phân tích AI</button>
+          <button class="btn btn-ghost btn-sm" data-pdel="${Number(p.id)}" style="padding:4px 10px;color:var(--warn);">Xoá</button>
         </div>
       </div>
     </div>`;
@@ -2512,8 +2711,8 @@ function renderProgressPhotosTab(){
 
 function bindProgressPhotoEvents(){
   $$("#progress-photo-list [data-pimg]").forEach(async imgEl=>{
-    const rec = await dbGetPhoto(Number(imgEl.dataset.pimg));
-    if(rec && imgEl) imgEl.src = URL.createObjectURL(rec.blob);
+    const u = await fkBlobUrl("photo", Number(imgEl.dataset.pimg));
+    if(u && imgEl) imgEl.src = u;
   });
   $$("#progress-photo-list [data-pcompare]").forEach(cb=>{
     cb.addEventListener("change", (e)=>{
@@ -2533,7 +2732,8 @@ function bindProgressPhotoEvents(){
     e.stopPropagation();
     const id = Number(btn.dataset.pdel);
     confirmDialog("Xoá ảnh tiến độ này?", "Ảnh sẽ bị xoá vĩnh viễn khỏi thiết bị và không thể khôi phục.", async ()=>{
-      await dbDeletePhoto(id);
+      try{ await dbDeletePhoto(id); }catch(e){}
+      fkBlobUrlDrop("photo", id);
       state.progressPhotos = state.progressPhotos.filter(p=>p.id!==id);
       progressUI.compareSel = progressUI.compareSel.filter(x=>x!==id);
       saveState();
@@ -2551,16 +2751,15 @@ function bindProgressPhotoEvents(){
 
 async function openPhotoViewer(photoId){
   const p = state.progressPhotos.find(x=>x.id===photoId);
-  const rec = await dbGetPhoto(photoId);
-  if(!p || !rec) return;
-  const url = URL.createObjectURL(rec.blob);
+  const url = p ? await fkBlobUrl("photo", photoId) : null;
+  if(!p || !url){ if(p) toast("Không mở được ảnh — có thể đã bị xoá khỏi bộ nhớ máy.", "error"); return; }
   openSheet(`
     <div class="sheet-header"><h3>Ảnh tiến độ</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
-    <img src="${url}" style="width:100%;max-height:58vh;object-fit:contain;border-radius:14px;background:#000;">
+    <img src="${attrUrl(url)}" alt="Ảnh tiến độ ${escapeHtml(angleLabel(p.angle))}" style="width:100%;max-height:58vh;object-fit:contain;border-radius:14px;background:#000;">
     <div class="chip-row" style="margin-top:12px;">
-      <span class="pill hot">${angleLabel(p.angle)}</span>
+      <span class="pill hot">${escapeHtml(angleLabel(p.angle))}</span>
       <span class="pill">${new Date(p.ts).toLocaleDateString("vi-VN")}</span>
-      ${p.weightAtCapture ? `<span class="pill">${p.weightAtCapture}kg</span>` : ""}
+      ${p.weightAtCapture ? `<span class="pill">${escapeHtml(fmtKg(p.weightAtCapture))}kg</span>` : ""}
     </div>
     <button class="btn btn-primary btn-block" style="margin-top:14px;" id="pv-analyze">Phân tích AI</button>
   `);
@@ -2573,11 +2772,9 @@ async function openComparePhotos(idA, idB){
   const pb = state.progressPhotos.find(x=>x.id===idB);
   if(!pa || !pb) return;
   const [before, after] = pa.ts <= pb.ts ? [pa,pb] : [pb,pa];
-  const recBefore = await dbGetPhoto(before.id);
-  const recAfter = await dbGetPhoto(after.id);
-  if(!recBefore || !recAfter) return;
-  const urlBefore = URL.createObjectURL(recBefore.blob);
-  const urlAfter = URL.createObjectURL(recAfter.blob);
+  const urlBefore = attrUrl(await fkBlobUrl("photo", before.id));
+  const urlAfter = attrUrl(await fkBlobUrl("photo", after.id));
+  if(!urlBefore || !urlAfter){ toast("Không mở được ảnh để so sánh.", "error"); return; }
   const wDelta = (before.weightAtCapture && after.weightAtCapture) ? fmt1(after.weightAtCapture - before.weightAtCapture) : null;
   const days = Math.round((after.ts-before.ts)/86400000);
   openSheet(`
@@ -2593,8 +2790,8 @@ async function openComparePhotos(idA, idB){
     </div>
     <input type="range" id="cmp-slider" min="0" max="100" value="50" style="width:100%;margin-top:12px;">
     <div class="stat-grid cols-2" style="margin-top:12px;">
-      <div class="stat-box"><div class="num">${before.weightAtCapture ?? "--"}kg</div><div class="cap">Trước</div></div>
-      <div class="stat-box"><div class="num">${after.weightAtCapture ?? "--"}kg</div><div class="cap">Sau</div></div>
+      <div class="stat-box"><div class="num">${before.weightAtCapture != null ? escapeHtml(fmtKg(before.weightAtCapture)) : "--"}kg</div><div class="cap">Trước</div></div>
+      <div class="stat-box"><div class="num">${after.weightAtCapture != null ? escapeHtml(fmtKg(after.weightAtCapture)) : "--"}kg</div><div class="cap">Sau</div></div>
     </div>
     ${wDelta!==null ? `<p class="small-note" style="margin-top:10px;text-align:center;">Chênh lệch cân nặng: <b style="color:${wDelta<=0?'var(--success)':'var(--primary-soft)'}">${wDelta>0?'+':''}${wDelta}kg</b>${days>0?` sau ${days} ngày`:""}</p>` : ""}
   `);
@@ -2660,7 +2857,7 @@ function blobToDataURL(blob){
   });
 }
 function providerLabel(id){
-  return { openai:"ChatGPT (OpenAI)", gemini:"Google Gemini", grok:"Grok (xAI)" }[id] || id;
+  return { openai:"ChatGPT (OpenAI)", gemini:"Google Gemini", grok:"Grok (xAI)" }[id] || "AI";   // R3-CORE-07: không trả nguyên chuỗi lạ từ state (được chèn vào HTML)
 }
 function getActiveProviderKey(){
   const s = state.aiSettings;
@@ -2736,7 +2933,7 @@ async function callOpenAIVision(apiKey, model, dataUrl, promptText){
 }
 async function callGeminiVision(apiKey, model, dataUrl, promptText){
   const base64 = dataUrl.split(",")[1];
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`, {
     method: "POST",
     headers: { "Content-Type":"application/json" },
     body: JSON.stringify({
@@ -2905,19 +3102,24 @@ function inbodyRowHTML(l){
         <span class="small-note">${new Date(l.ts).toLocaleDateString("vi-VN")}</span>
       </div>
       <div class="stat-grid" style="margin-top:10px;">
-        <div class="stat-box"><div class="num">${l.weight ?? '--'}</div><div class="cap">Cân nặng (kg)</div></div>
-        <div class="stat-box"><div class="num">${l.bodyFatPct ?? '--'}</div><div class="cap">% mỡ</div></div>
-        <div class="stat-box"><div class="num">${l.muscleMassKg ?? '--'}</div><div class="cap">Cơ (kg)</div></div>
+        <div class="stat-box"><div class="num">${fkNumTxt(l.weight)}</div><div class="cap">Cân nặng (kg)</div></div>
+        <div class="stat-box"><div class="num">${fkNumTxt(l.bodyFatPct)}</div><div class="cap">% mỡ</div></div>
+        <div class="stat-box"><div class="num">${fkNumTxt(l.muscleMassKg)}</div><div class="cap">Cơ (kg)</div></div>
       </div>
       ${l.note ? `<p class="small-note" style="margin-top:8px;">${escapeHtml(l.note)}</p>` : ""}
-      <button class="btn btn-ghost btn-sm" data-idel="${l.id}" style="margin-top:8px;color:var(--warn);">Xoá</button>
+      <button class="btn btn-ghost btn-sm" data-idel="${escapeHtml(String(l.id))}" style="margin-top:8px;color:var(--warn);">Xoá</button>
     </div>`;
 }
+/* R3-CORE-07: số từ state chèn vào HTML luôn đi qua đây (số hữu hạn → kiểu Việt, còn lại "--") */
+function fkNumTxt(v){ const n = typeof v === "number" ? v : (v == null || v === "" ? NaN : Number(v)); return Number.isFinite(n) ? escapeHtml(fmtVN(n)) : "--"; }
 
 function renderInbodyChart(containerId, rawLogs){
   const el = $(containerId);
   if(!el) return;
-  const logs = rawLogs.slice().sort((a,b)=>a.ts-b.ts);
+  const fin = v=> typeof v === "number" && Number.isFinite(v);
+  const logs = (Array.isArray(rawLogs) ? rawLogs : []).filter(l=> l && typeof l === "object")
+    .map(l=> Object.assign({}, l, { ts: Number(l.ts) || 0, weight: fin(l.weight) ? l.weight : null, bodyFatPct: fin(l.bodyFatPct) ? l.bodyFatPct : null }))   // R3-CORE-07: chỉ số hữu hạn mới vào toạ độ SVG
+    .sort((a,b)=>a.ts-b.ts);
   if(logs.length<1){ el.innerHTML = ""; return; }
   const W = 300, H = 140, PAD = 24;
   const weights = logs.map(l=>l.weight).filter(v=>v!=null);
@@ -2946,7 +3148,7 @@ function renderProgressInbodyTab(){
   const sortedAsc = state.inbodyLogs.slice().sort((a,b)=>a.ts-b.ts);
   const latest = logs[0];
   const first = sortedAsc[0];
-  const weightDelta = (latest && first && latest.id!==first.id) ? fmt1(latest.weight-first.weight) : null;
+  const weightDelta = (latest && first && latest.id!==first.id && Number.isFinite(Number(latest.weight)) && Number.isFinite(Number(first.weight)) && latest.weight != null && first.weight != null) ? fmt1(latest.weight-first.weight) : null;
   $("#progress-content").innerHTML = `
     <p class="small-note">Lưu số liệu đo InBody thật từ phòng gym/phòng khám, hoặc ước tính nhanh qua AI ở tab Ảnh tiến độ. Biểu đồ dưới đây theo dõi cả hai nguồn.</p>
     <button class="btn btn-soft btn-block" id="btn-add-inbody" style="margin:10px 0 14px;"><span class="material-symbols-rounded">add</span>&nbsp;Thêm số liệu đo thực tế</button>
@@ -2960,8 +3162,8 @@ function renderProgressInbodyTab(){
       </div>
     </div>
     <div class="stat-grid" style="margin-top:2px;">
-      <div class="stat-box"><div class="num">${latest.weight ?? '--'}kg</div><div class="cap">Mới nhất</div></div>
-      <div class="stat-box"><div class="num">${weightDelta!==null ? (weightDelta>0?'+':'')+weightDelta+'kg' : '--'}</div><div class="cap">So với lần đầu</div></div>
+      <div class="stat-box"><div class="num">${fkNumTxt(latest.weight)}kg</div><div class="cap">Mới nhất</div></div>
+      <div class="stat-box"><div class="num">${weightDelta!==null ? (weightDelta>0?'+':'')+fkNumTxt(weightDelta)+'kg' : '--'}</div><div class="cap">So với lần đầu</div></div>
       <div class="stat-box"><div class="num">${logs.length}</div><div class="cap">Lần đo</div></div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
@@ -2972,48 +3174,71 @@ function renderProgressInbodyTab(){
   $("#btn-add-inbody").addEventListener("click", ()=> openAddInbodyLog());
   $$("#progress-content [data-idel]").forEach(btn=> btn.addEventListener("click", ()=>{
     const id = btn.dataset.idel;
-    state.inbodyLogs = state.inbodyLogs.filter(l=>l.id!==id);
-    saveState(); renderProgressInbodyTab(); toast("Đã xoá số liệu", "delete");
+    /* R3-CORE-11: xoá số đo cần xác nhận (trước đây chạm nhầm là mất ngay, không hoàn tác được) */
+    confirmDialog("Xoá số liệu này?", "Lần đo sẽ bị xoá khỏi biểu đồ và không thể khôi phục.", ()=>{
+      state.inbodyLogs = state.inbodyLogs.filter(l=> String(l.id) !== String(id));
+      saveState(); renderProgressInbodyTab(); toast("Đã xoá số liệu", "delete");
+    }, "Xoá", "delete_forever");
   }));
 }
 
+/* Đọc + kiểm form InBody → { log } hoặc { error } (tách riêng để kiểm thử được) */
+function fkInbodyRead(f){
+  f = f || {};
+  const opt = (raw, min, max, label)=>{
+    const t = String(raw == null ? "" : raw).trim(); if(t === "") return { v: null };
+    const n = fkNum(t); if(!Number.isFinite(n) || n < min || n > max) return { e: `${label} phải trong khoảng ${fmtVN(min)}–${fmtVN(max)} — hoặc để trống nếu chưa đo.` };
+    return { v: Math.round(n * 10) / 10 };
+  };
+  const wRaw = String(f.weight == null ? "" : f.weight).trim();
+  const w = wRaw === "" ? Number(state.profile.weight) : fkNum(wRaw);
+  if(!Number.isFinite(w) || w < 20 || w > 350) return { error: "Cân nặng phải trong khoảng 20–350 kg." };
+  let ts = Date.now();
+  if(f.date){
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(f.date));
+    const d = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 12) : null;   // giờ trưa địa phương — tránh lệch ngày do múi giờ
+    if(!d || isNaN(d.getTime()) || d.getMonth() !== Number(m[2]) - 1) return { error: "Ngày đo không hợp lệ." };
+    if(todayStr(d) > todayStr()) return { error: "Ngày đo không thể ở tương lai." };
+    if(d.getFullYear() < 2000) return { error: "Ngày đo quá xa — hãy kiểm tra lại năm." };
+    ts = d.getTime();
+  }
+  const bf = opt(f.bf, 3, 70, "Tỉ lệ mỡ (%)"); if(bf.e) return { error: bf.e };
+  const mu = opt(f.muscle, 5, 120, "Khối lượng cơ (kg)"); if(mu.e) return { error: mu.e };
+  const wa = opt(f.water, 25, 80, "Nước cơ thể (%)"); if(wa.e) return { error: wa.e };
+  const vi = opt(f.visceral, 1, 59, "Mỡ nội tạng (cấp)"); if(vi.e) return { error: vi.e };
+  if(mu.v != null && mu.v >= w) return { error: "Khối lượng cơ phải nhỏ hơn cân nặng." };
+  return { log: { ts, weight: Math.round(w * 10) / 10, bodyFatPct: bf.v, muscleMassKg: mu.v, bodyWaterPct: wa.v, visceralFat: vi.v, note: String(f.note || "").trim().slice(0, 200) } };
+}
 function openAddInbodyLog(){
   openSheet(`
     <div class="sheet-header"><h3>Thêm số liệu InBody</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
     <p class="small-note" style="margin-bottom:10px;">Nhập số liệu từ máy đo InBody thật ở phòng gym/phòng khám để theo dõi chính xác nhất.</p>
     <div class="field-row">
-      <div class="field"><label>Ngày đo</label><input type="date" id="ib-date" value="${todayStr()}"></div>
-      <div class="field"><label>Cân nặng (kg)</label><input type="number" id="ib-weight" value="${escapeHtml(String(state.profile.weight))}"></div>
+      <div class="field"><label>Ngày đo</label><input type="date" id="ib-date" max="${todayStr()}" value="${todayStr()}"></div>
+      <div class="field"><label>Cân nặng (kg)</label><input type="text" inputmode="decimal" id="ib-weight" value="${escapeHtml(fmtVN(state.profile.weight))}"></div>
     </div>
     <div class="field-row" style="margin-top:10px;">
-      <div class="field"><label>Tỉ lệ mỡ (%)</label><input type="number" id="ib-bf" placeholder="VD: 18"></div>
-      <div class="field"><label>Khối lượng cơ (kg)</label><input type="number" id="ib-muscle" placeholder="VD: 32"></div>
+      <div class="field"><label>Tỉ lệ mỡ (%)</label><input type="text" inputmode="decimal" id="ib-bf" placeholder="VD: 18"></div>
+      <div class="field"><label>Khối lượng cơ (kg)</label><input type="text" inputmode="decimal" id="ib-muscle" placeholder="VD: 32"></div>
     </div>
     <div class="field-row" style="margin-top:10px;">
-      <div class="field"><label>Nước cơ thể (%)</label><input type="number" id="ib-water" placeholder="VD: 55"></div>
-      <div class="field"><label>Mỡ nội tạng (cấp)</label><input type="number" id="ib-visceral" placeholder="VD: 8"></div>
+      <div class="field"><label>Nước cơ thể (%)</label><input type="text" inputmode="decimal" id="ib-water" placeholder="VD: 55"></div>
+      <div class="field"><label>Mỡ nội tạng (cấp)</label><input type="text" inputmode="decimal" id="ib-visceral" placeholder="VD: 8"></div>
     </div>
     <div class="field" style="margin-top:10px;">
       <label>Ghi chú</label>
-      <input type="text" id="ib-note" placeholder="VD: Đo tại California Fitness">
+      <input type="text" id="ib-note" maxlength="200" placeholder="VD: Đo tại phòng tập gần nhà">
     </div>
+    <p class="auth-err" id="ib-err" role="alert"></p>
     <button class="btn btn-primary btn-block" style="margin-top:16px;" id="ib-save">Lưu số liệu</button>
   `);
   $("#ib-save").addEventListener("click", ()=>{
-    let dateVal = Date.now();
-    if($("#ib-date").value){
-      const [y,m,d] = $("#ib-date").value.split("-").map(Number);
-      dateVal = new Date(y, m-1, d, 12).getTime(); // giờ trưa local — tránh lệch ngày do múi giờ
-    }
-    state.inbodyLogs.push({
-      id: uid(), ts: dateVal, source: "manual",
-      weight: Number($("#ib-weight").value) || state.profile.weight,
-      bodyFatPct: $("#ib-bf").value ? Number($("#ib-bf").value) : null,
-      muscleMassKg: $("#ib-muscle").value ? Number($("#ib-muscle").value) : null,
-      bodyWaterPct: $("#ib-water").value ? Number($("#ib-water").value) : null,
-      visceralFat: $("#ib-visceral").value ? Number($("#ib-visceral").value) : null,
-      note: $("#ib-note").value || "",
-    });
+    /* R3-CORE-11: kiểm tra đầu vào — số âm / phi lý / ngày tương lai không được lưu (dấu phẩy thập phân kiểu Việt dùng được) */
+    const err = m=>{ const e = $("#ib-err"); if(e) e.textContent = m; toast(m, "error"); };
+    const val = fkInbodyRead({ date: $("#ib-date").value, weight: $("#ib-weight").value, bf: $("#ib-bf").value, muscle: $("#ib-muscle").value,
+      water: $("#ib-water").value, visceral: $("#ib-visceral").value, note: $("#ib-note").value });
+    if(val.error) return err(val.error);
+    state.inbodyLogs.push(Object.assign({ id: uid(), source: "manual" }, val.log));
     saveState();
     closeSheet();
     renderProgressInbodyTab();
@@ -3044,7 +3269,8 @@ function renderNutritionScreen(){
   const p = state.profile;
   const log = getDayFoodLog();
   let kcal=0, protein=0, carbs=0, fat=0;
-  Object.values(log).forEach(list=> list.forEach(it=>{ kcal+=it.kcal; protein+=it.protein; carbs+=it.carbs; fat+=it.fat; }));
+  const n0 = v=> Number(v) || 0;   // R3-CORE-07: món thiếu trường / sai kiểu không làm tổng thành NaN
+  Object.values(log).forEach(list=> (Array.isArray(list) ? list : []).forEach(it=>{ if(!it) return; kcal+=n0(it.kcal); protein+=n0(it.protein); carbs+=n0(it.carbs); fat+=n0(it.fat); }));
 
   const pct = p.goalKcal ? Math.min(100, Math.round(kcal/p.goalKcal*100)) : 0;
   $("#kcal-current").textContent = Math.round(kcal);
@@ -3059,9 +3285,9 @@ function renderNutritionScreen(){
   $("#macro-fat").textContent = `${Math.round(fat)}g`;
 
   $("#meal-sections").innerHTML = MEAL_TYPES.map(mt=>{
-    const items = log[mt.id];
-    const mealKcal = items.reduce((s,i)=>s+i.kcal,0);
-    const mealTime = state.reminders.meal[mt.id].time;
+    const items = Array.isArray(log[mt.id]) ? log[mt.id] : (log[mt.id] = []);
+    const mealKcal = items.reduce((s,i)=>s+n0(i && i.kcal),0);
+    const mealTime = escapeHtml(String(((state.reminders.meal || {})[mt.id] || {}).time || mt.defaultTime || ""));
     return `
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
@@ -3070,10 +3296,10 @@ function renderNutritionScreen(){
       </div>
       ${items.length ? items.map((it,i)=>`
         <div class="food-result">
-          <div><div class="name">${escapeHtml(it.name)}</div><div class="kcal">${it.grams}g · P${it.protein}g C${it.carbs}g F${it.fat}g</div></div>
+          <div><div class="name">${escapeHtml(it.name)}</div><div class="kcal">${fkNumTxt(it.grams)}g · P${fkNumTxt(it.protein)}g C${fkNumTxt(it.carbs)}g F${fkNumTxt(it.fat)}g</div></div>
           <div style="display:flex;align-items:center;gap:10px;">
-            <b>${it.kcal} kcal</b>
-            <button class="icon-btn" data-del-food="${mt.id}:${i}" style="width:26px;height:26px;"><span class="material-symbols-rounded" style="font-size:16px;color:var(--text-dim);">close</span></button>
+            <b>${fkNumTxt(it.kcal)} kcal</b>
+            <button class="icon-btn" data-del-food="${mt.id}:${i}" aria-label="Xoá món" style="width:26px;height:26px;"><span class="material-symbols-rounded" style="font-size:16px;color:var(--text-dim);">close</span></button>
           </div>
         </div>`).join("") : `<p class="empty-hint" style="padding:6px 0;">Chưa có món ăn nào · ${mealKcal} kcal</p>`}
     </div>`;
@@ -3323,6 +3549,7 @@ $$("#sleep-quality .pill").forEach(b=>{
   });
 });
 function sleepHours(start,end){
+  if(!FK_TIME_RE.test(String(start)) || !FK_TIME_RE.test(String(end))) return NaN;   // R3-CORE-10: ô giờ để trống / sai dạng
   const [sh,sm] = start.split(":").map(Number);
   const [eh,em] = end.split(":").map(Number);
   let mins = (eh*60+em) - (sh*60+sm);
@@ -3332,6 +3559,8 @@ function sleepHours(start,end){
 $("#btn-save-sleep").addEventListener("click", ()=>{
   const start = $("#sleep-start").value, end = $("#sleep-end").value;
   const hours = fmt1(sleepHours(start,end));
+  if(!Number.isFinite(hours) || hours <= 0){ toast("Chọn đủ giờ đi ngủ và giờ thức dậy.", "error"); return; }
+  if(hours > 16 && !confirm(`Bạn ngủ ${fmtVN(hours)} giờ? Kiểm tra lại giờ đi ngủ / thức dậy nếu chưa đúng.`)) return;
   state.sleepLog[todayStr()] = { start, end, hours, quality: selectedSleepQuality };
   saveState();
   renderSleepScreen();
@@ -3343,19 +3572,19 @@ function renderSleepScreen(){
   $("#sleep-goal-label").textContent = `Mục tiêu cá nhân: ${goalHours} giờ/đêm`;
   const days = Array.from({length:7}).map((_,i)=> dateStrOffset(-6+i));
   const logs = days.map(d=> state.sleepLog[d]);
-  const validHours = logs.filter(Boolean).map(l=>l.hours);
+  const validHours = logs.filter(Boolean).map(l=> Number(l.hours)).filter(h=> Number.isFinite(h) && h > 0);
   const avg = validHours.length ? fmt1(validHours.reduce((a,b)=>a+b,0)/validHours.length) : 0;
   const pct = Math.min(100, Math.round(avg/goalHours*100));
   $("#sleep-avg").textContent = `${avg}h`;
   $("#sleep-ring").style.strokeDashoffset = `${SLEEP_RING_CIRC*(1-pct/100)}`;
   const max = 10;
   $("#sleep-bars").innerHTML = days.map((d,i)=>{
-    const h = logs[i] ? logs[i].hours : 0;
-    const barH = Math.max(4, Math.round(h/max*80));
+    const h = logs[i] && Number.isFinite(Number(logs[i].hours)) ? Math.max(0, Number(logs[i].hours)) : 0;
+    const barH = Math.min(80, Math.max(4, Math.round(h/max*80)));
     const inGoal = h >= goalHours-1;
     return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
       <div style="width:100%;max-width:18px;height:${barH}px;border-radius:4px;background:${h?(inGoal?'var(--success)':'var(--primary-soft)'):'var(--surface-3)'};"></div>
-      <span style="font-size:12px;color:var(--text-dim);">${["T2","T3","T4","T5","T6","T7","CN"][new Date(d).getDay()===0?6:new Date(d).getDay()-1]}</span>
+      <span style="font-size:12px;color:var(--text-dim);">${todayDayKey(fkDateOf(d))}</span>
     </div>`;
   }).join("");
 }
@@ -3363,13 +3592,14 @@ $("#btn-edit-sleep-goal").addEventListener("click", ()=>{
   openSheet(`
     <h3 style="margin-bottom:14px;">Mục tiêu giờ ngủ mỗi đêm</h3>
     <p class="small-note" style="margin-bottom:10px;">National Sleep Foundation khuyến nghị 7–9 giờ/đêm cho người trưởng thành — bạn có thể tự đặt mục tiêu phù hợp với cơ địa của mình.</p>
-    <div class="field"><input type="number" id="sleep-goal-input" value="${state.profile.sleepGoalHours||8}" min="4" max="12" step="0.5"></div>
+    <div class="field"><input type="number" inputmode="decimal" id="sleep-goal-input" value="${Number(state.profile.sleepGoalHours)||8}" min="4" max="12" step="0.5"></div>
     <button class="btn btn-primary btn-block" style="margin-top:16px;" id="btn-save-sleep-goal">Lưu mục tiêu</button>
     <button class="btn btn-ghost btn-block" style="margin-top:8px;" id="btn-reset-sleep-goal">Đặt lại mặc định (8 giờ)</button>
   `);
   $("#btn-save-sleep-goal").addEventListener("click", ()=>{
-    const v = Number($("#sleep-goal-input").value) || 8;
-    state.profile.sleepGoalHours = v;
+    const v = fkNum($("#sleep-goal-input").value);
+    if(!Number.isFinite(v) || v < 4 || v > 12){ toast("Mục tiêu giấc ngủ từ 4 đến 12 giờ/đêm.", "error"); return; }
+    state.profile.sleepGoalHours = Math.round(v * 2) / 2;
     saveState(); closeSheet(); renderSleepScreen();
     toast("Đã lưu mục tiêu giấc ngủ");
   });
@@ -3399,11 +3629,11 @@ function renderRemindersScreen(){
 
   $("#reminder-workout-list").innerHTML = DAY_KEYS.map(k=>{
     const r = state.reminders.workout[k];
-    const day = getActivePlan().days[k];
-    if(day.items.length===0) return "";
+    const day = ((getActivePlan() || {}).days || {})[k];
+    if(!day || !Array.isArray(day.items) || day.items.length===0) return "";
     return `<div class="link-row">
       <div class="left"><span class="material-symbols-rounded">event</span>
-        <div><div class="name">${DAY_LABELS[k]} — ${escapeHtml(day.title)}</div><div class="sub" data-edit-time="workout:${k}" style="cursor:pointer;text-decoration:underline;">${r.time}</div></div>
+        <div><div class="name">${DAY_LABELS[k]} — ${escapeHtml(day.title)}</div><div class="sub" data-edit-time="workout:${k}" style="cursor:pointer;text-decoration:underline;">${escapeHtml(String(r.time))}</div></div>
       </div>
       <div class="toggle ${r.enabled?'on':''}" data-toggle="workout:${k}"></div>
     </div>`;
@@ -3413,7 +3643,7 @@ function renderRemindersScreen(){
     const r = state.reminders.meal[m.id];
     return `<div class="link-row">
       <div class="left"><span class="material-symbols-rounded">${m.icon}</span>
-        <div><div class="name">${m.label}</div><div class="sub" data-edit-time="meal:${m.id}" style="cursor:pointer;text-decoration:underline;">${r.time}</div></div>
+        <div><div class="name">${m.label}</div><div class="sub" data-edit-time="meal:${m.id}" style="cursor:pointer;text-decoration:underline;">${escapeHtml(String(r.time))}</div></div>
       </div>
       <div class="toggle ${r.enabled?'on':''}" data-toggle="meal:${m.id}"></div>
     </div>`;
@@ -3453,12 +3683,14 @@ function openEditReminderTime(type, key){
   const cur = getReminderTime(type, key);
   openSheet(`
     <h3 style="margin-bottom:14px;">Chọn giờ nhắc nhở</h3>
-    <input type="time" id="time-picker" value="${cur}" style="background:var(--surface-2);border:1px solid var(--border-strong);border-radius:12px;padding:14px;color:#fff;width:100%;font-size:16px;">
+    <input type="time" id="time-picker" value="${escapeHtml(String(cur || ""))}" aria-label="Giờ nhắc nhở" style="background:var(--surface-2);border:1px solid var(--border-strong);border-radius:12px;padding:14px;color:#fff;width:100%;font-size:16px;">
     <button class="btn btn-primary btn-block" style="margin-top:16px;" id="btn-save-time">Lưu</button>
     <button class="btn btn-ghost btn-block" style="margin-top:8px;" id="btn-reset-time">Đặt lại giờ mặc định (${defaultReminderTime(type,key)})</button>
   `);
   $("#btn-save-time").addEventListener("click", ()=>{
-    setReminderTime(type, key, $("#time-picker").value);
+    const tv = String($("#time-picker").value || "").slice(0, 5);
+    if(!FK_TIME_RE.test(tv)){ toast("Chọn giờ nhắc nhở hợp lệ (giờ:phút).", "error"); return; }   // R3-CORE-12: để trống → nhắc nhở không bao giờ chạy
+    setReminderTime(type, key, tv);
     saveState(); closeSheet(); renderRemindersScreen(); renderNutritionScreen();
     toast("Đã lưu giờ nhắc nhở");
   });
@@ -3485,44 +3717,56 @@ $("#toggle-bedtime").addEventListener("click", ()=>{
 });
 
 /* ---- Vòng lặp kiểm tra & bắn thông báo (hoạt động khi tab đang mở) ---- */
+/* R3-CORE-12: (1) không còn so khớp ĐÚNG phút — tab nền bị trình duyệt bóp timer (≥ 1 phút/nhịp) nên dễ trượt mất phút hẹn:
+   bắn khi đã tới giờ và trễ không quá FK_REMIND_GRACE phút, mỗi nhắc nhở 1 lần/ngày/giờ hẹn; (2) không có giáo án / ngày tập
+   không còn ném lỗi mỗi 15 giây; (3) dọn khoá chống trùng của ngày cũ. */
+const FK_REMIND_GRACE = 3;
+function fkReminderDue(time, now){
+  if(typeof time !== "string" || !FK_TIME_RE.test(time)) return false;
+  now = now || new Date();
+  const [h, m] = time.split(":").map(Number);
+  const diff = (now.getHours()*60 + now.getMinutes()) - (h*60 + m);
+  return diff >= 0 && diff <= FK_REMIND_GRACE;
+}
 function checkReminders(){
-  if(!state.reminders.master) return;
+  if(!state.reminders || !state.reminders.master) return;
   const now = new Date();
-  const hhmm = `${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
-  const minuteKey = `${todayStr()}_${hhmm}`;
-  const fire = (title, body, uniqueKey)=>{
-    const fireKey = `${minuteKey}_${uniqueKey}`;
+  const today = todayStr(now);
+  if(!state._firedKeys || typeof state._firedKeys !== "object") state._firedKeys = {};
+  let dirty = fkPruneFired(state) > 0;
+  const fire = (title, body, uniqueKey, time)=>{
+    const fireKey = `${today}_${time}_${uniqueKey}`;
     if(state._firedKeys[fireKey]) return;
-    state._firedKeys[fireKey] = true;
+    state._firedKeys[fireKey] = true; dirty = true;
     if("Notification" in window && Notification.permission==="granted"){
       try{ new Notification(title, { body, icon: undefined }); }catch(e){}
     }
     toast(body, "notifications_active");
-    saveState();
   };
-  const todayKey = todayDayKey();
-  const wr = state.reminders.workout[todayKey];
-  if(wr && wr.enabled && wr.time===hhmm){
-    const day = getActivePlan().days[todayKey];
-    fire("Đến giờ tập luyện!", `Hôm nay: ${day.title} — cùng TapEasy chinh phục giới hạn!`, "workout");
+  const todayKey = todayDayKey(now);
+  const wr = (state.reminders.workout || {})[todayKey];
+  if(wr && wr.enabled && fkReminderDue(wr.time, now)){
+    const day = ((getActivePlan() || {}).days || {})[todayKey];
+    if(day && Array.isArray(day.items) && day.items.length) fire("Đến giờ tập luyện!", `Hôm nay: ${day.title || "buổi tập"} — cùng TapEasy chinh phục giới hạn!`, "workout", wr.time);
   }
   MEAL_TYPES.forEach(m=>{
-    const mr = state.reminders.meal[m.id];
-    if(mr && mr.enabled && mr.time===hhmm) fire("Đến giờ ăn!", `Đừng quên ${m.label.toLowerCase()} và ghi lại vào nhật ký dinh dưỡng nhé.`, "meal_"+m.id);
+    const mr = (state.reminders.meal || {})[m.id];
+    if(mr && mr.enabled && fkReminderDue(mr.time, now)) fire("Đến giờ ăn!", `Đừng quên ${m.label.toLowerCase()} và ghi lại vào nhật ký dinh dưỡng nhé.`, "meal_"+m.id, mr.time);
   });
   if(state.reminders.bedtimeEnabled){
     const bedtime = state.reminders.bedtimeTime || "22:30";
-    if(bedtime===hhmm) fire("Đến giờ ngủ!", "Tắt thiết bị điện tử và chuẩn bị cho một giấc ngủ chất lượng.", "bedtime");
+    if(fkReminderDue(bedtime, now)) fire("Đến giờ ngủ!", "Tắt thiết bị điện tử và chuẩn bị cho một giấc ngủ chất lượng.", "bedtime", bedtime);
   }
+  if(dirty) saveState();
 }
-setInterval(checkReminders, 15000);
+setInterval(()=>{ try{ checkReminders(); }catch(e){ try{ console.warn("[reminders]", e); }catch(_){} } }, 15000);
 
 /* =========================================================================
    11. MÀN HÌNH HỒ SƠ
    ========================================================================= */
 function renderProfileScreen(){
   const p = state.profile;
-  $("#profile-avatar").src = p.avatarData || IMG.avatar;
+  $("#profile-avatar").src = safeUrl(p.avatarData) || IMG.avatar;
   $("#profile-name").textContent = (p.name || "Vận Động Viên").toUpperCase();
   const total = state.finishedDates.length;
   const level = Math.floor(total/5)+1;
@@ -3560,12 +3804,50 @@ $("#profile-avatar").addEventListener("click", ()=>{
   input.onchange = (e)=>{
     const file = e.target.files[0];
     if(!file) return;
-    const reader = new FileReader();
-    reader.onload = ()=>{ state.profile.avatarData = reader.result; saveState(); renderProfileScreen(); };
-    reader.readAsDataURL(file);
+    fkSetAvatar(file);
   };
   input.click();
 });
+/* R3-CORE-02: ảnh đại diện trước đây lưu NGUYÊN CỠ (ảnh chụp 3–8 MB → chuỗi base64 4–11 MB) vào localStorage (giới hạn ~5 MB):
+   lưu thất bại và từ đó MỌI thay đổi khác cũng không lưu được. Nay thu nhỏ về ≤ 256 px JPEG (~15–30 KB), chỉ nhận ảnh,
+   lưu không được thì hoàn tác và báo rõ. */
+const FK_AVATAR_PX = 256, FK_AVATAR_MAX_CHARS = 200000;
+function fkShrinkImage(file, px){
+  return new Promise((resolve, reject)=>{
+    let url = null;
+    try{ url = URL.createObjectURL(file); }catch(e){ reject(e); return; }
+    const img = new Image();
+    const done = ()=>{ try{ URL.revokeObjectURL(url); }catch(e){} };
+    img.onload = ()=>{
+      try{
+        const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+        if(!w || !h) throw new Error("empty");
+        const side = Math.min(w, h), c = document.createElement("canvas");
+        c.width = c.height = Math.min(px, side);
+        c.getContext("2d").drawImage(img, (w - side)/2, (h - side)/2, side, side, 0, 0, c.width, c.height);   // cắt vuông ở giữa
+        const out = c.toDataURL("image/jpeg", 0.85);
+        done(); resolve(out);
+      }catch(e){ done(); reject(e); }
+    };
+    img.onerror = ()=>{ done(); reject(new Error("decode")); };
+    img.src = url;
+  });
+}
+async function fkSetAvatar(file){
+  if(!file || (file.type && !/^image\//i.test(file.type))){ toast("Hãy chọn một tệp ảnh (JPG, PNG…).", "error"); return false; }
+  if(Number(file.size) > 25 * 1024 * 1024){ toast("Ảnh lớn hơn 25 MB — hãy chọn ảnh nhỏ hơn.", "error"); return false; }
+  let data = null;
+  try{ data = await fkShrinkImage(file, FK_AVATAR_PX); }catch(e){ data = null; }
+  if(typeof data !== "string" || !/^data:image\/(png|jpe?g|webp);base64,/i.test(data) || data.length > FK_AVATAR_MAX_CHARS){
+    toast("Không đọc được ảnh này — hãy thử ảnh khác (JPG hoặc PNG).", "error"); return false;
+  }
+  const prev = state.profile.avatarData;
+  state.profile.avatarData = data;
+  if(saveState() === false){ state.profile.avatarData = prev; try{ renderProfileScreen(); }catch(e){} return false; }
+  try{ renderProfileScreen(); }catch(e){}
+  toast("Đã đổi ảnh đại diện");
+  return true;
+}
 $("#btn-reset-app").addEventListener("click", ()=>{
   openSheet(`
     <div style="text-align:center;padding:10px 0;">
@@ -3582,8 +3864,9 @@ $("#btn-reset-app").addEventListener("click", ()=>{
     /* integrator (FIX-nutrition vòng 2 #4): xoá cả bộ nhớ thực đơn của nutrition-pro (localStorage riêng "fitkit_np_plans_v1") */
     try{ if(typeof NutriPro !== "undefined" && NutriPro && typeof NutriPro.clearPlanCache === "function") NutriPro.clearPlanCache(); }catch(e){}
     try{ localStorage.removeItem("fitkit_np_plans_v1"); }catch(e){}
-    localStorage.removeItem(STORAGE_KEY);
-    indexedDB.deleteDatabase(DB_NAME);
+    try{ localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(STORAGE_CORRUPT_KEY); }catch(e){}
+    try{ if(_dbPromise){ const db = await _dbPromise.catch(()=> null); if(db && db.close) db.close(); _dbPromise = null; } }catch(e){}
+    try{ indexedDB.deleteDatabase(DB_NAME); }catch(e){}       // R3-CORE-15: IndexedDB bị chặn không được làm kẹt nút "Xoá hết"
     location.reload();
   });
 });
@@ -3721,25 +4004,44 @@ async function restoreFromBackupZip(blob){
   const zip = await JSZip.loadAsync(blob);
   const stateFile = zip.file("state.json");
   if(!stateFile) throw new Error("File sao lưu không hợp lệ (thiếu state.json).");
-  const parsedState = JSON.parse(await stateFile.async("string"));
+  /* R3-CORE-03: KIỂM TRA TRƯỚC — XOÁ SAU. Trước đây kho video/ảnh bị xoá sạch rồi mới đọc bản sao lưu: file hỏng / state không
+     phải object / manifest sai / localStorage đầy → mất dữ liệu cũ mà không khôi phục được gì. Nay: đọc + kiểm toàn bộ, ghi
+     state mới (giữ bản cũ để hoàn tác), rồi mới thay kho video/ảnh; lỗi giữa chừng → trả state cũ. */
+  let parsedState, manifest;
+  try{ parsedState = JSON.parse(await stateFile.async("string")); }catch(e){ throw new Error("File sao lưu bị hỏng (state.json không đọc được)."); }
+  if(!parsedState || typeof parsedState !== "object" || Array.isArray(parsedState)) throw new Error("File sao lưu không hợp lệ (state.json sai định dạng).");
   const manifestFile = zip.file("db-manifest.json");
-  const manifest = manifestFile ? JSON.parse(await manifestFile.async("string")) : [];
-  await dbClear(DB_STORE);
-  await dbClear(DB_STORE_PHOTOS);
+  try{ manifest = manifestFile ? JSON.parse(await manifestFile.async("string")) : []; }catch(e){ manifest = null; }
+  if(!Array.isArray(manifest)) throw new Error("File sao lưu bị hỏng (danh sách video/ảnh không đọc được).");
+  manifest = manifest.filter(m=> m && typeof m === "object" && (m.store === "clips" || m.store === "photos") && Number.isFinite(Number(m.id)));
+  const merged = normalizeState(Object.assign(defaultState(), parsedState, {   // QT-11: chuẩn hoá bản sao lưu cũ/thiếu trường
+    profile: Object.assign(defaultState().profile, parsedState.profile && typeof parsedState.profile === "object" ? parsedState.profile : {}),
+    reminders: Object.assign(defaultState().reminders, parsedState.reminders && typeof parsedState.reminders === "object" ? parsedState.reminders : {}),
+    aiSettings: Object.assign(defaultState().aiSettings, parsedState.aiSettings && typeof parsedState.aiSettings === "object" ? parsedState.aiSettings : {}),
+    driveSettings: Object.assign(defaultState().driveSettings, parsedState.driveSettings && typeof parsedState.driveSettings === "object" ? parsedState.driveSettings : {}),
+  }));
+  // đọc trước toàn bộ blob (zip hỏng giữa chừng → dừng khi CHƯA xoá gì)
+  const records = [];
   for(const m of manifest){
     const f = zip.file(`blobs/${m.store}/${m.id}`);
     if(!f) continue;
     const arr = await f.async("arraybuffer");
-    const blobRec = new Blob([arr], { type: m.mimeType });
-    await dbPutRaw(m.store==="clips" ? DB_STORE : DB_STORE_PHOTOS, { id:m.id, name:m.name, blob:blobRec, createdAt:m.createdAt });
+    records.push({ store: m.store === "clips" ? DB_STORE : DB_STORE_PHOTOS,
+      rec: { id: Number(m.id), name: typeof m.name === "string" ? m.name.slice(0, 120) : "", blob: new Blob([arr], { type: /^(video|image)\/[\w.+-]+$/.test(String(m.mimeType)) ? m.mimeType : (m.store === "clips" ? "video/mp4" : "image/jpeg") }), createdAt: Number(m.createdAt) || Date.now() } });
   }
-  const merged = normalizeState(Object.assign(defaultState(), parsedState, {   // QT-11: chuẩn hoá bản sao lưu cũ/thiếu trường
-    profile: Object.assign(defaultState().profile, parsedState.profile||{}),
-    reminders: Object.assign(defaultState().reminders, parsedState.reminders||{}),
-    aiSettings: Object.assign(defaultState().aiSettings, parsedState.aiSettings||{}),
-    driveSettings: Object.assign(defaultState().driveSettings, parsedState.driveSettings||{}),
-  }));
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+  let oldRaw = null;
+  try{ oldRaw = localStorage.getItem(STORAGE_KEY); }catch(e){}
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(merged)); }
+  catch(e){ throw new Error("Bộ nhớ máy đầy hoặc trình duyệt chặn lưu — chưa khôi phục được (dữ liệu hiện tại vẫn nguyên)."); }
+  try{
+    await dbClear(DB_STORE);
+    await dbClear(DB_STORE_PHOTOS);
+    _fkBlobUrls.forEach(u=>{ try{ URL.revokeObjectURL(u); }catch(e){} }); _fkBlobUrls.clear();
+    for(const r of records) await dbPutRaw(r.store, r.rec);
+  }catch(e){
+    try{ if(oldRaw != null) localStorage.setItem(STORAGE_KEY, oldRaw); else localStorage.removeItem(STORAGE_KEY); }catch(_){}
+    throw new Error("Không ghi được video/ảnh vào máy (bộ nhớ đầy?) — đã giữ lại dữ liệu nhật ký hiện tại. Giải phóng bộ nhớ rồi khôi phục lại.");
+  }
 }
 
 async function driveBackupNow(showToast=true){
@@ -3789,7 +4091,7 @@ async function driveRestoreNow(){
 // Tự động kiểm tra định kỳ — chỉ âm thầm sao lưu khi đã đăng nhập sẵn (không tự bật popup đăng nhập)
 setInterval(()=>{
   const s = state.driveSettings;
-  if(driveDirty && s.autoSync && s.clientId && driveIsSignedIn()){
+  if(driveDirty && s.autoSync && getDriveClientId() && driveIsSignedIn()){   // R3-CORE-15: Client ID cấu hình sẵn trong app cũng tự sao lưu
     driveBackupNow(false);
   }
 }, 120000);
@@ -3877,7 +4179,49 @@ function renderAll(){
   else if(typeof renderHomeScreen==="function") renderHomeScreen();
 }
 
+/* R3-CORE-13: app mở ở 2 nơi (tab + PWA đã cài) — nơi mở sau ghi đè dữ liệu nơi kia vì mỗi nơi giữ 1 bản state riêng trong RAM.
+   Nghe sự kiện "storage": nơi khác vừa lưu → nạp lại state mới nhất (không làm khi đang trong buổi tập / đang mở sheet / onboarding:
+   khi đó đánh dấu chờ, nạp lúc quay lại app). */
+let _fkStoragePending = false;
+function fkStorageBusy(){
+  try{
+    if(typeof session !== "undefined" && session && !session.finished) return true;
+    const bd = $("#sheet-backdrop"); if(bd && bd.classList.contains("open")) return true;
+    const ob = $("#onboarding"); if(ob && ob.classList.contains("open")) return true;
+  }catch(e){}
+  return false;
+}
+function fkStorageAdopt(force){
+  if(!_fkStoragePending && !force) return false;
+  if(fkStorageBusy()) return false;
+  _fkStoragePending = false;
+  let raw = null; try{ raw = localStorage.getItem(STORAGE_KEY); }catch(e){ return false; }
+  if(!raw) return false;
+  let parsed = null; try{ parsed = JSON.parse(raw); }catch(e){ return false; }
+  if(!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return false;
+  const keepDay = state.selectedDay;
+  state = loadState();
+  if(keepDay) state.selectedDay = keepDay;
+  try{ ensureReminderDefaults(); if(state.onboarded) renderAll(); }catch(e){ try{ console.warn("[storage]", e); }catch(_){} }
+  return true;
+}
+try{ window.addEventListener("storage", ev=>{
+  try{
+    if(!ev || ev.key !== STORAGE_KEY || ev.newValue == null) return;
+    _fkStoragePending = true;
+    fkStorageAdopt();
+  }catch(e){}
+}); }catch(e){}
+/* R3-CORE-01 / R3-CORE-09: báo 1 lần lúc khởi động khi dữ liệu cũ bị hỏng hoặc trình duyệt chặn lưu trữ */
+function fkStorageNotice(){
+  try{
+    if(fkStorageNotice._done) return; fkStorageNotice._done = true;
+    if(loadState.blocked) setTimeout(()=> toast("Trình duyệt đang chặn lưu dữ liệu (chế độ riêng tư / tắt cookie) — dữ liệu sẽ mất khi đóng app.", "error"), 600);
+    else if(loadState.corrupt) setTimeout(()=> toast("Dữ liệu lưu trên máy bị hỏng nên app bắt đầu lại. Bản cũ đã được giữ riêng — hãy khôi phục từ bản sao lưu nếu có.", "error"), 600);
+  }catch(e){}
+}
 function init(){
+  fkStorageNotice();
   if("serviceWorker" in navigator){
     navigator.serviceWorker.register("sw.js").catch(()=>{});
   }
@@ -3924,7 +4268,7 @@ document.addEventListener("keydown", e=>{
    TIẾN TRÌNH TỰ ĐỘNG · KHỞI ĐỘNG · ĐĨA TẠ · LỊCH SỬ & KỶ LỤC · BÁO NGHỈ
    ===================================================================== */
 function repBottom(reps){ const m = String(reps||"").match(/(\d+)\s*[-–]\s*(\d+)/); return m ? Number(m[1]) : repTop(reps); }
-function e1rm(kg, reps){ kg = Number(kg)||0; reps = Math.min(12, Number(reps)||0); if(!kg || !reps) return 0; return reps===1 ? kg : kg*(1+reps/30); }   // giới hạn 12 lần để tránh phóng đại   // công thức Epley
+function e1rm(kg, reps){ kg = Number(kg)||0; reps = Math.min(12, Number(reps)||0); if(!(kg > 0) || !(reps > 0) || !Number.isFinite(kg)) return 0;   /* R3-CORE: kg/lần âm, NaN, vô cực → 0 */ return reps===1 ? kg : kg*(1+reps/30); }   // giới hạn 12 lần để tránh phóng đại   // công thức Epley
 function roundTo(x, step){ return Math.round(x/step)*step; }
 /* Loại dụng cụ: db (tạ đơn/tạ ấm) · barbell (thanh đòn, EZ, Smith) · machine (cáp/máy) · bw (trọng lượng cơ thể, xà, ghế…) · other */
 function fkEquipClass(meta){
@@ -3947,7 +4291,7 @@ function weightStep(meta, kg){
 const DB_LADDER = [1,2,3,4,5,6,7,8,9,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42.5,45,47.5,50,55,60];
 /* QT-02: mức tạ kế tiếp theo dụng cụ + % (thân dưới ~5 %, thân trên ~2,5 %, tối thiểu 1 nấc dụng cụ) */
 function fkNextKg(meta, kg){
-  kg = Number(kg) || 0;
+  kg = Math.max(0, Number(kg) || 0);   // R3-CORE: kg âm / NaN → 0
   const c = fkEquipClass(meta);
   if(c === "db"){ const n = DB_LADDER.find(x=> x > kg + 1e-9); return n != null ? n : roundTo(kg + 2.5, 2.5); }
   const step = weightStep(meta, kg);
@@ -4061,7 +4405,9 @@ function progressionFor(item, meta, last, timed, nSets){
 }
 function recordExerciseResult(key, name, reps, sets, timed){
   state.setLog = state.setLog || {}; state.setHist = state.setHist || {};
-  sets = Array.isArray(sets) ? sets : [];
+  /* R3-CORE: chuẩn hoá hiệp trước khi ghi — kg 0–500, lần 0–200 (module khác / dữ liệu PT gửi số âm, NaN, chuỗi không làm hỏng lịch sử) */
+  sets = (Array.isArray(sets) ? sets : []).filter(x=> x && typeof x === "object").slice(0, FK_MAX_SETS * 2);
+  sets.forEach(x=>{ const k = Number(x.kg), r = Number(x.reps); x.kg = Number.isFinite(k) && k > 0 ? Math.min(500, Math.round(k * 100) / 100) : 0; x.reps = Number.isFinite(r) && r > 0 ? Math.min(200, Math.round(r)) : 0; });
   const prev = state.setLog[key];
   const day = (typeof session !== "undefined" && session && typeof session.date === "string" && session.date) || todayStr();   // QT-07
   // QT-01: bài có tạ → hiệp trống kg lấy kg hiệp trước / mức tạ buổi trước (không lưu 0 kg, không kéo e1RM/khối lượng/tự tăng)

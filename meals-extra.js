@@ -556,7 +556,7 @@
       items:[["xoi-trang",150],["bap",80],["me-vung",5],["dau-an",3]],
       steps:["Nếp vo sạch, ngâm 4–6 giờ (hoặc qua đêm), để ráo.", "Trộn nếp với hạt bắp tách sẵn, chút muối; đồ (hấp) 25–30 phút, giữa chừng đảo đều.",
         "Phi chút dầu với hành (nếu thích), rưới lên xôi, rắc mè rang."],
-      tip:"Bữa sáng kiểu Việt ~420 kcal, ~10 g đạm — không thêm đường để hợp người cần kiểm soát đường huyết." },
+      tip:"Bữa sáng kiểu Việt ~420 kcal, ~10 g đạm — không thêm đường." },
     { id:"chao-khoai-lang", name:"Cháo trắng nấu khoai lang, rắc mè", emoji:"🥣", cuisine:"vn", method:"boil", min:25, level:1,
       tags:["chay","thuan-chay","re"], meal:"breakfast",
       items:[["com-trang",150],["khoai-lang",150],["me-vung",5]],

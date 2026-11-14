@@ -153,3 +153,80 @@ html.fk-scrolled #app-scroll > .screen.active > .topbar:not(.transparent){
   html:is([data-screen="coach"], [data-screen="client"], [data-screen="events"], [data-screen="community"], [data-screen="kb"]) .screen.active > .content{ width:100%; max-width:820px; margin-left:auto; margin-right:auto; }
   .tsx-grid{ grid-template-columns:repeat(4, minmax(0, 1fr)); }   /* Cửa hàng là lớp phủ toàn màn hình (không đổi data-screen) */
 }
+
+
+/* =========================================================================
+   R3 (ux · 14/11/2026 — docs/qa/R3-ux.md): đa ngôn ngữ, PWA (bản mới / cài đặt)
+   ========================================================================= */
+/* mở app ở ngôn ngữ ≠ vi: che tới khi dịch xong lượt đầu (i18n.js tự gỡ, tối đa 1,5 s) */
+html.fk-i18n-wait #app-shell{ visibility:hidden; }
+
+/* nút ngôn ngữ ở màn chào / đăng nhập (góc trên, né nút ☰ của màn chào) */
+.fk-lang-chip{ position:absolute; z-index:30; top:calc(env(safe-area-inset-top, 0px) + 12px); right:calc(env(safe-area-inset-right, 0px) + 66px);
+  display:inline-flex; align-items:center; gap:6px; min-height:var(--fk-tap, 44px); min-width:var(--fk-tap, 44px); padding:0 12px;
+  border-radius:999px; border:1px solid rgba(255,255,255,.32); background:rgba(6,26,36,.55); color:#fff;
+  font:600 13px/1 Inter, system-ui, sans-serif; letter-spacing:.04em; cursor:pointer; -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+.fk-lang-chip svg{ flex:none; }
+#auth:not(:has(.wl-burger)) .fk-lang-chip{ right:calc(env(safe-area-inset-right, 0px) + 14px); }
+html.fk-light #auth:not(:has(.wl-hero)) .fk-lang-chip{ background:rgba(255,255,255,.8); color:var(--text, #0B2530); border-color:rgba(11,37,48,.2); }
+
+/* mục Ngôn ngữ / Cài đặt app trong Hồ sơ */
+.fk-lang-cardrow{ padding:6px !important; }
+.fk-lang-item{ width:100%; text-align:left; background:transparent; border:0; color:inherit; font:inherit; cursor:pointer; min-height:56px;
+  display:flex; align-items:center; gap:12px; padding:8px 10px; border-radius:14px; }
+.fk-lang-item .info{ display:flex; flex-direction:column; min-width:0; flex:1; }
+.fk-lang-item .name{ font-weight:700; font-size:14px; }
+.fk-lang-item .meta{ font-size:12px; color:var(--text-muted); line-height:1.35; }
+.fk-lang-thumb{ width:40px; height:40px; flex:none; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  background:rgba(var(--mint-rgb, 94,230,199), .14); color:var(--mint, #33D6C9); }
+.fk-lang-item .trailing{ font-size:22px; color:var(--text-muted); }
+
+/* hộp chọn ngôn ngữ */
+.fk-lang-dlg{ position:fixed; inset:0; z-index:10060; display:flex; align-items:flex-end; justify-content:center;
+  background:rgba(2,10,14,.6); padding:0 max(12px, env(safe-area-inset-right)) calc(env(safe-area-inset-bottom, 0px) + 12px) max(12px, env(safe-area-inset-left)); }
+.fk-lang-card{ width:100%; max-width:440px; border-radius:22px; padding:18px 16px 14px; background:var(--sheet-bg, var(--glass-solid, #0C2733));
+  color:var(--text, #EAF6F4); border:1px solid var(--border, rgba(255,255,255,.16)); box-shadow:0 20px 60px rgba(0,0,0,.5); max-height:calc(100dvh - 40px); overflow:auto; }
+.fk-lang-card h2{ font-size:17px; margin:0 0 10px; }
+.fk-lang-list{ display:flex; flex-direction:column; gap:8px; }
+.fk-lang-opt{ display:flex; align-items:center; gap:10px; width:100%; min-height:52px; padding:10px 14px; border-radius:14px; cursor:pointer;
+  border:1px solid var(--border, rgba(255,255,255,.16)); background:transparent; color:inherit; font:inherit; text-align:left; }
+.fk-lang-opt[aria-checked="true"]{ border-color:var(--mint, #33D6C9); background:rgba(var(--mint-rgb, 94,230,199), .12); }
+.fk-lang-name{ flex:1; font-weight:600; font-size:15px; }
+.fk-lang-code{ font-size:12px; color:var(--text-muted); letter-spacing:.06em; }
+.fk-lang-tick{ width:18px; text-align:center; color:var(--mint, #33D6C9); visibility:hidden; }
+.fk-lang-opt[aria-checked="true"] .fk-lang-tick{ visibility:visible; }
+.fk-lang-note{ font-size:12px; line-height:1.45; color:var(--text-muted); margin:12px 2px; }
+.fk-lang-close{ width:100%; min-height:var(--fk-tap, 44px); border-radius:999px; border:1px solid var(--border, rgba(255,255,255,.2));
+  background:transparent; color:inherit; font:600 14px/1 inherit; cursor:pointer; }
+@media (min-width:600px){ .fk-lang-dlg{ align-items:center; } }
+
+/* dải gợi ý "Prefer English?" (lần đầu, máy không dùng tiếng Việt) + "Có bản mới" */
+.fk-lang-hint, .fk-update{ position:fixed; left:50%; z-index:10045; transform:translateX(-50%);
+  top:calc(env(safe-area-inset-top, 0px) + 10px); display:flex; align-items:center; gap:8px; width:max-content; max-width:min(94vw, 460px);
+  padding:6px 6px 6px 14px; border-radius:999px; background:#0E2E29; color:#D6FFF6; border:1px solid rgba(var(--mint-rgb, 94,230,199), .55);
+  box-shadow:0 10px 28px rgba(0,0,0,.45); font-size:13px; font-weight:600; line-height:1.3; }
+.fk-update{ transform:translate(-50%, -160%); transition:transform .28s var(--e-out, ease); }
+.fk-update.on{ transform:translate(-50%, 0); }
+.fk-lang-hint span, .fk-update-t{ min-width:0; }
+.fk-lang-hint button, .fk-update button{ flex:none; min-height:36px; min-width:36px; padding:0 12px; border-radius:999px; border:0; cursor:pointer; font:inherit; position:relative; }
+.fk-lang-hint button::after, .fk-update button::after{ content:""; position:absolute; inset:-4px 0; }      /* vùng chạm 44 px */
+.fk-lang-hint-yes, .fk-update-go{ background:var(--mint, #33D6C9); color:#061A24; }
+.fk-lang-hint-no, .fk-update-x{ background:transparent; color:inherit; padding:0 !important; }
+
+/* thanh mời cài đặt — nổi trên thanh điều hướng dưới */
+.fk-install{ position:fixed; z-index:940; left:50%; bottom:calc(env(safe-area-inset-bottom, 0px) + 84px); width:min(94vw, 460px);
+  transform:translate(-50%, 30px); opacity:0; pointer-events:none; transition:transform .3s var(--e-out, ease), opacity .3s;
+  display:flex; align-items:center; gap:10px; padding:10px 10px 10px 12px; border-radius:18px;
+  background:var(--glass-solid, #0C2733); color:var(--text, #EAF6F4); border:1px solid var(--border, rgba(255,255,255,.18)); box-shadow:0 14px 40px rgba(0,0,0,.45); }
+.fk-install.on{ transform:translate(-50%, 0); opacity:1; pointer-events:auto; }
+.fk-install img{ border-radius:10px; flex:none; }
+.fk-install-t{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; font-size:12px; line-height:1.35; color:var(--text-muted); }
+.fk-install-t b{ font-size:14px; color:var(--text, #EAF6F4); }
+.fk-install-go{ flex:none; min-height:var(--fk-tap, 44px); padding:0 16px; border-radius:999px; border:0; cursor:pointer;
+  background:var(--mint, #33D6C9); color:#061A24; font:700 14px/1 inherit; }
+.fk-install-x{ flex:none; width:var(--fk-tap, 44px); height:var(--fk-tap, 44px); border-radius:50%; border:0; background:transparent; color:var(--text-muted); cursor:pointer; font-size:15px; }
+.fk-ios-guide h3{ font-size:18px; margin:0 0 12px; }
+.fk-ios-guide ol{ margin:0 0 16px; padding-left:22px; display:flex; flex-direction:column; gap:12px; font-size:15px; line-height:1.45; }
+.fk-ios-guide li svg{ vertical-align:-4px; color:var(--mint, #33D6C9); }
+@media (prefers-reduced-motion: reduce){ .fk-update, .fk-install{ transition:none; } }
+@media print{ .fk-install, .fk-update, .fk-lang-hint, .fk-lang-chip{ display:none !important; } }

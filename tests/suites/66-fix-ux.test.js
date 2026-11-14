@@ -171,11 +171,11 @@ module.exports = {
     t.test("QU-09: sw.js — HTML mạng trước có hạn giờ 3 s, JS/CSS/ảnh stale-while-revalidate, font cache-first, cài từng file", ()=>{
       new Function(sw);
       assert.match(sw, /const HTML_TIMEOUT_MS = 3000;/);
-      assert.match(sw, /function staleWhileRevalidate\(e, name\)/);
+      assert.match(sw, /function staleWhileRevalidate\(e(?:, name)?\)/);
       assert.match(sw, /return e\.respondWith\(networkFirstHTML\(e\)\)/);
-      assert.match(sw, /return e\.respondWith\(staleWhileRevalidate\(e, CACHE\)\)/);
+      assert.match(sw, /return e\.respondWith\(staleWhileRevalidate\(e(?:, CACHE)?\)\)/);
       assert.match(sw, /fonts\.gstatic\.com"\) return e\.respondWith\(cacheFirst\(e, FONT_CACHE\)\)/);
-      assert.match(sw, /ASSETS\.map\(u=> c\.add\(u\)\.catch\(\(\)=>\{\}\)\)/, "precache phải lưu từng file");
+      assert.match(sw, /ASSETS\.map\(u=>[\s\S]{0,200}c\.put\(u, res\)[\s\S]{0,40}\.catch\(\(\)=>\{\}\)/, "precache phải lưu từng file");
       assert.match(sh, /Luôn làm: sinh lại danh sách ASSETS \+ băm phiên bản cache trong www\/sw\.js/);
     });
 
@@ -402,7 +402,7 @@ module.exports = {
         let py = null;
         try{ py = cp.execFileSync("python3", [path.join(ROOT, "scripts", "build-single-html.py"), out, "--offline"], { cwd: ROOT, timeout: 60000 }).toString(); }
         catch(e){ if(e.code === "ENOENT") return; throw e; }                                   // máy không có python3 → bỏ qua
-        assert.match(py, /Nhúng 9 file dữ liệu nạp lười/);
+        assert.match(py, /Nhúng (?:9|1[0-9]) file dữ liệu nạp lười/);   // R3: + từ điển i18n-en*.js
         const one = fs.readFileSync(out, "utf8");
         assert.ok(!/<script type="text\/fk-lazy"[^>]*><\/script>/.test(one), "còn thẻ khai báo chưa nhúng");
         for(const f of LAZY_ALL){

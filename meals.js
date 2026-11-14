@@ -140,7 +140,7 @@ const RECIPES = [
       "Lót giấy nến, nướng cá 190°C 15 phút, lật mặt nướng thêm 5 phút.",
       "Khoai lang luộc hoặc nướng chung (200°C, 20 phút).",
       "Cải thìa luộc hoặc hấp 3 phút."],
-    tip:"Cá thu giàu omega-3 tốt cho tim mạch và phục hồi cơ sau tập." },
+    tip:"Cá thu giàu omega-3 (chất béo không bão hoà) — nên có trong chế độ ăn cân bằng, hợp bữa sau tập." },
   { id:"bo-xao-cai", name:"Bò xào cải thìa nấm, cơm lứt", emoji:"🥩", cuisine:"vn", method:"pan", min:20, level:2, tags:["tang-co"], meal:"dinner",
     items:[["thit-bo-nac",130],["cai-thia",150],["nam",80],["com-gao-lut",180],["dau-oliu",7]],
     steps:["Thịt bò thái mỏng ngược thớ, ướp tỏi, tiêu, 1 thìa dầu hào trong 10 phút.",
@@ -369,17 +369,30 @@ function nutritionHealthFlags(p, hs){
 function bodyAnalysis(p, hs){
   p = p || {};
   const f = nutritionHealthFlags(p, hs);
-  const h = (p.height||0)/100, w = p.weight||0;
-  const bmiRaw = h ? w/(h*h) : 0;
+  /* R3-NUT-08: số đo phi lý (âm, NaN, chuỗi, chiều cao gõ theo mét "1,72", 700 kg…) → KHÔNG xếp loại / khuyên ăn dựa trên BMI rác
+     (trước: cân nặng âm ra "Thiếu cân", cao 1,72 "cm" ra BMI 236.614 "Béo phì độ II — ăn THÂM HỤT 20 %"). Khoảng nhận: 80–250 cm, 10–400 kg, BMI 8–100. */
+  const hCm = Number(p.height), wKg = Number(p.weight);
+  const sane = Number.isFinite(hCm) && Number.isFinite(wKg) && hCm >= 80 && hCm <= 250 && wKg >= 10 && wKg <= 400;
+  const h = sane ? hCm/100 : 0, w = sane ? wKg : 0;
+  let bmiRaw = h ? w/(h*h) : 0;
+  const hasInput = [p.height, p.weight].some(v=> v != null && v !== "" && v !== 0 && !(typeof v === "number" && Number.isNaN(v)));
+  if(!(bmiRaw >= 8 && bmiRaw <= 100)) bmiRaw = 0;
   // BUG-09: hiển thị 1 số lẻ bằng cách CẮT (không làm tròn lên) → 18,48 hiện 18,4 "Thiếu cân", không bao giờ vượt ngưỡng
   // phân loại; phân loại trên đúng giá trị hiển thị (ngưỡng 18,5/23/25/30 đều có 1 số lẻ nên tương đương giá trị thật).
   const bmi = Math.floor(bmiRaw*10 + 1e-9)/10;
-  let cat, rec, color, advice;
-  if(!bmi){ cat="Chưa đủ thông tin"; rec=p.goal||"maintain"; color="#9AF1DD"; advice="Nhập chiều cao, cân nặng để app gợi ý thực đơn phù hợp."; }
+  let cat, rec, color, advice, severe = false;
+  if(!bmi){ cat="Chưa đủ thông tin"; rec=p.goal||"maintain"; color="#9AF1DD";
+    advice = hasInput ? "Chiều cao / cân nặng trong hồ sơ có vẻ chưa đúng (chiều cao tính bằng cm, vd 165; cân nặng bằng kg). Hãy kiểm tra lại trong Hồ sơ để app gợi ý thực đơn phù hợp."
+                      : "Nhập chiều cao, cân nặng để app gợi ý thực đơn phù hợp."; }
+  /* R3-NUT-09: BMI < 16 (WHO: gầy độ III) — không chỉ khuyên "ăn dư + tập tạ": cần đi khám, tăng năng lượng TỪ TỪ, chưa tập nặng */
+  else if(bmi < 16){ cat="Thiếu cân"; rec="gain"; color="#FF7A45"; severe=true; advice="BMI dưới 16 là mức thiếu cân nặng — nên đi khám bác sĩ / chuyên gia dinh dưỡng để tìm nguyên nhân trước khi tự tăng cân. Tăng lượng ăn từ từ (thêm bữa phụ, không ăn dồn đột ngột), ưu tiên đủ đạm và tinh bột; chỉ vận động nhẹ cho tới khi được bác sĩ đồng ý tập nặng."; }
   else if(bmi < 18.5){ cat="Thiếu cân"; rec="gain"; color="#FFB08A"; advice="Bạn cần ăn DƯ khoảng 10–15% calo mỗi ngày, ưu tiên đạm và tinh bột tốt, kết hợp tập tạ để tăng cơ – tăng cân lành mạnh."; }
   else if(bmi < 23){ cat="Bình thường"; rec=p.goal||"maintain"; color="#5EE6C7"; advice="Cân nặng đang khoẻ mạnh. Giữ calo quanh mức duy trì để siết dáng, hoặc dư nhẹ nếu muốn tăng cơ."; }
   else if(bmi < 25){ cat="Thừa cân"; rec="lose"; color="#FFB08A"; advice="Nên ăn THÂM HỤT khoảng 15–20% calo để giảm mỡ ~0,5 kg/tuần, giữ đạm cao để không mất cơ."; }
-  else { cat = bmi < 30 ? "Béo phì độ I" : "Béo phì độ II"; rec="lose"; color="#FF7A45"; advice="Nên ăn THÂM HỤT khoảng 20% calo, tăng rau và đạm nạc, đi bộ nhiều hơn. Nếu có bệnh nền, hỏi ý kiến bác sĩ trước."; }
+  else { cat = bmi < 30 ? "Béo phì độ I" : "Béo phì độ II"; rec="lose"; color="#FF7A45"; advice="Nên ăn THÂM HỤT khoảng 20% calo, tăng rau và đạm nạc, đi bộ nhiều hơn. Nếu có bệnh nền, hỏi ý kiến bác sĩ trước.";
+    /* R3-NUT-09: BMI ≥ 35 — giảm cân nên có bác sĩ theo dõi (huyết áp, đường huyết, khớp); không tự ăn kiêng khắc nghiệt */
+    if(bmi >= 35) severe = true;
+    if(bmi >= 35) advice = "Nên giảm cân CÓ BÁC SĨ THEO DÕI (kiểm tra huyết áp, đường huyết, khớp trước khi tập). Ăn thâm hụt vừa phải khoảng 15–20% calo, không nhịn ăn hay ăn kiêng khắc nghiệt; bắt đầu bằng đi bộ, đạp xe, bơi — các bài ít dồn tải lên khớp."; }
   if(bmi && bmi >= 23) advice += " (BMI không phân biệt cơ và mỡ — người tập tạ lâu năm có thể có BMI cao dù ít mỡ.)";
   let hideBmi = false;
   if(p.age && p.age < 18){
@@ -400,7 +413,7 @@ function bodyAnalysis(p, hs){
     if(rec === "lose") rec = "maintain";
     advice = "Đang cho con bú: app giữ calo ở mức duy trì + năng lượng tạo sữa, không thâm hụt. Nếu muốn giảm cân: đợi ≥ 6–8 tuần sau sinh khi sữa đã ổn định, thâm hụt không quá 500 kcal/ngày (giảm ≤ 0,5 kg/tuần) và hỏi bác sĩ.";
   } else if(f && f.noDeficit && rec === "lose") rec = "maintain";
-  return { bmi, cat, rec, color, advice, hideBmi };
+  return { bmi, cat, rec, color, advice, hideBmi, severe: severe && !hideBmi && !(p.age && p.age < 18) };
 }
 
 /* QN-02: nhãn mục tiêu HIỂN THỊ phản ánh đúng điều chỉnh an toàn (không ghi "Giảm mỡ" khi app đã chặn thâm hụt) */

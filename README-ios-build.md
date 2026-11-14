@@ -2,6 +2,8 @@
 
 Tài liệu này dành cho máy tính **Windows**. Toàn bộ quy trình hoàn toàn miễn phí, không cần tài khoản Apple Developer (99 USD/năm).
 
+> Đây là đường **cài thử miễn phí**. Nộp App Store thật (TestFlight, cần Apple Developer 99 USD/năm): xem `docs/RELEASE-CHECKLIST.md` §E bước 5–6 và workflow `ios-appstore.yml`. Bản thử chưa ký không có *Sign in with Apple* (Apple ID miễn phí không ký được capability này) — đăng nhập email vẫn dùng được.
+
 Có 3 phần: (1) build file `.ipa` bằng GitHub Actions, (2) cài AltStore lên iPhone bằng máy tính Windows, (3) cài FitKit qua AltStore.
 
 ---
@@ -26,7 +28,7 @@ Cách dễ nhất nếu không quen dòng lệnh Git:
 
 ### Bước 1.4 — Chạy build
 1. Vào tab **Actions** trên repo.
-2. Chọn workflow **"Build unsigned iOS .ipa (FitKit)"** ở cột trái.
+2. Chọn workflow **"iOS — bản thử (unsigned .ipa cho AltStore)"** ở cột trái (file `.github/workflows/build-ios.yml`).
 3. Bấm **Run workflow** → **Run workflow** (nút màu xanh).
 4. Đợi khoảng 5–15 phút (máy ảo macOS của GitHub tự cài Capacitor, tạo project Xcode, build, đóng gói).
 5. Nếu dòng chữ chuyển xanh + dấu tick ✅ là build thành công.

@@ -113,7 +113,7 @@ def build(out, test=None, offline=False, no_sw=True, embed_shop=False):
         code = inline_assets(p.read_text(encoding="utf8")).replace("</script", "<\\/script")
         reg = f'\n;(window.__fkLazyDone = window.__fkLazyDone || {{}})[{json.dumps(src)}] = 1;'
         return f'<script data-src="{src}" data-fk-lazy="{grp}">\n' + code + reg + '\n</script>'
-    html = re.sub(r'<script((?=[^>]*\btype="text/fk-lazy")[^>]*)></script>', lazy_js, html)
+    html = re.sub(r'<script((?=[^>]*\btype="text/fk-(?:lazy|i18n)")[^>]*)></script>', lazy_js, html)   # R3 (ux): + từ điển dịch text/fk-i18n (i18n.js đọc __fkLazyDone)
     if lazy:
         print(f"Nhúng {len(lazy)} file dữ liệu nạp lười (fkLazy, đăng ký sẵn): {', '.join(lazy)}")
     html = inline_assets(html)

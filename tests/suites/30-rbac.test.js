@@ -595,11 +595,11 @@ module.exports = {
       assert.deepEqual(navOf(), ["overview", "users", "pt", "shop"], "Phân tích: chỉ mục xem (PT, đơn hàng — chỉ đọc)");
       assert.equal(app.ev("TE_RBAC.can('shop.orders') || TE_RBAC.can('pt.verify')"), false);
       await as("mod@tapeasy.vn");
-      assert.deepEqual(navOf(), ["overview", "users", "moderation"]);
+      assert.deepEqual(navOf(), ["overview", "users", "moderation", "community"]);   // R3 (agent admin): thêm mục "Bài đăng cộng đồng" (community.moderate / reviews.moderate / community.feature)
       await as("cskh@tapeasy.vn");
       assert.deepEqual(navOf(), ["overview", "users", "shop", "support"]);
       await as("chu.app@tapeasy.vn");
-      assert.deepEqual(navOf(), ["overview","users","team","pt","moderation","content","events","shop","support","broadcast","settings","audit"]);
+      assert.deepEqual(navOf(), ["overview","users","team","pt","moderation","community","content","events","shop","support","broadcast","settings","audit"]);
       await run(`TE_ADMIN.open("users"); await new Promise(r=> setTimeout(r, 120));`);
       const html = app.lastHtml("adm-u-list");
       assert.ok(html.includes("Lan &lt;img src=x onerror=alert(1)&gt;") && !html.includes("<img src=x"), "tên người dùng phải được escape");

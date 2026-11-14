@@ -34,6 +34,20 @@ const MOD = (function(){
   const ROOTS = [/^d[ij]t(me|ma|cu|con|bo|mo|may|m)/, /^dj?m(may|mm|cs|nr)$/, /^vail(o|z)?[nzl]+$/, /^cail[o]?[nz]+$/, /fuck|phuck|fukk/, /^shit/, /^cl(m|gt)+$/, /^dcm+$/, /^dkm+$/];
   const RAW = [/lồn/, /địt/, /cặc/, /buồi/];                        // có dấu, viết liền (vãilồn, địtmẹ…)
   const collapse = x=> x.replace(/(.)\1+/g, "$1");
+  /* R3-ADMIN-05: từ khoá cấm do quản trị nhập (Bảng quản trị → Cộng đồng → Từ khoá cấm) — so KHÔNG DẤU, không phân biệt hoa thường,
+     khớp nguyên từ / cụm từ (ranh giới là ký tự không phải chữ-số). cloud-admin.js gọi setCustom() mỗi khi cài đặt đổi. */
+  let CUSTOM = [];
+  const toksFull = t=> (String(t == null ? "" : t).normalize("NFC").toLowerCase().match(/[\p{L}\p{N}]+/gu) || []);
+  /* Khớp theo TỪ: chữ trong bài có dấu → phải đúng dấu ("kèo" không bắt "kéo"); chữ viết KHÔNG dấu → so dạng không dấu ("thuoc giam can") */
+  function setCustom(list){ CUSTOM = (Array.isArray(list) ? list : []).map(w=>{ const full = toksFull(w); return { full, strip: full.map(strip) }; }).filter(w=> w.full.length && w.full.join("").length >= 2).slice(0, 200); return CUSTOM.length; }
+  function customAt(tf, ts, i, w){ for(let j = 0; j < w.full.length; j++){ const a = tf[i + j]; if(a == null) return false; if(a !== w.full[j] && !(a === ts[i + j] && a === w.strip[j])) return false; } return true; }
+  function customHits(text){
+    if(!CUSTOM.length) return [];
+    const tf = toksFull(text), ts = tf.map(strip), out = [];
+    CUSTOM.forEach(w=>{ for(let i = 0; i + w.full.length <= tf.length; i++){ if(customAt(tf, ts, i, w)){ out.push(w.full.join(" ")); break; } } });
+    return out;
+  }
+  const customTok = tok=>{ const tf = toksFull(tok); if(tf.length !== 1) return false; const ts = tf.map(strip); return CUSTOM.some(w=> w.full.length === 1 && customAt(tf, ts, 0, w)); };
   function tokBad(tok){
     const raw = String(tok || "").normalize("NFC").toLowerCase();
     if(RAW.some(re=> re.test(raw))) return true;
@@ -53,6 +67,7 @@ const MOD = (function(){
     let run = "";
     const flush = ()=>{ if(run.length >= 2 && tokBad(run)) out.add(run); run = ""; };
     letters.forEach(t=>{ if([...t].length === 1) run += t; else flush(); }); flush();
+    customHits(s).forEach(w=> out.add(w));
     return [...out];
   }
   function union(a, b){ return Array.from(new Set([].concat(a || [], b || []))); }
@@ -62,7 +77,7 @@ const MOD = (function(){
     let out = String(t == null ? "" : t);
     try{ out = origClean ? origClean(out) : out; }catch(e){}
     if(!hits(out).length) return out;
-    out = out.replace(/[\p{L}\p{N}!|@$*._\-]+/gu, w=> tokBad(w) ? "*".repeat([...w].length) : w);
+    out = out.replace(/[\p{L}\p{N}!|@$*._\-]+/gu, w=> tokBad(w) || (CUSTOM.length && customTok(w)) ? "*".repeat([...w].length) : w);
     return hits(out).length ? "[Nội dung đã được ẩn vì vi phạm tiêu chuẩn cộng đồng]" : out;
   }
   function routineTexts(r){ r = r || {}; const days = Object.values(r.days || {}); return [r.title, r.desc, ...(r.tags || []), ...days.map(d=> d && d.title), ...days.flatMap(d=> ((d && d.ex) || []).map(e=> [e && e.name, e && e.guide].join(" ")))].join(" \n "); }
@@ -77,9 +92,11 @@ const MOD = (function(){
     if(typeof S.publishRoutine === "function"){ const op = S.publishRoutine;
       S.publishRoutine = async function(routine, opts){ const bad = validate(routine); if(bad) throw Object.assign(new Error(bad), { code:"social/invalid" }); return op.apply(this, arguments); }; }
   }
-  return { hits, tokBad, find, clean, validate, install, normTok };
+  return { hits, tokBad, find, clean, validate, install, normTok, setCustom, customHits };
 })();
 try{ MOD.install(); }catch(e){ try{ console.warn("[community] moderation", e); }catch(_){} }
+TC.moderation = MOD;
+try{ const A0 = W.cloudAdmin; if(A0 && typeof A0.bannedWords === "function") MOD.setCustom(A0.bannedWords()); }catch(e){}
 
 /* QS-03: routine của người khác → giáo án trên máy: CHỈ giữ trường cho phép, ép kiểu số, cắt độ dài, bỏ ký tự thẻ HTML
    (giáo án được vẽ ở Trang chủ/Tập luyện — app.js/pt.js — nên dữ liệu phải sạch ngay khi nhập). */
@@ -156,6 +173,25 @@ function st(){
   return s;
 }
 const save = ()=>{ try{ saveState(); }catch(e){} };
+/* ---- R3-ADMIN-04 · Điều khoản nội dung người dùng (App Store Guideline 1.2: người dùng phải đồng ý điều khoản,
+   không dung thứ nội dung phản cảm / người dùng lạm dụng; có Báo cáo + Chặn; xử lý báo cáo trong 24 giờ) ---- */
+const TERMS = [
+  "Không dung thứ nội dung phản cảm: khiêu dâm, bạo lực, thù ghét, quấy rối, xúc phạm, lừa đảo.",
+  "Không quảng cáo, spam, bán thuốc / thực phẩm chức năng không rõ nguồn gốc; không lời khuyên sức khoẻ nguy hiểm.",
+  "Chỉ đăng nội dung của bạn; ảnh / clip có người khác phải được họ đồng ý. Không lộ thông tin cá nhân của người khác.",
+  "Mỗi bài, bình luận đều có nút Báo cáo; bạn có thể Chặn bất kỳ người dùng nào — nội dung của họ biến mất ngay khỏi bảng tin của bạn.",
+  "Đội ngũ TapEasy xem xét báo cáo trong vòng 24 giờ: gỡ nội dung vi phạm và tạm dừng / khoá tài khoản đăng nội dung đó.",
+];
+const termsOK = ()=> Number(st().termsAt) > 0;
+function acceptTerms(){ const s = st(); if(!(Number(s.termsAt) > 0)){ s.termsAt = Date.now(); s.termsV = 1; save(); } return true; }
+function openTerms(onAgree){
+  const ok = termsOK();
+  openSheet(`<div class="sheet-header"><h3>Tiêu chuẩn cộng đồng</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng">${ic("close")}</button></div>
+    <ol class="cm-terms">${TERMS.map(t=> `<li>${esc(t)}</li>`).join("")}</ol>
+    <p class="small-note">Vi phạm có thể bị gỡ bài, tạm dừng đăng hoặc khoá tài khoản mà không báo trước.</p>
+    ${ok ? `<p class="small-note cm-terms-ok">${ic("check_circle")}Bạn đã đồng ý với tiêu chuẩn này.</p>` : `<button type="button" class="btn btn-primary btn-block" id="cm-terms-go">Tôi đồng ý</button>`}`);
+  const b = q("#cm-terms-go"); if(b) b.addEventListener("click", ()=>{ acceptTerms(); closeSheet(); toast("Cảm ơn bạn — cùng giữ cộng đồng lành mạnh", "check_circle"); if(typeof onAgree === "function") setTimeout(onAgree, 250); });
+}
 const C = { list:null, social:{ liked:[], saved:[], copied:[], reported:[] }, loading:null, prev:"home", err:"", blocked:[] };
 
 const GOAL_IC = { lose:"local_fire_department", muscle:"fitness_center", strength:"bolt", glute:"self_improvement", endurance:"directions_run", health:"favorite" };
@@ -420,10 +456,12 @@ function render(){
       ${sel("equipment", "Dụng cụ", [["all","Tất cả"]].concat(Object.entries(L.EQUIP)), s.f.equipment)}
     </div>
     <div id="cm-results" class="cm-results" aria-live="polite">${resultsHTML(list)}</div>
-    <p class="small-note cm-rules">${ic("shield")}Tiêu chuẩn cộng đồng: không quảng cáo, không nội dung thô tục hay nguy hiểm. Giáo án chia sẻ bị báo cáo từ ${esc(S.REPORT_HIDE)} lần sẽ tạm ẩn chờ kiểm duyệt.</p>
+    <p class="small-note cm-rules">${ic("shield")}Tiêu chuẩn cộng đồng: không quảng cáo, không nội dung thô tục hay nguy hiểm. Giáo án chia sẻ bị báo cáo từ ${esc(S.REPORT_HIDE)} lần sẽ tạm ẩn chờ kiểm duyệt; báo cáo được xem xét trong 24 giờ.</p>
+    <button type="button" class="cm-blocked-link" id="cm-terms">${ic("shield")}Xem tiêu chuẩn cộng đồng</button>
     ${cloud.user && typeof cloud.listBlocked === "function" ? `<button type="button" class="cm-blocked-link" id="cm-blocked">${ic("block")}Người đã chặn${(C.blocked || []).length ? ` (${(C.blocked || []).length})` : ""}</button>` : ""}`;
   bind(el);
   const bl = q("#cm-blocked", el); if(bl) bl.addEventListener("click", ()=> openBlocked());
+  const tm = q("#cm-terms", el); if(tm) tm.addEventListener("click", ()=> openTerms());
   bindResults(q("#cm-results", el) || el);
   fillRest(list);
 }
@@ -682,7 +720,8 @@ function openShare(planId){
     </div>
     <div class="cm-sub">Xem trước</div>
     <div class="cm-preview" id="sh-prev"></div>
-    <p class="auth-err" id="sh-err"></p>
+    ${termsOK() ? "" : `<label class="cm-agree"><input type="checkbox" id="sh-terms"><span>Tôi đồng ý với <b>Tiêu chuẩn cộng đồng TapEasy</b>: không nội dung phản cảm, quấy rối, spam; bài vi phạm bị gỡ trong 24 giờ và tài khoản có thể bị khoá.</span></label>`}
+    <p class="auth-err" id="sh-err" role="alert"></p>
     <button type="button" class="btn btn-primary btn-block" id="sh-go">${ic("ios_share")}Đăng giáo án</button>
     <p class="small-note" style="text-align:center;">Bằng việc đăng, bạn đồng ý với tiêu chuẩn cộng đồng TapEasy. Bạn có thể gỡ bất kỳ lúc nào.</p>
   </div>`);
@@ -700,7 +739,10 @@ function openShare(planId){
   ["#sh-goal","#sh-level","#sh-gender","#sh-eq","#sh-weeks"].forEach(s=> q(s).addEventListener("change", preview));
   q("#sh-back").addEventListener("click", ()=> openShare());
   q("#sh-go").addEventListener("click", async ()=>{
-    const b = q("#sh-go"); b.disabled = true; q("#sh-err").textContent = "";
+    const b = q("#sh-go"), tk = q("#sh-terms");
+    if(tk && !tk.checked){ q("#sh-err").textContent = "Hãy tick đồng ý với Tiêu chuẩn cộng đồng trước khi đăng."; try{ tk.focus(); }catch(e){} return; }
+    if(tk) acceptTerms();
+    b.disabled = true; q("#sh-err").textContent = "";
     try{
       const doc = await S.publishRoutine(L.routineFromPlan(p, meta()));
       C.list = [doc].concat((C.list || []).filter(x=> x.id !== doc.id));
@@ -855,7 +897,7 @@ function install(){
   return true;
 }
 
-Object.assign(TC, { open: ()=> goto("community"), render, load, openDetail, openShare, openCopy, copyRoutine, openAuthor, openReport, buildSeeds, muscleVolume, cardHTML, homeCardHTML, _C: C, state: st,
+Object.assign(TC, { termsOK, acceptTerms, openTerms, TERMS, open: ()=> goto("community"), render, load, openDetail, openShare, openCopy, copyRoutine, openAuthor, openReport, buildSeeds, muscleVolume, cardHTML, homeCardHTML, _C: C, state: st,
   blockAuthor, openBlocked, loadBlocks, isBlockedAuthor, currentList });
 try{ TC.installed = install(); }catch(e){ warn("không cài được", e); }
 })();

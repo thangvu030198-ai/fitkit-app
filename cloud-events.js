@@ -306,7 +306,7 @@ const cloudEvents = (() => {
         C_BLACK = { id:"black", name:"Đen", hex:"#17191C" };
   function seedProducts(){
     const P = {};
-    const add = (id, o) => { P[id] = Object.assign({ id, hidden:false, sizes:[], stock:50, createdAt: now(), updatedAt: now() }, o); };
+    const add = (id, o) => { P[id] = Object.assign({ id, hidden:false, sizes:[], stock:50, demo:true, createdAt: now(), updatedAt: now() }, o); };   // R3: hàng MẪU — shop.js không bày cho khách
     add("p_tee", { name:"Áo tập TapEasy Dry-fit", short:"Tập dễ dàng. Tiến bộ mỗi ngày.", art:"tee", cat:"wear", price:249000, compareAt:299000, badge:"Bán chạy",
       colors:[C_NAVY, C_MINT, C_WHITE], sizes:["S","M","L","XL","XXL"], stock:80,
       material:"Vải polyester thun lạnh 160 gsm, thoát mồ hôi nhanh, co giãn 4 chiều. In logo chuyển nhiệt không bong tróc.",

@@ -221,6 +221,7 @@
     shortcutDone = true;
     try{
       if(go === "workout" && typeof goto === "function") goto("workout");
+      else if(go === "progress" && typeof goto === "function") goto("progress");            // R3: lối tắt "Tiến độ" (manifest.json)
       else if(go === "meal" && typeof goto === "function"){
         goto("nutrition");
         setTimeout(()=>{ const b = document.getElementById("nu-add"); if(b) b.click(); }, 350);
@@ -520,6 +521,161 @@
   }
   window.fkSyncScrolled = syncScrolled;
 
+  /* =======================================================================
+     7. R3 — PWA: báo có bản mới · mời cài đặt (Android/desktop + hướng dẫn iOS) · thông báo qua service worker
+        (docs/qa/R3-ux.md R3-UX-02 / -05 / -06). App native (Capacitor) bỏ qua toàn bộ.
+     ======================================================================= */
+  const isNativeApp = ()=>{ try{ return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); }catch(e){ return false; } };
+  const isStandalone = ()=>{ try{ return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true; }catch(e){ return false; } };
+  const lsGet = k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } };
+  const lsSet = (k, v)=>{ try{ localStorage.setItem(k, v); }catch(e){} };
+  const tr = s=>{ try{ return window.FK_I18N ? window.FK_I18N.t(s) : s; }catch(e){ return s; } };
+
+  /* 7a. R3-UX-02: service worker mới đã kích hoạt trong lúc app đang mở → dải "Có bản mới — Tải lại" (KHÔNG tự tải lại) */
+  let updEl = null, updShown = false;
+  function showUpdateBar(){
+    if(updShown || isNativeApp()) return;
+    updShown = true;
+    try{
+      updEl = D.createElement("div"); updEl.className = "fk-update"; updEl.id = "fk-update";
+      updEl.setAttribute("role", "status"); updEl.setAttribute("aria-live", "polite");
+      updEl.innerHTML = `<span class="fk-update-t">Có bản mới — tải lại để cập nhật</span><button type="button" class="fk-update-go">Tải lại</button><button type="button" class="fk-update-x" aria-label="Để sau">✕</button>`;
+      updEl.querySelector(".fk-update-go").addEventListener("click", ()=>{ try{ location.reload(); }catch(e){} });
+      updEl.querySelector(".fk-update-x").addEventListener("click", ()=>{ updEl.classList.remove("on"); setTimeout(()=>{ try{ updEl.remove(); }catch(e){} }, 300); });
+      (D.body || ROOT).appendChild(updEl);
+      requestAnimationFrame(()=> updEl.classList.add("on"));
+    }catch(e){}
+  }
+  function watchServiceWorker(){
+    try{
+      const sw = navigator.serviceWorker;
+      if(!sw || isNativeApp()) return;
+      let hadController = !!sw.controller;                       // lần cài đầu tiên: controllerchange KHÔNG phải "bản mới"
+      sw.addEventListener("controllerchange", ()=>{ if(hadController) showUpdateBar(); hadController = true; });
+      sw.addEventListener("message", e=>{ const d = e && e.data; if(d && d.type === "FK_SW_ACTIVATED" && hadController) showUpdateBar(); });
+      // quay lại app sau ≥ 30 phút → hỏi máy chủ có sw.js mới không (PWA mở nhiều ngày không tắt vẫn nhận bản mới)
+      let last = Date.now();
+      D.addEventListener("visibilitychange", ()=>{
+        if(D.visibilityState !== "visible" || Date.now() - last < 30 * 60 * 1000) return;
+        last = Date.now();
+        try{ sw.getRegistration().then(r=>{ if(r && r.update) r.update().catch(()=>{}); }).catch(()=>{}); }catch(e){}
+      });
+    }catch(e){}
+  }
+
+  /* 7b. R3-UX-06: Android Chrome không cho `new Notification()` (ném TypeError) → nhắc nhở của app (app.js / pt.js) im lặng.
+         Bọc hàm dựng: thử cách cũ, hỏng thì hiện qua registration.showNotification (sw.js có notificationclick). */
+  function patchNotification(){
+    try{
+      const N = window.Notification;
+      if(!N || N.__fkSw || isNativeApp() || !navigator.serviceWorker) return;
+      const P = function(title, opts){
+        try{ return new N(title, opts); }
+        catch(err){
+          const o = Object.assign({ icon:"assets/icon-192.png", badge:"assets/favicon-32.png" }, opts || {});
+          if(o.icon === undefined) o.icon = "assets/icon-192.png";
+          try{ navigator.serviceWorker.ready.then(r=> r.showNotification(String(title), o)).catch(()=>{}); }catch(e){}
+          return { close(){}, addEventListener(){}, removeEventListener(){}, onclick:null };
+        }
+      };
+      P.prototype = N.prototype; P.__fkSw = 1;
+      P.requestPermission = function(){ return N.requestPermission.apply(N, arguments); };
+      Object.defineProperty(P, "permission", { get(){ return N.permission; } });
+      if("maxActions" in N) Object.defineProperty(P, "maxActions", { get(){ return N.maxActions; } });
+      window.Notification = P;
+    }catch(e){}
+  }
+
+  /* 7c. R3-UX-05: mời cài đặt. Android/desktop: beforeinstallprompt → nút "Cài"; iOS Safari: hướng dẫn "Thêm vào Màn hình chính".
+         Hiện tối đa 1 lần / 14 ngày, không hiện ở màn chào / onboarding / đang có sheet, và chỉ từ lần mở thứ 2. */
+  const INST_KEY = "fk_install_dismissed", VISIT_KEY = "fk_visits";
+  let deferredPrompt = null, instEl = null;
+  const isIOS = ()=>{ const ua = navigator.userAgent || ""; return /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1); };
+  const isIOSSafari = ()=> isIOS() && !/CriOS|FxiOS|EdgiOS|OPiOS|FBAN|FBAV|Instagram|Line\/|Zalo/i.test(navigator.userAgent || "");
+  function canOfferInstall(){ return !isNativeApp() && !isStandalone() && (!!deferredPrompt || isIOS()); }
+  function installBusy(){
+    try{
+      const open = id=>{ const el = D.getElementById(id); return !!(el && el.classList && el.classList.contains("open")); };
+      const ready = D.getElementById("ob-ready");
+      return open("auth") || open("onboarding") || open("sheet-backdrop") || (ready && !ready.hidden) || !!D.querySelector(".ts-session.open, .fk-lang-dlg, .fk-update.on");
+    }catch(e){ return true; }
+  }
+  function hideInstall(remember){
+    if(remember) lsSet(INST_KEY, String(Date.now()));
+    if(instEl){ const el = instEl; instEl = null; el.classList.remove("on"); setTimeout(()=>{ try{ el.remove(); }catch(e){} }, 300); }
+  }
+  function showIOSGuide(){
+    try{
+      const html = `<div class="fk-ios-guide"><h3>Cài TapEasy lên iPhone</h3>
+        <ol><li><span>Bấm nút Chia sẻ</span> <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m0 0L8 7m4-4 4 4M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg> <span>ở thanh dưới của Safari</span></li>
+        <li>Chọn "Thêm vào Màn hình chính"</li><li>Bấm "Thêm" ở góc trên</li></ol>
+        ${isIOSSafari() ? "" : `<p class="small-note">Trên iPhone, hãy mở trang này bằng Safari để cài đặt.</p>`}
+        <button type="button" class="btn btn-primary btn-block" data-fk-close>Đã hiểu</button></div>`;
+      if(typeof openSheet === "function"){
+        openSheet(html);
+        const sc = D.getElementById("sheet-content"), b = sc && sc.querySelector("[data-fk-close]");
+        if(b) b.addEventListener("click", ()=>{ try{ closeSheet(); }catch(e){} });
+      } else if(typeof toast === "function") toast('Safari → Chia sẻ → "Thêm vào Màn hình chính"');
+    }catch(e){}
+  }
+  async function promptInstall(){
+    if(deferredPrompt){
+      const ev = deferredPrompt; deferredPrompt = null;
+      try{ ev.prompt(); const r = await ev.userChoice; hideInstall(true); syncInstallRow(); return r && r.outcome; }catch(e){ return "error"; }
+    }
+    if(isIOS()){ hideInstall(true); showIOSGuide(); return "guide"; }
+    return "unavailable";
+  }
+  function showInstallBar(){
+    if(instEl || !canOfferInstall() || installBusy()) return;
+    const last = +lsGet(INST_KEY) || 0;
+    if(Date.now() - last < 14 * 86400e3) return;
+    if((+lsGet(VISIT_KEY) || 0) < 2) return;
+    try{
+      instEl = D.createElement("div"); instEl.className = "fk-install"; instEl.id = "fk-install";
+      instEl.setAttribute("role", "region"); instEl.setAttribute("aria-label", "Cài đặt ứng dụng");
+      instEl.innerHTML = `<img src="assets/icon-192.png" alt="" width="40" height="40" data-no-fallback>
+        <div class="fk-install-t"><b>Cài TapEasy</b><span>Thêm TapEasy vào màn hình chính để mở nhanh và dùng khi mất mạng.</span></div>
+        <button type="button" class="fk-install-go">${deferredPrompt ? "Cài" : "Hướng dẫn"}</button>
+        <button type="button" class="fk-install-x" aria-label="Để sau">✕</button>`;
+      instEl.querySelector(".fk-install-go").addEventListener("click", promptInstall);
+      instEl.querySelector(".fk-install-x").addEventListener("click", ()=> hideInstall(true));
+      (D.body || ROOT).appendChild(instEl);
+      requestAnimationFrame(()=> instEl && instEl.classList.add("on"));
+    }catch(e){}
+  }
+  /* mục "Cài TapEasy" trong Hồ sơ (ngay trên thẻ tài khoản) — chỉ khi cài được */
+  function syncInstallRow(){
+    try{
+      let row = D.getElementById("fk-install-row");
+      if(!canOfferInstall()){ if(row) row.remove(); return; }
+      if(row) return;
+      const anchor = D.getElementById("profile-account-card");
+      if(!anchor || !anchor.parentNode) return;
+      row = D.createElement("div"); row.className = "card fk-lang-cardrow"; row.id = "fk-install-row";
+      row.innerHTML = `<button type="button" class="list-item fk-lang-item" id="btn-install-app"><span class="thumb fk-lang-thumb" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 19h14"/></svg></span>
+        <span class="info"><span class="name">Cài TapEasy</span><span class="meta">Thêm TapEasy vào màn hình chính để mở nhanh và dùng khi mất mạng.</span></span><span class="trailing" aria-hidden="true">›</span></button>`;
+      anchor.parentNode.insertBefore(row, anchor);
+      row.querySelector("button").addEventListener("click", promptInstall);
+    }catch(e){}
+  }
+  function initInstall(){
+    if(isNativeApp()) return;
+    try{
+      if(!sessionStorage.getItem("fk_visit_counted")){ sessionStorage.setItem("fk_visit_counted", "1"); lsSet(VISIT_KEY, String((+lsGet(VISIT_KEY) || 0) + 1)); }
+    }catch(e){}
+    window.addEventListener("beforeinstallprompt", e=>{
+      e.preventDefault(); deferredPrompt = e; syncInstallRow();
+      setTimeout(showInstallBar, 8000);
+    });
+    window.addEventListener("appinstalled", ()=>{
+      deferredPrompt = null; hideInstall(true); syncInstallRow();
+      try{ if(typeof toast === "function") toast("Đã cài TapEasy — mở từ màn hình chính nhé!"); }catch(e){}
+    });
+    if(isIOS() && !isStandalone()) setTimeout(()=>{ syncInstallRow(); showInstallBar(); }, 12000);
+  }
+  window.fkInstall = { can: canOfferInstall, prompt: promptInstall, guide: showIOSGuide, standalone: isStandalone, _bar: showInstallBar, _update: showUpdateBar };
+
   /* ---- 6i. Quét chung (gọi được từ test: fkA11y.scan(el)) ---- */
   function scanAll(root){ labelButtons(root); kbdScan(root); lazyImgs(root); wlScan(root); }
   window.fkA11y = { scan: scanAll, label: labelOne, labels: ICON_LABELS, syncScreen, lowMedia, contextOf };
@@ -561,6 +717,7 @@
       if(auth) new MutationObserver(wlLeave).observe(auth, { attributes:true, attributeFilter:["class"] });
     }catch(e){ console.warn("[ui-kit] a11y", e); }
     if(navigator.onLine === false) offlineBanner(true);
+    watchServiceWorker(); patchNotification(); initInstall();          // R3: PWA
     try{
       const shell = document.getElementById("app-shell") || document.body;
       scanHints(shell);

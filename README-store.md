@@ -2,6 +2,9 @@
 
 > App đổi tên từ **FIT KIT** thành **TapEasy** (11/2026). Chỉ đổi tên hiển thị, logo, icon: Bundle ID / package `vn.thangvu.fitkit`, tên repo `fitkit-app`, tên file build `FitKit-*.apk/.aab/.ipa` và alias khoá ký `fitkit` **giữ nguyên** (đổi các thứ này = app mới, mất người dùng cũ). Hướng dẫn thương hiệu: `docs/BRAND.md`.
 
+> **Vòng R3 (14/11/2026) — đọc trước:** `docs/RELEASE-CHECKLIST.md` là danh sách kiểm + các bước đánh số cho chủ dự án (tài khoản, keystore, secrets, form từng store). Nội dung dán sẵn lên 2 console nằm trong thư mục `store/`. File này giữ phần giải thích dài; chỗ nào khác với RELEASE-CHECKLIST thì **RELEASE-CHECKLIST đúng**.
+> Thay đổi R3 của bộ đóng gói: Android nâng AGP 8.9.1/Gradle 8.11.1 để build được target API 36, ký AAB bằng Gradle, quyền tối thiểu + tự soát quyền thừa, xử lý edge-to-edge Android 15+; iOS chỉ iPhone, privacy manifest `PrivacyInfo.xcprivacy`, mô tả quyền Việt/Anh, tuỳ chọn ký tay; cờ nền tảng `window.FK_BUILD`; `CapacitorHttp` tắt (bật làm hỏng Firestore realtime).
+
 ## 0. Bản v2 có gì
 
 - **Đăng nhập / Đăng ký / Chọn vai trò** (Tập cá nhân · Tôi có PT · Tôi là PT · Tìm & Book PT *sắp ra mắt*). Vẫn có nút "Dùng ngay, không cần tài khoản" cho tập cá nhân. Apple yêu cầu điều này: tính năng không cần tài khoản thì không được bắt đăng nhập.
@@ -62,9 +65,8 @@ Trên web dùng cửa sổ popup; trong app native cần plugin đăng nhập g�
 npm i @capacitor-firebase/authentication@^6 firebase
 npx cap sync
 ```
-- Android: tải `google-services.json` (Firebase → Project settings → app Android `vn.thangvu.fitkit`, nhớ thêm SHA-1 của keystore) đặt vào `android/app/`; thêm `facebook_app_id` + `facebook_client_token` vào `android/app/src/main/res/values/strings.xml`.
-- iOS: tải `GoogleService-Info.plist` vào `ios/App/App/`; thêm URL Scheme `REVERSED_CLIENT_ID` và `fb<APP_ID>` trong Info.plist.
-- `capacitor.config.json` → `"plugins": { "FirebaseAuthentication": { "skipNativeAuth": true, "providers": ["google.com", "facebook.com"] } }`
+- **Không cần làm tay** — workflow CI tự làm khi có secret (R3): Android `GOOGLE_SERVICES_JSON_BASE64` (base64 của `google-services.json`; Firebase → Project settings → app Android `vn.thangvu.fitkit`, nhớ thêm SHA-1 + SHA-256 của keystore **và** của Play App Signing); iOS `IOS_GOOGLE_SERVICE_INFO_PLIST` (base64 của `GoogleService-Info.plist`) — workflow tự thêm file vào project, URL Scheme `REVERSED_CLIENT_ID`, entitlement Sign in with Apple.
+- `capacitor.config.json` hiện bật `"providers": ["apple.com", "google.com"]`. **Facebook trên app native chưa cấu hình** (cần Facebook SDK: `facebook_app_id` + `facebook_client_token` trong `strings.xml`, `fb<APP_ID>` trong Info.plist — `docs/STORE-COMPLIANCE.md` §0.2a mục 5) → trên bản store nút Facebook phải ẩn (`FK_BUILD.authProviders`), mô tả store không nhắc Facebook.
 Code app (`cloud.js`) đã tự nhận plugin này; chưa cài thì nút báo "chưa cấu hình" thay vì lỗi.
 
 **Apple (bắt buộc cho App Store — Guideline 4.8, nút đã có sẵn)**
@@ -82,8 +84,11 @@ Mỗi lần commit, 2 workflow tự chạy (xem tab **Actions**):
 
 | Workflow | Kết quả | Dùng để |
 |---|---|---|
-| Android — APK thử + AAB | `FitKit-debug.apk` (+ `FitKit-release.aab` nếu có khoá ký) | Cài thử trên Android, nộp Google Play |
+| Android — APK thử + AAB nộp Google Play | `FitKit-debug.apk` (+ `FitKit-release.aab` và `FitKit-release.apk` đã ký nếu có khoá ký) | Cài thử trên Android, nộp Google Play |
 | iOS — bản thử (unsigned) | `FitKit-unsigned.ipa` | Cài thử qua AltStore như trước |
+| iOS — bản nộp App Store (TestFlight) — chỉ chạy tay | bản build trên TestFlight (hoặc artifact `FitKit-appstore-ipa`) | Nộp App Store |
+
+> Mã đẩy lên bằng `deploy-bundle.zip` **không** tự kích hoạt 2 workflow build (giới hạn của GitHub) — vào tab Actions → chọn workflow → **Run workflow**.
 
 > Mã định danh app đã đổi thành `vn.thangvu.fitkit` (bản cũ `com.fitkit.app` gần như chắc chắn đã có người dùng trên store). Vì vậy bản v2 cài lên iPhone sẽ là **một app mới**, không đè lên bản cũ. Dữ liệu tập của bản cũ nằm trong app cũ.
 
@@ -128,7 +133,7 @@ Icon store: `assets/icon-1024.png` (App Store 1024, không alpha) và `assets/ic
 4. **Users and Access → Integrations → App Store Connect API → +** → quyền **Admin** → tải file `AuthKey_XXXX.p8` (chỉ tải được 1 lần). Ghi lại **Key ID** và **Issuer ID**.
 5. Thêm secret vào GitHub: `APPSTORE_KEY_ID`, `APPSTORE_ISSUER_ID`, `APPSTORE_KEY_P8` (nội dung file .p8 chuyển base64 như bước Android), `APPLE_TEAM_ID` (Membership → Team ID).
 6. Tab **Actions → "iOS — bản nộp App Store (TestFlight)" → Run workflow**. Bản build sẽ lên TestFlight sau ~15–30 phút. *Workflow này chưa chạy thử được vì cần tài khoản thật. Nếu báo lỗi, gửi log cho mình chỉnh.*
-7. Trong App Store Connect: điền mô tả, ảnh chụp màn hình (iPhone 6.7" và 6.5"), Privacy Policy URL, **App Privacy** (mục 6). Ở mục **App Review Information → Sign-in required**, cung cấp 1 tài khoản demo (ví dụ một tài khoản PT có sẵn 1 học viên mẫu) để người duyệt đăng nhập được.
+7. Trong App Store Connect: điền mô tả (`store/app-store/`), ảnh chụp màn hình (bắt buộc 1 bộ iPhone 6.7"/6.9"; 6.5" và 5.5" tuỳ chọn — `store/screenshots/README.md`), Privacy Policy URL, **App Privacy** (mục 6). Ở mục **App Review Information → Sign-in required**, cung cấp 1 tài khoản demo (ví dụ một tài khoản PT có sẵn 1 học viên mẫu) để người duyệt đăng nhập được.
 8. **Submit for Review**, thường được duyệt trong 1–3 ngày.
 
 > Rủi ro bị từ chối: Apple có điều khoản 4.2 "chức năng tối thiểu" dành cho app chỉ bọc lại trang web. TapEasy có thông báo native, chia sẻ, chạy offline và dữ liệu riêng nên khả năng qua được là khá. Nếu bị từ chối, đọc lý do rồi gửi cho mình để bổ sung.
@@ -155,7 +160,8 @@ Email liên hệ trong file đang là email của bạn. Có thể đổi sang e
 - **Góp ý & NPS trong app:** khai "Other user-generated content" (không gắn tài khoản; liên hệ chỉ khi người dùng cho phép) — docs/FEEDBACK.md.
 - Dữ liệu được mã hoá khi truyền: Yes (Firebase dùng HTTPS).
 - Người dùng có thể yêu cầu xoá: Yes, có nút Xoá tài khoản trong app.
-- Dữ liệu sức khoẻ (cân nặng, calo, giấc ngủ): **chỉ lưu trên máy, không thu thập lên máy chủ.**
+- Dữ liệu sức khoẻ (cân nặng, calo, giấc ngủ): lưu trên máy; **chỉ** rời máy khi học viên chọn chia sẻ với PT (khi đó phải khai “Health info”).
+- **Câu trả lời đầy đủ, dán sẵn (R3):** `store/google-play/data-safety.md`, `store/google-play/declarations.md`, `store/app-store/app-privacy.md` — dùng các file này, danh sách rút gọn ở trên chỉ để hiểu ý.
 
 ---
 

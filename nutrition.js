@@ -89,18 +89,83 @@ function nuMergeImg(pix, ai){ return Object.assign({}, pix || {}, ai || {}); }
   try{ if(Object.keys(FOOD_IMG).length && typeof renderNutritionScreen==="function" && $("#screen-nutrition.active")) renderNutritionScreen(); }catch(e){}
 })();
 function foodIdOf(idOrName){ if(FOODS.some(f=>f.id===idOrName)) return idOrName; const f = FOODS.find(f=>f.name===idOrName); return f ? f.id : ""; }
+/* R3-NUT-02: emoji của món TỰ TẠO đến từ state (sao lưu / đồng bộ) và được chèn vào HTML + vào chuỗi JS của onerror →
+   chỉ giữ tối đa 8 ký tự, bỏ mọi ký tự có nghĩa với HTML/JS (< > & " ' ` \ và xuống dòng). Rỗng → 🍽️. */
+function nuEmo(s){
+  const t = Array.from(String(s == null ? "" : s).replace(/[<>&"'`\\\s(){};=]/g, "")).slice(0, 8).join("");
+  return t || "🍽️";
+}
 function foodPic(idOrName, cls="fp"){
   const id = RECIPES.some(r=>r.id===idOrName) ? idOrName : foodIdOf(idOrName);
   const hit = FOOD_IMG[id];
-  if(hit) return `<img class="${cls}" src="${(hit.base || FOOD_IMG_BASE)+hit.file}" alt=""${hit.ai ? ' data-ai="1" title="Ảnh minh hoạ tạo bằng AI"' : ""} loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${foodEmoji(id)}'}))">`;
+  cls = String(cls || "fp").replace(/[^a-zA-Z0-9 _-]/g, "");
+  if(hit) return `<img class="${cls}" src="${escapeHtml((hit.base || FOOD_IMG_BASE)+hit.file)}" alt=""${hit.ai ? ' data-ai="1" title="Ảnh minh hoạ tạo bằng AI"' : ""} loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${nuEmo(foodEmoji(id))}'}))">`;
   const r = RECIPES.find(x=>x.id===id);
-  return `<span class="${cls} emo">${r ? r.emoji : foodEmoji(id)}</span>`;
+  return `<span class="${cls} emo">${nuEmo(r ? r.emoji : foodEmoji(id))}</span>`;
+}
+
+/* =====================================================================
+   R3-NUT-03/04/05 (14/11/2026) — LÀM SẠCH NHẬT KÝ ĂN / NƯỚC
+   Dữ liệu cũ, bản sao lưu Drive, đồng bộ cloud có thể chứa dòng null / chuỗi, số âm, NaN, Infinity, số cực lớn:
+   trước đây 1 dòng null làm cả màn Dinh dưỡng (và Trang chủ) ném lỗi; kcal âm làm "Còn … kcal" tăng giả; 1e12 phá bố cục.
+   Quy ước: mỗi dòng là object; kcal 0–20.000; gam 0–10.000; đạm/tinh bột/béo/xơ 0–5.000 g; tên là chuỗi ≤ 120 ký tự.
+   Chỉ GHI lại khi giá trị sai (dòng hợp lệ giữ nguyên từng bit) → không tạo thay đổi giả cho sao lưu / đồng bộ.
+   ===================================================================== */
+const NU_LIM = { kcal:20000, grams:10000, macro:5000, waterL:15 };
+function nuFix(v, max){
+  const n = typeof v === "number" ? v : (typeof v === "string" && v.trim() !== "" ? Number(v) : NaN);
+  return Number.isFinite(n) && n > 0 ? Math.min(n, max) : 0;
+}
+function nuCleanEntry(it){
+  if(!it || typeof it !== "object" || Array.isArray(it)) return null;
+  const fix = (k, max)=>{ const v = it[k]; if(v === undefined && k !== "kcal") return; const n = nuFix(v, max); if(v !== n) it[k] = n; };
+  fix("kcal", NU_LIM.kcal); fix("grams", NU_LIM.grams);
+  fix("protein", NU_LIM.macro); fix("carbs", NU_LIM.macro); fix("fat", NU_LIM.macro); fix("fiber", NU_LIM.macro);
+  if(typeof it.name !== "string" || it.name.length > 120) it.name = String(it.name == null ? "Món ăn" : it.name).slice(0, 120);
+  if(it.recipe != null && typeof it.recipe !== "string") delete it.recipe;
+  if(it.foodId != null && typeof it.foodId !== "string") delete it.foodId;
+  return it;
+}
+/* Làm sạch 1 ngày (sửa tại chỗ, giữ nguyên mảng để nơi khác đang giữ tham chiếu vẫn đúng). full=true → bảo đảm đủ 4 bữa. */
+function nuCleanDay(day, full){
+  if(!day || typeof day !== "object" || Array.isArray(day)) return 0;
+  let n = 0;
+  if(full) MEAL_TYPES.forEach(mt=>{ if(!Array.isArray(day[mt.id])){ day[mt.id] = []; n++; } });
+  Object.keys(day).forEach(m=>{
+    const L = day[m];
+    if(!Array.isArray(L)){ day[m] = []; n++; return; }
+    for(let i = L.length - 1; i >= 0; i--){ if(!nuCleanEntry(L[i])){ L.splice(i, 1); n++; } }
+  });
+  return n;
+}
+let _nuCleanedLog = null, _nuCleanedWater = null;
+function nuCleanLogs(force){
+  let n = 0;
+  try{
+    if(!state.foodLog || typeof state.foodLog !== "object" || Array.isArray(state.foodLog)){ state.foodLog = {}; n++; }
+    if(force || _nuCleanedLog !== state.foodLog){                       // cả nhật ký: 1 lần cho mỗi bản state (nạp máy / khôi phục / đồng bộ)
+      Object.keys(state.foodLog).forEach(k=>{ const d = state.foodLog[k];
+        if(!d || typeof d !== "object" || Array.isArray(d)){ delete state.foodLog[k]; n++; } else n += nuCleanDay(d); });
+      _nuCleanedLog = state.foodLog;
+    }
+    const today = state.foodLog[todayStr()];
+    if(today) n += nuCleanDay(today, true);                              // hôm nay: mỗi lần vẽ (rẻ) + đủ 4 bữa để .push() không ném lỗi
+    if(!state.waterLog || typeof state.waterLog !== "object" || Array.isArray(state.waterLog)){ state.waterLog = {}; n++; }
+    if(force || _nuCleanedWater !== state.waterLog){
+      Object.keys(state.waterLog).forEach(k=>{ const v = state.waterLog[k], c = nuMl(nuFix(v, NU_LIM.waterL)); if(v !== c){ state.waterLog[k] = c; n++; } });
+      _nuCleanedWater = state.waterLog;
+    } else { const k = todayStr(), v = state.waterLog[k]; if(v !== undefined){ const c = nuMl(nuFix(v, NU_LIM.waterL)); if(v !== c){ state.waterLog[k] = c; n++; } } }
+  }catch(e){ try{ console.warn("[nutrition] nuCleanLogs", e); }catch(_){} }
+  return n;
 }
 
 function recipeMacros(r){
   const out = { kcal:0, protein:0, carbs:0, fat:0, lines:[] };
-  r.items.forEach(([id,g])=>{
-    const f = FOODS.find(x=>x.id===id); if(!f) return;
+  /* R3-NUT-06: món thiếu items / dòng hỏng / gam âm, NaN → bỏ qua dòng đó thay vì ném lỗi hoặc ra NaN */
+  (r && Array.isArray(r.items) ? r.items : []).forEach(row=>{
+    if(!Array.isArray(row)) return;
+    const id = row[0], g = Number(row[1]);
+    const f = FOODS.find(x=>x.id===id); if(!f || !Number.isFinite(g) || g <= 0) return;
     const k = g/100;
     const line = { name:f.name, grams:g, kcal:Math.round(f.kcal*k), protein:fmt1(f.protein*k), carbs:fmt1(f.carbs*k), fat:fmt1(f.fat*k) };
     out.kcal += line.kcal; out.protein += f.protein*k; out.carbs += f.carbs*k; out.fat += f.fat*k; out.lines.push(line);
@@ -110,6 +175,8 @@ function recipeMacros(r){
 }
 
 let nuUI = { tag:"all", open:{} };
+/* R3-NUT-03: làm sạch nhật ký 1 lần ngay khi nạp file (trước appBoot) → Trang chủ / thẻ của module khác cũng không gặp dòng hỏng */
+try{ if(typeof state !== "undefined" && state && nuCleanLogs(true) > 0 && typeof saveState === "function") saveState(); }catch(e){}
 
 /* =====================================================================
    Vòng 2 (11/11/2026) — "ẨN SỐ CALO" cho người có tiền sử rối loạn ăn uống (RLĂU)
@@ -381,7 +448,7 @@ function nuDeleteFood(mealId, i){
 /* ---- Khối nước uống (QN-06/07/20/21) ---- */
 function nuWaterHTML(){
   const p = state.profile;
-  const water = Number(state.waterLog[todayStr()]) || 0;
+  const water = nuMl(nuFix(state.waterLog[todayStr()], NU_LIM.waterL));      // R3-NUT-05: không hiện số âm / NaN / cực lớn
   const goal = nuWaterGoal(p);
   const btns = `<div class="nu-water-btns"><button data-w="0.25">+250 ml</button><button data-w="0.5">+500 ml</button><button data-w="reset">Đặt lại</button></div>`;
   const edit = `<button class="icon-btn nu-water-edit" id="nu-water-edit" aria-label="Đặt mục tiêu nước uống"><span class="material-symbols-rounded">tune</span></button>`;
@@ -407,13 +474,22 @@ function nuBindWater(box){
   $$("[data-cup]", box).forEach(b=> b.addEventListener("click", ()=>{
     const k = todayStr(), goal = nuWaterGoal(state.profile); if(!goal) return;
     const cupSize = goal/8, i = Number(b.dataset.cup);
-    const done = Math.min(8, Math.round((Number(state.waterLog[k])||0)/cupSize + 1e-9));
+    const done = Math.min(8, Math.round(nuFix(state.waterLog[k], NU_LIM.waterL)/cupSize + 1e-9));
     state.waterLog[k] = nuMl((i < done && i === done-1 ? i : i+1) * cupSize);
     saveState(); nuRefreshWater();
   }));
   $$("[data-w]", box).forEach(b=> b.addEventListener("click", ()=>{
     const k = todayStr();
-    state.waterLog[k] = b.dataset.w==="reset" ? 0 : nuMl((Number(state.waterLog[k])||0) + Number(b.dataset.w));
+    if(b.dataset.w === "reset"){ state.waterLog[k] = 0; saveState(); nuRefreshWater(); return; }
+    /* R3-NUT-05: trần 15 L/ngày (trước đây cộng vô hạn); vượt xa mục tiêu → nhắc 1 lần/ngày về nguy cơ uống quá nhiều nước */
+    const cur = nuFix(state.waterLog[k], NU_LIM.waterL), add = nuFix(b.dataset.w, 2), next = nuMl(Math.min(NU_LIM.waterL, cur + add));
+    if(next <= cur){ toast(`Đã đạt mức ghi tối đa ${NU_LIM.waterL} L/ngày`, "error"); return; }
+    state.waterLog[k] = next;
+    const goal = nuWaterGoal(state.profile), hi = Math.max(5, (Number(goal) || 0) + 2);
+    if(goal != null && cur < hi && next >= hi && nuUI.waterWarn !== k){
+      nuUI.waterWarn = k;
+      toast("Bạn đã uống vượt xa mục tiêu. Uống quá nhiều nước trong thời gian ngắn có thể gây hạ natri máu — không cần uống thêm nếu không khát.", "water_drop");
+    }
     saveState(); nuRefreshWater();
   }));
 }
@@ -423,25 +499,27 @@ renderNutritionScreen = function(){
   ensureReminderDefaults();
   const el = $("#nu-content"); if(!el) return;
   const p = state.profile;
+  if(nuCleanLogs() > 0){ try{ saveState(); }catch(e){} }                    // R3-NUT-03/04: dòng hỏng không làm sập màn
   const log = getDayFoodLog();
+  nuCleanDay(log, true);
   let kcal=0, protein=0, carbs=0, fat=0;
   Object.values(log).forEach(list=> list.forEach(it=>{ kcal+=Number(it.kcal)||0; protein+=Number(it.protein)||0; carbs+=Number(it.carbs)||0; fat+=Number(it.fat)||0; }));
-  const goal = p.goalKcal || 2000, pct = kcal/goal;
+  const goal = Number(p.goalKcal) > 0 && Number.isFinite(Number(p.goalKcal)) ? Number(p.goalKcal) : 2000, pct = kcal/goal;     // R3-NUT-07: mục tiêu NaN/âm → 2.000
   const left = Math.round(goal - kcal);
   const now = new Date();
   const goalLabel = typeof goalDisplay === "function" ? goalDisplay(p).label : ((GOALS.find(g=>g.id===p.goal)||{}).label || "");   // QN-02
 
   // 7 ngày gần nhất
   const days = Array.from({length:7},(_,i)=>{ const d=new Date(); d.setDate(d.getDate()-(6-i)); const k=todayStr(d);
-    const L = state.foodLog[k]; let s=0; if(L) Object.values(L).forEach(l=>l.forEach(it=>s+=Number(it.kcal)||0));
+    const L = state.foodLog[k]; let s=0; if(L && typeof L === "object") Object.values(L).forEach(l=>{ if(Array.isArray(l)) l.forEach(it=>{ s += nuFix(it && it.kcal, NU_LIM.kcal); }); });
     return { k, s, lab: i===6 ? "Nay" : WD_SHORT[d.getDay()] }; });
   const maxDay = Math.max(goal, ...days.map(d=>d.s));
 
-  const macro = (label, val, tgt, color, extra)=>`
+  const macro = (label, val, tgt, color, extra)=>{ tgt = Math.round(nuFix(tgt, 99999)); return `
     <div class="nu-macro">
-      <div class="nu-macro-top"><span>${label}${extra||""}</span><b>${Math.round(val)}<small>/${escapeHtml(tgt)}g</small></b></div>
+      <div class="nu-macro-top"><span>${label}${extra||""}</span><b>${Math.round(val)}<small>/${tgt ? escapeHtml(tgt) : "—"}g</small></b></div>
       <div class="nu-bar"><i style="width:${tgt?Math.min(100,val/tgt*100):0}%;background:${color}"></i></div>
-    </div>`;
+    </div>`; };
 
   const hk = nuHideKcal();                                           // vòng 2: "Ẩn số calo"
   const recipes = nuRecipeList(hk);

@@ -1,7 +1,7 @@
 /* TapEasy — themes-modules.css (SINH TỰ ĐỘNG, đừng sửa tay)
    Lớp màu theo theme cho CSS của các module. Nạp SAU CÙNG (sau mọi file .css module).
    Tạo lại: python3 scripts/gen_themes_layer.py --modules [a.css,b.css]
-   Nguồn: achievements.css, admin.css, community.css, events.css, findpt.css, health-safety.css, kb.css, nutrition-pro.css, press-feel.css, program-builder.css, pt-connect.css, pt-pro.css, shop.css, training-pro.css — tổng 1633 luật. */
+   Nguồn: achievements.css, admin.css, community.css, events.css, findpt.css, health-safety.css, kb.css, nutrition-pro.css, press-feel.css, program-builder.css, pt-connect.css, pt-pro.css, shop.css, training-pro.css — tổng 1636 luật. */
 /* ===== achievements.css: 109 luật ===== */
 :where(html.fk-themed) .ach-bar{ background:rgba(var(--fk-ov-rgb),calc(.14 * var(--fk-ov-k))); } /*L7*/
 :where(html.fk-themed) .ach-bar > i{ background:linear-gradient(90deg, var(--mint-2), var(--mint) 60%, var(--coral)); } /*L8*/
@@ -114,7 +114,7 @@
 :where(html.fk-themed) .ach-pop-lvnum{ color:#fff; background:radial-gradient(circle at 50% 35%, #1B5361, var(--navy) 75%); border:3px solid transparent; background-clip:padding-box; box-shadow:0 0 0 3px rgba(var(--mint-rgb),.7), 0 0 40px rgba(var(--mint-rgb),.35); } /*L238*/
 /* ===== admin.css: 0 luật ===== */
 
-/* ===== community.css: 133 luật ===== */
+/* ===== community.css: 135 luật ===== */
 :where(html.fk-themed) .te-mark{ background:linear-gradient(140deg, var(--mint) 0%, var(--coral) 100%); color:var(--on-mint); } /*L5*/
 :where(html.fk-themed) .te-mark img{ background:var(--navy); } /*L8*/
 :where(html.fk-themed) .cm-hero{ background:radial-gradient(110% 100% at 0% 0%, rgba(var(--mint-rgb,94,230,199), .34), transparent 55%), radial-gradient(90% 110% at 100% 100%, rgba(var(--coral-rgb,255,122,69), .34), transparent 60%), var(--glass, rgba(var(--fk-ov-rgb),calc(.12 * var(--fk-ov-k)))); border:1px solid rgba(var(--fk-ov-rgb,255,255,255), .22); box-shadow:0 18px 50px rgba(0,0,0,.28), inset 0 1px 0 rgba(var(--fk-ov-rgb),calc(.2 * var(--fk-ov-k))); } /*L21*/
@@ -250,6 +250,8 @@
 :where(html.fk-themed) .cm-blocked-link{ background:none; border:0; color:var(--text-muted, rgba(var(--fk-ink-rgb),calc(.78 + (1 - .78) * var(--fk-text-boost)))); text-decoration:underline; } /*L281*/
 :where(html.fk-themed) .cm-blocked-row{ border:1px solid var(--cm-line, rgba(var(--fk-ov-rgb),calc(.16 * var(--fk-line-k)))); } /*L283*/
 :where(html.fk-themed) .cm-blocked-row small{ color:var(--text-muted, rgba(var(--fk-ink-rgb),calc(.78 + (1 - .78) * var(--fk-text-boost)))); } /*L286*/
+:where(html.fk-themed) .cm-agree{ border:1px solid var(--cm-line, rgba(var(--fk-ov-rgb),calc(.16 * var(--fk-line-k)))); } /*L291*/
+:where(html.fk-themed) .cm-agree input{ accent-color:var(--mint); } /*L292*/
 /* ===== events.css: 309 luật ===== */
 :where(html.fk-themed) .te-screen{ --te-ink:var(--fk-ink, #fff); --te-muted:var(--text-muted, rgba(var(--fk-ov-rgb),calc(.78 * var(--fk-ov-k)))); --te-dim:var(--text-dim, rgba(var(--fk-ov-rgb),calc(.62 * var(--fk-ov-k)))); } /*L5*/
 :where(html.fk-themed) .te-sheet, :where(html.fk-themed) .te-home, :where(html.fk-themed) .te-prof, :where(html.fk-themed) .te-top-btn{ --te-ink:var(--fk-ink, #fff); --te-muted:var(--text-muted, rgba(var(--fk-ov-rgb),calc(.78 * var(--fk-ov-k)))); --te-dim:var(--text-dim, rgba(var(--fk-ov-rgb),calc(.62 * var(--fk-ov-k)))); } /*L14*/
@@ -1548,7 +1550,7 @@ html:where(.fk-themed).lowfx .sc-bub{ background:var(--glass-solid, rgba(var(--f
 :where(html.fk-themed) .ptp-sumgrid small{ color:rgba(var(--fk-ink-rgb),calc(.65 + (1 - .65) * var(--fk-text-boost))); } /*L308*/
 :where(html.fk-themed) .ptp-sumgrid b i{ color:rgba(var(--fk-ink-rgb),calc(.65 + (1 - .65) * var(--fk-text-boost))); } /*L310*/
 :where(html.fk-themed) .ptp-infosum .ptp-note .material-symbols-rounded{ color:var(--coral-2); } /*L311*/
-/* ===== shop.css: 7 luật ===== */
+/* ===== shop.css: 8 luật ===== */
 :where(html.fk-themed) .sx-hero{ border:0; background:#E5E1D9; } /*L491*/
 :where(html.fk-themed) .sx-hero-t{ color:#111; } /*L493*/
 :where(html.fk-themed) .sx-hero-t em{ text-decoration:underline; } /*L496*/
@@ -1556,6 +1558,7 @@ html:where(.fk-themed).lowfx .sc-bub{ background:var(--glass-solid, rgba(var(--f
 :where(html.fk-themed) .sx-rail img, :where(html.fk-themed) .sx-rail svg{ background:#EEEDEA; } /*L500*/
 :where(html.fk-themed) .sx-rail span{ color:var(--te-muted, rgba(var(--fk-ink-rgb),calc(.8 + (1 - .8) * var(--fk-text-boost)))); } /*L501*/
 :where(html.fk-themed) .sx-links button{ border:1px solid var(--te-line, rgba(var(--fk-ov-rgb),calc(.2 * var(--fk-line-k)))); background:rgba(var(--te-ov, 255,255,255), calc(.06 * var(--te-k, 1))); color:var(--te-ink, var(--fk-ink)); } /*L504*/
+:where(html.fk-themed) .sx-soon-card{ border:1px dashed var(--border, rgba(127,127,127,.35)); } /*L559*/
 /* ===== training-pro.css: 97 luật ===== */
 :where(html.fk-themed) .tp-cycle:focus-visible{ outline:2px solid var(--mint); outline-offset:2px; } /*L8*/
 :where(html.fk-themed) .tp-cyc-top small{ color:var(--text-muted); } /*L10*/

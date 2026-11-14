@@ -29,7 +29,9 @@ module.exports = {
     const run = code=> app.ev(`(async()=>{ ${code} })()`);
     const J = async code=>{ const v = await run(code); return v === undefined ? undefined : JSON.parse(JSON.stringify(v)); };
     const errOf = async code=>{ try{ await run(code); return null; }catch(e){ return e.message || String(e); } };
-    await run(`await cloud.signUp("fix.commerce@tapeasy.vn", "matkhau1", "QA Commerce"); await cloudEvents.init(); await TapShop.reload();`);
+    /* R3 (agent admin, 14/11/2026): danh mục shop-data.js giờ là hàng MẪU (demo:true) — khách không thấy / không đặt được cho tới khi quản trị
+       thêm hàng thật + bật mở bán. Suite này kiểm luồng giỏ/đơn/kho bằng danh mục mẫu → bật cờ phát triển demoCatalog (hành vi mới: suite 83-r3-admin). */
+    await run(`globalThis.TAPEASY_SHOP_CONFIG = Object.assign({}, globalThis.TAPEASY_SHOP_CONFIG, { demoCatalog:true }); await cloud.signUp("fix.commerce@tapeasy.vn", "matkhau1", "QA Commerce"); await cloudEvents.init(); await TapShop.reload();`);
     const stockOf = (pid, k)=> J(`const p = (await cloudEvents.listProducts()).find(x=> x.id === ${JSON.stringify(pid)}); return ${k ? `p.stockBy[${JSON.stringify(k)}]` : "p.stock"};`);
     const order = (items, extra)=> J(`return await cloudEvents.placeOrder(${JSON.stringify(Object.assign({ items, payment:"cod", payVia:"cod", shipMethod:"standard", address: ADDR }, extra || {}))});`);
 

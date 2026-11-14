@@ -10,6 +10,7 @@
 <meta name="description" content="TapEasy — app tập luyện & dinh dưỡng tiếng Việt: giáo án cá nhân, thực đơn theo mục tiêu, kết nối PT với học viên.">
 <meta name="application-name" content="TapEasy">
 <meta name="apple-mobile-web-app-title" content="TapEasy">
+<meta name="mobile-web-app-capable" content="yes">
 <meta property="og:title" content="TapEasy — Huấn luyện & Dinh dưỡng thông minh">
 <meta property="og:site_name" content="TapEasy">
 <meta name="theme-color" content="#061A24">
@@ -52,6 +53,15 @@
 <link rel="stylesheet" href="themes-modules.css">  <!-- SAU CÙNG trong các stylesheet -->
 <script src="themes.js"></script>                  <!-- trong <head>: áp theme trước khi vẽ → không nháy màu -->
 <script src="fk-lazy.js"></script>                 <!-- vòng 2 (ux, QU-01): window.fkLazy.load('exdbvi'|'kb') — nạp lười dữ liệu lớn; trong <head> để mọi file sau gọi được -->
+<script src="i18n.js"></script>                    <!-- R3 (ux): FK_I18N — lớp dịch DOM Việt ⇄ Anh; trong <head> để người dùng English không thấy nháy tiếng Việt. Mặc định "vi": KHÔNG tải từ điển -->
+<!-- Từ điển tiếng Anh: KHAI BÁO (type="text/fk-i18n" → trình duyệt không tải/chạy); i18n.js tự chèn khi người dùng chọn English.
+     Giữ ở đây để tests (nạp mọi src=), prepare-www.sh (chép + precache) và build-single-html.py (nhúng sẵn) thấy file. Thêm ngôn ngữ: FK_I18N.register + file i18n-<mã>.js -->
+<script type="text/fk-i18n" data-lang="en" src="i18n-en.js"></script>
+<script type="text/fk-i18n" data-lang="en" src="i18n-en-2.js"></script>
+<script type="text/fk-i18n" data-lang="en" src="i18n-en-3.js"></script>
+<script type="text/fk-i18n" data-lang="en" src="i18n-en-4.js"></script>
+<script type="text/fk-i18n" data-lang="en" src="i18n-en-5.js"></script>
+<script type="text/fk-i18n" data-lang="en" src="i18n-en-6.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <!-- QU-08: JSZip KHÔNG còn nạp đồng bộ — loadJSZip() (ui-kit.js) tải khi sao lưu/khôi phục Google Drive -->
 </head>
