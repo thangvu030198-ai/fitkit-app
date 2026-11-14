@@ -275,6 +275,8 @@ function flush(){
    --------------------------------------------------------------------- */
 const stats = { dropped: 0, sent: 0 };
 function track(event, props){
+  // pulse.js: nhịp sử dụng ẨN DANH cho bảng quản trị — chỉ nhận TÊN sự kiện / tên màn hình (không uid, không thuộc tính khác); tự bỏ qua khi người dùng từ chối / DNT
+  try{ if(G.FKPulse) G.FKPulse.mark(event, event === "screen_view" ? { screen: props && props.screen } : null); }catch(e){}
   if(!consent()){ stats.dropped++; return false; }   // tắt → không gì rời máy (kể cả nhật ký cục bộ)
   const e = cleanEvent(event); if(!e){ stats.dropped++; return false; }
   const ev = { e, p: Object.assign(sanitize(baseProps()), sanitize(props)), t: Date.now() };
@@ -371,11 +373,9 @@ function instrument(){
   wrapGlobal("saveState", old=> function(){
     const r = old.apply(this, arguments);
     try{
-      if(consent()){
-        const now = foodCount();
-        Object.keys(now).forEach(m=>{ const d = now[m] - (fc[m] || 0); if(d > 0) track("meal_logged", { meal: m, items: d }); });
-        fc = now;
-      }
+      const now = foodCount();                       // track() tự bỏ khi chưa đồng ý (pulse.js chỉ cần biết "có ghi món")
+      Object.keys(now).forEach(m=>{ const d = now[m] - (fc[m] || 0); if(d > 0) track("meal_logged", { meal: m, items: d }); });
+      fc = now;
     }catch(e){}
     return r;
   });

@@ -32,6 +32,8 @@ const FK_FEATURES = {
   phoneOtp: false,
   emailOtp: false,
   cloudSync: true,
+  // Nhịp sử dụng ẨN DANH cho mục "Phân tích" của bảng quản trị (pulse.js): không uid/email/IP. Đặt false để tắt hẳn.
+  metrics: true,
   // Cách đăng nhập mạng xã hội ĐÃ bật trong Firebase Console → Authentication (bản web). Bật thêm Facebook/Apple trên Console xong thì thêm "facebook"/"apple" vào đây.
   authProviders: ["google"],
 };

@@ -280,6 +280,32 @@ service cloud.firestore {
     // R3 — OTP email (functions/account.js): băm mã + bộ đếm giới hạn tần suất. CHỈ Cloud Functions (Admin SDK) đọc/ghi.
     match /email_otps/{id} { allow read, write: if false; }
     match /otp_rate/{id} { allow read, write: if false; }
+
+    /* ================= NHỊP SỬ DỤNG ẨN DANH (pulse.js → mục "Phân tích" của bảng quản trị) =================
+       Không uid / email / IP — chỉ mã thiết bị ngẫu nhiên + nhãn đếm. Ghi được cả khi CHƯA đăng nhập (khách vãng lai),
+       nên hình dạng bị khoá chặt: đúng khoá, đúng kiểu, kích thước nhỏ, ts = giờ máy chủ. Không ai đọc từng tài liệu;
+       presence: người có quyền analytics.view xem danh sách (đang trực tuyến); activity: chỉ Cloud Function adminAnalytics đếm. */
+    function okVid(v) { return v.matches('^v[a-z0-9]{20}$'); }
+    match /presence/{vid} {
+      allow get: if false;
+      allow list, delete: if hasPerm('analytics.view');
+      allow create, update: if okVid(vid)
+        && request.resource.data.keys().hasOnly(['ts', 'p', 's', 'l', 'a'])
+        && request.resource.data.ts == request.time
+        && request.resource.data.p in ['web', 'android', 'ios']
+        && request.resource.data.s is string && request.resource.data.s.size() <= 24
+        && request.resource.data.l in ['vi', 'en']
+        && request.resource.data.a is bool
+        && (resource == null || request.time.toMillis() > resource.data.ts.toMillis() + 20000);   // ≥ 20 giây / lần
+    }
+    match /activity/{id} {
+      allow read, delete: if false;
+      allow create, update: if id.matches('^[dwm]_[0-9-]{7,10}_v[a-z0-9]{20}$')
+        && request.resource.data.keys().hasOnly(['ts', 't'])
+        && request.resource.data.ts == request.time
+        && request.resource.data.t is list && request.resource.data.t.size() >= 1 && request.resource.data.t.size() <= 40
+        && (resource == null || request.resource.data.t.hasAll(resource.data.t));              // chỉ thêm nhãn, không xoá
+    }
     match /ptLinks/{id} { allow read, write: if false; }      // {ptId}_{studentUid} — Cloud Function syncPtLinks
     // Quyền viết đánh giá PT (QS-07, QP-02, QP-12): Function cấp khi có buổi PT xác nhận / buổi thử hoàn thành; giữ 12 tháng kể cả khi rời PT
     match /reviewRights/{id} { allow get: if signedIn() && resource.data.uid == me(); allow list, write: if false; }
