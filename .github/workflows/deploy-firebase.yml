@@ -1,0 +1,80 @@
+name: Firebase — đẩy rules + Cloud Functions (database thật)
+
+# Bấm tay khi: (1) đổi firestore.rules / indexes, (2) đã nâng gói Blaze và muốn bật Cloud Functions
+# (kết nối PT bằng mã mời, đơn hàng, quyền Admin, OTP email).
+# Secrets cần có trong repo (Settings → Secrets and variables → Actions):
+#   FIREBASE_SERVICE_ACCOUNT  : nội dung JSON khoá service account (Firebase Console → Project settings → Service accounts → Generate new private key)
+#   OWNER_BOOTSTRAP_CODE      : mã ≥ 12 ký tự để nhận quyền Chủ sở hữu lần đầu trong app (chỉ cần khi functions=true)
+#   MAIL_API_KEY              : khoá dịch vụ gửi mail (Resend / Brevo / SendGrid) — chỉ cần khi bật OTP email
+#   MAIL_FROM                 : địa chỉ gửi đã xác minh, vd "TapEasy <no-reply@ten-mien.vn>" — chỉ cần khi bật OTP email
+# Không secret nào được in ra log. CHƯA chạy thử lần nào (project đang ở gói Spark) — lần đầu nếu đỏ, gửi log để chỉnh.
+on:
+  workflow_dispatch:
+    inputs:
+      functions:     { description: "Đẩy cả Cloud Functions (cần gói Blaze) — true/false", default: "false", required: false }
+      mail_provider: { description: "Dịch vụ gửi mail cho OTP email: resend | brevo | sendgrid", default: "resend", required: false }
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-firebase
+  cancel-in-progress: false
+
+env:
+  PROJECT_ID: tapeasy-2ce8f
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - name: Kiểm tra khoá service account
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$SA" ]; then echo "::error::Thiếu secret FIREBASE_SERVICE_ACCOUNT"; exit 1; fi
+          printf '%s' "$SA" > "$RUNNER_TEMP/sa.json"
+          node -e "const j=require(process.env.RUNNER_TEMP+'/sa.json'); if(j.project_id!==process.env.PROJECT_ID){console.error('::error::Khoá thuộc project '+j.project_id+', cần '+process.env.PROJECT_ID);process.exit(1)}"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/sa.json" >> "$GITHUB_ENV"
+      - run: npm install -g firebase-tools@13
+      - name: Đẩy Firestore rules + indexes
+        run: firebase deploy --only firestore:rules,firestore:indexes --project "$PROJECT_ID" --non-interactive
+      - name: Đặt secrets cho Functions
+        if: ${{ inputs.functions == 'true' }}
+        env:
+          OWNER_BOOTSTRAP_CODE: ${{ secrets.OWNER_BOOTSTRAP_CODE }}
+          MAIL_API_KEY: ${{ secrets.MAIL_API_KEY }}
+        run: |
+          if [ -z "$OWNER_BOOTSTRAP_CODE" ] || [ "${#OWNER_BOOTSTRAP_CODE}" -lt 12 ]; then echo "::error::Thiếu secret OWNER_BOOTSTRAP_CODE (≥ 12 ký tự)"; exit 1; fi
+          put(){ printf '%s' "$2" > "$RUNNER_TEMP/s.txt"; firebase functions:secrets:set "$1" --data-file "$RUNNER_TEMP/s.txt" --project "$PROJECT_ID" --force >/dev/null; rm -f "$RUNNER_TEMP/s.txt"; echo "đã đặt $1"; }
+          has(){ firebase functions:secrets:access "$1" --project "$PROJECT_ID" >/dev/null 2>&1; }
+          put OWNER_BOOTSTRAP_CODE "$OWNER_BOOTSTRAP_CODE"
+          # OTP_PEPPER: tạo ngẫu nhiên MỘT lần rồi giữ nguyên (đổi sẽ làm mã OTP đang chờ hết hiệu lực)
+          has OTP_PEPPER || put OTP_PEPPER "$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")"
+          # chưa có khoá mail → đặt giá trị giữ chỗ (function vẫn deploy; OTP email trả lỗi 'chưa cấu hình' cho tới khi có khoá thật)
+          if [ -n "$MAIL_API_KEY" ]; then put MAIL_API_KEY "$MAIL_API_KEY"; else has MAIL_API_KEY || put MAIL_API_KEY "unset"; fi
+          has APPLE_PRIVATE_KEY || put APPLE_PRIVATE_KEY "unset"
+      - name: Tham số Functions (không bí mật)
+        if: ${{ inputs.functions == 'true' }}
+        env:
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_PROVIDER: ${{ inputs.mail_provider || 'resend' }}
+        run: |
+          {
+            echo "MAIL_PROVIDER=$MAIL_PROVIDER"
+            echo "MAIL_FROM=$MAIL_FROM"
+            echo "APPLE_TEAM_ID=unset"
+            echo "APPLE_KEY_ID=unset"
+          } > functions/.env
+      - name: Đẩy Cloud Functions
+        if: ${{ inputs.functions == 'true' }}
+        run: |
+          (cd functions && npm install --no-audit --no-fund)
+          firebase deploy --only functions --project "$PROJECT_ID" --non-interactive --force
+      - name: Dọn khoá
+        if: always()
+        run: rm -f "$RUNNER_TEMP/sa.json" functions/.env
