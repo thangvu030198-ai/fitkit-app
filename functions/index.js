@@ -40,6 +40,8 @@ Object.assign(exports, require("./commerce"));
 Object.assign(exports, require("./social"));
 /* Vòng R3 (functions/account.js): OTP 6 số qua email để đặt lại mật khẩu (requestEmailOtp / verifyEmailOtp) + exportMyData (xuất dữ liệu của tôi) */
 Object.assign(exports, require("./account"));
+/* Mục "Phân tích" của bảng quản trị (functions/analytics.js): adminAnalytics — đếm nhãn sử dụng ẩn danh (pulse.js) */
+Object.assign(exports, require("./analytics"));
 
 const REGION = "asia-southeast1";                 // cùng vùng Firestore (Singapore) — client gọi functions("asia-southeast1")
 const RECENT_LOGIN_SEC = 15 * 60;                 // chỉ cho thu hồi ngay sau khi xác thực lại
