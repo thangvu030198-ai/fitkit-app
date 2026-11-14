@@ -441,7 +441,7 @@ module.exports = {
           try{ return { code: 0, out: cp.execFileSync("bash", ["-c", "set -e\n" + m[0] + "\necho QUA"], { cwd: tmp, env: Object.assign({}, process.env, env) }).toString() }; }
           catch(e){ return { code: e.status, out: String(e.stdout || "") + String(e.stderr || "") }; }
         };
-        const empty = read("firebase-config.js");
+        const empty = read("firebase-config.js").replace(/\b(apiKey|authDomain|projectId|storageBucket|messagingSenderId|appId):\s*"[^"]*"/g, '$1: ""');   // R3: file thật đã có cấu hình → tự làm rỗng để thử nhánh "trống"
         let r = run(empty, { STORE_BUILD:"1" }); assert.equal(r.code, 1, r.out); assert.match(r.out, /STORE_BUILD=1 nhưng firebase-config\.js trống/);
         r = run(null, { STORE_BUILD:"1" }); assert.equal(r.code, 1, "thiếu file mà vẫn qua");
         r = run(empty, { STORE_BUILD:"0" }); assert.equal(r.code, 0, r.out); assert.match(r.out, /CHẾ ĐỘ DEMO[\s\S]*QUA/);

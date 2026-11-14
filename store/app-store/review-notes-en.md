@@ -4,7 +4,7 @@
 
 **Sign-in required:** Yes
 **User name:** `[ĐIỀN EMAIL TÀI KHOẢN PT DEMO]`  **Password:** `[ĐIỀN MẬT KHẨU]`
-**Contact:** `[ĐIỀN HỌ TÊN]` · `[ĐIỀN SỐ ĐIỆN THOẠI +84…]` · `[ĐIỀN EMAIL HỖ TRỢ]`
+**Contact:** `[ĐIỀN HỌ TÊN]` · `[ĐIỀN SỐ ĐIỆN THOẠI +84…]` · `thangvu030198@gmail.com`
 
 ```text
 Thank you for reviewing TapEasy, a Vietnamese-language gym, nutrition and personal-trainer app.

@@ -18,7 +18,7 @@
 | **Photo and video permissions** | App không xin `READ_MEDIA_IMAGES/VIDEO` (dùng trình chọn ảnh hệ thống) → không phải khai. |
 | **Exact alarm / Foreground service / All files access** | Không dùng → không phải khai. |
 | **Category · Tags** | Health & Fitness · Workout tracker, Calorie counter, Personal trainer, Diet & nutrition |
-| **Contact details** | Email hỗ trợ `[ĐIỀN EMAIL HỖ TRỢ]` · Website `https://thangvu030198-ai.github.io/fitkit-app/landing.html` |
+| **Contact details** | Email hỗ trợ `thangvu030198@gmail.com` · Website `https://thangvu030198-ai.github.io/fitkit-app/landing.html` |
 | **Store settings → External marketing** | Tuỳ chọn |
 
 ## Quyền Android trong bản build (đối chiếu Play Console → App bundle explorer → Permissions)

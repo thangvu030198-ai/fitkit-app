@@ -156,6 +156,8 @@ async function createApp(opts={}){
     const full = path.join(APP_DIR, file);
     let code;
     try{ code = fs.readFileSync(full, "utf8"); }catch(e){ loadErrors.push({ file, error: e }); continue; }
+    /* R3: firebase-config.js nay có cấu hình THẬT (project tapeasy) — bộ test luôn chạy ĐỘNG CƠ DEMO (không gọi mạng) nên làm rỗng cấu hình khi nạp */
+    if(file === "firebase-config.js" && !opts.keepFirebaseConfig) code = code.replace(/\b(apiKey|authDomain|projectId|storageBucket|messagingSenderId|appId|measurementId):\s*"[^"]*"/g, '$1: ""');
     try{ new vm.Script(code, { filename: full }).runInContext(ctx); }
     catch(e){ loadErrors.push({ file, error: e }); }
   }

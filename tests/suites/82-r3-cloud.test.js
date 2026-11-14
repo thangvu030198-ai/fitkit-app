@@ -175,8 +175,11 @@ module.exports = {
     t.test("A · cờ phoneOtp/emailOtp mặc định TẮT → ẩn hoàn toàn khỏi giao diện, API từ chối; firebase-config.js không chứa khoá", async ()=>{
       const cfg = read("firebase-config.js");
       assert.match(cfg, /phoneOtp:\s*false/); assert.match(cfg, /emailOtp:\s*false/);
-      assert.match(cfg, /apiKey:\s*""/, "apiKey phải để trống — chủ dự án tự điền");
-      assert.ok(!/AIza[0-9A-Za-z_-]{20,}/.test(cfg + cloudJs + ptJs + read("functions/account.js")), "không có khoá API trong mã");
+      /* R3 (14/11): firebase-config.js đã điền cấu hình web CÔNG KHAI của project tapeasy (apiKey web của Firebase không phải bí mật — dữ liệu bảo vệ bằng rules).
+         Vẫn cấm: khoá ở file khác, khoá dịch vụ/bí mật (service account, SMTP, OTP pepper) trong mã. */
+      assert.match(cfg, /projectId:\s*"(tapeasy-[a-z0-9]+)?"/);
+      assert.ok(!/AIza[0-9A-Za-z_-]{20,}/.test(cloudJs + ptJs + read("functions/account.js")), "không có khoá API trong mã ngoài firebase-config.js");
+      assert.ok(!/private_key|BEGIN PRIVATE KEY|client_secret|MAIL_API_KEY\s*[:=]\s*["'][^"']+|OTP_PEPPER\s*[:=]\s*["'][^"']+/.test(cfg), "firebase-config.js không được chứa khoá bí mật");
       const app = await t.app({ state: false });
       assert.equal(app.ev("cloud.otp.enabled()"), false); assert.equal(app.ev("cloud.phone.enabled()"), false);
       app.run(`showAuth("forgot")`);

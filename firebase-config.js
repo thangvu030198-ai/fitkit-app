@@ -12,12 +12,12 @@
     Dữ liệu được bảo vệ bằng file firestore.rules.)
    ========================================================================= */
 const FIREBASE_CONFIG = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: "",
+  apiKey: "AIzaSyCTyzxlaM_yvL14P4A2e9XUmMFMPSbA6P0",
+  authDomain: "tapeasy-2ce8f.firebaseapp.com",
+  projectId: "tapeasy-2ce8f",
+  storageBucket: "tapeasy-2ce8f.firebasestorage.app",
+  messagingSenderId: "654220839822",
+  appId: "1:654220839822:web:3c7a025ab731d1e92d72df",
   measurementId: "",   // TUỲ CHỌN: "G-…" để bật Firebase Analytics (chỉ gửi khi người dùng đồng ý — docs/ANALYTICS.md)
 };
 

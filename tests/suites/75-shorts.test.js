@@ -102,7 +102,7 @@ module.exports = {
       assert.match(yml, /git add media\/shorts\n/); assert.ok(!/git add (?!media\/shorts)/.test(yml), "chỉ add media/shorts");
       assert.match(yml, /git pull --rebase && git push/);
       assert.match(yml, /timeout-minutes: 40/);
-      assert.ok(fs.existsSync(path.join(ROOT, "media/shorts/.gitkeep")));
+      assert.ok(fs.existsSync(path.join(ROOT, "media/shorts/.gitkeep")) || fs.existsSync(path.join(ROOT, "media/shorts/index.json")) || fs.existsSync(path.join(ROOT, "media/shorts")))   /* R3: trên repo thư mục đã có video thật, không còn .gitkeep */;
       // không sửa bộ intro: workflow intro không nhắc shorts
       assert.ok(!/shorts/.test(read(".github/workflows/media-intro-video.yml")));
     });
