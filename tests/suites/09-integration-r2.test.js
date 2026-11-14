@@ -94,8 +94,8 @@ module.exports = {
       assert.match(nc, /function validNote\(d\)[\s\S]*?d\.authorUid == me\(\)/);
       // vòng 3 (RBAC): quyền ghi sản phẩm = hasPerm('shop.products'); thêm đúng 1 chỗ đọc công khai: đánh giá PT (Tìm PT — minh bạch)
       const pub = nc.split("\n").filter(l=> /if true;/.test(l)).map(l=> l.trim());
-      assert.deepEqual(pub, ["allow read: if true;", "match /products/{id} { allow read: if true; allow write: if hasPerm('shop.products'); }", "allow read: if true;"],
-        "chỉ routines (bảng tin), products (gian hàng) và ptListings/*/reviews (đánh giá PT công khai) được đọc công khai");
+      assert.deepEqual(pub, ["allow read: if true;", "allow read: if true;", "match /products/{id} { allow read: if true; allow write: if hasPerm('shop.products'); }", "allow read: if true;"],
+        "chỉ settings/auth (cờ cách đăng nhập — màn đăng nhập cần đọc trước khi có tài khoản), routines (bảng tin), products (gian hàng) và ptListings/*/reviews (đánh giá PT công khai) được đọc công khai");
       assert.match(block(nc, "match /routines/{rid}"), /allow read: if true;/);
       assert.match(block(nc, "match /reviews/{ruid}"), /allow read: if true;/, "đánh giá PT công khai");
       assert.ok(!/allow write: if signedIn\(\);/.test(nc), "có collection cho mọi người ghi tự do");
