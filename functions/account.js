@@ -225,7 +225,9 @@ async function exportMyDataCore(request, deps){
   return out;
 }
 
-const OPTS = { region: REGION, maxInstances: 5, timeoutSeconds: 30, memory: "256MiB" };
+/* invoker:"public" — callable tự kiểm tra quyền bên trong; thiếu dòng này thì hàm tạo lại sau lần deploy lỗi đầu tiên
+   không có quyền gọi công khai → trình duyệt nhận 403 ở bước CORS (OPTIONS) và app báo "internal". */
+const OPTS = { region: REGION, maxInstances: 5, timeoutSeconds: 30, memory: "256MiB", invoker: "public" };
 exports.requestEmailOtp = onCall(Object.assign({ secrets: [MAIL_API_KEY, OTP_PEPPER] }, OPTS), request=> requestEmailOtpCore(request));
 exports.verifyEmailOtp  = onCall(Object.assign({ secrets: [OTP_PEPPER] }, OPTS), request=> verifyEmailOtpCore(request));
 exports.exportMyData    = onCall(Object.assign({}, OPTS, { timeoutSeconds: 120, memory: "512MiB" }), request=> exportMyDataCore(request));
