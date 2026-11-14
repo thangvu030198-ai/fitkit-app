@@ -60,6 +60,13 @@ module.exports = {
       assert.match(read("ui-signature.js"), /if\(!i \|\| typeof i !== "object"\) return; tot\.kcal/);
       assert.match(read("app.js"), /day\[m\] = day\[m\]\.filter\(isObj\)/);
     });
+    t.test("R3-ADM-SCROLL: bảng quản trị cuộn được (lưới + flex có min-height:0, vùng nội dung overflow-y:auto)", ()=>{
+      const c = read("admin.css");
+      assert.match(c, /\.adm-shell\{[^}]*grid-template-rows:minmax\(0,1fr\)[^}]*min-height:0/);
+      assert.match(c, /\.adm-shell > \*\{ min-height:0; \}/);
+      assert.match(c, /\.adm-main\{[^}]*min-height:0/);
+      assert.match(c, /\.adm-body\{[^}]*min-height:0[^}]*overflow-y:auto/);
+    });
     t.test("R3-store (chuyển giao): bản store ẩn mục \"Sắp ra mắt\" ở màn chọn vai trò", ()=>{
       assert.match(read("pt.js"), /filter\(r=> !\(r\.soon && window\.FK_BUILD && FK_BUILD\.store\)\)/);
     });
