@@ -107,7 +107,11 @@ async function sendMail(to, msg, fetchImpl){
     body = { from, to: [to], subject: msg.subject, text: msg.text, html: msg.html };
   }
   const res = await f(url, { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, headers), body: JSON.stringify(body) });
-  if(!res || !res.ok) throw new Error(`Dịch vụ mail (${provider}) trả lỗi ${res && res.status}`);
+  if(!res || !res.ok){
+    let detail = "";
+    try{ detail = String(await res.text()).replace(/\s+/g, " ").slice(0, 300); }catch(_){}
+    throw new Error(`Dịch vụ mail (${provider}) trả lỗi ${res && res.status}${detail ? " — " + detail : ""}`);
+  }
   return true;
 }
 
@@ -141,7 +145,7 @@ async function requestEmailOtpCore(request, deps){
   await ref.set({ uid: user.uid, salt, hash: otpHash(value(OTP_PEPPER, ""), salt, email, code), exp: nowMs + OTP_TTL_MS, tries: 0 }, { merge: true });
   try{ await sendMail(email, mailBody(code), deps.fetch); }
   catch(e){
-    logger.error("OTP: không gửi được email", { message: e.message });
+    logger.error("OTP: không gửi được email — " + String(e && e.message || e).slice(0, 400));
     await ref.set({ hash: admin.firestore.FieldValue.delete(), salt: admin.firestore.FieldValue.delete(), exp: 0 }, { merge: true });
   }
   return { ok: true };
