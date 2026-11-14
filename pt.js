@@ -906,6 +906,12 @@ function openDeleteAccountSheet(){
 
 /* Nút Google / Facebook trên màn đăng nhập & đăng ký */
 function bindSocialButtons(needAgree){
+  /* R3: Firebase thật — chỉ hiện cách đăng nhập ĐÃ bật trong Firebase Console (FK_FEATURES.authProviders; bản native: FK_BUILD.authProviders).
+     Nút của nhà cung cấp chưa cấu hình sẽ báo lỗi khi bấm → ẩn hẳn. Chế độ demo giữ đủ 3 nút để thử luồng. */
+  try{
+    const en = (window.FK_BUILD && Array.isArray(FK_BUILD.authProviders) && FK_BUILD.authProviders) || (typeof FK_FEATURES !== "undefined" && FK_FEATURES.authProviders);
+    if(cloud.mode === "firebase" && Array.isArray(en)) $$("[data-social]").forEach(b=>{ if(en.indexOf(b.dataset.social) < 0) b.style.display = "none"; });
+  }catch(_){}
   $$("[data-social]").forEach(b=> b.addEventListener("click", async ()=>{
     const err = $("#au-err");
     let grants = null;

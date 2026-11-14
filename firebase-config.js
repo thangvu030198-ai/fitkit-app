@@ -32,4 +32,6 @@ const FK_FEATURES = {
   phoneOtp: false,
   emailOtp: false,
   cloudSync: true,
+  // Cách đăng nhập mạng xã hội ĐÃ bật trong Firebase Console → Authentication (bản web). Bật thêm Facebook/Apple trên Console xong thì thêm "facebook"/"apple" vào đây.
+  authProviders: ["google"],
 };
