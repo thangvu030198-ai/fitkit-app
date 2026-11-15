@@ -13,7 +13,7 @@ name: Media — video giới thiệu TapEasy (intro dọc + ngang)
 on:
   workflow_dispatch:
     inputs:
-      app_url:  { description: "URL app để chụp (không hiện trên video)", default: "https://thangvu030198-ai.github.io/fitkit-app/", required: false }
+      app_url:  { description: "URL app để chụp (không hiện trên video)", default: "https://tapeasy.app/", required: false }
       fps:      { description: "Khung/giây (30 hoặc 60)", default: "30", required: false }
       scale:    { description: "deviceScaleFactor khi chụp app", default: "3", required: false }
       commit:   { description: "Commit media/intro vào repo (true/false)", default: "true", required: false }
@@ -63,7 +63,7 @@ jobs:
       - name: Ảnh nền + clip màn chào
         run: python scripts/intro-video/fetch_assets.py
       - name: Chụp app thật (390×844 @${{ inputs.scale || '3' }}x)
-        run: python scripts/intro-video/capture_app.py --url "${{ inputs.app_url || 'https://thangvu030198-ai.github.io/fitkit-app/' }}" --scale "${{ inputs.scale || '3' }}" ${{ (inputs.safe_strict || 'true') == 'true' && ' ' || '--safe-warn' }}
+        run: python scripts/intro-video/capture_app.py --url "${{ inputs.app_url || 'https://tapeasy.app/' }}" --scale "${{ inputs.scale || '3' }}" ${{ (inputs.safe_strict || 'true') == 'true' && ' ' || '--safe-warn' }}
       - name: Báo cáo vùng an toàn (cảnh có sheet mở, chữ/nút dưới dynamic island / thanh home)
         if: always()
         run: cat scripts/intro-video/build/qa/safe/report.txt || true

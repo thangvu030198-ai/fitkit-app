@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
     inputs:
       ids:     { description: "Id short, cách nhau dấu phẩy (trống = cả 14)", default: "", required: false }
-      app_url: { description: "URL app để chụp (không hiện trên video)", default: "https://thangvu030198-ai.github.io/fitkit-app/", required: false }
+      app_url: { description: "URL app để chụp (không hiện trên video)", default: "https://tapeasy.app/", required: false }
       voice:   { description: "Giọng đọc TTS (true/false)", default: "true", required: false }
       commit:  { description: "Commit media/shorts vào repo (true/false)", default: "true", required: false }
 
@@ -90,7 +90,7 @@ jobs:
         run: python scripts/shorts/fetch_assets.py --ids "${{ steps.groups.outputs.ids }}"
       - name: Chụp app thật (390×844 @3x, dữ liệu demo cục bộ)
         env:
-          APP_URL: ${{ inputs.app_url || 'https://thangvu030198-ai.github.io/fitkit-app/' }}
+          APP_URL: ${{ inputs.app_url || 'https://tapeasy.app/' }}
         run: |
           case "$APP_URL" in https://*|http://127.0.0.1*) ;; *) echo "::error::app_url phải là https://"; exit 1;; esac
           python scripts/shorts/capture.py --url "$APP_URL" --ids "${{ steps.groups.outputs.ids }}"
