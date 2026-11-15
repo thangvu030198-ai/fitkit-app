@@ -1,5 +1,5 @@
 /* Video hướng dẫn miễn phí (freevideos.js) + gắn video vào giáo án (templates.js) + UI video (video.js)
-   Fixture media/wger|extra/index.json = bản chụp 11/2026 của https://thangvu030198-ai.github.io/fitkit-app/ */
+   Fixture media/wger|extra/index.json = bản chụp 11/2026 của https://tapeasy.app/ */
 "use strict";
 const { assert, expectNone } = require("../lib/framework");
 

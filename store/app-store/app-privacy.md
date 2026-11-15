@@ -2,7 +2,7 @@
 
 App Store Connect → app → **App Privacy → Get Started**. Bảng gốc kèm lý do: `docs/STORE-COMPLIANCE.md` §1. Phải khớp `PrivacyInfo.xcprivacy` trong bản build (`store/native/ios/PrivacyInfo.xcprivacy`).
 
-**Privacy Policy URL:** `https://thangvu030198-ai.github.io/fitkit-app/privacy-policy.html`
+**Privacy Policy URL:** `https://tapeasy.app/privacy-policy.html`
 **Do you or your third-party partners collect data from this app?** → **Yes, we collect data from this app**
 
 Với mỗi loại bên dưới: *Used for tracking?* → **No** (app không quảng cáo, không chia sẻ dữ liệu cho bên môi giới dữ liệu, không ghép dữ liệu với app/website khác ⇒ **không cần App Tracking Transparency**, bản build không có `NSUserTrackingUsageDescription`, `NSPrivacyTracking = false`).

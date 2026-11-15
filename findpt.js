@@ -542,7 +542,7 @@ function goBackFromProfile(){
 function replaceBtn(sel, fn){ const b = q(sel); if(!b || !b.parentNode) return null; const nb = b.cloneNode(true); b.parentNode.replaceChild(nb, b); nb.addEventListener("click", fn); return nb; }
 function fixLogo(){ const lg = q("#pp-content .pp-logo"); if(lg && /FIT/i.test(lg.textContent)) lg.innerHTML = `Tap<b>Easy</b>`; }
 function shareListing(l){
-  const link = (location.protocol.startsWith("http") ? location.origin + location.pathname : "https://thangvu030198-ai.github.io/fitkit-app/") + "?pt=" + encodeURIComponent(l.id);
+  const link = (location.protocol.startsWith("http") ? location.origin + location.pathname : "https://tapeasy.app/") + "?pt=" + encodeURIComponent(l.id);
   const text = `${l.name} — ${(l.specs || []).slice(0,2).join(", ")} · ${L.areaText(l)} · từ ${mk(l.priceFrom || L.priceFrom(l))}/buổi. Xem hồ sơ, bảng giá & đánh giá trên TapEasy: ${link}`;
   try{ if(typeof shareText === "function" && shareText.length === 2) return shareText(`${l.brandName || l.name} trên TapEasy`, text); }catch(e){}
   try{ if(navigator.share) return navigator.share({ title:"TapEasy — Tìm PT", text }).catch(()=>{}); }catch(e){}

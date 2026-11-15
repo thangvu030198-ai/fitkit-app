@@ -23,7 +23,7 @@ python3 prep.py                                   # timeline.json → build/time
 python3 tts.py --check                            # đếm từ/giây kịch bản lời đọc (không gọi API)
 TTS_API_KEY=… python3 tts.py --fit-timeline       # giọng đọc → build/voice/voice.wav (lời dài → kéo dài chương + chạy lại prep.py)
 python3 fetch_assets.py                           # ảnh nền people-ai + khung clip màn chào
-python3 capture_app.py --url https://thangvu030198-ai.github.io/fitkit-app/
+python3 capture_app.py --url https://tapeasy.app/
 python3 qa_fit.py --fmt v && python3 qa_fit.py --fmt h   # ảnh app khít màn mockup ≤ 1 px (mã thoát 1 nếu trượt)
 python3 render.py --fmt v --draft --end 20        # nháp 540p 20 s đầu (không nhoè)
 python3 render.py --fmt v && python3 render.py --fmt h

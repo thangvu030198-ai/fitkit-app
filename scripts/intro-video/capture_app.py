@@ -14,7 +14,7 @@ Mỗi shot (director.js → __TI.order): ảnh nền toàn màn (base) + các d�
 toạ độ điểm chạm. Ra build/shots/<id>/*.jpg + build/manifest.js (window.__MANIFEST__).
 
   python3 scripts/intro-video/prep.py                       # tạo build/needs.json
-  python3 scripts/intro-video/capture_app.py --url https://thangvu030198-ai.github.io/fitkit-app/
+  python3 scripts/intro-video/capture_app.py --url https://tapeasy.app/
   python3 scripts/intro-video/capture_app.py --url http://127.0.0.1:8000/index.html --only home,nutrition
 
 Chỉ dùng dữ liệu demo cục bộ (localStorage của ngữ cảnh trình duyệt mới) — KHÔNG đăng nhập tài khoản thật.
@@ -96,7 +96,7 @@ async def capture_seq(page, sid, d, args):
 
 async def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--url", default="https://thangvu030198-ai.github.io/fitkit-app/")
+    ap.add_argument("--url", default="https://tapeasy.app/")
     ap.add_argument("--scale", type=float, default=3.0, help="deviceScaleFactor (3 = @3x)")
     ap.add_argument("--quality", type=int, default=90)
     ap.add_argument("--only", default="", help="chỉ lưu các shot này (vẫn chạy cả chuỗi để giữ trạng thái)")

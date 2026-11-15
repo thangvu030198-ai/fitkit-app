@@ -96,7 +96,7 @@ module.exports = {
       const yml = read(".github/workflows/media-shorts.yml");
       assert.match(yml, /workflow_dispatch:/);
       ["ids:", "app_url:", "voice:", "commit:"].forEach(k=> assert.ok(yml.includes(k), k));
-      assert.match(yml, /default: "https:\/\/thangvu030198-ai\.github\.io\/fitkit-app\/"/);
+      assert.match(yml, /default: "https:\/\/tapeasy\.app\/"/);
       assert.match(yml, /fromJSON\(needs\.prepare\.outputs\.groups\)/);
       assert.match(yml, /git config user\.name "tapeasy-bot"/);
       assert.match(yml, /git add media\/shorts\n/); assert.ok(!/git add (?!media\/shorts)/.test(yml), "chỉ add media/shorts");

@@ -1,6 +1,6 @@
 # Vòng R3 (14/11/2026) — Rà soát sâu + nâng cấp trước khi đóng gói 3 nền tảng
 
-Mã nguồn: `/sessions/quirky-magical-gauss/mnt/outputs/FitKit/` (vanilla JS SPA, tiếng Việt, Capacitor 6, web tại https://thangvu030198-ai.github.io/fitkit-app/).
+Mã nguồn: `/sessions/quirky-magical-gauss/mnt/outputs/FitKit/` (vanilla JS SPA, tiếng Việt, Capacitor 6, web tại https://tapeasy.app/).
 Đọc trước: `docs/AGENT-BRIEF.md`, `docs/INTEGRATION-LOG.md`, `docs/DESIGN-SYSTEM.md`, `docs/qa/FIX-ROUND-BRIEF.md` (quy tắc sửa lỗi vẫn áp dụng), và các `docs/qa/FIX-*.md` để biết lỗi nào ĐÃ sửa ở vòng trước (đừng báo lại).
 
 ## Việc của MỖI agent (trong phạm vi file mình sở hữu)

@@ -20,9 +20,9 @@ const MEDIA_CONFIG = {
   // Video nền màn mở app (QU-04): "auto" = KHÔNG tìm video lúc chạy (không gọi API), chỉ dùng ảnh nền tĩnh.
   // Muốn có video nền: dán thẳng link .mp4 cố định (CDN của app) lúc build.
   welcomeVideo: (typeof innerWidth !== "undefined" && innerWidth * (typeof devicePixelRatio !== "undefined" ? devicePixelRatio : 1) > 900)
-    ? "https://thangvu030198-ai.github.io/fitkit-app/media/welcome/welcome-bw-1080.mp4"
-    : "https://thangvu030198-ai.github.io/fitkit-app/media/welcome/welcome-bw-720.mp4",   // clip Pexels 36184742, đen trắng (workflow media-welcome.yml)
-  welcomePoster: "https://thangvu030198-ai.github.io/fitkit-app/media/welcome/welcome-bw-poster.jpg",
+    ? "https://tapeasy.app/media/welcome/welcome-bw-1080.mp4"
+    : "https://tapeasy.app/media/welcome/welcome-bw-720.mp4",   // clip Pexels 36184742, đen trắng (workflow media-welcome.yml)
+  welcomePoster: "https://tapeasy.app/media/welcome/welcome-bw-poster.jpg",
   welcomeQuery: "gym workout training",
   /* Thống kê sử dụng ẩn danh qua PostHog (analytics.js · docs/ANALYTICS.md) — TUỲ CHỌN, để trống = không dùng PostHog.
      Chỉ gửi khi người dùng bấm "Đồng ý"; SDK chỉ tải sau khi đồng ý. Khoá dự án PostHog (phc_…) là khoá công khai phía client.

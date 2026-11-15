@@ -1,7 +1,7 @@
 # FIT KIT — Brief chung cho các agent phát triển (đọc kỹ trước khi code)
 
 ## Dự án
-- App tập luyện + dinh dưỡng + kết nối PT↔học viên, **tiếng Việt**, vanilla JS SPA (không framework, không bundler), đóng gói Capacitor 6 cho iOS/Android, chạy web tại https://thangvu030198-ai.github.io/fitkit-app/
+- App tập luyện + dinh dưỡng + kết nối PT↔học viên, **tiếng Việt**, vanilla JS SPA (không framework, không bundler), đóng gói Capacitor 6 cho iOS/Android, chạy web tại https://tapeasy.app/
 - Mã nguồn (đường dẫn shell): `/sessions/quirky-magical-gauss/mnt/outputs/FitKit/`
 - Thứ tự nạp script (index.html): icons.js, firebase-config.js, media-config.js, cloud.js, data.js, templates.js, exdb.js, app.js, meals.js, nutrition.js, freevideos.js, video.js, library.js, coach.js, ptprofile.js, pt.js, **← module của bạn sẽ được nạp SAU pt.js**.
 - `pt.js` gọi `appBoot()` ngay khi nạp → khi module của bạn chạy, app đã khởi động. Nếu bạn ghi đè hàm render, hãy gọi lại render màn đang mở nếu cần.

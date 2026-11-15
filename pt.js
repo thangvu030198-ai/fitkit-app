@@ -974,7 +974,7 @@ function openCreditsSheet(){
    4b. R3 (14/11/2026) — TÀI KHOẢN "THỰC CHIẾN": đồng ý khi đăng ký, quên mật khẩu (link / OTP email / OTP số điện thoại),
        sao lưu cloud, tài khoản liên kết, xuất dữ liệu. Lớp dữ liệu: cloud.js (cloud.consent / sync / linked / otp / phone).
    --------------------------------------------------------------------- */
-const FK_WEB_BASE = "https://thangvu030198-ai.github.io/fitkit-app/";
+const FK_WEB_BASE = "https://tapeasy.app/";
 /* CSS của phần R3 chèn bằng <style> (chỉ dùng token màu của theme) — không đụng style.css / lớp màu module của agent ux.
    Vùng chạm ≥ 44 px, chữ ≥ 12 px, input 16 px, co giãn 320–430 px, không tràn ngang. */
 (function fkAccStyle(){
@@ -987,6 +987,9 @@ const FK_WEB_BASE = "https://thangvu030198-ai.github.io/fitkit-app/";
 .fk-consent-row input[type=checkbox]{ width:22px; height:22px; margin:1px 2px 0 0; flex:0 0 22px; }
 .fk-consent-row a{ text-decoration:underline; cursor:pointer; }
 .fk-consent-row i{ font-style:normal; opacity:.8; }
+/* Ô đồng ý ở màn đăng ký: chữ (kể cả có link) chảy liền một khối, sát ô tích — không bị style.css (.fk-consent-row span{flex column} + space-between) đẩy sang phải */
+.auth-check.fk-consent-row{ justify-content:flex-start; }
+.auth-check.fk-consent-row > span{ display:block; flex:1 1 auto; min-width:0; text-align:left; }
 .fk-seg{ display:flex; gap:6px; padding:4px; border-radius:999px; background:rgba(127,127,127,.16); }
 .fk-seg button{ flex:1 1 0; min-width:0; min-height:44px; padding:0 8px; border:0; border-radius:999px; background:transparent; color:inherit; font-family:inherit; font-size:13px; font-weight:600; line-height:1.2; cursor:pointer; white-space:normal; }
 .fk-seg button.active{ background:var(--primary); color:var(--on-primary, #fff); }

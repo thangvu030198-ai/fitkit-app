@@ -670,7 +670,7 @@ module.exports = {
         "đánh giá tác động", "chuyển dữ liệu", "16 tuổi", "24 giờ", "Rủi ro", "Cao", "Thuế", "kiểm tra lại"].filter(k=> !legal.includes(k)), "docs/LEGAL-VN.md thiếu mục");
       const setup = read("docs/DATABASE-SETUP.md");
       expectNone(["asia-southeast1", "vn.thangvu.fitkit", "SHA-1", "SHA-256", "google-services.json", "GoogleService-Info.plist", "firebase deploy --only firestore:rules", "firestore:indexes", "--only functions",
-        "thangvu030198-ai.github.io", "App Check", "Spark", "Blaze", "phoneOtp", "emailOtp", "MAIL_API_KEY", "OTP_PEPPER", "Sao lưu", "Facebook", "Apple", "firebase-config.js"].filter(k=> !setup.includes(k)), "docs/DATABASE-SETUP.md thiếu mục");
+        "tapeasy.app", "App Check", "Spark", "Blaze", "phoneOtp", "emailOtp", "MAIL_API_KEY", "OTP_PEPPER", "Sao lưu", "Facebook", "Apple", "firebase-config.js"].filter(k=> !setup.includes(k)), "docs/DATABASE-SETUP.md thiếu mục");
       assert.match(ptJs, /fkLegalUrl\("terms\.html"\)/); assert.match(ptJs, /fkLegalUrl\("privacy-policy\.html"\)/);
     });
   },

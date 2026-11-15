@@ -15,7 +15,7 @@
 (function(G){
 "use strict";
 if(G.fkPeopleAI) return;
-const BASE = "https://thangvu030198-ai.github.io/fitkit-app/media/people-ai/";
+const BASE = "https://tapeasy.app/media/people-ai/";
 const LS_KEY = "fk_people_ai_idx";
 const LABEL = "Ảnh minh hoạ tạo bằng AI";
 /*MAP-BEGIN — sinh từ scripts/ai_people_prompts.json (replaces_pexels) */

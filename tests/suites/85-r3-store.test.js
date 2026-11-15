@@ -301,7 +301,7 @@ module.exports = {
       const len = s=> Array.from(s).length;
       for(const l of ["vi", "en"]) for(const [k, lim] of [["name", 30], ["subtitle", 30], ["shortDescription", 80], ["promotionalText", 170], ["keywords", 100]])
         assert.ok(len(M[l][k]) > 0 && len(M[l][k]) <= lim, l + "." + k + " = " + len(M[l][k]) + " > " + lim);
-      for(const u of Object.values(M.urls)) assert.match(u, /^https:\/\/thangvu030198-ai\.github\.io\/fitkit-app\/[a-z-]+\.html$/);
+      for(const u of Object.values(M.urls)) assert.match(u, /^https:\/\/tapeasy\.app\/[a-z-]+\.html$/);
       for(const f of ["privacy-policy.html", "delete-account.html", "landing.html"]) assert.ok(exists(f), "thiếu " + f);
       const pairs = [["app-store/vi", "vi"], ["app-store/en-US", "en"]];
       for(const [dir, l] of pairs){

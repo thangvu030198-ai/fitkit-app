@@ -16,9 +16,9 @@
 |---|---|---|
 | 1 | Điền `firebase-config.js` (đang để trống, app chạy **chế độ demo**) | Ở chế độ demo, PT và học viên trên 2 máy **không thấy dữ liệu của nhau**. Mô tả store đang hứa tính năng kết nối PT nên bắt buộc phải bật Firebase. |
 | 2 | Tạo tài khoản demo cho người duyệt Apple (1 PT + 1 học viên mẫu đã nối mã) | Mục *App Review Information → Sign-in required*. |
-| 3 | URL chính sách bảo mật: `https://thangvu030198-ai.github.io/fitkit-app/privacy-policy.html` | Cả hai store đều bắt buộc. |
-| 4 | URL xoá tài khoản: `https://thangvu030198-ai.github.io/fitkit-app/delete-account.html` | Google Play → Data safety → Delete account URL. |
-| 5 | URL marketing / trang giới thiệu: `https://thangvu030198-ai.github.io/fitkit-app/landing.html` | App Store → Marketing URL; Google Play → Website. |
+| 3 | URL chính sách bảo mật: `https://tapeasy.app/privacy-policy.html` | Cả hai store đều bắt buộc. |
+| 4 | URL xoá tài khoản: `https://tapeasy.app/delete-account.html` | Google Play → Data safety → Delete account URL. |
+| 5 | URL marketing / trang giới thiệu: `https://tapeasy.app/landing.html` | App Store → Marketing URL; Google Play → Website. |
 | 6 | Email hỗ trợ riêng (VD `support@…`) | Không nên dùng email cá nhân trên trang store công khai. |
 
 ---

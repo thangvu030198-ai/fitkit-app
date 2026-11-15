@@ -12,7 +12,7 @@ import argparse, json, os, shutil, subprocess, sys, urllib.request
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 BUILD = os.path.join(HERE, "build")
-PAGES = "https://thangvu030198-ai.github.io/fitkit-app/media/"
+PAGES = "https://tapeasy.app/media/"
 CLIP = "welcome/welcome-bw-720.mp4"
 
 

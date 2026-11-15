@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /media/shorts/
+Disallow: /media/intro/
+Sitemap: https://tapeasy.app/sitemap.xml

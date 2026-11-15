@@ -1345,8 +1345,8 @@ function openOnboarding(prefill, startStep){
   mark("equipment", tempProfile.equipment); mark("days", String(tempProfile.days));
   { // 12/11: ảnh NGANG (chủ thể ở giữa) cho khung ngang — ảnh dọc bị cắt mất người
     const im = document.querySelector('.onboard-step[data-step="0"] .ob-hero-img') || $('.onboard-step[data-step="0"]').querySelector("img:not(.brand-wm)");
-    if(im){ im.onerror = function(){ this.onerror = null; this.src = "https://thangvu030198-ai.github.io/fitkit-app/media/welcome/welcome-bw-poster.jpg"; this.style.objectPosition = "center 30%"; };
-      im.src = "https://thangvu030198-ai.github.io/fitkit-app/media/people-ai/ob-gym-empty.webp"; im.style.objectPosition = "center 50%"; }
+    if(im){ im.onerror = function(){ this.onerror = null; this.src = "https://tapeasy.app/media/welcome/welcome-bw-poster.jpg"; this.style.objectPosition = "center 30%"; };
+      im.src = "https://tapeasy.app/media/people-ai/ob-gym-empty.webp"; im.style.objectPosition = "center 50%"; }
   }
   showObStep(Math.max(0, Math.min(OB_STEPS - 1, Number(startStep) || 0)));
   $("#onboarding").classList.add("open");
@@ -1377,7 +1377,7 @@ function renderWorkoutScreen(){
   const idx = DAY_KEYS.indexOf(state.selectedDay);
   { // 12/11: ảnh hero theo giới tính (AI: hero-m-* / hero-f-*); lớp dưới = ảnh cũ nếu ảnh mới chưa có
     const g = (state.profile && state.profile.gender) === "female" ? "f" : "m";
-    const ai = `https://thangvu030198-ai.github.io/fitkit-app/media/people-ai/hero-${g}-${(idx % 4) + 1}.webp`;
+    const ai = `https://tapeasy.app/media/people-ai/hero-${g}-${(idx % 4) + 1}.webp`;
     $("#workout-hero").style.backgroundImage = `url('${ai}'), url('${HERO_CYCLE[idx % HERO_CYCLE.length]}')`;
   }
 

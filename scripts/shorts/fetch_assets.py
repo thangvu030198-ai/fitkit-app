@@ -11,7 +11,7 @@ import argparse, json, os, shutil, sys, urllib.request
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 OUT = os.path.join(HERE, "build", "assets")
-PAGES = "https://thangvu030198-ai.github.io/fitkit-app/media/"
+PAGES = "https://tapeasy.app/media/"
 QR = os.path.join(HERE, "..", "intro-video", "assets", "zalo-community-qr.jpg")
 
 

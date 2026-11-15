@@ -3,7 +3,7 @@
 
   pip install playwright && python -m playwright install chromium         # một lần, trên máy chủ dự án hoặc CI
   python3 scripts/store-screenshots.py                                    # phục vụ thư mục gốc repo tại localhost rồi chụp
-  python3 scripts/store-screenshots.py --url https://thangvu030198-ai.github.io/fitkit-app/   # chụp từ bản web đang chạy
+  python3 scripts/store-screenshots.py --url https://tapeasy.app/   # chụp từ bản web đang chạy
   python3 scripts/store-screenshots.py --only ios-6.7,android-phone --screens home,workout,nutrition
   python3 scripts/store-screenshots.py --dry-run                          # chỉ in kế hoạch (không cần Playwright)
 

@@ -39,7 +39,7 @@ thẻ kết loang tròn rồi đứng yên ≥ 2 s cho quét QR.
 | Input | Mặc định | Ý nghĩa |
 |---|---|---|
 | `ids` | trống = cả 14 | ví dụ `bmr-tdee,giac-ngu` |
-| `app_url` | `https://thangvu030198-ai.github.io/fitkit-app/` | chỉ để chụp app (không hiện trên video) |
+| `app_url` | `https://tapeasy.app/` | chỉ để chụp app (không hiện trên video) |
 | `voice` | `true` | giọng đọc TTS; `false` = nhạc + phụ đề |
 | `commit` | `true` | commit `media/shorts/` (tapeasy-bot, `git pull --rebase && git push`) |
 

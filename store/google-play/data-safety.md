@@ -10,7 +10,7 @@ Nguyên tắc: chỉ khai dữ liệu **rời khỏi máy** (gửi lên Firebase
 | Does your app collect or share any of the required user data types? | **Yes** |
 | Is all of the user data collected by your app encrypted in transit? | **Yes** |
 | Which of the following methods of account creation does your app support? | **Username and password** + **OAuth** (Google, Apple) |
-| Delete account URL | `https://thangvu030198-ai.github.io/fitkit-app/delete-account.html` |
+| Delete account URL | `https://tapeasy.app/delete-account.html` |
 | Do you provide a way for users to request that some or all of their data is deleted, without requiring them to delete their account? | **Yes** — cùng URL trên (mục “Xoá một phần dữ liệu”) |
 | Has your app successfully completed an independent security review (MASA)? | No (không bắt buộc) |
 | Committed to follow the Play Families Policy? | Không áp dụng — không nhắm trẻ em |

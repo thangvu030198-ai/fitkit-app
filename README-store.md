@@ -50,7 +50,7 @@ Nút "Tiếp tục với Google / Facebook" đã có trên màn Đăng nhập & 
 
 **Google (≈5 phút)**
 1. Firebase Console → Authentication → Sign-in method → **Google** → Enable → chọn email hỗ trợ → Save.
-2. Authentication → Settings → **Authorized domains**: thêm tên miền web của app (VD `thangvu030198-ai.github.io`).
+2. Authentication → Settings → **Authorized domains**: thêm tên miền web của app (VD `tapeasy.app`).
 
 **Facebook (≈15 phút)**
 1. Vào developers.facebook.com → My Apps → Create App → loại "Consumer" (hoặc "Authenticate and request data from users with Facebook Login").
@@ -146,7 +146,7 @@ Icon store: `assets/icon-1024.png` (App Store 1024, không alpha) và `assets/ic
 `https://<tên-miền-của-bạn>/delete-account.html` (file `delete-account.html` đã có trong repo; bật GitHub Pages hoặc Firebase Hosting để có link). Trang cho phép đăng nhập rồi xoá vĩnh viễn tài khoản + dữ liệu, và hướng dẫn xoá trong app.
 
 File `privacy-policy.html` đã có sẵn. Cách lấy link miễn phí: repo GitHub → **Settings → Pages → Source: Deploy from a branch → main / (root) → Save**. Link sẽ là:
-`https://thangvu030198-ai.github.io/fitkit-app/privacy-policy.html`
+`https://tapeasy.app/privacy-policy.html`
 
 Email liên hệ trong file đang là email của bạn. Có thể đổi sang email hỗ trợ riêng trước khi nộp.
 

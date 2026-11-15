@@ -8,7 +8,7 @@ Dùng lại NGUYÊN bộ chụp của intro (scripts/intro-video/capture_app.py 
   - --only = các shot mà series.json dùng (chuỗi shot vẫn chạy đủ để giữ trạng thái app)
 Ra: build/app/shots/<id>/*.jpg + build/app/manifest.js/.json (+ build/app/qa/safe/report.txt). Lỗi vùng an toàn chỉ cảnh báo.
 
-  python3 scripts/shorts/capture.py --url https://thangvu030198-ai.github.io/fitkit-app/ [--ids bmr-tdee,demo-ghi-set]
+  python3 scripts/shorts/capture.py --url https://tapeasy.app/ [--ids bmr-tdee,demo-ghi-set]
 """
 import argparse, asyncio, importlib.util, json, os, sys
 
@@ -33,7 +33,7 @@ def shots_needed(series, ids):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--url", default="https://thangvu030198-ai.github.io/fitkit-app/")
+    ap.add_argument("--url", default="https://tapeasy.app/")
     ap.add_argument("--scale", default="3")
     ap.add_argument("--ids", default="")
     ap.add_argument("--list", action="store_true", help="chỉ in danh sách shot cần chụp")

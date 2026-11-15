@@ -786,7 +786,7 @@ function setRead(id, on){
   return on;
 }
 function shareUrl(id){
-  let base = "https://thangvu030198-ai.github.io/fitkit-app/";
+  let base = "https://tapeasy.app/";
   try{ if(G.location && /^https?:$/.test(G.location.protocol) && G.location.host) base = G.location.origin + G.location.pathname; }catch(e){}
   return base + "?kb=" + encodeURIComponent(cleanId(id));
 }

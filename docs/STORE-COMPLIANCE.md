@@ -147,7 +147,7 @@ Từ 31/08/2026: app mới & cập nhật phải target **API 36**. `build-andro
 - App có thu thập hoặc chia sẻ loại dữ liệu người dùng bắt buộc nào không? → **Có**
 - Mọi dữ liệu được mã hoá khi truyền? → **Có** (HTTPS: Firebase, các API)
 - Cách tạo tài khoản → **Tên người dùng + mật khẩu; OAuth (Google, Facebook, Apple)**
-- Người dùng có thể yêu cầu xoá dữ liệu? → **Có** — Delete account URL: `https://thangvu030198-ai.github.io/fitkit-app/delete-account.html`
+- Người dùng có thể yêu cầu xoá dữ liệu? → **Có** — Delete account URL: `https://tapeasy.app/delete-account.html`
 - Xoá một phần dữ liệu mà không xoá tài khoản? → **Có** (xoá dữ liệu sức khoẻ, đặt lại dữ liệu trên máy, PT xoá form học viên) — dùng cùng URL hoặc email hỗ trợ
 - Tuân thủ Families Policy? → Không áp dụng (không nhắm trẻ em)
 - Đánh giá bảo mật độc lập (MASA)? → Không

@@ -9,7 +9,7 @@ const path = require("path");
 const { assert } = require("../lib/framework");
 const ROOT = path.resolve(__dirname, "..", "..");
 const read = f=> fs.readFileSync(path.join(ROOT, f), "utf8");
-const BASE = "https://thangvu030198-ai.github.io/fitkit-app/media/people-ai/";
+const BASE = "https://tapeasy.app/media/people-ai/";
 /* Ảnh Pexels đã kiểm kê là KHÔNG có người (món ăn / phong cảnh / đồ vật) — giữ nguyên, không cần ảnh AI */
 const NOT_PEOPLE = ["30635703", "30635714", "16211481", "1640771", "3850841", "760719"];
 const BRANDS = /\b(nike|adidas|puma|reebok|under ?armou?r|lululemon|gymshark|asics|new balance|fila|decathlon|domyos|rogue|eleiko|technogym|life ?fitness|concept ?2|peloton|hyrox|crossfit|garmin|apple watch|strava|zumba|coca|pepsi|red ?bull|gatorade|tapeasy)\b/i;

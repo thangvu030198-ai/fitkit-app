@@ -32,7 +32,7 @@ pip install playwright && python -m playwright install chromium     # một lầ
 python3 scripts/store-screenshots.py --dry-run                       # xem kế hoạch + kích thước
 python3 scripts/store-screenshots.py                                 # chụp mọi preset từ mã trong repo (tự mở máy chủ localhost)
 python3 scripts/store-screenshots.py --only ios-6.7,android-phone --screens home,workout,nutrition,coach
-python3 scripts/store-screenshots.py --url https://thangvu030198-ai.github.io/fitkit-app/    # chụp từ bản web đang chạy
+python3 scripts/store-screenshots.py --url https://tapeasy.app/    # chụp từ bản web đang chạy
 python3 scripts/store-screenshots.py --color-scheme light --out store/screenshots/out-light
 ```
 

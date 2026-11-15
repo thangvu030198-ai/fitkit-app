@@ -42,7 +42,7 @@ function recipeMatchesTag(r, tag){
 }
 
 /* ---- Ảnh thật đã tách nền (media/food, phát qua jsDelivr). Chưa có ảnh → dùng emoji ---- */
-const FOOD_IMG_BASE = "https://thangvu030198-ai.github.io/fitkit-app/media/food/";
+const FOOD_IMG_BASE = "https://tapeasy.app/media/food/";
 let FOOD_IMG = {};
 /* QN-13: ảnh Pixabay tự chọn bị SAI món (đã duyệt tay 11/2026: món chay hiện thịt/trứng, đậu đen/whey hiện cà phê, gỏi cuốn hiện
    chả giò chiên, cơm cá ngừ hiện sashimi sống…) → bỏ ánh xạ, hiện emoji. Khoá = id món → mã ảnh Pixabay (px) sai: khi chạy lại
@@ -66,7 +66,7 @@ function nuCleanImgIndex(idx){
   return out;
 }
 /* Ảnh món tạo bằng AI (media/food-ai, workflow media-food-ai.yml) — đúng món, cùng phong cách; ƯU TIÊN hơn ảnh Pixabay. */
-const FOOD_AI_BASE = "https://thangvu030198-ai.github.io/fitkit-app/media/food-ai/";
+const FOOD_AI_BASE = "https://tapeasy.app/media/food-ai/";
 let FOOD_IMG_AI = {};
 function nuCleanAiIndex(idx){
   const out = {};

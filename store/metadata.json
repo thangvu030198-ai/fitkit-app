@@ -8,10 +8,10 @@
   "containsAds": false,
   "inAppPurchases": false,
   "urls": {
-    "privacyPolicy": "https://thangvu030198-ai.github.io/fitkit-app/privacy-policy.html",
-    "deleteAccount": "https://thangvu030198-ai.github.io/fitkit-app/delete-account.html",
-    "marketing": "https://thangvu030198-ai.github.io/fitkit-app/landing.html",
-    "support": "https://thangvu030198-ai.github.io/fitkit-app/landing.html"
+    "privacyPolicy": "https://tapeasy.app/privacy-policy.html",
+    "deleteAccount": "https://tapeasy.app/delete-account.html",
+    "marketing": "https://tapeasy.app/landing.html",
+    "support": "https://tapeasy.app/landing.html"
   },
   "supportEmail": "thangvu030198@gmail.com",
   "copyright": "© 2026 TapEasy",

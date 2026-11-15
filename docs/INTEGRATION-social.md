@@ -41,7 +41,7 @@
 ```
 (Tăng `CACHE` trong `sw.js` lên 1 bậc.)
 
-- Link mời trong QR: mặc định `location.origin + đường dẫn hiện tại` (bản web) hoặc `https://thangvu030198-ai.github.io/fitkit-app/` (bản app). Đổi bằng `window.TAPEASY_JOIN_URL = "https://…/"` đặt trước module. App mở với `?join=MÃ` → tự hiện sheet xem trước PT (chưa đăng nhập thì giữ mã, mở sau khi đăng nhập). Deep link trong app native (Capacitor App Links) chưa cấu hình.
+- Link mời trong QR: mặc định `location.origin + đường dẫn hiện tại` (bản web) hoặc `https://tapeasy.app/` (bản app). Đổi bằng `window.TAPEASY_JOIN_URL = "https://…/"` đặt trước module. App mở với `?join=MÃ` → tự hiện sheet xem trước PT (chưa đăng nhập thì giữ mã, mở sau khi đăng nhập). Deep link trong app native (Capacitor App Links) chưa cấu hình.
 
 ## 2. Điểm vào & ghi đè (luôn gọi lại hàm cũ, bọc try/catch)
 

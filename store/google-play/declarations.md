@@ -2,7 +2,7 @@
 
 | Mục | Trả lời |
 |---|---|
-| **Privacy policy** | `https://thangvu030198-ai.github.io/fitkit-app/privacy-policy.html` (phải mở được, không còn chữ `[ĐIỀN …]`) |
+| **Privacy policy** | `https://tapeasy.app/privacy-policy.html` (phải mở được, không còn chữ `[ĐIỀN …]`) |
 | **Ads** | *No, my app does not contain ads* |
 | **App access** | *All or some functionality is restricted* → thêm 2 bộ đăng nhập: `PT demo` và `Học viên demo` (email + mật khẩu; ghi chú tiếng Anh như `store/app-store/review-notes-en.md` §Accounts). Ghi rõ: “No 2FA. The app can also be used without an account (tap ‘Dùng ngay, không cần tài khoản’)”. |
 | **Content rating** (IARC) | Category: *Utility, Productivity, Communication, or Other*. Violence/Sexuality/Language/Controlled substance/Gambling: **No**. *Does the app allow users to interact or exchange content?* **Yes** (chat PT ↔ học viên, bình luận, ảnh/clip sự kiện). *Does the app share the user’s current physical location?* **No**. *Does the app allow purchase of digital goods?* **No**. Kết quả dự kiến: Everyone / 3+ kèm nhãn “Users Interact”. |
@@ -18,7 +18,7 @@
 | **Photo and video permissions** | App không xin `READ_MEDIA_IMAGES/VIDEO` (dùng trình chọn ảnh hệ thống) → không phải khai. |
 | **Exact alarm / Foreground service / All files access** | Không dùng → không phải khai. |
 | **Category · Tags** | Health & Fitness · Workout tracker, Calorie counter, Personal trainer, Diet & nutrition |
-| **Contact details** | Email hỗ trợ `thangvu030198@gmail.com` · Website `https://thangvu030198-ai.github.io/fitkit-app/landing.html` |
+| **Contact details** | Email hỗ trợ `thangvu030198@gmail.com` · Website `https://tapeasy.app/landing.html` |
 | **Store settings → External marketing** | Tuỳ chọn |
 
 ## Quyền Android trong bản build (đối chiếu Play Console → App bundle explorer → Permissions)

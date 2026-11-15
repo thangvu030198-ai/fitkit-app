@@ -59,7 +59,7 @@ const KCAL_PREG = [0, 340, 452];          // IOM 2005 — tam cá nguyệt 1/2/3
    > 6 tháng +400 kcal (IOM 2005). Bản cũ luôn +330 (IOM có trừ 170 kcal từ mỡ dự trữ — chỉ đúng khi mẹ đang giảm cân). */
 const KCAL_LACT = [500, 400];
 const DAY_MS = 86400000;
-const PRIVACY_URL = "https://thangvu030198-ai.github.io/fitkit-app/privacy-policy.html";
+const PRIVACY_URL = "https://tapeasy.app/privacy-policy.html";
 /* Mở link ngoài: app native dùng @capacitor/browser (không rời WebView của app), web mở tab mới */
 function openExternal(url){
   try{

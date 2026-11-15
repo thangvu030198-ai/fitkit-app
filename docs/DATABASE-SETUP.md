@@ -42,7 +42,7 @@ Vào **Build → Authentication → Get started → tab Sign-in method**, bật 
 Tiếp theo, tab **Settings** của Authentication:
 
 - **User actions → Email enumeration protection**: để **bật** (mặc định) — chống dò email đã đăng ký.
-- **Authorized domains** → **Add domain**: thêm `thangvu030198-ai.github.io` (bản web). `localhost` có sẵn để thử trên máy.
+- **Authorized domains** → **Add domain**: thêm `tapeasy.app` và `www.tapeasy.app` (bản web; `thangvu030198-ai.github.io` giữ lại cho link cũ). `localhost` có sẵn để thử trên máy.
 - **Templates** → *Password reset*: đổi ngôn ngữ sang **Tiếng Việt**, đổi tên người gửi thành `TapEasy`.
 
 ## 3. Tạo Firestore (cơ sở dữ liệu)
@@ -244,7 +244,7 @@ Khi vượt hạn mức ở gói Spark, app báo: *"Hệ thống đang quá tả
 
 - [ ] `firebase-config.js` đã điền; web mở lên không còn chữ "Bản thử nghiệm".
 - [ ] Firestore vùng `asia-southeast1`; đã deploy `firestore:rules` + `firestore:indexes` (+ `storage`, `functions` nếu dùng).
-- [ ] Authorized domains có `thangvu030198-ai.github.io`.
+- [ ] Authorized domains có `tapeasy.app`, `www.tapeasy.app`.
 - [ ] Thử đủ: đăng ký email → nhận thư xác minh → đăng xuất → quên mật khẩu (nhận link) → đăng nhập Google → Tài khoản liên kết (thêm/gỡ) → bật Sao lưu → đăng nhập máy khác thấy dữ liệu → Xuất dữ liệu → Xoá tài khoản (kiểm tra Firestore không còn `users/{mã}`).
 - [ ] Android: đủ SHA-1 + SHA-256 của **cả** khoá tải lên và khoá Play App Signing; secret `GOOGLE_SERVICES_JSON_BASE64` mới nhất.
 - [ ] iOS: secret `GoogleService-Info.plist`; Sign in with Apple bật trong Identifier.

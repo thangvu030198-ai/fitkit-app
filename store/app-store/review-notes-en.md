@@ -20,7 +20,7 @@ HOW TO TEST THE MAIN FLOWS
 - Nutrition: Dinh dưỡng tab → add a food → daily calories/macros update.
 - Trainer–client: sign in as the trainer → PT tab → open the demo client → assign a workout or send a message; sign in as the client on another device to see it.
 - Report / block (Guideline 1.2): on any public post, comment, review or trainer profile tap “⋯” → “Báo cáo” (Report) or “Chặn” (Block). Reports go to our moderation queue and are handled within 24 hours; offending content is removed and the user is banned. Terms forbidding objectionable content are accepted at sign-up.
-- Account deletion (5.1.1(v)): Hồ sơ (Profile) → Tài khoản → “Xoá tài khoản” deletes the account and all cloud data immediately (Sign in with Apple tokens are revoked). Also available at https://thangvu030198-ai.github.io/fitkit-app/delete-account.html
+- Account deletion (5.1.1(v)): Hồ sơ (Profile) → Tài khoản → “Xoá tài khoản” deletes the account and all cloud data immediately (Sign in with Apple tokens are revoked). Also available at https://tapeasy.app/delete-account.html
 
 SIGN-IN OPTIONS (Guideline 4.8)
 Email/password, Sign in with Apple and Google. Sign in with Apple is offered wherever Google is offered and supports “Hide My Email”.

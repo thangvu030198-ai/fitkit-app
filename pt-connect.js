@@ -200,7 +200,7 @@ const QR = (()=>{
 
 /* Link mời: mở web app với ?join=MÃ (camera điện thoại quét được) */
 function joinUrl(code){
-  let base = "https://thangvu030198-ai.github.io/fitkit-app/";
+  let base = "https://tapeasy.app/";
   try{ if(/^https?:$/.test(location.protocol) && !/localhost|127\.0\.0\.1|test\.local/.test(location.host)) base = location.origin + location.pathname.replace(/[^/]*$/, ""); }catch(e){}
   if(W.TAPEASY_JOIN_URL) base = W.TAPEASY_JOIN_URL;
   return `${base}?join=${encodeURIComponent(code)}`;

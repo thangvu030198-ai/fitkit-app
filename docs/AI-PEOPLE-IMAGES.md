@@ -8,7 +8,7 @@ Mục tiêu: thay mọi ảnh tĩnh **có con người** lấy từ kho ảnh ng
 
 - Danh sách prompt: `scripts/ai_people_prompts.json` (sinh ảnh: `scripts/gen_ai_images.py`, workflow `.github/workflows/media-people-ai.yml`).
 - Ảnh ra: `media/people-ai/<id>.webp` (cạnh dài 1280) + `<id>-sm.webp` (cạnh dài 480) + `index.json` + `_review/contact-XX.jpg`.
-- Gắn vào app: `people-ai.js` (nạp ngay sau `data.js`). Bảng `Pexels id → id ảnh AI`; `fkPeopleImg(urlCu, small)` trả URL `https://thangvu030198-ai.github.io/fitkit-app/media/people-ai/<id>(-sm).webp` khi `index.json` có id đó, ngược lại trả URL cũ. Khi index có ảnh: ghi đè `IMG.*`, `EXERCISES[*].img`, `HERO_CYCLE`, và đổi ảnh đang/ sắp hiển thị (thẻ `<img>`, `data-tm-src`, `background-image`) — dữ liệu seed giữ nguyên URL Pexels làm dự phòng; ảnh AI lỗi tải → tự quay về URL cũ.
+- Gắn vào app: `people-ai.js` (nạp ngay sau `data.js`). Bảng `Pexels id → id ảnh AI`; `fkPeopleImg(urlCu, small)` trả URL `https://tapeasy.app/media/people-ai/<id>(-sm).webp` khi `index.json` có id đó, ngược lại trả URL cũ. Khi index có ảnh: ghi đè `IMG.*`, `EXERCISES[*].img`, `HERO_CYCLE`, và đổi ảnh đang/ sắp hiển thị (thẻ `<img>`, `data-tm-src`, `background-image`) — dữ liệu seed giữ nguyên URL Pexels làm dự phòng; ảnh AI lỗi tải → tự quay về URL cũ.
 - Credit: nơi trước ghi "Pexels" cho ảnh người (Tìm PT, Sự kiện/Khoảnh khắc) hiện **"Ảnh minh hoạ tạo bằng AI"** khi ảnh AI đang được dùng.
 
 ## Tổng hợp
