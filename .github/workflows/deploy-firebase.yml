@@ -6,6 +6,8 @@ name: Firebase — đẩy rules + Cloud Functions (database thật)
 #   FIREBASE_SERVICE_ACCOUNT  : nội dung JSON khoá service account (Firebase Console → Project settings → Service accounts → Generate new private key)
 #   OWNER_BOOTSTRAP_CODE      : mã ≥ 12 ký tự để nhận quyền Chủ sở hữu lần đầu trong app (chỉ cần khi functions=true)
 #   MAIL_API_KEY              : khoá dịch vụ gửi mail (Resend / Brevo / SendGrid) — chỉ cần khi bật OTP email
+#   VISION_API_KEY            : khoá AI đọc ảnh cho "Chụp ảnh tính calo" (mặc định Google Gemini — lấy tại aistudio.google.com). Đổi nhà cung cấp:
+#                               biến repo VISION_API_BASE (gốc API tương thích OpenAI) + VISION_MODEL
 #   MAIL_FROM                 : địa chỉ gửi đã xác minh, vd "TapEasy <no-reply@ten-mien.vn>" — chỉ cần khi bật OTP email
 # Không secret nào được in ra log. CHƯA chạy thử lần nào (project đang ở gói Spark) — lần đầu nếu đỏ, gửi log để chỉnh.
 on:
@@ -48,6 +50,7 @@ jobs:
         env:
           OWNER_BOOTSTRAP_CODE: ${{ secrets.OWNER_BOOTSTRAP_CODE }}
           MAIL_API_KEY: ${{ secrets.MAIL_API_KEY }}
+          VISION_API_KEY: ${{ secrets.VISION_API_KEY }}
         run: |
           if [ -z "$OWNER_BOOTSTRAP_CODE" ] || [ "${#OWNER_BOOTSTRAP_CODE}" -lt 12 ]; then echo "::error::Thiếu secret OWNER_BOOTSTRAP_CODE (≥ 12 ký tự)"; exit 1; fi
           put(){ printf '%s' "$2" > "$RUNNER_TEMP/s.txt"; firebase functions:secrets:set "$1" --data-file "$RUNNER_TEMP/s.txt" --project "$PROJECT_ID" --force >/dev/null; rm -f "$RUNNER_TEMP/s.txt"; echo "đã đặt $1"; }
@@ -58,11 +61,15 @@ jobs:
           # chưa có khoá mail → đặt giá trị giữ chỗ (function vẫn deploy; OTP email trả lỗi 'chưa cấu hình' cho tới khi có khoá thật)
           if [ -n "$MAIL_API_KEY" ]; then put MAIL_API_KEY "$MAIL_API_KEY"; else has MAIL_API_KEY || put MAIL_API_KEY "unset"; fi
           has APPLE_PRIVATE_KEY || put APPLE_PRIVATE_KEY "unset"
+          # khoá AI đọc ảnh món ăn (chụp ảnh tính calo) — chưa có thì đặt giữ chỗ, app báo "chưa cấu hình"
+          if [ -n "$VISION_API_KEY" ]; then put VISION_API_KEY "$VISION_API_KEY"; else has VISION_API_KEY || put VISION_API_KEY "unset"; fi
       - name: Tham số Functions (không bí mật)
         if: ${{ inputs.functions == 'true' }}
         env:
           MAIL_FROM: ${{ secrets.MAIL_FROM }}
           MAIL_PROVIDER: ${{ inputs.mail_provider || 'resend' }}
+          VISION_API_BASE: ${{ vars.VISION_API_BASE || 'https://generativelanguage.googleapis.com/v1beta/openai' }}
+          VISION_MODEL: ${{ vars.VISION_MODEL || 'gemini-2.5-flash' }}
         run: |
           # Firebase CLI ở chế độ tự động KHÔNG tự lấy giá trị mặc định → ghi ĐỦ mọi tham số defineString
           {
@@ -75,6 +82,8 @@ jobs:
             echo "APPLE_KEY_ID=unset"
             echo "APPLE_BUNDLE_ID=vn.thangvu.fitkit"
             echo "APPLE_SERVICES_ID=vn.thangvu.fitkit.web"
+            echo "VISION_API_BASE=$VISION_API_BASE"
+            echo "VISION_MODEL=$VISION_MODEL"
           } > functions/.env
       - name: Đẩy Cloud Functions
         if: ${{ inputs.functions == 'true' }}
