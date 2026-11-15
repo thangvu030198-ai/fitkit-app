@@ -434,7 +434,8 @@ function saveLog(res, oil, meal, sess){
 function mountEntry(){
   try{
     css();
-    const sec = D.getElementById("meal-sections"); if(!sec || D.getElementById("fk-scan-entry")) return;
+    if(D.getElementById("fk-scan-entry")) return;
+    const sec = D.querySelector("#nu-content .nu-meal") || D.getElementById("meal-sections"); if(!sec) return;      // màn Dinh dưỡng mới (nutrition.js) vẽ vào #nu-content
     const b = D.createElement("button"); b.type = "button"; b.className = "fk-scan-entry"; b.id = "fk-scan-entry";
     b.innerHTML = `<span class="ic">${ic("photo_camera")}</span><span style="flex:1;min-width:0;"><b>Chụp ảnh tính calo</b><span class="s">AI nhận diện món và ước lượng khẩu phần — bạn chỉnh lại trước khi lưu</span></span>${ic("chevron_right")}`;
     b.addEventListener("click", ()=> open());
@@ -443,4 +444,7 @@ function mountEntry(){
 }
 G.FKFoodScan = { __v:1, open, close, compute, clean, per100, quality, prompt, parseJson, catalog, mealByClock, analyze, mountEntry, REFS, TIPS, OIL_KCAL };
 try{ if(D){ if(D.readyState === "loading") D.addEventListener("DOMContentLoaded", mountEntry); else mountEntry(); } }catch(e){}
+/* Màn Dinh dưỡng vẽ lại toàn bộ mỗi lần mở → chèn lại nút sau mỗi lần vẽ */
+try{ if(typeof renderNutritionScreen === "function" && !renderNutritionScreen.__fkScan){ const _r = renderNutritionScreen;
+  renderNutritionScreen = function(){ const o = _r.apply(this, arguments); try{ mountEntry(); }catch(e){} return o; }; renderNutritionScreen.__fkScan = true; } }catch(e){}
 })(typeof window !== "undefined" ? window : globalThis);

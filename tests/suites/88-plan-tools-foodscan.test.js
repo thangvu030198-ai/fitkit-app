@@ -141,6 +141,9 @@ module.exports = {
       const sw = read("sw.js"); assert.ok(sw.includes('"./plan-tools.js"') && sw.includes('"./food-scan.js"')); assert.ok(+(/const CACHE = "fitkit-v(\d+)"/.exec(sw)[1]) >= 32);
       assert.match(read("scripts/prepare-www.sh"), /plan-tools\.js food-scan\.js/);
       assert.match(read("privacy-policy.html"), /id="foodscan"/);
+      const fs2 = read("food-scan.js");      // màn Dinh dưỡng (nutrition.js) vẽ vào #nu-content và vẽ lại toàn bộ → nút phải bám vào đó và được chèn lại
+      assert.match(fs2, /D\.querySelector\("#nu-content \.nu-meal"\) \|\| D\.getElementById\("meal-sections"\)/);
+      assert.match(fs2, /renderNutritionScreen = function\(\)\{ const o = _r\.apply\(this, arguments\); try\{ mountEntry\(\); \}/);
     });
   }
 };
