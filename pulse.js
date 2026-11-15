@@ -20,6 +20,7 @@
 (function(G){
 "use strict";
 if(G.FKPulse && G.FKPulse.__v) return;
+const CL = ()=>{ try{ if(typeof cloud !== "undefined" && cloud) return cloud; }catch(e){} return G.cloud || null; };   // cloud.js khai báo `const cloud` (không gắn vào window)
 
 const KEY = "fk_pulse_v1";            // { vid, first:"YYYY-MM-DD", src, sent:{ d, w, m, tags:[…] } }
 const DEMO_KEY = "fk_pulse_demo";     // chế độ demo: mô phỏng trên máy để bảng quản trị demo có số liệu
@@ -64,8 +65,8 @@ function platform(){
   return "web";
 }
 function lang(){ try{ return G.FK_I18N && G.FK_I18N.lang === "en" ? "en" : "vi"; }catch(e){ return "vi"; } }
-function signedIn(){ try{ return !!(G.cloud && G.cloud.user && G.cloud.user.uid); }catch(e){ return false; } }
-function mode(){ try{ return G.cloud && G.cloud.mode || "demo"; }catch(e){ return "demo"; } }
+function signedIn(){ try{ return !!(CL() && CL().user && CL().user.uid); }catch(e){ return false; } }
+function mode(){ try{ return CL() && CL().mode || "demo"; }catch(e){ return "demo"; } }
 
 function state(){
   const s = readJ(KEY);
@@ -190,9 +191,9 @@ function start(){
   const wrapOpen = (host, name, scr)=>{ try{ const h = G[host]; if(!h || typeof h[name] !== "function" || h[name].__pulse) return; const old = h[name];
     const f = function(){ try{ mark("screen_view", { screen: scr }); }catch(e){} return old.apply(this, arguments); }; f.__pulse = true; h[name] = f; }catch(e){} };
   wrapOpen("TECommunity", "open", "community"); wrapOpen("TapShop", "open", "shop"); wrapOpen("TapEv", "open", "events"); wrapOpen("TE_FINDPT", "open", "findpt");
-  try{ const c = G.cloud; if(c && typeof c.signUp === "function" && !c.signUp.__pulse){ const old = c.signUp;
+  try{ const c = CL(); if(c && typeof c.signUp === "function" && !c.signUp.__pulse){ const old = c.signUp;
     const f = function(){ const r = old.apply(this, arguments); Promise.resolve(r).then(()=> feature("signup")).catch(()=>{}); return r; }; f.__pulse = true; c.signUp = f; } }catch(e){}
-  try{ if(G.cloud && typeof G.cloud.onAuth === "function") G.cloud.onAuth(()=>{ setTimeout(()=> beat(false), 1500); }); }catch(e){}
+  try{ if(CL() && typeof CL().onAuth === "function") CL().onAuth(()=>{ setTimeout(()=> beat(false), 1500); }); }catch(e){}
   try{ G.document.addEventListener("visibilitychange", ()=>{ if(G.document.visibilityState === "visible") beat(false); }); }catch(e){}
   setTimeout(()=> beat(true), 3500);                       // sau khi cloud.init() kịp xong
   setInterval(()=> beat(false), HB_MS);

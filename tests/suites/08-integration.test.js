@@ -227,7 +227,7 @@ module.exports = {
     /* ---------- 4. Đóng gói ---------- */
     t.test("sw.js: cache đủ mọi JS/CSS cục bộ của index.html + logo; đổi tên cache; lưu từng file (1 file 404 không làm hỏng cả cache)", ()=>{
       const sw = read("sw.js"), html = read("index.html");
-      assert.ok(!/fitkit-v3/.test(sw), "chưa tăng tên cache");
+      assert.ok(!/"fitkit-v3"/.test(sw), "chưa tăng tên cache");   // khớp đúng "fitkit-v3" (không bắt nhầm v30, v31…)
       const local = [...html.matchAll(/(?:src|href)="([^"#:]+\.(?:js|css))"/g)].map(m=> m[1]);
       expectNone(local.filter(f=> !sw.includes(`"./${f}"`)), "sw.js thiếu");
       assert.match(sw, /ASSETS\.map\(u=>[\s\S]{0,200}c\.put\(u, res\)[\s\S]{0,40}\.catch/);   // R3: lưu từng file bằng fetch(cache:reload)+put

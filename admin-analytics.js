@@ -16,6 +16,7 @@
 (function(G){
 "use strict";
 if(G.TE_ADMIN_ANALYTICS && G.TE_ADMIN_ANALYTICS.__v) return;
+const CL = ()=>{ try{ if(typeof cloud !== "undefined" && cloud) return cloud; }catch(e){} return G.cloud || null; };   // cloud.js khai báo `const cloud` (không gắn vào window)
 
 const DAY_MS = 86400000, TZ_MS = 7 * 3600000, ONLINE_MS = 150000;
 const PLATS = ["web", "android", "ios"], LANGS = ["vi", "en"];
@@ -43,7 +44,7 @@ const weekOf = d=>{ const x = new Date(d + "T00:00:00Z"); return addDays(d, -((x
 const prevMonth = m=>{ const y = +m.slice(0, 4), mo = +m.slice(5, 7); return mo === 1 ? `${y - 1}-12` : `${y}-${String(mo - 1).padStart(2, "0")}`; };
 const fd = d=> `${d.slice(8, 10)}/${d.slice(5, 7)}`;
 const can = p=>{ try{ return !!(G.TE_RBAC && G.TE_RBAC.can(p)); }catch(e){ return false; } };
-const isFb = ()=>{ try{ return G.cloud && G.cloud.mode === "firebase"; }catch(e){ return false; } };
+const isFb = ()=>{ try{ return CL() && CL().mode === "firebase"; }catch(e){ return false; } };
 
 /* ---------------- 1. Nhãn cần đếm + dựng mô hình (hàm thuần) ---------------- */
 function frame(now){
@@ -149,7 +150,7 @@ async function fetchModel(force){
   const tags = wanted(now);
   let counts = {};
   if(isFb()){
-    const r = await G.cloud.fn("adminAnalytics", { tags });
+    const r = await CL().fn("adminAnalytics", { tags });
     counts = (r && r.counts) || {};
   } else {
     const act = (G.FKPulse && G.FKPulse.demoStore().activity) || {};

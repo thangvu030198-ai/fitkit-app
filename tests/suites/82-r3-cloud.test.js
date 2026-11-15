@@ -343,6 +343,29 @@ module.exports = {
     });
 
     /* ================= C. SAO LƯU & ĐỒNG BỘ ================= */
+    t.test("C2 · Thực đơn đã lập (fitkit_np_plans_v1) đi kèm bản sao lưu → máy khác thấy đúng thực đơn; không lọt vào state", async ()=>{
+      const NP = { v:1, sig:"sigTEST", keys:["k1", "k2"], plans:{ k1:{ m:[["pho-bo", 350]] }, k2:{ m:[["com-ga", 300]] } } };
+      const A = await t.app({ state: { onboarded:true, authDone:true } });
+      await A.ev(`cloud.signUp("np@x.vn", "matkhau1", "NP")`);
+      await A.ev(`cloud.consent.record({ terms:true, age:true, health:true }, "signup")`);
+      A.localStorage.setItem("fitkit_np_plans_v1", JSON.stringify(NP));
+      A.run(`state.waterLog["2026-11-12"] = 1; saveState();`);
+      await A.ev("cloud.sync.flush()");
+      const raw = A.localStorage.getItem("fitkit_cloud_demo_state_v1");
+      assert.ok(raw.includes("_npPlans") && raw.includes("pho-bo"), "thực đơn có trong bản sao lưu tài khoản");
+      assert.equal(A.ev("'_npPlans' in state"), false, "không ghi vào state");
+      const B = await t.app({ state: false }); copyServer(A, B);
+      B.localStorage.setItem("fitkit_np_plans_v1", JSON.stringify({ v:1, sig:"sigTEST", keys:["k9"], plans:{ k9:{ m:[["xoi", 200]] } } }));
+      await B.ev(`cloud.signIn("np@x.vn", "matkhau1")`); await B.ev("cloud.consent.load()");
+      await B.ev("cloud.sync.syncNow()");
+      const got = JSON.parse(B.localStorage.getItem("fitkit_np_plans_v1"));
+      assert.deepEqual(Object.keys(got.plans).sort(), ["k1", "k2", "k9"], "gộp: thực đơn tài khoản + thực đơn chỉ có trên máy B");
+      assert.equal(got.plans.k1.m[0][0], "pho-bo");
+      assert.equal(B.ev("'_npPlans' in state"), false);
+      assert.equal(B.ev(`state.waterLog["2026-11-12"]`), 1);
+      assert.match(ptJs, /getState: fkSyncGetState, applyState: fkSyncApplyState/);
+    });
+
     t.test("C · Sao lưu theo tài khoản → đăng nhập MÁY KHÁC khôi phục đủ; khoá API / dữ liệu theo máy KHÔNG lên cloud", async ()=>{
       const A = await t.app({ state: { onboarded:true, authDone:true, workoutLog: { "2026-11-10": { dayKey:"T3", completedExerciseIds:["x1"], finishedAt: 5 } }, finishedDates: ["2026-11-10"] } });
       await A.ev(`cloud.signUp("sync@x.vn", "matkhau1", "Sync")`);

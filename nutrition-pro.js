@@ -441,11 +441,16 @@ function npStorePut(key, plan){
   if(!_storeDirty){ _storeDirty = true; npIdle(npStoreSave); }
 }
 function npStoreSave(){
+  const was = _storeDirty;
   _storeDirty = false;
   const ls = npLS(); if(!ls || !_store) return;
+  /* 15/11: thực đơn mới → báo đồng bộ tài khoản (pt.js gửi kèm "_npPlans"); chỉ khi thật sự có thay đổi */
+  if(was){ try{ const C = (typeof cloud !== "undefined" && cloud) || G.cloud; if(C && C.sync && typeof C.sync.markDirty === "function") setTimeout(()=>{ try{ C.sync.markDirty(); }catch(e){} }, 0); }catch(e){} }
   try{ ls.setItem(NP_STORE_KEY, JSON.stringify(_store)); }
   catch(e){ try{ _store.keys.splice(0, Math.ceil(_store.keys.length/2)).forEach(k=> delete _store.plans[k]); ls.setItem(NP_STORE_KEY, JSON.stringify(_store)); }catch(_){} }   // bộ nhớ đầy → bỏ nửa cũ
 }
+/* đồng bộ tài khoản vừa ghi bản thực đơn mới vào localStorage → bỏ bản đang giữ trong bộ nhớ để lần sau đọc lại (không xoá dữ liệu) */
+function npStoreReload(){ _store = null; _storeDirty = false; _planCache.clear(); }
 function npStoreClear(){ _store = null; _planCache.clear(); try{ const ls = npLS(); if(ls) ls.removeItem(NP_STORE_KEY); }catch(e){} }
 /* đã có thực đơn (trong bộ nhớ / bộ nhớ bền) cho (hồ sơ, ngày, tuỳ chọn) chưa — không tính */
 function npPlanCached(p, dayIndex, prefs){
@@ -674,7 +679,7 @@ function npProteinWhy(p, h){
 
 G.NutriPro = { buildDayPlan:npBuildDayPlan, pool:npPool, targets:npTargets, itemsMacros, planTotals, fillers:NP_FILLERS, food,
   safety:npSafety, effGoal:npEffGoal, parseNum:npParseNum, num:npNum, search:npSearch, pregRisk:npPregRisk, weekKey:npWeekKey, fiberCap:npFiberCap,
-  planCtx:npPlanCtx, planCached:npPlanCached, clearPlanCache:npStoreClear, flushStore:npStoreSave, proteinWhy:npProteinWhy, _storeKey:NP_STORE_KEY,
+  planCtx:npPlanCtx, planCached:npPlanCached, clearPlanCache:npStoreClear, flushStore:npStoreSave, reloadStore:npStoreReload, proteinWhy:npProteinWhy, _storeKey:NP_STORE_KEY,
   cleanCustom: c=> npCleanCustom(c), KCAL_MAX: NP_KCAL_MAX };
 
 /* =====================================================================

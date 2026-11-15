@@ -1174,6 +1174,38 @@ function openTermsSheet(){
 }
 
 /* ---- Sao lưu cloud: bộ nối giữa state của app và cloud.sync ---- */
+/* 15/11: sao lưu kèm THỰC ĐƠN đã lập (nutrition-pro.js giữ ở localStorage riêng "fitkit_np_plans_v1" để saveState nhẹ) → đổi máy / cài app
+   thấy đúng thực đơn cũ, không bị tính lại khác đi. Chỉ đi kèm gói đồng bộ (cần đồng ý dữ liệu sức khoẻ như phần còn lại), không vào `state`. */
+const FK_NP_SYNC_FIELD = "_npPlans", FK_NP_SYNC_MAX = 120000;
+function fkNpStoreKey(){ try{ return (window.NutriPro && NutriPro._storeKey) || "fitkit_np_plans_v1"; }catch(e){ return "fitkit_np_plans_v1"; } }
+function fkNpRead(){
+  try{ if(window.NutriPro && typeof NutriPro.flushStore === "function") NutriPro.flushStore(); }catch(e){}
+  try{ const raw = localStorage.getItem(fkNpStoreKey()); if(!raw || raw.length > FK_NP_SYNC_MAX) return null;
+    const o = JSON.parse(raw); return o && o.v === 1 && typeof o.sig === "string" && Array.isArray(o.keys) && o.plans && typeof o.plans === "object" ? o : null; }catch(e){ return null; }
+}
+function fkSyncGetState(){
+  const np = fkNpRead();
+  return np ? Object.assign({}, state, { [FK_NP_SYNC_FIELD]: np }) : state;
+}
+function fkSyncApplyState(next){
+  if(!next || typeof next !== "object") return;
+  const np = next[FK_NP_SYNC_FIELD];
+  if(FK_NP_SYNC_FIELD in next){ next = Object.assign({}, next); delete next[FK_NP_SYNC_FIELD]; }
+  if(np && typeof np === "object" && np.v === 1 && typeof np.sig === "string" && Array.isArray(np.keys) && np.plans && typeof np.plans === "object"){
+    try{
+      const raw = JSON.stringify(np);
+      if(raw.length <= FK_NP_SYNC_MAX){
+        const cur = fkNpRead();
+        /* cùng chữ ký dữ liệu món: gộp (bản tài khoản + thực đơn chỉ có trên máy này); khác chữ ký: nutrition-pro tự bỏ khi đọc */
+        const out = cur && cur.sig === np.sig ? { v:1, sig:np.sig, keys: np.keys.concat(cur.keys.filter(k=> !(k in np.plans))).slice(-35), plans: Object.assign({}, cur.plans, np.plans) } : np;
+        Object.keys(out.plans).forEach(k=>{ if(!out.keys.includes(k)) delete out.plans[k]; });
+        localStorage.setItem(fkNpStoreKey(), JSON.stringify(out));
+        if(window.NutriPro && typeof NutriPro.reloadStore === "function") NutriPro.reloadStore();
+      }
+    }catch(e){ console.warn("[sync] thực đơn", e); }
+  }
+  fkApplyCloudState(next);
+}
 function fkApplyCloudState(next){
   if(!next || typeof next !== "object") return;
   const d = defaultState();
@@ -1399,7 +1431,7 @@ async function appBoot(){
   $("#auth").classList.add("open");
   $("#auth-body").innerHTML = `<div class="splash"><div class="splash-brand"><img class="splash-logo on-dark" src="assets/brand/logo-lockup-light.svg" alt="TapEasy" data-no-fallback onerror="this.onerror=null;this.outerHTML='<div class=&quot;logo-big&quot;>Tap<b>Easy</b></div>'"><img class="splash-logo on-light" src="assets/brand/logo-lockup-dark.svg" alt="" aria-hidden="true" data-no-fallback onerror="this.onerror=null;this.remove()"></div><div class="spinner"></div></div>`;
   /* R3: gắn state của app vào lớp sao lưu cloud TRƯỚC khi khởi động (cloud.sync chỉ chạy khi đã đăng nhập + đã đồng ý) */
-  try{ cloud.sync.attach({ getState: ()=> state, applyState: fkApplyCloudState, choose: fkSyncChoose }); }catch(e){ console.warn("[sync] attach", e); }
+  try{ cloud.sync.attach({ getState: fkSyncGetState, applyState: fkSyncApplyState, choose: fkSyncChoose }); }catch(e){ console.warn("[sync] attach", e); }
   try{ cloud.sync.onChange(s=>{ const el = document.getElementById("acc-sync-sub"); if(el) el.textContent = fkSyncLabel(s); }); }catch(e){}
   await cloud.init();
   cloud.onAuth(()=>{ coachTab = null; ptData = EMPTY_PT(); refreshCoachData(true); renderAccountCard(); });

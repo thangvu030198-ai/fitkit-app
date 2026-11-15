@@ -76,6 +76,18 @@ module.exports = {
       const W2 = sandbox({ ls: { fk_analytics_v1: JSON.stringify({ consent: "denied" }) } });
       assert.equal(await W2.FKPulse.beat(true), false); assert.ok(!("fk_pulse_demo" in W2._store));
     });
+    t.test("PULSE-06: cloud.js khai báo `const cloud` (không nằm trên window) → pulse/admin-analytics vẫn nhận đúng chế độ Firebase", ()=>{
+      const W = { localStorage:{ getItem:()=> null, setItem(){} }, navigator:{}, location:{ search:"", hostname:"a" }, FK_I18N:{ lang:"vi" }, setInterval:()=> 0, setTimeout, clearTimeout };
+      W.window = W;
+      new Function("window", "globalThis", "const cloud = { mode:'firebase', user:{ uid:'u1' } };\n" + read("pulse.js").replace('typeof window !== "undefined" ? window : globalThis', "window"))(W, W);
+      const st = W.FKPulse.state(); st.first = "2026-11-15";
+      assert.ok(W.FKPulse.tagsFor(T0, st, { p:"web", l:"vi" }).D.includes("d:2026-11-15|a:1"), "nhận ra người dùng đã đăng nhập qua `cloud` toàn cục");
+      for(const f of ["pulse.js", "admin-analytics.js"]){
+        const src = read(f);
+        assert.match(src, /const CL = \(\)=>\{ try\{ if\(typeof cloud !== "undefined" && cloud\) return cloud; \}catch\(e\)\{\} return G\.cloud \|\| null; \};/, f);
+        assert.ok(!/G\.cloud\.(mode|user|fn|signUp|onAuth)/.test(src), f + " không đọc thẳng G.cloud");
+      }
+    });
     t.test("PULSE-05: analytics.js gọi FKPulse.mark trước khi xét đồng ý, chỉ chuyển tên sự kiện / tên màn hình", ()=>{
       const an = read("analytics.js");
       const i = an.indexOf("function track(event, props){"), body = an.slice(i, i + 600);
