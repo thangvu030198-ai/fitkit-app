@@ -38,7 +38,7 @@ Nhà phát triển: Vũ Thắng (TapEasy) (sau đây gọi là "chúng tôi").</
 <nav class="muted">Mục lục:
   <a href="#local">1. Dữ liệu trên máy</a><a href="#health">2. Dữ liệu sức khoẻ</a><a href="#backup">2b. Sao lưu cloud &amp; đồng ý</a><a href="#transfer">9b. Chuyển dữ liệu ra nước ngoài</a><a href="#retention">9c. Thời hạn lưu</a><a href="terms.html">Điều khoản sử dụng</a><a href="#en">English</a><a href="#server">3. Dữ liệu trên máy chủ</a><a href="#login">4. Đăng nhập Google/Facebook/Apple</a>
   <a href="#purpose">5. Mục đích</a><a href="#third">6. Bên thứ ba</a><a href="#content">7. Nhà cung cấp nội dung</a><a href="#perm">8. Quyền thiết bị</a>
-  <a href="#ugc">3b. Nội dung công khai, chặn &amp; báo cáo</a><a href="#staff">3c. Đội ngũ quản trị</a><a href="#analytics">3d. Thống kê sử dụng ẩn danh</a><a href="#pulse">3d-2. Đếm lượt sử dụng tổng hợp</a><a href="#feedback">3e. Góp ý &amp; đánh giá</a><a href="#keep">9. Lưu trữ &amp; bảo mật</a><a href="#rights">10. Quyền của bạn &amp; xoá dữ liệu</a><a href="#kids">11. Trẻ em</a><a href="#medical">12. Lưu ý y tế</a><a href="#contact">13. Liên hệ</a><a href="#change">14. Thay đổi</a>
+  <a href="#ugc">3b. Nội dung công khai, chặn &amp; báo cáo</a><a href="#staff">3c. Đội ngũ quản trị</a><a href="#analytics">3d. Thống kê sử dụng ẩn danh</a><a href="#pulse">3d-2. Đếm lượt sử dụng tổng hợp</a><a href="#foodscan">3d-3. Chụp ảnh tính calo</a><a href="#feedback">3e. Góp ý &amp; đánh giá</a><a href="#keep">9. Lưu trữ &amp; bảo mật</a><a href="#rights">10. Quyền của bạn &amp; xoá dữ liệu</a><a href="#kids">11. Trẻ em</a><a href="#medical">12. Lưu ý y tế</a><a href="#contact">13. Liên hệ</a><a href="#change">14. Thay đổi</a>
 </nav>
 
 <h2 id="local">1. Dữ liệu chỉ lưu trên thiết bị của bạn</h2>
@@ -112,6 +112,9 @@ Nhà phát triển: Vũ Thắng (TapEasy) (sau đây gọi là "chúng tôi").</
   <li><b>Ai xem:</b> chỉ nhân sự được cấp quyền "Xem số liệu" trong bảng quản trị, và chỉ ở dạng tổng số.</li>
   <li><b>Lưu trữ:</b> trạng thái "đang mở app" tự xoá sau khoảng 2 ngày; con số theo ngày được giữ để so sánh theo thời gian.</li>
 </ul>
+
+<h3 id="foodscan">3d-3. Chụp ảnh món ăn để ước lượng calo</h3>
+<p>Khi bạn dùng <b>Chụp ảnh tính calo</b>, tấm ảnh bạn chụp (cùng vật tham chiếu và ghi chú bạn chọn) được gửi qua máy chủ TapEasy tới <b>dịch vụ AI đọc ảnh</b> để nhận diện món và ước lượng khẩu phần. TapEasy <b>không lưu ảnh</b> trên máy chủ; máy chủ chỉ giữ bộ đếm số lượt bạn đã dùng trong ngày. Kết quả bạn bấm lưu được ghi vào nhật ký ăn uống như các món khác. Đừng chụp người, giấy tờ hay thông tin riêng tư trong khung hình. Con số là ước lượng tham khảo, không thay cho tư vấn dinh dưỡng – y tế.</p>
 
 <h3 id="feedback">3e. Góp ý &amp; đánh giá trong app</h3>
 <p>Khi bạn gửi <b>Góp ý</b> (lỗi, ý tưởng, nội dung, khác) hoặc chấm điểm <b>"Bạn có muốn giới thiệu TapEasy?" (0–10)</b>, máy chủ (Cloud Firestore) lưu: nội dung bạn viết, loại góp ý hoặc điểm, ảnh chụp màn hình nếu bạn tự đính kèm, phiên bản app, màn hình đang mở, và thông tin thiết bị <b>không định danh</b> (nền tảng, hệ điều hành, kích thước màn hình, ngôn ngữ, giao diện). Góp ý <b>không gắn với tài khoản</b> của bạn; email/số điện thoại chỉ được lưu khi bạn chủ động chọn "Cho phép TapEasy liên hệ lại". Nếu chưa đăng nhập, app dùng đăng nhập ẩn danh của Firebase chỉ để gửi góp ý. Khi không có mạng, góp ý được giữ tạm trên máy (tối đa 30 ngày) và tự gửi khi có mạng.</p>

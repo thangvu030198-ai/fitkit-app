@@ -280,6 +280,7 @@ service cloud.firestore {
     // R3 — OTP email (functions/account.js): băm mã + bộ đếm giới hạn tần suất. CHỈ Cloud Functions (Admin SDK) đọc/ghi.
     match /email_otps/{id} { allow read, write: if false; }
     match /otp_rate/{id} { allow read, write: if false; }
+    match /vision_rate/{id} { allow read, write: if false; }   // bộ đếm lượt chụp ảnh tính calo / ngày (functions/vision.js)
 
     /* ================= NHỊP SỬ DỤNG ẨN DANH (pulse.js → mục "Phân tích" của bảng quản trị) =================
        Không uid / email / IP — chỉ mã thiết bị ngẫu nhiên + nhãn đếm. Ghi được cả khi CHƯA đăng nhập (khách vãng lai),

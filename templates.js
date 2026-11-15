@@ -392,9 +392,10 @@ async function tplAddToWeek(t){
   toast("Đang thêm giáo án & gắn video…", "videocam");
   let res = { total:0, withVid:0 };
   try{ res = await tplAttachVideos(plan); }catch(e){}
+  let eqN = 0; try{ if(window.FKEquip) eqN = FKEquip.applyPrefs(plan); }catch(e){}     // 16/11: dùng dụng cụ người dùng đã nhớ
   state.plans[plan.id] = plan; state.activePlanId = plan.id; state.selectedDay = todayDayKey();
   saveState(); closeSheet(); goto("workout");
-  toast(`Đã thêm "${t.name}" vào tuần tập · ${res.withVid}/${res.total} bài có video hướng dẫn`, "check_circle");
+  toast(`Đã thêm "${t.name}" vào tuần tập · ${res.withVid}/${res.total} bài có video hướng dẫn${eqN ? ` · ${eqN} bài đã đổi theo dụng cụ của bạn` : ""}`, "check_circle");
 }
 function openTemplateBrowser(){
   const list = PROGRAM_TEMPLATES.filter(t=> (tplUI.gender==="all" || t.gender===tplUI.gender || (tplUI.gender!=="chung" && t.gender==="chung")) && (tplUI.level==="all" || t.level===tplUI.level))

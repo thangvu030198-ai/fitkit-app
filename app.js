@@ -1479,6 +1479,7 @@ function openExerciseDetail(itemUid, isToday){
     mountClipVideo("#ex-detail-video", item.clipId);
     attachFitToggle($("#btn-fit-toggle-detail"), "#ex-detail-video", item.clipId);
   }
+  try{ if(window.FKEquip) FKEquip.mount({ plan, dayKey: state.selectedDay, item, host: $("#sheet-content .chip-row"), reopen: ()=>{ renderWorkoutScreen(); openExerciseDetail(itemUid, isToday); } }); }catch(e){}   // 16/11: chọn dụng cụ
   $("#btn-attach-clip-detail").addEventListener("click", ()=>{
     openClipPicker((clipId)=>{
       item.clipId = clipId;
@@ -2295,6 +2296,7 @@ function bindPlanEditorEvents(plan){
     if(u) v.src = u;
   });
   $$("#plans-content [data-item]").forEach(row=> row.addEventListener("click", ()=> openPlanItemEditor(plan, plansUI.day, row.dataset.item)));
+  try{ if(window.FKPlanTools) FKPlanTools.bind(plan); }catch(e){}     // 16/11: giữ & kéo đổi thứ tự + nút "Dụng cụ phòng tập" (plan-tools.js)
 }
 function openAddExerciseSheet(plan, dayKey){
   let tab = "lib";
@@ -2398,6 +2400,7 @@ function openPlanItemEditor(plan, dayKey, itemUid){
     } else {
       mediaEl.innerHTML = `<img src="${attrUrl((item.stock && item.stock.thumb) || meta.img)}" alt="${escapeHtml(meta.name)}" style="width:100%;height:150px;object-fit:cover;border-radius:14px;">`;   // QS-04
     }
+    try{ if(window.FKEquip) FKEquip.mount({ plan, dayKey, item, host: $("#pie-media"), reopen: ()=>{ renderPlansScreen(); openPlanItemEditor(plan, dayKey, itemUid); } }); }catch(e){}   // 16/11: chọn dụng cụ
     $("#pie-attach").addEventListener("click", ()=>{
       openClipPicker((clipId)=>{ item.clipId = clipId; saveState(); render(); renderPlansScreen(); });
     });
