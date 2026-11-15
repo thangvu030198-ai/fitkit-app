@@ -60,6 +60,22 @@ module.exports = {
       assert.match(read("ui-signature.js"), /if\(!i \|\| typeof i !== "object"\) return; tot\.kcal/);
       assert.match(read("app.js"), /day\[m\] = day\[m\]\.filter\(isObj\)/);
     });
+    t.test("INSTALL-01: nút Cài TapEasy luôn mời trên web (không cần beforeinstallprompt) + hướng dẫn có hình đúng từng máy", ()=>{
+      const u = read("ui-kit.js");
+      assert.match(u, /function canOfferInstall\(\)\{ return !isNativeApp\(\) && !isStandalone\(\); \}/);
+      for(const pf of ['"ios"', '"ios-other"', '"android"', '"samsung"', '"desktop"']) assert.ok(u.includes(pf), "thiếu nền tảng " + pf);
+      assert.match(u, /Thêm vào MH chính/); assert.match(u, /Cài đặt ứng dụng/); assert.match(u, /data-fk-copy/);
+      assert.match(u, /hideInstall\(true\); showIOSGuide\(installPlatform\(\)\); return "guide";/);
+      assert.match(read("ui-kit.css"), /\.fk-ig-hot\{/);
+    });
+    t.test("TABS-01: hàng tab cuộn ngang không co tab (form PT ↔ học viên bị đè chữ trên iPhone)", ()=>{
+      assert.match(read("style.css"), /\.day-tabs > \.day-tab\{ flex:0 0 auto; \}/);
+    });
+    t.test("CONSENT-01: ô đồng ý điều khoản ở màn đăng ký không bị đẩy sang phải", ()=>{
+      const p = read("pt.js");
+      assert.match(p, /\.auth-check\.fk-consent-row\{ justify-content:flex-start; \}/);
+      assert.match(p, /\.auth-check\.fk-consent-row > span\{ display:block;/);
+    });
     t.test("R3-ADM-SCROLL: bảng quản trị cuộn được (lưới + flex có min-height:0, vùng nội dung overflow-y:auto)", ()=>{
       const c = read("admin.css");
       assert.match(c, /\.adm-shell\{[^}]*grid-template-rows:minmax\(0,1fr\)[^}]*min-height:0/);

@@ -230,3 +230,32 @@ html.fk-light #auth:not(:has(.wl-hero)) .fk-lang-chip{ background:rgba(255,255,2
 .fk-ios-guide li svg{ vertical-align:-4px; color:var(--mint, #33D6C9); }
 @media (prefers-reduced-motion: reduce){ .fk-update, .fk-install{ transition:none; } }
 @media print{ .fk-install, .fk-update, .fk-lang-hint, .fk-lang-chip{ display:none !important; } }
+
+/* 15/11: hướng dẫn cài đặt có hình (ui-kit.js guideHtml) */
+.fk-ig-steps{ list-style:none; padding:0 !important; gap:16px !important; }
+.fk-ig-step{ display:flex; gap:12px; align-items:flex-start; }
+.fk-ig-n{ flex:0 0 28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px;
+  background:var(--accent, var(--mint, #33D6C9)); color:#062126; }
+.fk-ig-body{ flex:1 1 auto; min-width:0; }
+.fk-ig-body p{ margin:3px 0 8px; font-size:15px; line-height:1.45; }
+.fk-ig-body small{ display:block; margin-top:6px; font-size:12.5px; line-height:1.45; color:var(--text-muted, rgba(255,255,255,.65)); }
+.fk-ig-fig{ border-radius:14px; padding:10px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:#4DA3FF; }
+.fk-ig-url{ display:block; text-align:center; font-size:13px; color:rgba(255,255,255,.85); background:rgba(255,255,255,.08); border-radius:10px; padding:7px 10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.fk-ig-bar{ display:flex; justify-content:space-around; align-items:center; margin-top:8px; min-height:40px; }
+.fk-ig-hot{ display:inline-flex; align-items:center; justify-content:center; min-width:40px; height:40px; border-radius:50%;
+  outline:2.5px solid #FF7A45; outline-offset:1px; background:rgba(255,122,69,.18); color:#FFB08A; animation:fk-ig-pulse 1.6s ease-in-out infinite; }
+.fk-ig-btn{ border-radius:8px; height:auto; min-width:0; padding:3px 10px; font-weight:700; font-size:13px; }
+@keyframes fk-ig-pulse{ 50%{ outline-offset:4px; } }
+@media (prefers-reduced-motion: reduce){ .fk-ig-hot{ animation:none; } }
+.fk-ig-list{ display:flex; flex-direction:column; font-size:14px; color:rgba(255,255,255,.7); }
+.fk-ig-list > div{ padding:7px 6px; border-bottom:1px solid rgba(255,255,255,.08); display:flex; gap:8px; align-items:center; }
+.fk-ig-list > div:last-child{ border-bottom:0; }
+.fk-ig-hotrow{ color:#FFB08A; background:rgba(255,122,69,.18); border-radius:8px; outline:2px solid #FF7A45; }
+.fk-ig-add{ display:flex; justify-content:space-between; align-items:center; font-size:13px; color:rgba(255,255,255,.75); padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,.1); }
+.fk-ig-add b{ color:#fff; }
+.fk-ig-app{ display:flex; gap:10px; align-items:center; padding-top:8px; color:#fff; font-size:14px; }
+.fk-ig-app img{ border-radius:10px; }
+.fk-ig-app small{ display:block; color:rgba(255,255,255,.55); font-size:12px; }
+.fk-ig-top{ display:flex; align-items:center; gap:8px; }
+.fk-ig-url-in{ flex:1 1 auto; min-width:0; }
+html.fk-light .fk-ig-fig, html[data-scheme="light"] .fk-ig-fig{ background:rgba(0,0,0,.04); border-color:rgba(0,0,0,.1); color:#1A6FD1; }

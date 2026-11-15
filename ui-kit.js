@@ -592,7 +592,7 @@
   let deferredPrompt = null, instEl = null;
   const isIOS = ()=>{ const ua = navigator.userAgent || ""; return /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1); };
   const isIOSSafari = ()=> isIOS() && !/CriOS|FxiOS|EdgiOS|OPiOS|FBAN|FBAV|Instagram|Line\/|Zalo/i.test(navigator.userAgent || "");
-  function canOfferInstall(){ return !isNativeApp() && !isStandalone() && (!!deferredPrompt || isIOS()); }
+  function canOfferInstall(){ return !isNativeApp() && !isStandalone(); }     /* 15/11: luôn mời (kể cả Android chưa bắn beforeinstallprompt) — không có lời mời gốc thì hiện hướng dẫn có hình */
   function installBusy(){
     try{
       const open = id=>{ const el = D.getElementById(id); return !!(el && el.classList && el.classList.contains("open")); };
@@ -604,17 +604,82 @@
     if(remember) lsSet(INST_KEY, String(Date.now()));
     if(instEl){ const el = instEl; instEl = null; el.classList.remove("on"); setTimeout(()=>{ try{ el.remove(); }catch(e){} }, 300); }
   }
-  function showIOSGuide(){
+  /* 15/11: hướng dẫn CÓ HÌNH, tự đổi theo máy: iPhone Safari · iPhone trình duyệt khác · Android Chrome · Samsung Internet · máy tính */
+  function installPlatform(){
+    const ua = navigator.userAgent || "";
+    if(isIOS()) return isIOSSafari() ? "ios" : "ios-other";
+    if(/Android/i.test(ua)) return /SamsungBrowser/i.test(ua) ? "samsung" : (/FBAN|FBAV|Instagram|Zalo|Line\//i.test(ua) ? "android-inapp" : "android");
+    return "desktop";
+  }
+  const IC = {
+    share: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m0 0L8 7m4-4 4 4"/><path d="M7 10H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-1"/></svg>',
+    plus: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/></svg>',
+    dots: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="19" r="1.9"/></svg>',
+    hdots: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>',
+    menu: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+    left: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>',
+    right: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>',
+    book: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h5v16H6a2 2 0 0 0-2 2z"/><path d="M20 5a2 2 0 0 0-2-2h-5v16h5a2 2 0 0 1 2 2z"/></svg>',
+    tabs: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="13" height="13" rx="2"/><path d="M4 16V6a2 2 0 0 1 2-2h10"/></svg>',
+  };
+  const host = ()=>{ try{ return location.host || "tapeasy.app"; }catch(e){ return "tapeasy.app"; } };
+  /* Khung minh hoạ: thanh dưới Safari (iPhone) — nút Chia sẻ được khoanh */
+  const figSafari = ()=> `<div class="fk-ig-fig" aria-hidden="true"><div class="fk-ig-url">🔒 ${esc(host())}</div>
+      <div class="fk-ig-bar">${IC.left}${IC.right}<span class="fk-ig-hot">${IC.share}</span>${IC.book}${IC.tabs}</div></div>`;
+  const figSheet = (label, icon)=> `<div class="fk-ig-fig" aria-hidden="true"><div class="fk-ig-list">
+      <div>Sao chép</div><div>Thêm dấu trang</div><div class="fk-ig-hotrow">${icon}<b>${esc(label)}</b></div><div>Tìm trên trang</div></div></div>`;
+  const figAdd = (btn)=> `<div class="fk-ig-fig" aria-hidden="true"><div class="fk-ig-add"><span>Huỷ</span><b>TapEasy</b><span class="fk-ig-hot fk-ig-btn">${esc(btn)}</span></div>
+      <div class="fk-ig-app"><img src="assets/icon-192.png" alt="" width="40" height="40" data-no-fallback><span>TapEasy<small>${esc(host())}</small></span></div></div>`;
+  const figChrome = ()=> `<div class="fk-ig-fig" aria-hidden="true"><div class="fk-ig-top"><span class="fk-ig-url fk-ig-url-in">🔒 ${esc(host())}</span><span class="fk-ig-hot">${IC.dots}</span></div></div>`;
+  const figSamsung = ()=> `<div class="fk-ig-fig" aria-hidden="true"><div class="fk-ig-bar">${IC.left}${IC.right}${IC.book}${IC.tabs}<span class="fk-ig-hot">${IC.menu}</span></div></div>`;
+  const step = (n, title, fig, note)=> `<li class="fk-ig-step"><div class="fk-ig-n">${n}</div><div class="fk-ig-body"><p>${title}</p>${fig || ""}${note ? `<small>${note}</small>` : ""}</div></li>`;
+  function guideHtml(pf){
+    let title = "Cài TapEasy lên điện thoại", steps = "", foot = "";
+    if(pf === "ios"){
+      title = "Cài TapEasy lên iPhone";
+      steps = step(1, "Bấm nút <b>Chia sẻ</b> ở giữa thanh dưới cùng của Safari", figSafari(), "Không thấy thanh này? Chạm vào thanh địa chỉ hoặc cuộn lên một chút. iOS mới: bấm dấu <b>…</b> cạnh địa chỉ rồi chọn <b>Chia sẻ</b>.")
+        + step(2, "Vuốt bảng lên, chọn <b>Thêm vào MH chính</b>", figSheet("Thêm vào MH chính", IC.plus), "Vẫn không thấy? Kéo xuống cuối, bấm <b>Sửa tác vụ…</b> rồi bấm dấu <b>+</b> cạnh “Thêm vào MH chính”.")
+        + step(3, "Bấm <b>Thêm</b> ở góc trên bên phải", figAdd("Thêm"), "Từ giờ mở TapEasy bằng biểu tượng mới trên màn hình chính.");
+    } else if(pf === "ios-other"){
+      title = "Cài TapEasy lên iPhone";
+      steps = step(1, "iPhone chỉ cài được bằng <b>Safari</b>. Bấm nút dưới để chép đường dẫn", "", "")
+        + step(2, "Mở <b>Safari</b>, dán vào thanh địa chỉ và mở trang", "", "")
+        + step(3, "Trong Safari: <b>Chia sẻ</b> → <b>Thêm vào MH chính</b> → <b>Thêm</b>", figSafari(), "");
+      foot = `<button type="button" class="btn btn-outline btn-block" data-fk-copy>Chép đường dẫn ${esc(host())}</button>`;
+    } else if(pf === "android" || pf === "android-inapp"){
+      title = "Cài TapEasy lên Android";
+      steps = (pf === "android-inapp" ? step(0, "Bạn đang mở trong Facebook / Zalo / Instagram. Bấm <b>⋮</b> → <b>Mở bằng trình duyệt</b> (Chrome) trước", "", "") : "")
+        + step(1, "Bấm dấu <b>⋮</b> ở góc trên bên phải Chrome", figChrome(), "")
+        + step(2, "Chọn <b>Cài đặt ứng dụng</b> (hoặc <b>Thêm vào màn hình chính</b>)", figSheet("Cài đặt ứng dụng", IC.plus), "")
+        + step(3, "Bấm <b>Cài đặt</b> để xác nhận", figAdd("Cài đặt"), "Biểu tượng TapEasy xuất hiện trên màn hình chính và trong danh sách ứng dụng.");
+    } else if(pf === "samsung"){
+      title = "Cài TapEasy lên Samsung";
+      steps = step(1, "Bấm nút <b>☰</b> ở góc dưới bên phải", figSamsung(), "")
+        + step(2, "Chọn <b>Thêm trang vào</b> → <b>Màn hình chính</b>", figSheet("Màn hình chính", IC.plus), "")
+        + step(3, "Bấm <b>Thêm</b>", figAdd("Thêm"), "");
+    } else {
+      title = "Cài TapEasy lên máy tính";
+      steps = step(1, "Trên Chrome / Edge: bấm biểu tượng <b>cài đặt</b> ở cuối thanh địa chỉ, hoặc <b>⋮</b> → <b>Cài đặt TapEasy</b>", figChrome(), "")
+        + step(2, "Trên điện thoại: mở <b>" + esc(host()) + "</b> rồi bấm lại nút “Cài TapEasy” trong Hồ sơ", "", "");
+    }
+    return `<div class="fk-ios-guide fk-ig" data-pf="${esc(pf)}"><h3>${title}</h3><ol class="fk-ig-steps">${steps}</ol>${foot}
+      <button type="button" class="btn btn-primary btn-block" data-fk-close>Đã hiểu</button></div>`;
+  }
+  function showIOSGuide(pf){
     try{
-      const html = `<div class="fk-ios-guide"><h3>Cài TapEasy lên iPhone</h3>
-        <ol><li><span>Bấm nút Chia sẻ</span> <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m0 0L8 7m4-4 4 4M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg> <span>ở thanh dưới của Safari</span></li>
-        <li>Chọn "Thêm vào Màn hình chính"</li><li>Bấm "Thêm" ở góc trên</li></ol>
-        ${isIOSSafari() ? "" : `<p class="small-note">Trên iPhone, hãy mở trang này bằng Safari để cài đặt.</p>`}
-        <button type="button" class="btn btn-primary btn-block" data-fk-close>Đã hiểu</button></div>`;
+      pf = typeof pf === "string" ? pf : installPlatform();
+      const html = guideHtml(pf);
       if(typeof openSheet === "function"){
         openSheet(html);
-        const sc = D.getElementById("sheet-content"), b = sc && sc.querySelector("[data-fk-close]");
+        const sc = D.getElementById("sheet-content");
+        const b = sc && sc.querySelector("[data-fk-close]");
         if(b) b.addEventListener("click", ()=>{ try{ closeSheet(); }catch(e){} });
+        const c = sc && sc.querySelector("[data-fk-copy]");
+        if(c) c.addEventListener("click", async ()=>{
+          const url = "https://" + host() + "/";
+          try{ await navigator.clipboard.writeText(url); if(typeof toast === "function") toast("Đã chép — mở Safari và dán vào thanh địa chỉ"); }
+          catch(e){ try{ window.prompt("Chép đường dẫn này rồi mở bằng Safari:", url); }catch(_){} }
+        });
       } else if(typeof toast === "function") toast('Safari → Chia sẻ → "Thêm vào Màn hình chính"');
     }catch(e){}
   }
@@ -623,8 +688,7 @@
       const ev = deferredPrompt; deferredPrompt = null;
       try{ ev.prompt(); const r = await ev.userChoice; hideInstall(true); syncInstallRow(); return r && r.outcome; }catch(e){ return "error"; }
     }
-    if(isIOS()){ hideInstall(true); showIOSGuide(); return "guide"; }
-    return "unavailable";
+    hideInstall(true); showIOSGuide(installPlatform()); return "guide";     // mọi máy: hướng dẫn có hình theo đúng trình duyệt
   }
   function showInstallBar(){
     if(instEl || !canOfferInstall() || installBusy()) return;
@@ -654,7 +718,7 @@
       if(!anchor || !anchor.parentNode) return;
       row = D.createElement("div"); row.className = "card fk-lang-cardrow"; row.id = "fk-install-row";
       row.innerHTML = `<button type="button" class="list-item fk-lang-item" id="btn-install-app"><span class="thumb fk-lang-thumb" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 19h14"/></svg></span>
-        <span class="info"><span class="name">Cài TapEasy</span><span class="meta">Thêm TapEasy vào màn hình chính để mở nhanh và dùng khi mất mạng.</span></span><span class="trailing" aria-hidden="true">›</span></button>`;
+        <span class="info"><span class="name">Cài TapEasy lên điện thoại</span><span class="meta">Thêm TapEasy vào màn hình chính để mở nhanh và dùng khi mất mạng.</span></span><span class="trailing" aria-hidden="true">›</span></button>`;
       anchor.parentNode.insertBefore(row, anchor);
       row.querySelector("button").addEventListener("click", promptInstall);
     }catch(e){}
@@ -672,9 +736,11 @@
       deferredPrompt = null; hideInstall(true); syncInstallRow();
       try{ if(typeof toast === "function") toast("Đã cài TapEasy — mở từ màn hình chính nhé!"); }catch(e){}
     });
-    if(isIOS() && !isStandalone()) setTimeout(()=>{ syncInstallRow(); showInstallBar(); }, 12000);
+    if(!isStandalone()){ setTimeout(syncInstallRow, 1500); setTimeout(()=>{ syncInstallRow(); showInstallBar(); }, 12000); }
+    /* Hồ sơ vẽ lại → chèn lại mục "Cài TapEasy lên điện thoại" */
+    try{ if(typeof window.goto === "function" && !window.goto.__fkInst){ const g0 = window.goto; const g1 = function(s){ const r = g0.apply(this, arguments); if(s === "profile") setTimeout(syncInstallRow, 60); return r; }; g1.__fkInst = true; window.goto = g1; } }catch(e){}
   }
-  window.fkInstall = { can: canOfferInstall, prompt: promptInstall, guide: showIOSGuide, standalone: isStandalone, _bar: showInstallBar, _update: showUpdateBar };
+  window.fkInstall = { can: canOfferInstall, prompt: promptInstall, guide: showIOSGuide, platform: installPlatform, guideHtml, standalone: isStandalone, _bar: showInstallBar, _update: showUpdateBar };
 
   /* ---- 6i. Quét chung (gọi được từ test: fkA11y.scan(el)) ---- */
   function scanAll(root){ labelButtons(root); kbdScan(root); lazyImgs(root); wlScan(root); }

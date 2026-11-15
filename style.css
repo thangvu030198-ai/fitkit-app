@@ -1731,3 +1731,7 @@ html.lowfx .wl-speed{ display:none; }
 html.fk-themed .ob-ready{ background:var(--fk-shell-bg); background-blend-mode:var(--fk-shell-blend); }
 html.fk-themed :is(.fk-consent, .fk-fb-fab){ background:linear-gradient(180deg, rgba(var(--fk-sheet-1-rgb),.94), rgba(var(--fk-sheet-2-rgb),.97)); border-color:rgba(var(--fk-ov-rgb), .18); }
 html.fk-themed :is(.fk-consent-row, .ob-mac, .fk-an-row){ background:rgba(var(--fk-ov-rgb), .07); }
+
+/* 15/11: hàng tab cuộn ngang (form PT ↔ học viên có 9–10 tab) — KHÔNG co tab (trước đây min-width 44px + co lại → chữ đè lên nhau trên iPhone) */
+.day-tabs > .day-tab{ flex:0 0 auto; }
+#client-tabs{ gap:18px; scroll-padding-inline:16px; }
