@@ -26,7 +26,9 @@ function keyOf(id){ return String(id || "").replace(/^ex-/, ""); }
 function exs(){ try{ return typeof EXERCISES !== "undefined" ? EXERCISES : null; }catch(e){ return null; } }
 function valid(e){ return e && typeof e.id === "string" && /^ex-[a-z0-9]+$/.test(e.id) && e.file === e.id + ".webp"; }
 
+let lastIds = [];
 function apply(ids){
+  lastIds = Array.from(new Set(lastIds.concat(ids || [])));
   const E = exs(); if(!E) return 0;
   let n = 0;
   ids.forEach(id=>{ const k = keyOf(id); if(E[k]){ if(!E[k]._origImg) E[k]._origImg = E[k].img; E[k].img = BASE + id + ".webp"; avail.add(k); n++; } });
@@ -79,4 +81,10 @@ G.fkExArt = {
   _apply: apply, _applyVideos: applyVideos, _hold: { video: HOLD_VIDEO, image: HOLD_IMAGE }, _keys: ()=> Array.from(avail),
 };
 load();
+/* templates.js thêm ~40 bài vào EXERCISES SAU khi file này chạy → áp lại khi trang nạp xong */
+if(typeof document !== "undefined" && document.addEventListener){
+  const again = ()=>{ if(lastIds.length && apply(lastIds)) swapDom(); };
+  document.addEventListener("DOMContentLoaded", again);
+  if(G.addEventListener) G.addEventListener("load", again);
+}
 })(typeof window !== "undefined" ? window : globalThis);
