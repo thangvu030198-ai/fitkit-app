@@ -1,6 +1,11 @@
 {
- "at": "2026-11-16T16:58:43.101330Z",
+ "at": "2026-11-16T18:05:33.282175Z",
  "kind": "video",
- "ok": 6,
- "fail": []
+ "ok": 21,
+ "fail": [
+  [
+   "ex-glutebridge",
+   "Hết lượt (402 insufficient balance)"
+  ]
+ ]
 }
