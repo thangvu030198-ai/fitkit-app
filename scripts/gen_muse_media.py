@@ -19,7 +19,8 @@ import requests
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
-KEY = os.environ.get("MUSE_API_KEY", "").strip()
+KEYS = [k for k in (os.environ.get(n, "").strip() for n in ("MUSE_API_KEY", "MUSE_API_KEY_2", "MUSE_API_KEY_3", "MUSE_API_KEY_4")) if k]
+KEY = KEYS[0] if KEYS else ""
 BASE = (os.environ.get("MUSE_API_BASE", "") or "https://muse.careflow-demo.online").strip().rstrip("/")
 KIND = (os.environ.get("MUSE_KIND", "") or "image").strip().lower()
 MANIFEST = ROOT / (os.environ.get("MUSE_MANIFEST", "") or "scripts/ai_exercise_prompts.json")
@@ -39,8 +40,16 @@ if not BASE.startswith("https://"): sys.exit("MUSE_API_BASE phải bắt đầu 
 if KIND not in ("image", "video"): sys.exit("MUSE_KIND phải là image hoặc video")
 if KIND == "video" and DURATION not in (10, 20): sys.exit("MUSE_DURATION chỉ nhận 10 hoặc 20 (tiết kiệm lượt)")
 OUT.mkdir(parents=True, exist_ok=True); REVIEW.mkdir(parents=True, exist_ok=True)
-H = {"Authorization": f"Bearer {KEY}", "Content-Type": "application/json"}
 lock = threading.Lock()
+_ki = [0]
+def H(): return {"Authorization": f"Bearer {KEYS[_ki[0]]}", "Content-Type": "application/json"}
+def next_key(used):
+    """Khoá đang dùng hết lượt (402) → chuyển sang khoá kế tiếp (MUSE_API_KEY_2, _3…). False = hết khoá."""
+    with lock:
+        if _ki[0] != used: return True          # luồng khác đã chuyển rồi
+        if _ki[0] + 1 < len(KEYS):
+            _ki[0] += 1; print(f"  ↻ khoá {used + 1} hết lượt → dùng khoá {_ki[0] + 1}/{len(KEYS)}"); return True
+        return False
 
 VIDEO_MOTION = ("\n\nMOTION (video): the figure performs 2 slow, controlled, complete repetitions of the exercise with full range of motion, "
   "smooth tempo (about 2 seconds down, 1 second up), the teal glow on the working muscles gently pulses brighter on each effort. "
@@ -58,20 +67,23 @@ def submit(prompt):
     url = f"{BASE}/v1/{'images' if KIND == 'image' else 'videos'}"
     body = {"prompt": prompt[:5000], "aspect_ratio": RATIO}
     if KIND == "video": body["duration_seconds"] = DURATION
-    for attempt in range(3):
-        r = requests.post(url, headers=H, json=body, timeout=60)
-        if r.status_code in (200, 201, 202): return r.json()["id"]
-        if r.status_code == 402: raise RuntimeError("Hết lượt (402 insufficient balance)")
+    for attempt in range(6):
+        ki = _ki[0]
+        r = requests.post(url, headers=H(), json=body, timeout=60)
+        if r.status_code in (200, 201, 202): return r.json()["id"], ki
+        if r.status_code == 402:
+            if next_key(ki): continue
+            raise RuntimeError("Hết lượt (402 insufficient balance) — tất cả khoá")
         if r.status_code in (401, 400): raise RuntimeError(f"HTTP {r.status_code}: {safe(r.text)}")
         time.sleep(5 * (attempt + 1))
     raise RuntimeError(f"Gửi job thất bại: HTTP {r.status_code} {safe(r.text)}")
 
-def wait(job_id):
+def wait(job_id, ki):
     url = f"{BASE}/v1/{'images' if KIND == 'image' else 'videos'}/{job_id}"
     t0 = time.time()
     while time.time() - t0 < MAX_WAIT:
         time.sleep(POLL)
-        try: j = requests.get(url, headers=H, timeout=30).json()
+        try: j = requests.get(url, headers={"Authorization": f"Bearer {KEYS[ki]}"}, timeout=30).json()
         except Exception: continue
         if j.get("status") == "done" and j.get("url"): return j
         if j.get("status") == "failed": raise RuntimeError("failed: " + safe(j.get("error")))
@@ -102,8 +114,8 @@ def save_video(item, data):
 def work(item):
     prompt = item["prompt"] + (VIDEO_MOTION if KIND == "video" else "")
     t0 = time.time()
-    job_id = submit(prompt)
-    j = wait(job_id)
+    job_id, ki = submit(prompt)
+    j = wait(job_id, ki)
     meta = (save_image if KIND == "image" else save_video)(item, download(j["url"]))
     meta.update({"id": item["id"], "name": item.get("name", ""), "group": item.get("group", ""), "hash": h(item), "provider": "KVAPI/Muse",
                  "kind": KIND, "ratio": RATIO, "created": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), "seconds": round(time.time() - t0)})
@@ -129,7 +141,7 @@ def main():
     todo = [x for x in items if FORCE or index.get(x["id"], {}).get("hash") != h(x) or not (OUT / index.get(x["id"], {}).get("file", "_")).exists()]
     if LIMIT: todo = todo[:LIMIT]
     cost = len(todo) * (0.5 if KIND == "image" else DURATION / 10)
-    print(f"Muse {KIND}: {len(todo)} mục cần tạo (bỏ qua {len(items) - len(todo)} đã có) · ước tính {cost:g} lượt · {BASE}")
+    print(f"Muse {KIND}: {len(KEYS)} khoá · {len(todo)} mục cần tạo (bỏ qua {len(items) - len(todo)} đã có) · ước tính {cost:g} lượt · {BASE}")
     ok, fail = 0, []
     with cf.ThreadPoolExecutor(WORKERS) as ex:
         futs = {ex.submit(work, it): it for it in todo}
