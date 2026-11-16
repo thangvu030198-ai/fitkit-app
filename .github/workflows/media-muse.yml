@@ -10,6 +10,7 @@ on:
       ids:      { description: "Chỉ tạo các id (vd ex-benchpress,ex-squat) — trống = tất cả", default: "ex-benchpress,ex-squat,ex-pullup,ex-plank,ex-lateralraise,ex-deadlift", required: false }
       limit:    { description: "Tối đa số mục lần này (0 = không giới hạn)", default: "0", required: false }
       duration: { description: "Video: 10 hoặc 20 giây", default: "10", required: false }
+      ratio:    { description: "Khung: trống = mặc định (ảnh 1:1, video 9:16) · video ngang: 16:9", default: "", required: false }
       force:    { description: "Làm lại cả mục đã có (1 = có)", default: "0", required: false }
 
 permissions:
@@ -40,6 +41,7 @@ jobs:
           MUSE_LIMIT: ${{ inputs.limit }}
           MUSE_DURATION: ${{ inputs.duration }}
           MUSE_FORCE: ${{ inputs.force }}
+          MUSE_RATIO: ${{ inputs.ratio }}
           MUSE_WORKERS: "3"
         run: python scripts/gen_muse_media.py
       - name: Lưu bảng duyệt (artifact)
