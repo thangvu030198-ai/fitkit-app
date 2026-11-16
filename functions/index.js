@@ -44,6 +44,8 @@ Object.assign(exports, require("./account"));
 Object.assign(exports, require("./analytics"));
 /* Chụp ảnh món ăn → AI ước lượng khẩu phần (functions/vision.js): analyzeFoodPhoto — secret VISION_API_KEY */
 Object.assign(exports, require("./vision"));
+/* Trợ lý AI + quản lý AI trong bảng quản trị (functions/aicoach.js): aiChat, adminAiConfig — khoá lưu ở ai_secret/main */
+Object.assign(exports, require("./aicoach"));
 
 const REGION = "asia-southeast1";                 // cùng vùng Firestore (Singapore) — client gọi functions("asia-southeast1")
 const RECENT_LOGIN_SEC = 15 * 60;                 // chỉ cho thu hồi ngay sau khi xác thực lại
