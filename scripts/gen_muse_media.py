@@ -125,7 +125,7 @@ def contact_sheet(index):
     items = [x for x in index.values() if (OUT / (x.get("small") or x.get("poster") or "")).exists()]
     items.sort(key=lambda x: x["id"])
     for n in range(0, len(items), 20):
-        part = items[n:n + 20]; cols, cw = 5, 300; ch = cw if KIND == "image" else int(cw * 16 / 9)
+        part = items[n:n + 20]; cols, cw = 5, 300; ch = cw if KIND == "image" else (int(cw * 9 / 16) if RATIO == "16:9" else int(cw * 16 / 9))
         sheet = Image.new("RGB", (cols * cw, ((len(part) + cols - 1) // cols) * (ch + 28)), (12, 18, 24))
         d = ImageDraw.Draw(sheet)
         for i, x in enumerate(part):
