@@ -1,0 +1,52 @@
+name: Firebase — trang đăng nhập tự host (tapeasy.app/__/auth)
+
+# Sửa lỗi đăng nhập Google "Unable to process request due to missing initial state":
+# trình duyệt mới chặn chia sẻ bộ nhớ giữa tapeasy.app và tapeasy-2ce8f.firebaseapp.com.
+# Workflow này chép 5 file trợ giúp đăng nhập của CHÍNH dự án Firebase (Firebase khuyến nghị "self-host the helper code")
+# vào repo tại __/auth/ để GitHub Pages phục vụ ở https://tapeasy.app/__/auth/handler — cùng tên miền với app.
+# Sau khi chạy xong: thêm https://tapeasy.app/__/auth/handler vào Authorized redirect URIs (Google Cloud Console)
+# rồi đặt FK_FEATURES.ownAuthDomain = true trong firebase-config.js.
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "17 3 1 * *"     # làm mới mỗi tháng (Firebase thỉnh thoảng cập nhật trang đăng nhập)
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auth-helper
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SRC: https://tapeasy-2ce8f.firebaseapp.com/__/auth
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tải file trợ giúp đăng nhập của dự án
+        run: |
+          set -euo pipefail
+          mkdir -p __/auth /tmp/auth
+          for f in handler handler.js experiments.js iframe iframe.js; do
+            curl -fsSL --retry 3 --max-time 30 -o "/tmp/auth/$f" "$SRC/$f"
+            test -s "/tmp/auth/$f" || { echo "::error::$f rỗng"; exit 1; }
+          done
+          grep -qi "<html" /tmp/auth/handler || { echo "::error::handler không phải HTML"; exit 1; }
+          grep -qi "<html" /tmp/auth/iframe  || { echo "::error::iframe không phải HTML"; exit 1; }
+          # GitHub Pages phục vụ /__/auth/handler từ handler.html (file không đuôi sẽ bị tải xuống thay vì mở)
+          cp /tmp/auth/handler __/auth/handler.html
+          cp /tmp/auth/iframe  __/auth/iframe.html
+          cp /tmp/auth/handler.js /tmp/auth/experiments.js /tmp/auth/iframe.js __/auth/
+          # Tắt Jekyll để GitHub Pages KHÔNG bỏ qua thư mục bắt đầu bằng "_"
+          touch .nojekyll
+          ls -la __/auth
+      - name: Commit & push
+        run: |
+          git config user.name "tapeasy-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A __/auth .nojekyll
+          git commit -m "Cập nhật trang đăng nhập Firebase tự host (__/auth)" || echo "Không có thay đổi"
+          git push
