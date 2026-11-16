@@ -573,11 +573,78 @@ renderNutritionScreen = function(){
   const rbox = $$("#nu-recipes", el)[0] || $("#nu-recipes");
   if(rbox) rbox.addEventListener("click", e=>{ const c = e.target && e.target.closest && e.target.closest("[data-recipe]"); if(c) openRecipe(c.dataset.recipe); });
   nuRecipesMore(recipes, NU_RC_FIRST, hk);
-  $("#nu-see-all").addEventListener("click", ()=>{ nuUI.tag = "all"; nuRefreshRecipes(); });
+  $("#nu-see-all").addEventListener("click", ()=> nuOpenAllRecipes());   // 16/11: mở danh sách dọc tất cả món — cuộn để chọn
   $$(".nu-gauge-card [data-nu-why]", el).forEach(b=> b.addEventListener("click", e=>{ e.stopPropagation(); try{ NutriPro.ui.openProteinWhy(); }catch(_){} }));
   $$("[data-nu-kcal]", el).forEach(b=> b.addEventListener("click", ()=> nuSetHideKcal(b.dataset.nuKcal === "hide")));
   bindPlanCard(el);
 };
+
+/* 16/11: "Xem tất cả" → tờ danh sách DỌC toàn bộ món (ảnh + tên + cách nấu + calo), có tìm kiếm không dấu và lọc nhanh; chạm món để xem công thức.
+   Quay lại từ công thức vẫn về đúng danh sách (giữ ô tìm, bộ lọc, vị trí cuộn). */
+let _nuAll = { q: "", tag: null, top: 0 };
+function nuOpenAllRecipes(){
+  const hk = nuHideKcal();
+  const tags = hk ? RECIPE_TAGS.filter(t=> t.id !== "giam-mo") : RECIPE_TAGS;
+  if(!_nuAll.tag || !tags.some(t=> t.id === _nuAll.tag)) _nuAll.tag = tags.some(t=> t.id === nuUI.tag) ? nuUI.tag : "all";
+  const norm = x=> String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d");
+  if(!document.getElementById("nu-all-css")){
+    const st = document.createElement("style"); st.id = "nu-all-css";
+    st.textContent = `.nu-all-tags{ display:flex; gap:6px; overflow-x:auto; margin:0 -4px 10px; padding:2px 4px 4px; scrollbar-width:none; } .nu-all-tags::-webkit-scrollbar{ display:none; }
+.nu-all-tags button{ flex:0 0 auto; min-height:36px; padding:0 12px; border-radius:999px; border:1px solid rgba(128,128,128,.35); background:transparent; color:inherit; font:600 12.5px/1 inherit; white-space:nowrap; }
+.nu-all-tags button.on{ background:var(--primary,#5EE6C7); color:var(--navy,#061A24); border-color:transparent; }
+.nu-all-list{ max-height:58vh; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; margin:0 -4px; padding:0 4px 8px; }
+.nu-all-row{ display:flex; align-items:center; gap:12px; width:100%; min-height:72px; padding:8px 10px; margin-bottom:8px; border-radius:16px; border:1px solid rgba(128,128,128,.22); background:rgba(128,128,128,.08); color:inherit; font:inherit; text-align:left; cursor:pointer; }
+.nu-all-row:active{ transform:scale(.985); }
+.nu-all-pic{ flex:0 0 56px; width:56px; height:56px; border-radius:50%; background:rgba(0,0,0,.28); display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:26px; }
+.nu-all-pic .fp{ width:52px; height:52px; object-fit:contain; }
+.nu-all-t{ flex:1 1 auto; min-width:0; } .nu-all-t b{ display:block; font-size:14.5px; line-height:1.3; overflow-wrap:anywhere; }
+.nu-all-t small{ display:block; margin-top:3px; font-size:12px; color:var(--text-muted); }
+.nu-all-k{ flex:0 0 auto; text-align:right; font-weight:700; font-size:14px; white-space:nowrap; } .nu-all-k small{ display:block; font-weight:500; font-size:11px; color:var(--text-muted); }
+.nu-all-n{ font-size:12px; color:var(--text-muted); margin:0 0 8px; }`;
+    document.head.appendChild(st);
+  }
+  openSheet(`
+    <div class="sheet-header"><h3>Món healthy</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
+    <div class="search-box" style="margin-bottom:10px;"><span class="material-symbols-rounded" style="color:var(--text-dim);">search</span><input type="text" id="nu-all-q" placeholder="Tìm món — VD: ức gà, yến mạch…" autocomplete="off" value="${escapeHtml(_nuAll.q)}"></div>
+    <div class="nu-all-tags" role="group" aria-label="Lọc món">${tags.map(t=> `<button type="button" data-all-tag="${t.id}" class="${t.id === _nuAll.tag ? "on" : ""}" aria-pressed="${t.id === _nuAll.tag}">${t.emoji} ${t.label}</button>`).join("")}</div>
+    <p class="nu-all-n" id="nu-all-n" aria-live="polite"></p>
+    <div class="nu-all-list" id="nu-all-list"></div>`);
+  const list = document.getElementById("nu-all-list"), cnt = document.getElementById("nu-all-n"), qInp = document.getElementById("nu-all-q");
+  const paint = keepTop=>{
+    const nq = norm(_nuAll.q);
+    const hit = RECIPES.filter(r=> recipeMatchesTag(r, _nuAll.tag) && (!nq || norm(r.name).indexOf(nq) >= 0));
+    cnt.textContent = hit.length ? `${hit.length} món · chạm để xem cách nấu và ghi vào bữa` : "";
+    list.innerHTML = hit.map(r=>{
+      const m = recipeMacros(r);
+      return `<button type="button" class="nu-all-row" data-all-recipe="${escapeHtml(r.id)}">
+        <span class="nu-all-pic">${foodPic(r.id)}</span>
+        <span class="nu-all-t"><b>${escapeHtml(r.name)}</b><small>${escapeHtml((COOK_METHODS[r.method] || {}).label || "")} · ${escapeHtml(r.min)} phút · ${r.cuisine === "vn" ? "Việt" : "Âu"} · ${["Dễ","Vừa","Khó"][r.level-1] || ""}</small></span>
+        ${hk ? "" : `<span class="nu-all-k">${m.kcal.toLocaleString("vi-VN")}<small>kcal · ${Math.round(m.protein || 0)}g đạm</small></span>`}
+      </button>`; }).join("") || `<p class="empty-hint">Không thấy món phù hợp — thử từ khoá khác hoặc bỏ bộ lọc.</p>`;
+    list.scrollTop = keepTop ? _nuAll.top : 0;
+  };
+  paint(true);
+  qInp.addEventListener("input", ()=>{ _nuAll.q = qInp.value; paint(false); });
+  $$("[data-all-tag]").forEach(b=> b.addEventListener("click", ()=>{
+    _nuAll.tag = b.dataset.allTag;
+    $$("[data-all-tag]").forEach(x=>{ const on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-pressed", String(on)); });
+    paint(false);
+  }));
+  list.addEventListener("scroll", ()=>{ _nuAll.top = list.scrollTop; }, { passive:true });
+  list.addEventListener("click", e=>{
+    const c = e.target && e.target.closest && e.target.closest("[data-all-recipe]"); if(!c) return;
+    _nuAll.top = list.scrollTop;
+    openRecipe(c.dataset.allRecipe);
+    try{   // thêm nút quay lại danh sách vào tờ công thức
+      const h = document.querySelector("#sheet-content .sheet-header");
+      if(h && !document.getElementById("nu-all-back")){
+        const b = document.createElement("button"); b.type = "button"; b.className = "icon-btn"; b.id = "nu-all-back"; b.setAttribute("aria-label", "Quay lại danh sách món");
+        b.innerHTML = `<span class="material-symbols-rounded">arrow_back</span>`; b.addEventListener("click", ()=> nuOpenAllRecipes());
+        h.insertBefore(b, h.firstChild);
+      }
+    }catch(_){}
+  });
+}
 
 /* Nút "+" lớn: tự chọn bữa gần giờ hiện tại nhất */
 function openQuickAddMeal(){
