@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       kind:     { description: "image | video", default: "image", required: true }
-      ids:      { description: "Chỉ tạo các id (vd ex-benchpress,ex-squat) — trống = tất cả", default: "ex-benchpress,ex-squat,ex-pullup,ex-plank,ex-lateralraise,ex-deadlift", required: false }
+      ids:      { description: "Các id (vd ex-benchpress,ex-squat) — gõ all = cả 68 bài", default: "ex-benchpress,ex-squat,ex-pullup,ex-plank,ex-lateralraise,ex-deadlift", required: false }
       limit:    { description: "Tối đa số mục lần này (0 = không giới hạn)", default: "0", required: false }
       duration: { description: "Video: 10 hoặc 20 giây", default: "10", required: false }
       ratio:    { description: "Khung: trống = mặc định (ảnh 1:1, video 9:16) · video ngang: 16:9", default: "", required: false }
