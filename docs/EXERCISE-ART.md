@@ -32,3 +32,10 @@ Mục tiêu: có bộ hình bài tập **của riêng TapEasy**, nhận ra ngay 
 - Prompt chỉ mô tả động tác bằng chữ; không dùng ảnh tham chiếu của bên thứ ba.
 - Lưu `index.json` + `_review/log.json` (prompt, model, ngày tạo) làm bằng chứng tự tạo.
 - Kiểm tra điều khoản dùng thương mại của nhà cung cấp model ảnh trước khi phát hành.
+
+
+## Duyệt chuyên môn (17/11/2026)
+- 68/68 ảnh đạt sau 2 vòng sửa prompt (front squat, hip thrust, hanging leg raise, leg press, pec deck, Bulgarian split squat, walking, preacher curl).
+- 67/68 clip 16:9 đạt. Clip preacher curl chưa đạt sau 3 lần render (model video không dựng được ghế preacher) → ẩn bằng `HOLD_VIDEO` trong exercise-art.js; app dùng ảnh minh hoạ + video nguồn gốc.
+- Tiêu chí duyệt: đúng bài & dụng cụ, đúng tư thế/biên độ, đúng nhóm cơ phát sáng, an toàn khớp (lưng trung tính, gối theo mũi chân), dáng người mẫu fitness, không chữ/logo.
+- Thêm bài vào HOLD dạng "key" (ẩn mọi bản) hoặc "key@hash" (chỉ ẩn bản lỗi đó).
