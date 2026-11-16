@@ -708,7 +708,7 @@
   "file": "ex-preacher.mp4",
   "poster": "ex-preacher.jpg",
   "duration": 10.0,
-  "bytes": 287833,
+  "bytes": 302620,
   "id": "ex-preacher",
   "name": "Cuốn tạ ghế Scott (Preacher Curls)",
   "group": "Tay trước",
@@ -716,8 +716,8 @@
   "provider": "KVAPI/Muse",
   "kind": "video",
   "ratio": "16:9",
-  "created": "2026-11-16T18:56:20Z",
-  "seconds": 58
+  "created": "2026-11-16T19:01:48Z",
+  "seconds": 67
  },
  {
   "file": "ex-pullover.mp4",
