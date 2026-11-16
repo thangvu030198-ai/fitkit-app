@@ -35,6 +35,9 @@ jobs:
       - name: Tạo media
         env:
           MUSE_API_KEY: ${{ secrets.MUSE_API_KEY }}
+          MUSE_API_KEY_2: ${{ secrets.MUSE_API_KEY_2 }}
+          MUSE_API_KEY_3: ${{ secrets.MUSE_API_KEY_3 }}
+          MUSE_API_KEY_4: ${{ secrets.MUSE_API_KEY_4 }}
           MUSE_API_BASE: ${{ vars.MUSE_API_BASE }}
           MUSE_KIND: ${{ inputs.kind }}
           MUSE_IDS: ${{ inputs.ids }}
