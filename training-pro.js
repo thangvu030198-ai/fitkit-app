@@ -893,7 +893,7 @@ function buildSummary(s){
   const exercises = [];
   s.items.forEach(it=>{
     const rows = (s.sets||{})[it.uid]; if(!rows) return;
-    const done = rows.filter(r=> r.done); if(!done.length) return;
+    const done = rows.filter(r=> r.done && r.type !== "w"); if(!done.length) return;   // 16/11: hiệp khởi động không tính vào tổng kết
     let v = 0; done.forEach(r=> v += num(r.kg) * num(r.reps));
     vol += v;
     if(!s.completed.includes(it.uid)) return;

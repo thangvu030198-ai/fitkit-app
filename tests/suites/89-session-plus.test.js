@@ -97,6 +97,28 @@ module.exports = {
       C("recordExerciseResult", "row", "Row", "6-8", [{kg:40,reps:8},{kg:40,reps:8,type:"lạ"}], false);
       const r = app.evj("state.setLog.row"); assert.ok(!r.all); assert.ok(r.sets.every(s=> !s.type));
     });
+    t.test("SP-30: thêm bài giữa buổi — chèn ngay sau bài đang tập, không cắt ngang superset; tuỳ chọn lưu vào giáo án", ()=>{
+      const W = {}; W.window = W; const st = {}; const plan = { days:{ T2:{ items:[] } } };
+      new Function("window", "state", "saveState", "getActivePlan", "uid", read("session-plus.js").replace('typeof window !== "undefined" ? window : globalThis', "window"))(W, st, ()=>{}, ()=> plan, ()=> "u" + Math.random().toString(36).slice(2, 8));
+      const Q = W.FKSessionPlus;
+      const s = { dayKey:"T2", idx:1, items:[{uid:"a"},{uid:"b"},{uid:"c"},{uid:"d"}] };
+      assert.equal(Q.insertPos(s), 2);
+      s._tp = { groupOf:{ b:0, c:0 }, groups:[["b","c"]] };
+      assert.equal(Q.insertPos(s), 3, "đang ở superset b+c → chèn sau c");
+      const made = Q.addToSession(s, [{ exerciseId:"squat", sets:4, reps:"6-8", restSec:120 }, { name:"Cable Y Raise", muscle:"Vai", sets:99, restSec:5000, exDbId:"x1" }], false);
+      assert.deepEqual(s.items.map(i=> i.uid.replace(/_.*$/, "").replace(/^u.*/, "new")), ["a","b","c","squat","new","d"]);
+      assert.equal(made[0].exerciseId, "squat"); assert.equal(made[0].sets, 4);
+      assert.equal(made[1].custom.name, "Cable Y Raise"); assert.equal(made[1].sets, 20, "kẹp ≤ 20 hiệp"); assert.equal(made[1].restSec, 900);
+      assert.equal(plan.days.T2.items.length, 0, "không tick → chỉ thêm cho buổi hôm nay");
+      Q.addToSession(s, [{ exerciseId:"plank" }], true);
+      assert.equal(plan.days.T2.items.length, 1); assert.equal(st.spAddToPlan, 1, "nhớ lựa chọn");
+      assert.ok(new Set(s.items.map(i=> i.uid)).size === s.items.length, "uid không trùng");
+    });
+    t.test("SP-31: tổng kết buổi bỏ hiệp khởi động; màn superset được nâng cấp", ()=>{
+      assert.ok(/r\.done && r\.type !== "w"/.test(read("training-pro.js")));
+      const src = read("session-plus.js");
+      assert.ok(/enhanceGroup/.test(src) && /data-tp-row/.test(src) && /FKEquip\.mount/.test(src) && /openExDbPicker/.test(src));
+    });
     t.test("SP-20: đã nối vào app — index.html (sau training-pro), sw.js, prepare-www.sh; nút lưu truyền loại hiệp", ()=>{
       const html = read("index.html");
       assert.ok(html.indexOf("session-plus.js") > html.indexOf("training-pro.js"));

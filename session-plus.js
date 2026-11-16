@@ -7,6 +7,8 @@
    5. Dải bài tập: thấy cả buổi, chạm để tập bài khác trước; "Để cuối buổi" khi máy đang bận.
    6. Ghi chú dính theo bài (nấc ghế, tay nắm…) — hiện lại mọi buổi sau.
    7. Thanh số liệu trực tiếp: thời gian · số hiệp · khối lượng.
+   8. Thêm bài (thư viện lõi / 800+ bài) và đổi dụng cụ NGAY GIỮA BUỔI — không phải thoát ra sửa giáo án.
+   9. Màn superset / circuit cũng có loại hiệp, "lần trước" từng hiệp và kỷ lục tức thì.
    Không phụ thuộc mạng; dữ liệu nằm trong state (đồng bộ theo tài khoản như phần còn lại). */
 (function(G){
 "use strict";
@@ -114,9 +116,9 @@ const CSS = `
 .set-row[data-sp-t="d"]{ margin-left:14px; }
 .set-row.sp-pr{ box-shadow:0 0 0 2px #FFC44C inset; animation:spPr .7s ease; }
 @keyframes spPr{ 0%{ transform:scale(1); } 35%{ transform:scale(1.025); } 100%{ transform:scale(1); } }
-.sp-prev{ display:flex; align-items:center; gap:8px; margin:-3px 0 2px 48px; font-size:12px; min-height:20px; }
+.sp-prev{ display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; margin:-3px 0 2px 48px; font-size:12px; min-height:20px; }
 .sp-prev button{ background:none; border:0; padding:2px 0; color:inherit; opacity:.62; font:inherit; display:inline-flex; align-items:center; gap:3px; }
-.sp-prev button .material-symbols-rounded{ font-size:13px; }
+.sp-prev button .material-symbols-rounded{ font-size:13px; } .sp-prev button, .sp-prev em{ white-space:nowrap; }
 .sp-prev em{ font-style:normal; font-weight:700; padding:1px 7px; border-radius:999px; background:rgba(255,255,255,.08); }
 .sp-prev em.up{ background:rgba(94,230,199,.2); color:var(--mint,#5EE6C7); } .sp-prev em.dn{ background:rgba(255,107,107,.16); color:#FF8A8A; }
 .sp-prev em.pr{ background:rgba(255,196,76,.22); color:#FFC44C; }
@@ -128,6 +130,12 @@ const CSS = `
 .sp-menu button.del{ grid-column:1 / -1; text-align:center; color:#FF8A8A; }
 .sp-add{ width:100%; margin-top:6px; height:40px; border-radius:12px; border:1px dashed rgba(255,255,255,.25); background:transparent; color:inherit; font:600 13.5px/1 inherit; display:flex; align-items:center; justify-content:center; gap:6px; }
 .sp-add .material-symbols-rounded{ font-size:18px; }
+.sp-acts{ display:flex; gap:8px; margin:0 0 10px; }
+.sp-acts button{ flex:1; height:38px; border-radius:12px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.05); color:inherit; font:600 13px/1 inherit; display:flex; align-items:center; justify-content:center; gap:6px; }
+.sp-acts button .material-symbols-rounded{ font-size:17px; }
+.sp-acts + .fk-eq{ margin-top:0; margin-bottom:12px; }
+.sp-toplan{ display:flex; gap:8px; align-items:flex-start; font-size:13px; cursor:pointer; } .sp-toplan input{ width:20px; height:20px; flex:0 0 20px; }
+.tp-ss-ex .sp-prev{ margin-left:42px; }
 .sp-hint{ font-size:12px; opacity:.6; margin-top:6px; text-align:center; }
 @media (prefers-reduced-motion:reduce){ .set-row.sp-pr, .sp-menu{ animation:none; } }
 html[data-theme="light"] .sp-chip, body.light .sp-chip{ background:rgba(6,26,36,.06); border-color:rgba(6,26,36,.12); }
@@ -155,11 +163,223 @@ function rerender(){
   try{ if(G._restEnd){ const box = document.getElementById("set-rest"); if(box) box.hidden = false; if(typeof fkRestSync === "function") fkRestSync(); } }catch(e){}
 }
 
+/* ---------- dải bài tập + số liệu trực tiếp (dùng chung cho bài đơn và superset) ---------- */
+function topBar(s, sc, item){
+  const head = sc.querySelector(".progress-row");
+  const gset = s._tp && s._tp.groupOf && s._tp.groupOf[item.uid] !== undefined ? (s._tp.groups[s._tp.groupOf[item.uid]] || []) : [];
+  const strip = document.createElement("div"); strip.className = "sp-strip"; strip.setAttribute("role", "list"); strip.setAttribute("aria-label", "Các bài trong buổi");
+  strip.innerHTML = s.items.map((it, j) => {
+    const cur = j === s.idx || (j > s.idx && gset.indexOf(it.uid) >= 0), done = !cur && j < s.idx, skipped = done && s.completed.indexOf(it.uid) < 0;
+    const nm = getExerciseMeta(it).name || "Bài " + (j + 1);
+    return `<button type="button" role="listitem" class="sp-chip ${cur ? "cur" : done ? "ok" : ""}" data-sp-jump="${j}" ${done || cur ? "disabled" : ""} aria-label="${esc(nm)}${cur ? " — đang tập" : done ? (skipped ? " — đã bỏ qua" : " — đã xong") : " — chạm để tập trước"}">${done ? `<span class="material-symbols-rounded">${skipped ? "remove" : "check"}</span>` : `<i>${j + 1}</i>`}<span class="t">${esc(nm)}</span></button>`;
+  }).join("");
+  const stat = document.createElement("div"); stat.className = "sp-stats"; stat.setAttribute("aria-live", "off");
+  const paintStats = () => { const x = stats(s); stat.innerHTML = `${sc.querySelector(".tp-sbar") ? "" : `<span><span class="material-symbols-rounded">timer</span><b data-sp-time>${fmtTime(Date.now() - (s.startedAt || Date.now()))}</b></span>`}<span><span class="material-symbols-rounded">done_all</span>${x.sets} hiệp</span><span><span class="material-symbols-rounded">weight</span>${typeof fmtVN === "function" ? fmtVN(x.vol) : x.vol} kg</span>`; };
+  paintStats();
+  if(head && head.parentNode){ head.parentNode.insertBefore(strip, head); const tr = sc.querySelector(".progress-track"); (tr || head).insertAdjacentElement("afterend", stat); }
+  const curChip = strip.querySelector(".cur"); if(curChip) try{ strip.scrollLeft = Math.max(0, curChip.offsetLeft - 60); }catch(e){}
+  clearInterval(tick);
+  tick = setInterval(() => { const el = document.querySelector("#sheet-content [data-sp-time]"); const ss = S(); if(!el || !ss || ss.finished){ clearInterval(tick); return; } el.textContent = fmtTime(Date.now() - (ss.startedAt || Date.now())); }, 1000);
+  strip.addEventListener("click", e => {
+    const b = e.target.closest ? e.target.closest("[data-sp-jump]") : null; if(!b || b.disabled) return;
+    const j = Number(b.dataset.spJump), it = s.items[j];
+    if(!(j > s.idx) || !it) return;
+    if(grouped(s, it) || grouped(s, item)){ say("Bài nằm trong superset — tập theo thứ tự nhóm nhé", "info"); return; }
+    try{ stopSetRest(); }catch(e2){}
+    moveItem(s.items, j, s.idx);
+    say("Tập trước: " + (getExerciseMeta(it).name || ""), "swap_vert");
+    renderSessionStep();
+  });
+  return { stat, paintStats };
+}
+
+/* ---------- hàng hiệp: loại hiệp · lần trước · kỷ lục tức thì (bài đơn + superset) ---------- */
+function rowsUI(o){
+  const { s, st, sc, scope, rows, last, timed, key, meta } = o;
+  const paint = () => {
+    rows.forEach((r, i) => {
+      const el = o.rowEl(i); if(!el) return;
+      const t = tOf(r); el.dataset.spT = t;
+      const b = el.querySelector("b");
+      if(b){ if(b.dataset.spSfx === undefined) b.dataset.spSfx = /\+\s*$/.test(b.textContent) ? "+" : "";
+        b.textContent = label(rows, i) + b.dataset.spSfx; b.className = "sp-badge"; b.setAttribute("role", "button"); b.tabIndex = 0; b.dataset.spI = i;
+        b.setAttribute("aria-label", "Hiệp " + (i + 1) + " — " + TYPES[t].n + ". Chạm để đổi loại hiệp"); }
+      if(timed) return;
+      let line = el.nextElementSibling; if(!line || !line.classList.contains("sp-prev")){ line = document.createElement("div"); line.className = "sp-prev"; el.insertAdjacentElement("afterend", line); }
+      const p = prevFor(last, rows, i);
+      const d = p ? delta(p, r.kg, r.reps) : "";
+      const cls = d.charAt(0) === "+" ? "up" : d.charAt(0) === "−" ? "dn" : "";
+      line.innerHTML = (p ? `<button type="button" data-sp-copy="${i}" aria-label="Chép kết quả lần trước vào hiệp ${i + 1}"><span class="material-symbols-rounded">history</span>Lần trước ${p.kg > 0 ? kgTxt(p.kg) + " kg × " : ""}${p.reps}</button>` : "")
+        + (d && r.done && t !== "w" ? `<em class="${cls}">${d === "=" ? "bằng lần trước" : d}</em>` : "")
+        + (r._pr ? `<em class="pr">🏆 Kỷ lục</em>` : "");
+      line.hidden = !line.innerHTML;
+    });
+  };
+  paint();
+  const closeMenu = () => { const m = scope.querySelector(".sp-menu"); if(m) m.remove(); };
+  const openMenu = i => {
+    const had = scope.querySelector(`.sp-menu[data-i="${i}"]`); closeMenu(); if(had) return;
+    const el = o.rowEl(i); if(!el) return;
+    const cur = tOf(rows[i]);
+    const m = document.createElement("div"); m.className = "sp-menu"; m.dataset.i = i; m.setAttribute("role", "menu");
+    m.innerHTML = (timed ? [] : o.types).map(t => `<button type="button" role="menuitemradio" aria-checked="${cur === t}" class="${cur === t ? "on" : ""}" data-sp-type="${t}"><b>${TYPES[t].s ? TYPES[t].s + " · " : ""}${TYPES[t].n}</b><small>${TYPES[t].d}</small></button>`).join("")
+      + (o.allowDel && rows.length > 1 ? `<button type="button" role="menuitem" class="del" data-sp-del="1"><b>Xoá hiệp này</b></button>` : "");
+    if(!m.innerHTML) return;
+    const after = el.nextElementSibling && el.nextElementSibling.classList.contains("sp-prev") ? el.nextElementSibling : el;
+    after.insertAdjacentElement("afterend", m);
+    m.addEventListener("click", e => {
+      const b = e.target.closest ? e.target.closest("button") : null; if(!b) return;
+      if(b.dataset.spDel){ rows.splice(i, 1); rerender(); return; }
+      const t = b.dataset.spType;
+      if(t) rows[i].type = t; else delete rows[i].type;
+      if(t === "f" && !rows[i].rpe){ rows[i].rpe = "10"; const sel = el.querySelector("select.rpe"); if(sel) sel.value = "10"; }
+      if(!st.spHintDone){ st.spHintDone = 1; const h = sc.querySelector(".sp-hint"); if(h) h.remove(); }
+      closeMenu(); paint(); if(o.onChange) o.onChange();
+    });
+  };
+  scope.addEventListener("click", e => {
+    const t = e.target; if(!t || !t.closest) return;
+    const badge = t.closest("b.sp-badge");
+    if(badge){ openMenu(Number(badge.dataset.spI)); return; }
+    const cp = t.closest("[data-sp-copy]");
+    if(cp){
+      const i = Number(cp.dataset.spCopy), r = rows[i], p = prevFor(last, rows, i); if(!r || !p) return;
+      if(r.done){ say("Hiệp đã ✓ — bỏ ✓ nếu muốn sửa", "info"); return; }
+      const el = o.rowEl(i), k = el.querySelector(o.kgSel), rp = el.querySelector(o.repsSel);
+      if(p.kg > 0){ r.kg = p.kg; if(k) k.value = p.kg; } r.reps = p.reps; if(rp) rp.value = p.reps; r._edited = true; r._repsEdited = true;
+      paint();
+    }
+  });
+  scope.addEventListener("keydown", e => { if((e.key === "Enter" || e.key === " ") && e.target && e.target.classList && e.target.classList.contains("sp-badge")){ e.preventDefault(); openMenu(Number(e.target.dataset.spI)); } });
+  scope.addEventListener("change", () => setTimeout(paint, 0));
+  /* ✓: kỷ lục ngay tại hiệp · drop set không nghỉ */
+  o.doneBtns.forEach(([btn, i]) => btn.addEventListener("click", () => {
+    const r = rows[i]; if(!r) return;
+    if(r.done){
+      const nx = rows[i + 1];
+      if(o.allowDel && nx && tOf(nx) === "d"){ try{ stopSetRest(); }catch(e){} say("Drop set — hạ tạ, làm tiếp ngay!", "bolt"); }
+      if(!timed && tOf(r) !== "w" && s.isToday){
+        s._livePr = s._livePr || {};
+        const e = prCheck((st.setHist || {})[key], r.kg, r.reps, s._livePr[key]);
+        if(e){
+          s._livePr[key] = e; rows.forEach(x => { delete x._pr; }); r._pr = 1;
+          const el = o.rowEl(i); if(el){ el.classList.remove("sp-pr"); void el.offsetWidth; el.classList.add("sp-pr"); }
+          say(`🏆 Kỷ lục mới ngay hiệp này: ${meta.name} ~${Math.round(e)} kg`, "military_tech");
+          try{ if(navigator.vibrate) navigator.vibrate([30, 40, 60]); }catch(e2){}
+        }
+      }
+    } else if(r._pr){ delete r._pr; }
+    paint(); if(o.onChange) o.onChange();
+  }));
+}
+
+/* ---------- thêm bài / đổi dụng cụ ngay giữa buổi ---------- */
+/* Vị trí chèn bài mới: ngay sau bài đang tập (đang ở superset → sau bài cuối của nhóm, không cắt ngang nhóm). */
+function insertPos(s){
+  const it = s.items[s.idx]; let pos = s.idx;
+  if(it && grouped(s, it)){ const g = s._tp.groups[s._tp.groupOf[it.uid]] || []; s.items.forEach((x, j) => { if(g.indexOf(x.uid) >= 0 && j > pos) pos = j; }); }
+  return Math.min(s.items.length, pos + 1);
+}
+function newItem(src){
+  const id = typeof uid === "function" ? uid() : String(Date.now()) + Math.random().toString(36).slice(2, 7);
+  const sets = Math.min(MAX, Math.max(1, Math.round(num(src.sets)) || 3)), rest = Math.min(900, Math.max(0, Math.round(num(src.restSec)) || 60));
+  if(src.exerciseId) return { uid: src.exerciseId + "_" + id, exerciseId: src.exerciseId, custom: null, sets, reps: src.reps || "10-12", restSec: rest, clipId: null };
+  return { uid: id, exerciseId: null, custom: { name: String(src.name || "Bài tập").slice(0, 60), muscle: src.muscle || "", equipment: src.equipment || "", guide: src.guide || "", img: src.img || "", exDbId: src.exDbId }, sets, reps: src.reps || "10-12", restSec: rest, clipId: null };
+}
+function addToSession(s, srcs, toPlan){
+  const st = ST(); let pos = insertPos(s); const made = [];
+  srcs.forEach(src => { const it = newItem(src); s.items.splice(pos++, 0, it); made.push(it); });
+  if(toPlan){ try{ const plan = getActivePlan(), day = plan && plan.days && plan.days[s.dayKey]; if(day && Array.isArray(day.items)) made.forEach(it => day.items.push(it)); }catch(e){} }
+  if(st){ st.spAddToPlan = toPlan ? 1 : 0; } save();
+  return made;
+}
+function openAddSheet(s, st, cur){
+  const curMuscle = String((getExerciseMeta(cur) || {}).muscle || "");
+  const lib = (typeof EXERCISES !== "undefined" && EXERCISES) || {};
+  const norm = x => String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d");
+  const inSession = new Set(s.items.map(it => it.exerciseId).filter(Boolean));
+  const all = Object.keys(lib).map(id => ({ id, ex: lib[id], same: curMuscle && lib[id].muscle === curMuscle ? 0 : 1 })).sort((a, b) => a.same - b.same);
+  openSheet(`
+    <div class="sheet-header"><h3>Thêm bài vào buổi này</h3><button type="button" class="icon-btn" id="sp-add-back" aria-label="Quay lại buổi tập"><span class="material-symbols-rounded">arrow_back</span></button></div>
+    <p class="small-note" style="margin:-4px 0 10px;">Bài mới sẽ nằm ngay sau bài bạn đang tập.</p>
+    <label class="sp-toplan"><input type="checkbox" id="sp-add-plan" ${st.spAddToPlan ? "checked" : ""}> <span>Lưu luôn vào giáo án của ngày này (các tuần sau cũng có)</span></label>
+    <div class="search-box" style="margin:10px 0;"><span class="material-symbols-rounded" style="color:var(--text-dim);">search</span><input type="text" id="sp-add-q" placeholder="Tìm bài — VD: đẩy ngực, kéo xà…" autocomplete="off"></div>
+    ${typeof openExDbPicker === "function" ? `<button type="button" class="btn btn-ghost btn-block btn-sm" id="sp-add-exdb" style="margin-bottom:10px;"><span class="material-symbols-rounded">library_books</span>Tìm trong thư viện 800+ bài</button>` : ""}
+    <div id="sp-add-list" style="max-height:46vh;overflow-y:auto;"></div>`);
+  const sc = document.getElementById("sheet-content"), list = sc.querySelector("#sp-add-list");
+  const toPlan = () => !!(sc.querySelector("#sp-add-plan") || {}).checked;
+  const back = msg => { if(msg) say(msg, "add_circle"); renderSessionStep(); };
+  const paint = q => {
+    const nq = norm(q);
+    const hit = all.filter(x => !nq || norm(x.ex.name).indexOf(nq) >= 0 || norm(x.ex.muscle).indexOf(nq) >= 0).slice(0, 60);
+    list.innerHTML = hit.map(x => `<div class="food-result" role="button" tabindex="0" data-sp-pick="${esc(x.id)}" style="cursor:pointer;"><div><div class="name">${esc(x.ex.name)}${inSession.has(x.id) ? ` <small style="opacity:.6">· đã có trong buổi</small>` : ""}</div><div class="kcal">${esc(x.ex.muscle || "")}${!x.same && !nq ? " · cùng nhóm cơ đang tập" : ""}</div></div><span class="material-symbols-rounded" style="color:var(--text-dim);">add_circle</span></div>`).join("") || `<p class="empty-hint">Không thấy bài phù hợp — thử thư viện 800+ bài.</p>`;
+  };
+  paint("");
+  sc.querySelector("#sp-add-q").addEventListener("input", e => paint(e.target.value));
+  sc.querySelector("#sp-add-back").addEventListener("click", () => back());
+  const pick = el => { const id = el.dataset.spPick, ex = lib[id]; if(!ex) return; addToSession(s, [{ exerciseId: id, sets: ex.sets, reps: ex.reps, restSec: ex.restSec }], toPlan()); back("Đã thêm: " + ex.name); };
+  list.addEventListener("click", e => { const el = e.target.closest ? e.target.closest("[data-sp-pick]") : null; if(el) pick(el); });
+  list.addEventListener("keydown", e => { if(e.key === "Enter" && e.target.dataset && e.target.dataset.spPick) pick(e.target); });
+  const xb = sc.querySelector("#sp-add-exdb");
+  if(xb) xb.addEventListener("click", () => {
+    const plan = toPlan(); let picked = false;
+    const pauseHook = typeof onSheetCloseHook === "function" ? onSheetCloseHook : null;
+    /* thư viện 800+ tự đóng sheet khi chọn xong → hoãn "tạm dừng buổi" 1 nhịp; chọn được bài thì quay lại buổi tập luôn */
+    const arm = () => { onSheetCloseHook = () => { setTimeout(() => { if(!picked && pauseHook) pauseHook(); }, 0); }; };
+    try{
+      openExDbPicker(items => { picked = true; const arr = Array.isArray(items) ? items : [items]; const made = addToSession(s, arr, plan); s.paused = false; back(made.length > 1 ? `Đã thêm ${made.length} bài` : "Đã thêm: " + ((arr[0] || {}).name || "bài mới")); }, { multi: true });
+      arm();
+    }catch(e){ back(); }
+  });
+}
+function actsRow(s, st, sc, item, host, single){
+  if(!host || sc.querySelector(".sp-acts")) return;
+  const row = document.createElement("div"); row.className = "sp-acts";
+  const fam = single && G.FKEquip && typeof G.FKEquip.familyOf === "function" ? G.FKEquip.familyOf(item) : null;
+  row.innerHTML = (fam ? `<button type="button" data-sp-act="eq" aria-expanded="false"><span class="material-symbols-rounded">swap_horiz</span>Đổi dụng cụ</button>` : "")
+    + `<button type="button" data-sp-act="add"><span class="material-symbols-rounded">add</span>Thêm bài</button>`;
+  host.insertAdjacentElement("afterend", row);
+  row.addEventListener("click", e => {
+    const b = e.target.closest ? e.target.closest("[data-sp-act]") : null; if(!b) return;
+    if(b.dataset.spAct === "add"){ try{ stopSetRest(); }catch(e2){} openAddSheet(s, st, item); return; }
+    const old = document.getElementById("fk-eq");
+    if(old){ old.remove(); b.setAttribute("aria-expanded", "false"); return; }
+    let plan = null; try{ plan = getActivePlan(); }catch(e2){}
+    const ok = G.FKEquip.mount({ plan, dayKey: s.dayKey, item, host: row, reopen: () => {
+      const rows = s.sets && s.sets[item.uid];
+      if(rows && !rows.some(r => r.done)){ delete s.sets[item.uid]; if(s._sp) delete s._sp[item.uid]; }   // chưa ghi hiệp nào → điền sẵn lại theo bài mới (mức tạ ghi riêng từng bài)
+      renderSessionStep();
+    } });
+    b.setAttribute("aria-expanded", ok ? "true" : "false");
+    if(!ok) say("Bài này chưa có lựa chọn dụng cụ khác", "info");
+  });
+}
+
+/* ---------- màn superset / circuit của training-pro ---------- */
+function enhanceGroup(s, st, sc){
+  const item = s.items[s.idx]; if(!item || !grouped(s, item)) return;
+  css();
+  const uids = s._tp.groups[s._tp.groupOf[item.uid]] || [];
+  const items = uids.map(u => s.items.find(it => it.uid === u)).filter(Boolean);
+  const { stat, paintStats } = topBar(s, sc, item);
+  sc.querySelectorAll("section.tp-ss-ex[data-k]").forEach(sec => {
+    const k = Number(sec.dataset.k), it = items[k], rows = it && s.sets && s.sets[it.uid], table = sec.querySelector(".set-table");
+    if(!it || !rows || !table) return;
+    const key = exKey(it), meta = getExerciseMeta(it), timed = typeof isTimedReps === "function" && isTimedReps(it.reps);
+    rowsUI({ s, st, sc, scope: table, rows, last: (st.setLog || {})[key], timed, key, meta, types: ["", "w", "f"], allowDel: false, onChange: paintStats,
+      rowEl: i => table.querySelector(`[data-tp-row="${k}:${i}"]`), kgSel: "[data-tp-kg]", repsSel: "[data-tp-reps]",
+      doneBtns: [...table.querySelectorAll("[data-tp-done]")].map(b => [b, Number(b.getAttribute("data-tp-done").split(":")[1])]) });
+  });
+  actsRow(s, st, sc, item, stat, false);
+}
+
 function enhance(){
   const s = S(), st = ST(), sc = document.getElementById("sheet-content");
   if(!s || !st || !sc || s.finished || s.idx >= s.items.length) return;
   const table = sc.querySelector(".set-table");
-  if(!table || !sc.querySelector("#btn-session-done") || sc.querySelector(".sp-strip")) return;   // màn superset của training-pro / đã nâng cấp
+  if(!table || sc.querySelector(".sp-strip")) return;   // không phải màn ghi hiệp / đã nâng cấp
+  if(sc.querySelector("#tp-ss-done")){ enhanceGroup(s, st, sc); return; }
+  if(!sc.querySelector("#btn-session-done")) return;
   css();
   const item = s.items[s.idx], rows = s.sets && s.sets[item.uid];
   if(!rows) return;
@@ -174,31 +394,7 @@ function enhance(){
     if(!timed && rebuild(rows, last)){ rerender(); return; }
   }
 
-  /* --- dải bài tập + số liệu trực tiếp --- */
-  const head = sc.querySelector(".progress-row");
-  const strip = document.createElement("div"); strip.className = "sp-strip"; strip.setAttribute("role", "list"); strip.setAttribute("aria-label", "Các bài trong buổi");
-  strip.innerHTML = s.items.map((it, j) => {
-    const done = j < s.idx, cur = j === s.idx, skipped = done && s.completed.indexOf(it.uid) < 0;
-    const nm = getExerciseMeta(it).name || "Bài " + (j + 1);
-    return `<button type="button" role="listitem" class="sp-chip ${cur ? "cur" : done ? "ok" : ""}" data-sp-jump="${j}" ${done || cur ? "disabled" : ""} aria-label="${esc(nm)}${cur ? " — đang tập" : done ? (skipped ? " — đã bỏ qua" : " — đã xong") : " — chạm để tập trước"}">${done ? `<span class="material-symbols-rounded">${skipped ? "remove" : "check"}</span>` : `<i>${j + 1}</i>`}<span class="t">${esc(nm)}</span></button>`;
-  }).join("");
-  const stat = document.createElement("div"); stat.className = "sp-stats"; stat.setAttribute("aria-live", "off");
-  const paintStats = () => { const x = stats(s); stat.innerHTML = `${sc.querySelector(".tp-sbar") ? "" : `<span><span class="material-symbols-rounded">timer</span><b data-sp-time>${fmtTime(Date.now() - (s.startedAt || Date.now()))}</b></span>`}<span><span class="material-symbols-rounded">done_all</span>${x.sets} hiệp</span><span><span class="material-symbols-rounded">weight</span>${typeof fmtVN === "function" ? fmtVN(x.vol) : x.vol} kg</span>`; };
-  paintStats();
-  if(head && head.parentNode){ head.parentNode.insertBefore(strip, head); const tr = sc.querySelector(".progress-track"); (tr || head).insertAdjacentElement("afterend", stat); }
-  const curChip = strip.querySelector(".cur"); if(curChip && strip.scrollTo) try{ strip.scrollLeft = Math.max(0, curChip.offsetLeft - 60); }catch(e){}
-  clearInterval(tick);
-  tick = setInterval(() => { const el = document.querySelector("#sheet-content [data-sp-time]"); const ss = S(); if(!el || !ss || ss.finished){ clearInterval(tick); return; } el.textContent = fmtTime(Date.now() - (ss.startedAt || Date.now())); }, 1000);
-  strip.addEventListener("click", e => {
-    const b = e.target.closest ? e.target.closest("[data-sp-jump]") : null; if(!b || b.disabled) return;
-    const j = Number(b.dataset.spJump), it = s.items[j];
-    if(!(j > s.idx) || !it) return;
-    if(grouped(s, it) || grouped(s, item)){ say("Bài nằm trong superset — tập theo thứ tự nhóm nhé", "info"); return; }
-    try{ stopSetRest(); }catch(e2){}
-    moveItem(s.items, j, s.idx);
-    say("Tập trước: " + (getExerciseMeta(it).name || ""), "swap_vert");
-    renderSessionStep();
-  });
+  const { stat, paintStats } = topBar(s, sc, item);
 
   /* --- ghi chú dính theo bài --- */
   st.exNotes = (st.exNotes && typeof st.exNotes === "object") ? st.exNotes : {};
@@ -210,84 +406,10 @@ function enhance(){
   table.parentNode.insertBefore(note, sc.querySelector(".set-tools") || table);
   const lastLine = sc.querySelector(".set-last"); if(lastLine && !timed) lastLine.remove();   // đã có "Lần trước" theo từng hiệp
 
-  /* --- từng hàng: nhãn loại hiệp + dòng "lần trước" --- */
-  const rowEl = i => table.querySelector(`.set-row[data-set="${i}"]`);
-  const paint = () => {
-    rows.forEach((r, i) => {
-      const el = rowEl(i); if(!el) return;
-      const t = tOf(r); el.dataset.spT = t;
-      const b = el.querySelector("b");
-      if(b){ b.textContent = label(rows, i); b.className = "sp-badge"; b.setAttribute("role", "button"); b.tabIndex = 0;
-        b.setAttribute("aria-label", "Hiệp " + (i + 1) + " — " + TYPES[t].n + ". Chạm để đổi loại hiệp"); }
-      if(timed) return;
-      let line = el.nextElementSibling; if(!line || !line.classList.contains("sp-prev")){ line = document.createElement("div"); line.className = "sp-prev"; el.insertAdjacentElement("afterend", line); }
-      const p = prevFor(last, rows, i);
-      const d = p ? delta(p, r.kg, r.reps) : "";
-      const cls = d.charAt(0) === "+" ? "up" : d.charAt(0) === "−" ? "dn" : "";
-      line.innerHTML = (p ? `<button type="button" data-sp-copy="${i}" aria-label="Chép kết quả lần trước vào hiệp ${i + 1}"><span class="material-symbols-rounded">history</span>Lần trước ${p.kg > 0 ? kgTxt(p.kg) + " kg × " : ""}${p.reps}</button>` : "")
-        + (d && r.done && t !== "w" ? `<em class="${cls}">${d === "=" ? "bằng lần trước" : d}</em>` : "")
-        + (r._pr ? `<em class="pr">🏆 Kỷ lục</em>` : "");
-      line.hidden = !line.innerHTML;
-    });
-  };
-  paint();
-
-  const closeMenu = () => { const m = table.querySelector(".sp-menu"); if(m) m.remove(); };
-  const openMenu = i => {
-    const had = table.querySelector(`.sp-menu[data-i="${i}"]`); closeMenu(); if(had) return;
-    const el = rowEl(i); if(!el) return;
-    const cur = tOf(rows[i]);
-    const m = document.createElement("div"); m.className = "sp-menu"; m.dataset.i = i; m.setAttribute("role", "menu");
-    m.innerHTML = (timed ? [] : ["", "w", "d", "f"]).map(t => `<button type="button" role="menuitemradio" aria-checked="${cur === t}" class="${cur === t ? "on" : ""}" data-sp-type="${t}"><b>${TYPES[t].s ? TYPES[t].s + " · " : ""}${TYPES[t].n}</b><small>${TYPES[t].d}</small></button>`).join("")
-      + (rows.length > 1 ? `<button type="button" role="menuitem" class="del" data-sp-del="1"><b>Xoá hiệp này</b></button>` : "");
-    if(!m.innerHTML) return;
-    const after = el.nextElementSibling && el.nextElementSibling.classList.contains("sp-prev") ? el.nextElementSibling : el;
-    after.insertAdjacentElement("afterend", m);
-    m.addEventListener("click", e => {
-      const b = e.target.closest ? e.target.closest("button") : null; if(!b) return;
-      if(b.dataset.spDel){ rows.splice(i, 1); rerender(); return; }
-      const t = b.dataset.spType;
-      if(t) rows[i].type = t; else delete rows[i].type;
-      if(t === "f" && !rows[i].rpe){ rows[i].rpe = "10"; const sel = el.querySelector("select.rpe"); if(sel) sel.value = "10"; }
-      if(!st.spHintDone){ st.spHintDone = 1; const h = sc.querySelector(".sp-hint"); if(h) h.remove(); }
-      closeMenu(); paint(); paintStats();
-    });
-  };
-  table.addEventListener("click", e => {
-    const t = e.target; if(!t || !t.closest) return;
-    const badge = t.closest("b.sp-badge");
-    if(badge){ openMenu(Number(badge.closest(".set-row").dataset.set)); return; }
-    const cp = t.closest("[data-sp-copy]");
-    if(cp){
-      const i = Number(cp.dataset.spCopy), r = rows[i], p = prevFor(last, rows, i); if(!r || !p) return;
-      if(r.done){ say("Hiệp đã ✓ — bỏ ✓ nếu muốn sửa", "info"); return; }
-      const el = rowEl(i), k = el.querySelector("[data-kg]"), rp = el.querySelector("[data-reps]");
-      if(p.kg > 0){ r.kg = p.kg; if(k) k.value = p.kg; } r.reps = p.reps; if(rp) rp.value = p.reps; r._edited = true; r._repsEdited = true;
-      paint();
-    }
-  });
-  table.addEventListener("keydown", e => { if((e.key === "Enter" || e.key === " ") && e.target && e.target.classList && e.target.classList.contains("sp-badge")){ e.preventDefault(); openMenu(Number(e.target.closest(".set-row").dataset.set)); } });
-  table.addEventListener("change", () => setTimeout(paint, 0));
-
-  /* --- ✓: kỷ lục ngay tại hiệp · drop set không nghỉ · khởi động nghỉ ngắn --- */
-  table.querySelectorAll("[data-done]").forEach(btn => btn.addEventListener("click", () => {
-    const i = Number(btn.dataset.done), r = rows[i]; if(!r) return;
-    if(r.done){
-      const nx = rows[i + 1];
-      if(nx && tOf(nx) === "d"){ try{ stopSetRest(); }catch(e){} say("Drop set — hạ tạ, làm tiếp ngay!", "bolt"); }
-      if(!timed && tOf(r) !== "w" && s.isToday){
-        s._livePr = s._livePr || {};
-        const e = prCheck((st.setHist || {})[key], r.kg, r.reps, s._livePr[key]);
-        if(e){
-          s._livePr[key] = e; rows.forEach(x => { delete x._pr; }); r._pr = 1;
-          const el = rowEl(i); if(el){ el.classList.remove("sp-pr"); void el.offsetWidth; el.classList.add("sp-pr"); }
-          say(`🏆 Kỷ lục mới ngay hiệp này: ${meta.name} ~${Math.round(e)} kg`, "military_tech");
-          try{ if(navigator.vibrate) navigator.vibrate([30, 40, 60]); }catch(e2){}
-        }
-      }
-    } else if(r._pr){ delete r._pr; }
-    paint(); paintStats();
-  }));
+  rowsUI({ s, st, sc, scope: table, rows, last, timed, key, meta, types: ["", "w", "d", "f"], allowDel: true, onChange: paintStats,
+    rowEl: i => table.querySelector(`.set-row[data-set="${i}"]`), kgSel: "[data-kg]", repsSel: "[data-reps]",
+    doneBtns: [...table.querySelectorAll("[data-done]")].map(b => [b, Number(b.dataset.done)]) });
+  actsRow(s, st, sc, item, sc.querySelector(".chip-row") || stat, true);
 
   /* --- thêm hiệp --- */
   if(rows.length < MAX){
@@ -319,6 +441,6 @@ function install(){
   };
   return true;
 }
-G.FKSessionPlus = { TYPES, label, prevFor, rebuild, prCheck, moveItem, stats, addRow, delta, epley, install, enhance };
+G.FKSessionPlus = { insertPos, newItem, addToSession, TYPES, label, prevFor, rebuild, prCheck, moveItem, stats, addRow, delta, epley, install, enhance };
 try{ if(typeof document !== "undefined") install(); }catch(e){}
 })(typeof window !== "undefined" ? window : globalThis);
