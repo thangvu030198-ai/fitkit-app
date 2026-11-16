@@ -371,6 +371,16 @@ function enhanceGroup(s, st, sc){
       doneBtns: [...table.querySelectorAll("[data-tp-done]")].map(b => [b, Number(b.getAttribute("data-tp-done").split(":")[1])]) });
   });
   actsRow(s, st, sc, item, stat, false);
+  /* 17/11: cấp "Mới tập" ẩn cột RPE — màn superset trước đây không có nút bật lại như màn bài đơn */
+  try{
+    const done = sc.querySelector("#tp-ss-done");
+    if(done && !sc.querySelector("select.rpe") && !sc.querySelector("#set-show-rpe") && items.some(it=> !(typeof isTimedReps === "function" && isTimedReps(it.reps)))){
+      const b = document.createElement("button"); b.type = "button"; b.className = "btn btn-ghost btn-sm"; b.id = "set-show-rpe"; b.style.marginTop = "4px";
+      b.textContent = "Hiện cột RPE (độ nặng cảm nhận)";
+      b.addEventListener("click", ()=>{ st.profile.showRpe = true; save(); rerender(); });
+      done.insertAdjacentElement("beforebegin", b);
+    }
+  }catch(e){}
 }
 
 function enhance(){
