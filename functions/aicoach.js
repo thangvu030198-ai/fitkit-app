@@ -24,6 +24,7 @@ const A = require("./admin")._adminTest;
 const REGION = "asia-southeast1";
 const SESSION_SEC = 12 * 3600;
 const CTX_MAX = 14000, MSG_MAX = 2000, HIST_MAX = 12, EXTRA_MAX = 1500;
+/* data.lang = "en" → máy chủ thêm chỉ dẫn trả lời bằng tiếng Anh (giao diện English của app); mặc định "vi". */
 const DEFAULTS = { enabled: false, baseUrl: "", model: "", fallback: "", planModel: "", temperature: 0.5, maxTokens: 900, planMaxTokens: 2600, dailyLimit: 30, extra: "" };
 const DAY_KEYS = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
 
@@ -97,8 +98,12 @@ const PLAN_RULES = `CHẾ ĐỘ LẬP KẾ HOẠCH: chỉ trả về MỘT đố
  "health":{"tips":["…"],"warnings":["…"]}}
 Quy tắc: "days" chỉ gồm các NGÀY TẬP (đúng số buổi/tuần người dùng chọn), mỗi buổi 4–7 bài, chỉ dùng mã bài tập có trong <app_data> và hợp thiết bị người dùng có; buổi chân / lưng nặng thì cardio phải là LISS nhẹ hoặc "không" (không HIIT); kcal và đạm lấy theo hồ sơ nếu có; tôn trọng dị ứng / chế độ ăn; "health" chỉ gồm lời khuyên lối sống nhẹ, không nhắc tên thuốc hay bệnh lý cụ thể. Mỗi mảng "tips"/"notes"/"principles" 3–5 ý, mỗi ý ≤ 160 ký tự.`;
 
-function buildSystem(cfg, mode, context){
-  return SYSTEM + (cfg.extra ? `\n\nGHI CHÚ THÊM CỦA QUẢN TRỊ VIÊN:\n${cfg.extra}` : "") + (mode === "plan" ? "\n\n" + PLAN_RULES : "")
+const LANG_EN = `LANGUAGE (overrides the default above): the user's app is set to ENGLISH. Write the entire reply in natural English, even though <app_data> is in Vietnamese. Address the user as "you". Use metric units (kg, cm, kcal, ml).
+- Exercise names in <app_data> look like "Tên Việt (English name)" — use the English name. Translate Vietnamese dish names into short natural English. Keep the [[type:id]] tags exactly as they are.
+- End health / nutrition-specific answers with: "Suggestions are based on the information you gave and do not replace advice from a doctor."
+- In plan mode every text value in the JSON (titles, summary, notes, tips, warnings, meal names, cardio type) must be in English; "day" codes and ids stay unchanged.`;
+function buildSystem(cfg, mode, context, lang){
+  return SYSTEM + (lang === "en" ? "\n\n" + LANG_EN : "") + (cfg.extra ? `\n\nGHI CHÚ THÊM CỦA QUẢN TRỊ VIÊN:\n${cfg.extra}` : "") + (mode === "plan" ? "\n\n" + PLAN_RULES : "")
     + `\n\n<app_data>\n${context || "(trống)"}\n</app_data>`;
 }
 function cleanMessages(list){
@@ -229,8 +234,8 @@ async function aiChatCore(request, deps){
   const messages = cleanMessages(d.messages);
   if(!messages.length) throw new HttpsError("invalid-argument", "Thiếu câu hỏi.");
   const left = await S.rate(a.uid, nowMs, cfg.dailyLimit);
-  if(left < 0) throw new HttpsError("resource-exhausted", `Bạn đã dùng hết ${cfg.dailyLimit} lượt hỏi AI hôm nay. Mai quay lại nhé — hôm nay app vẫn gợi ý được từ dữ liệu có sẵn.`);
-  const sys = buildSystem(cfg, mode, str(d.context, CTX_MAX));
+  if(left < 0) throw new HttpsError("resource-exhausted", `Bạn đã dùng hết ${cfg.dailyLimit} lượt hỏi AI hôm nay. Mai quay lại nhé — hôm nay app vẫn gợi ý được từ dữ liệu có sẵn.`);   // (client English tự hiện câu tiếng Anh tương ứng)
+  const sys = buildSystem(cfg, mode, str(d.context, CTX_MAX), d.lang === "en" ? "en" : "vi");
   const base = { base: cfg.baseUrl, key, fetch: deps.fetch, temperature: mode === "plan" ? Math.min(cfg.temperature, 0.4) : cfg.temperature,
     maxTokens: mode === "plan" ? cfg.planMaxTokens : cfg.maxTokens, json: mode === "plan", timeoutMs: mode === "plan" ? 60000 : 40000,
     messages: [{ role: "system", content: sys }].concat(messages) };
@@ -299,4 +304,4 @@ async function adminAiConfigCore(request, deps){
 
 exports.aiChat = onCall({ region: REGION, maxInstances: 10, timeoutSeconds: 180, memory: "256MiB", invoker: "public" }, request=> aiChatCore(request));
 exports.adminAiConfig = onCall({ region: REGION, maxInstances: 3, timeoutSeconds: 90, memory: "256MiB", invoker: "public" }, request=> adminAiConfigCore(request));
-exports._aiTest = { aiChatCore, adminAiConfigCore, cleanBase, cleanModel, cleanConfig, cleanKey, cleanMessages, cleanPlan, parseJson, buildSystem, callChat, listModels, tailOf, SYSTEM, PLAN_RULES, DEFAULTS, CTX_MAX };
+exports._aiTest = { LANG_EN, aiChatCore, adminAiConfigCore, cleanBase, cleanModel, cleanConfig, cleanKey, cleanMessages, cleanPlan, parseJson, buildSystem, callChat, listModels, tailOf, SYSTEM, PLAN_RULES, DEFAULTS, CTX_MAX };

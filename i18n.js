@@ -43,7 +43,7 @@
 
   var LANGS = {
     vi: { name: "Tiếng Việt", locale: "vi-VN", files: [] },
-    en: { name: "English", locale: "en-US", files: ["i18n-en.js", "i18n-en-2.js", "i18n-en-3.js", "i18n-en-4.js", "i18n-en-5.js", "i18n-en-6.js"] }
+    en: { name: "English", locale: "en-US", files: ["i18n-en.js", "i18n-en-2.js", "i18n-en-3.js", "i18n-en-4.js", "i18n-en-5.js", "i18n-en-6.js", "i18n-en-7.js"] }
   };
   var dicts = {};            // lang → { exact:Map, lower:Map, pats:[], rev:null, n }
   var cache = new Map();     // lang + "\u0001" + chuỗi → bản dịch | null

@@ -215,6 +215,41 @@ module.exports = {
       assert.ok(/Chụp ảnh tính calo/.test(app.ev(`FKCoach.localAnswer("cách chụp ảnh tính calo")`)));
       assert.ok(/chưa tìm thấy/.test(app.ev(`FKCoach.localAnswer("xyzzy qwerty")`)));
     });
+    t.test("AI-38: bản tiếng Anh — trả lời, kế hoạch, cardio, tên bài và lọc dị ứng gõ tiếng Anh", ()=>{
+      app.run(`window.__fkLang = "en"; window.FK_I18N = window.FK_I18N || {}; try{ Object.defineProperty(window.FK_I18N, "lang", { get: ()=> window.__fkLang, configurable: true }); }catch(e){ window.FK_I18N.lang = "en"; } if(!window.FK_I18N.t) window.FK_I18N.t = s=> s; FKCoach._reset(); state.profile.weight = 70; state.profile.goal = "lose"; state.profile.goalKcal = 0; state.aiCoach = {};`);
+      try{
+        assert.equal(app.ev("FKCoach.lang()"), "en");
+        const c = app.ev(`FKCoach.localAnswer("What cardio after leg day?")`); assert.ok(/LISS/.test(c) && /No HIIT right after a heavy leg/.test(c) && c.includes("[[ex:inclinewalk]]") && !/[àáảãạăâđêôơư]/i.test(c), c.slice(0, 160));
+        const p = app.ev(`FKCoach.localAnswer("How much protein do I need?")`); assert.ok(/112–154 g/.test(p) && /Daily protein/.test(p));
+        const h = app.ev(`FKCoach.localAnswer("how do I scan a food photo for calories")`); assert.ok(/^- Photo calorie scan/.test(h), h.slice(0, 120));
+        const ex = app.evj(`FKCoach.lib.retrieve("chest exercises with dumbbells").filter(d=> d.t === "ex").slice(0, 3).map(d=> d.id)`); assert.ok(ex.includes("inclinedb") || ex.includes("dbbench"), ex.join(","));
+        assert.ok(/could not find a match/.test(app.ev(`FKCoach.localAnswer("xyzzy qwerty")`)));
+        assert.equal(app.ev(`FKCoach.nm("Đẩy ngực nằm (Bench Press)")`), "Bench Press");
+        const P = app.evj(`FKCoach.localPlan({ goal:"lose", daysN:3, weight:70, height:172, sleepH:5.5, allergy:"shrimp, peanuts" })`);
+        assert.equal(P.lang, "en"); assert.ok(/sessions a week/.test(P.workout.summary) && /fat loss/.test(P.workout.summary));
+        const txt = JSON.stringify([P.workout.notes, P.workout.days.map(d=> d.cardio), P.nutrition.principles, P.nutrition.avoid, P.nutrition.meals.map(m=> [m.meal, m.note]), P.sleep.tips, P.health]);
+        assert.ok(!/[àáảãạăằắâấầđêếềôốồơớờưứừ]/i.test(txt), "còn chữ Việt trong kế hoạch tiếng Anh: " + (txt.match(/[^"]*[àáảãạăằắâấầđêếềôốồơớờưứừ][^"]*/i) || [""])[0]);
+        assert.deepEqual(P.nutrition.meals.map(m=> m.meal), ["Breakfast", "Lunch", "Dinner", "Snack"]);
+        const names = Object.fromEntries(app.evj("RECIPES.map(r=> [r.id, r.name])")); const picked = P.nutrition.meals.flatMap(m=> m.recipe_ids).map(id=> names[id]);
+        assert.ok(picked.length >= 6 && !picked.some(n=> /tôm|đậu phộng/i.test(n)), "dị ứng gõ tiếng Anh phải lọc được món: " + picked.join("|"));
+        assert.ok(app.evj(`FKCoach.dietOk(FKCoach.lib.docs().find(d=> d.id === "com-lut-ga-luoc") || FKCoach.lib.docs().find(d=> d.t === "recipe" && /gà luộc/.test(d.name)), { allergy: "shrimp" })`), "món gà không bị loại nhầm khi dị ứng tôm");
+        assert.ok(/Easy walk/.test(app.evj(`FKCoach.cardioFor(["squat","legpress","legcurl"], "lose")`).type));
+        assert.ok(/plan · Fat loss ×3/.test(app.evj(`FKCoach.toAppPlan(FKCoach.localPlan({ goal:"lose", daysN:3 }))`).name));
+        assert.deepEqual(app.evj("FKCoach.suggest()").length, 6); assert.ok(/protein/i.test(app.evj("FKCoach.suggest()").join(" ")));
+      } finally { app.run(`window.__fkLang = "vi"; FKCoach._reset();`); }
+      assert.ok(/LISS/.test(app.ev(`FKCoach.localAnswer("Sau buổi chân nên cardio thế nào?")`)) && /Không HIIT/.test(app.ev(`FKCoach.localAnswer("Sau buổi chân nên cardio thế nào?")`)));
+    });
+    t.test("AI-39: máy chủ — lang=en thêm chỉ dẫn trả lời tiếng Anh; mặc định không thêm; từ điển Anh có đủ tên 96 món", async ()=>{
+      assert.ok(T.buildSystem(T.cleanConfig({}), "chat", "x", "en").includes("Write the entire reply in natural English"));
+      assert.ok(!T.buildSystem(T.cleanConfig({}), "chat", "x", "vi").includes("natural English") && !T.buildSystem(T.cleanConfig({}), "chat", "x").includes("natural English"));
+      const st = fakeStore({ cfg: READY, k: "sk-test-12345678" }); let sys = "";
+      await T.aiChatCore({ auth: { uid: "en1" }, data: { lang: "en", messages: [{ role: "user", content: "hi" }] } }, { store: st.api(T), fetch: async (u, o)=>{ sys = JSON.parse(o.body).messages[0].content; return okRes(chatBody("Hello")); } });
+      assert.ok(sys.includes("ENGLISH") && sys.includes("KHÔNG phải bác sĩ"), "vẫn giữ rào an toàn");
+      const dict = {}; new Function("FK_I18N", read("i18n-en-7.js"))({ add: (l, d)=> Object.assign(dict, d) });
+      const names = app.evj("RECIPES.map(r=> r.name)"); const miss = names.filter(n=> !dict[n]); assert.deepEqual(miss, [], "thiếu bản dịch món");
+      Object.keys(dict).forEach(k=> assert.ok(dict[k] && !/[àáảãạăằắâấầđêếềôốồơớờưứừ]/i.test(dict[k].replace(/banh mi|pho/gi, "")), "bản dịch còn chữ Việt: " + dict[k]));
+      assert.ok(read("i18n.js").includes('"i18n-en-7.js"') && read("sw.js").includes('"./i18n-en-7.js"') && read("index.html").includes('src="i18n-en-7.js"'));
+    });
     t.test("AI-40: quản trị — phân loại model theo hãng, loại model không phải chat, gắn nhãn gợi ý", ()=>{
       const W = { document: { getElementById: ()=> null } }; W.window = W;
       new Function("window", read("admin-ai.js").replace('typeof window !== "undefined" ? window : globalThis', "window"))(W);
