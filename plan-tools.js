@@ -467,6 +467,139 @@ function bind(plan){
   }catch(e){ try{ console.warn("[plan-tools]", e); }catch(_){} }
 }
 
+/* ---------------------------------------------------------------------
+   4. ĐỔI NGÀY TẬP (16/11): chuyển cả buổi sang ngày khác trong tuần — VD giáo án mẫu 2-4-6 → 3-5-7.
+      · Lùi / tiến cả lịch 1 ngày · chọn lại ngày cho từng buổi (chọn trùng ngày → 2 buổi tự đổi chỗ).
+      · Mang theo mọi thứ của buổi: tên, cường độ, thời lượng, bài, superset (state.trainingPro.links).
+      · Cảnh báo nhẹ khi 2 buổi nặng liền nhau / buổi chân nặng ngay trước buổi chân.
+   API: window.FKDays = { KEYS, trainingDays, remap(plan, map), shift(plan, n), assign(plan, targets), backToBack(plan), open(plan) }
+   --------------------------------------------------------------------- */
+const DKEYS = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+const DLABEL = { T2:"Thứ 2", T3:"Thứ 3", T4:"Thứ 4", T5:"Thứ 5", T6:"Thứ 6", T7:"Thứ 7", CN:"Chủ nhật" };
+const DSHORT = { T2:"T2", T3:"T3", T4:"T4", T5:"T5", T6:"T6", T7:"T7", CN:"CN" };
+const emptyDay = ()=> ({ title: "Nghỉ ngơi", intensity: "Nghỉ", duration: 0, items: [] });
+const isTrain = d=> !!(d && Array.isArray(d.items) && d.items.length);
+function trainingDays(plan){ return plan && plan.days ? DKEYS.filter(k=> isTrain(plan.days[k])) : []; }
+/** map: { ngàyCũ: ngàyMới } cho các ngày tập. Ngày còn trống nhận ngày nghỉ cũ (giữ tên "Nghỉ · đi bộ…" nếu có). Trả số buổi đã dời. */
+function remap(plan, map){
+  if(!plan || !plan.days || !map) return 0;
+  const src = trainingDays(plan), dst = src.map(k=> map[k] || k);
+  if(dst.some(k=> DKEYS.indexOf(k) < 0) || new Set(dst).size !== dst.length) return 0;          // ngày đích phải hợp lệ & không trùng
+  const old = plan.days, rests = DKEYS.filter(k=> !isTrain(old[k])).map(k=> old[k]);
+  const next = {}; let moved = 0;
+  src.forEach((k, i)=>{ next[dst[i]] = old[k]; if(dst[i] !== k) moved++; });
+  let ri = 0; DKEYS.forEach(k=>{ if(!next[k]) next[k] = rests[ri++] || emptyDay(); });
+  plan.days = next;
+  /* superset / liên hoàn của training-pro lưu theo planId → ngày → mới đi theo buổi */
+  try{
+    const S = ST(), L = S && S.trainingPro && S.trainingPro.links && S.trainingPro.links[plan.id];
+    if(L && typeof L === "object"){ const nl = {}; src.forEach((k, i)=>{ if(Array.isArray(L[k]) && L[k].length) nl[dst[i]] = L[k]; }); S.trainingPro.links[plan.id] = nl; }
+  }catch(e){}
+  return moved;
+}
+function shift(plan, n){
+  const src = trainingDays(plan), map = {};
+  src.forEach(k=>{ map[k] = DKEYS[(DKEYS.indexOf(k) + n + 70) % 7]; });
+  return remap(plan, map);
+}
+function assign(plan, targets){
+  const src = trainingDays(plan); if(!Array.isArray(targets) || targets.length !== src.length) return 0;
+  const map = {}; src.forEach((k, i)=>{ map[k] = targets[i]; }); return remap(plan, map);
+}
+/** Cặp ngày tập liền nhau (tính cả CN → T2 của tuần sau) — kèm cờ "nặng" nếu cả 2 buổi đều nhiều bài chân / cường độ cao */
+function backToBack(plan){
+  const out = [], tr = trainingDays(plan);
+  const legHeavy = d=>{ try{ return (d.items || []).filter(it=> /Chân|Mông|Đùi/.test((typeof getExerciseMeta === "function" ? getExerciseMeta(it) : {}).muscle || "")).length >= 2; }catch(e){ return false; } };
+  tr.forEach(k=>{ const n = DKEYS[(DKEYS.indexOf(k) + 1) % 7]; if(tr.indexOf(n) >= 0){ const a = plan.days[k], b = plan.days[n];
+    out.push({ a: k, b: n, legs: legHeavy(a) && legHeavy(b), hard: /Cao|Rất cao/i.test(a.intensity || "") && /Cao|Rất cao/i.test(b.intensity || "") }); } });
+  return out;
+}
+function daysCss(){
+  if(document.getElementById("fk-days-css")) return;
+  const s = document.createElement("style"); s.id = "fk-days-css";
+  s.textContent = `.fk-days-week{ display:grid; grid-template-columns:repeat(7, 1fr); gap:4px; margin:4px 0 14px; }
+.fk-days-week span{ display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 0; border-radius:10px; font-size:11.5px; font-weight:600; background:rgba(128,128,128,.12); color:var(--text-muted); }
+.fk-days-week span.on{ background:var(--primary,#5EE6C7); color:var(--navy,#061A24); } .fk-days-week span.chg{ outline:2px dashed var(--accent,#FF7A45); outline-offset:-2px; }
+.fk-days-quick{ display:flex; gap:8px; margin-bottom:14px; } .fk-days-quick button{ flex:1; min-height:44px; border-radius:12px; border:1px solid rgba(128,128,128,.35); background:transparent; color:inherit; font:600 13px/1.25 inherit; padding:6px 8px; cursor:pointer; }
+.fk-days-row{ padding:10px 12px; border-radius:14px; border:1px solid rgba(128,128,128,.25); margin-bottom:8px; }
+.fk-days-row b{ display:block; font-size:14px; margin-bottom:6px; overflow-wrap:anywhere; } .fk-days-row small{ font-weight:500; color:var(--text-muted); }
+.fk-days-pick{ display:flex; gap:4px; } .fk-days-pick button{ flex:1; min-width:0; min-height:38px; border-radius:10px; border:1px solid rgba(128,128,128,.3); background:transparent; color:inherit; font:600 12px/1 inherit; cursor:pointer; padding:0; }
+.fk-days-pick button.on{ background:var(--primary,#5EE6C7); color:var(--navy,#061A24); border-color:transparent; } .fk-days-pick button.used{ opacity:.45; }
+.fk-days-warn{ font-size:12.5px; line-height:1.45; padding:10px 12px; border-radius:12px; background:rgba(255,196,76,.12); border:1px solid rgba(255,196,76,.35); margin:6px 0 10px; }`;
+  document.head.appendChild(s);
+}
+/** Tờ "Đổi ngày tập" — chỉnh trên bản nháp, bấm Lưu mới áp vào giáo án */
+function openDays(plan, onDone){
+  plan = plan || (typeof getActivePlan === "function" ? getActivePlan() : null);
+  if(!plan || !plan.days || typeof openSheet !== "function") return;
+  daysCss();
+  const src = trainingDays(plan);
+  if(!src.length){ say("Giáo án này chưa có buổi tập nào", "info"); return; }
+  let draft = src.slice();                                         // draft[i] = ngày mới của buổi thứ i
+  const paint = ()=>{
+    const used = new Set(draft), bb = (()=>{ const tmp = { id: plan.id, days: {} }; DKEYS.forEach(k=> tmp.days[k] = emptyDay()); src.forEach((k, i)=> tmp.days[draft[i]] = plan.days[k]); return backToBack(tmp); })();
+    const changed = draft.some((d, i)=> d !== src[i]);
+    const warn = bb.filter(x=> x.legs || x.hard).map(x=> `${DLABEL[x.a]} và ${DLABEL[x.b]} đều là buổi ${x.legs ? "nặng chân" : "cường độ cao"} liền nhau — nên xen 1 ngày nghỉ để cơ kịp hồi phục.`);
+    const fullBody = src.length <= 3 && bb.length && src.every(k=> /toàn thân|full ?body/i.test(plan.days[k].title || ""));
+    if(fullBody) warn.push("Giáo án toàn thân nên tập cách ngày (VD 2-4-6 hoặc 3-5-7) để mỗi nhóm cơ có 48 giờ phục hồi.");
+    openSheet(`
+      <div class="sheet-header"><h3>Đổi ngày tập</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
+      <p class="small-note" style="margin:-4px 0 10px;">${esc(plan.name)} · ${src.length} buổi/tuần. Chọn lại ngày cho từng buổi — bài tập, superset và ghi chú của buổi đi theo.</p>
+      <div class="fk-days-week" aria-label="Lịch mới">${DKEYS.map(k=> `<span class="${used.has(k) ? "on" : ""} ${used.has(k) && src.indexOf(k) < 0 ? "chg" : ""}">${DSHORT[k]}<i class="material-symbols-rounded" style="font-size:14px;font-style:normal;">${used.has(k) ? "fitness_center" : "bedtime"}</i></span>`).join("")}</div>
+      <div class="fk-days-quick"><button type="button" data-days-shift="-1">← Lùi 1 ngày<br><small>${src.map(k=> DSHORT[DKEYS[(DKEYS.indexOf(k) + 6) % 7]]).join(" · ")}</small></button><button type="button" data-days-shift="1">Tiến 1 ngày →<br><small>${src.map(k=> DSHORT[DKEYS[(DKEYS.indexOf(k) + 1) % 7]]).join(" · ")}</small></button></div>
+      ${src.map((k, i)=> `<div class="fk-days-row"><b>${esc(plan.days[k].title || "Buổi " + (i + 1))} <small>· đang ở ${DLABEL[k]}${draft[i] !== k ? ` → <span style="color:var(--accent,#FF7A45);">${DLABEL[draft[i]]}</span>` : ""}</small></b>
+        <div class="fk-days-pick" role="radiogroup" aria-label="Ngày cho ${esc(plan.days[k].title || "buổi " + (i + 1))}">${DKEYS.map(d=> `<button type="button" role="radio" aria-checked="${draft[i] === d}" class="${draft[i] === d ? "on" : used.has(d) ? "used" : ""}" data-days-set="${i}:${d}">${DSHORT[d]}</button>`).join("")}</div></div>`).join("")}
+      ${warn.map(w=> `<div class="fk-days-warn">⚠️ ${esc(w)}</div>`).join("")}
+      <button type="button" class="btn btn-primary btn-block" id="fk-days-save" style="margin-top:6px;" ${changed ? "" : "disabled"}>Lưu lịch mới</button>
+      ${changed ? `<button type="button" class="btn btn-ghost btn-block" id="fk-days-reset" style="margin-top:4px;">Hoàn tác</button>` : ""}`);
+    const sc = document.getElementById("sheet-content");
+    sc.querySelectorAll("[data-days-shift]").forEach(b=> b.addEventListener("click", ()=>{ const n = Number(b.dataset.daysShift); draft = src.map(k=> DKEYS[(DKEYS.indexOf(k) + n + 7) % 7]); try{ haptic("light"); }catch(e){} paint(); }));
+    sc.querySelectorAll("[data-days-set]").forEach(b=> b.addEventListener("click", ()=>{
+      const [i, d] = b.dataset.daysSet.split(":"); const idx = Number(i), j = draft.indexOf(d);
+      if(j >= 0 && j !== idx) draft[j] = draft[idx];                 // ngày đã có buổi khác → 2 buổi đổi chỗ
+      draft[idx] = d; try{ haptic("light"); }catch(e){} paint();
+    }));
+    const rs = document.getElementById("fk-days-reset"); if(rs) rs.addEventListener("click", ()=>{ draft = src.slice(); paint(); });
+    document.getElementById("fk-days-save").addEventListener("click", ()=>{
+      const n = assign(plan, draft);
+      if(!n){ say("Lịch không hợp lệ — mỗi buổi cần một ngày khác nhau", "error"); return; }
+      save(); try{ haptic("success"); }catch(e){}
+      try{ const st = ST(); if(st && DKEYS.indexOf(st.selectedDay) >= 0 && typeof todayDayKey === "function") st.selectedDay = todayDayKey(); }catch(e){}
+      if(typeof closeSheet === "function") closeSheet();
+      say(`Đã dời lịch: ${draft.map(k=> DSHORT[k]).join(" · ")}`, "event_available");
+      try{ if(onDone) onDone(); else if(document.querySelector("#screen-workout.active") && typeof renderWorkoutScreen === "function") renderWorkoutScreen(); }catch(e){}
+    });
+  };
+  paint();
+}
+/** Nút "Đổi ngày tập" ở hàng nút của màn Tập luyện + trong màn sửa giáo án */
+function mountDays(){
+  try{
+    const row = document.querySelector("#screen-workout .content > .chip-row");
+    if(row && !row.querySelector(".fk-days-pill")){
+      const b = document.createElement("button"); b.type = "button"; b.className = "pill fk-days-pill"; b.style.cursor = "pointer";
+      b.innerHTML = `<span class="material-symbols-rounded" style="font-size:14px;">event_available</span>&nbsp;Đổi ngày tập`;
+      b.addEventListener("click", ()=> openDays());
+      row.insertBefore(b, row.children[2] || null);
+    }
+  }catch(e){}
+}
+function installDays(){
+  if(installDays.done || typeof document === "undefined") return; installDays.done = true;
+  try{ if(typeof renderWorkoutScreen === "function"){ const _r = renderWorkoutScreen; renderWorkoutScreen = function(){ const r = _r.apply(this, arguments); mountDays(); return r; }; } }catch(e){}
+  /* màn Sửa giáo án: nút "Đổi ngày tập" ngay dưới dải ngày */
+  try{ if(typeof renderPlansScreen === "function"){ const _p = renderPlansScreen; renderPlansScreen = function(){ const r = _p.apply(this, arguments);
+    try{ const ui = typeof plansUI !== "undefined" ? plansUI : null, box = document.getElementById("plans-content");
+      if(ui && ui.mode !== "list" && box && !box.querySelector(".fk-days-edit")){ const plan = ST().plans && ST().plans[ui.planId], tabs = box.querySelector(".day-tabs");
+        if(plan && tabs){ const b = document.createElement("button"); b.type = "button"; b.className = "btn btn-outline btn-sm fk-days-edit"; b.style.margin = "0 0 12px";
+          b.innerHTML = `<span class="material-symbols-rounded" style="font-size:16px;">event_available</span>Đổi ngày tập (VD 2-4-6 → 3-5-7)`;
+          b.addEventListener("click", ()=> openDays(plan, ()=>{ try{ renderPlansScreen(); }catch(e){} })); tabs.insertAdjacentElement("afterend", b); } } }catch(e){}
+    return r; }; } }catch(e){}
+  setTimeout(mountDays, 800);
+}
+G.FKDays = { __v:1, KEYS: DKEYS, trainingDays, remap, shift, assign, backToBack, open: openDays, mount: mountDays };
+try{ installDays(); }catch(e){}
+
 G.FKEquip = { __v:1, FAMILIES, EQ, PROFILES, familyOf, optionsOf, currentOf, preferred, setItem, swap, applyPrefs, convertPlan, mount, openGymSheet, viName, imgOf };
 G.FKPlanTools = { __v:1, bind, reorder, bindDnD };
 })(typeof window !== "undefined" ? window : globalThis);
