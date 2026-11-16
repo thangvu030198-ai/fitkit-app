@@ -24,6 +24,7 @@ BASE = (os.environ.get("MUSE_API_BASE", "") or "https://muse.careflow-demo.onlin
 KIND = (os.environ.get("MUSE_KIND", "") or "image").strip().lower()
 MANIFEST = ROOT / (os.environ.get("MUSE_MANIFEST", "") or "scripts/ai_exercise_prompts.json")
 IDS = [s.strip() for s in os.environ.get("MUSE_IDS", "").split(",") if s.strip()]
+if any(x.lower() in ("all", "*", "tatca") for x in IDS): IDS = []   # "all" = cả bộ (ô trống bị GitHub điền lại giá trị mặc định)
 LIMIT = int(os.environ.get("MUSE_LIMIT", "0") or 0)
 FORCE = os.environ.get("MUSE_FORCE", "") in ("1", "true", "yes")
 WORKERS = max(1, min(6, int(os.environ.get("MUSE_WORKERS", "3") or 3)))
