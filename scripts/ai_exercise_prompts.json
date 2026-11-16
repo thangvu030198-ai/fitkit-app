@@ -1,0 +1,1770 @@
+[
+ {
+  "id": "ex-benchpress",
+  "name": "Đẩy ngực nằm (Bench Press)",
+  "group": "Ngực",
+  "used_in": [
+   "data.js EXERCISES.benchpress.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Bench Press. The figure is lying on a flat bench pressing a barbell straight up over the mid-chest, feet flat on the floor, shoulder blades pinched. Teal glow on: chest, front shoulders, triceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on chest, front shoulders, triceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-inclinedb",
+  "name": "Đẩy ngực trên ghế nghiêng (Incline DB Press)",
+  "group": "Ngực",
+  "used_in": [
+   "data.js EXERCISES.inclinedb.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Incline DB Press. The figure is lying on a bench inclined about 35 degrees pressing two dumbbells up over the upper chest. Teal glow on: upper chest, front shoulders, triceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on upper chest, front shoulders, triceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-pushup",
+  "name": "Chống đẩy (Push-up)",
+  "group": "Ngực",
+  "used_in": [
+   "data.js EXERCISES.pushup.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Push-up. The figure is in a straight-body push-up at the bottom position, hands under shoulders, elbows about 45 degrees. Teal glow on: chest, triceps, front shoulders, core. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on chest, triceps, front shoulders, core",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-cablefly",
+  "name": "Ép ngực cáp (Cable Fly)",
+  "group": "Ngực",
+  "used_in": [
+   "data.js EXERCISES.cablefly.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Cable Fly. The figure is standing between two cable towers in a split stance, hands meeting in front of the chest in a hugging arc. Teal glow on: chest, front shoulders. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on chest, front shoulders",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-pullup",
+  "name": "Kéo xà (Pull-up)",
+  "group": "Lưng",
+  "used_in": [
+   "data.js EXERCISES.pullup.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Pull-up. The figure is hanging from a pull-up bar with overhand grip, pulling chin above the bar, legs straight. Teal glow on: lats, upper back, biceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on lats, upper back, biceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-bentoverrow",
+  "name": "Kéo tạ gập người (Bent-over Row)",
+  "group": "Lưng",
+  "used_in": [
+   "data.js EXERCISES.bentoverrow.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Bent-over Row. The figure is hinged forward about 45 degrees with flat back, rowing a barbell to the lower ribs. Teal glow on: lats, mid back, rear shoulders, biceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on lats, mid back, rear shoulders, biceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-latpulldown",
+  "name": "Kéo xô cáp (Lat Pulldown)",
+  "group": "Lưng",
+  "used_in": [
+   "data.js EXERCISES.latpulldown.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Lat Pulldown. The figure is seated at a lat pulldown machine pulling a wide bar to the upper chest, torso slightly leaned back. Teal glow on: lats, upper back, biceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on lats, upper back, biceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-deadlift",
+  "name": "Deadlift (Nâng tạ từ sàn)",
+  "group": "Lưng / Chân",
+  "used_in": [
+   "data.js EXERCISES.deadlift.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Nâng tạ từ sàn. The figure is lifting a loaded barbell from the floor at mid-shin height, hips hinged, flat back, arms straight. Teal glow on: glutes, hamstrings, lower back, upper back. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on glutes, hamstrings, lower back, upper back",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-overheadpress",
+  "name": "Đẩy vai (Overhead Press)",
+  "group": "Vai",
+  "used_in": [
+   "data.js EXERCISES.overheadpress.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Overhead Press. The figure is standing, pressing a barbell from the shoulders to straight overhead, ribs down, glutes tight. Teal glow on: shoulders, triceps, upper chest. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on shoulders, triceps, upper chest",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-lateralraise",
+  "name": "Nâng tạ vai bên (Lateral Raise)",
+  "group": "Vai",
+  "used_in": [
+   "data.js EXERCISES.lateralraise.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Lateral Raise. The figure is standing, raising two light dumbbells out to the sides to shoulder height with slightly bent elbows. Teal glow on: side shoulders. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on side shoulders",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-facepull",
+  "name": "Kéo cáp mặt (Face Pull)",
+  "group": "Vai",
+  "used_in": [
+   "data.js EXERCISES.facepull.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Face Pull. The figure is standing facing a cable tower, pulling a rope attachment toward the face with elbows high and wide. Teal glow on: rear shoulders, upper back. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on rear shoulders, upper back",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-squat",
+  "name": "Gánh tạ (Back Squat)",
+  "group": "Chân",
+  "used_in": [
+   "data.js EXERCISES.squat.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Back Squat. The figure is barbell resting on upper back, squatting to thighs parallel, knees tracking over toes, chest up. Teal glow on: quadriceps, glutes. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on quadriceps, glutes",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-legpress",
+  "name": "Đẩy chân (Leg Press)",
+  "group": "Chân",
+  "used_in": [
+   "data.js EXERCISES.legpress.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Leg Press. The figure is seated in a 45-degree leg press machine, feet shoulder-width on the platform, knees bent about 90 degrees. Teal glow on: quadriceps, glutes. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on quadriceps, glutes",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-lunges",
+  "name": "Lunge (Bước chùng chân)",
+  "group": "Chân",
+  "used_in": [
+   "data.js EXERCISES.lunges.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Bước chùng chân. The figure is stepping forward into a lunge holding dumbbells at the sides, both knees bent about 90 degrees, torso upright. Teal glow on: quadriceps, glutes. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on quadriceps, glutes",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-legcurl",
+  "name": "Cuốn gân kheo (Leg Curl)",
+  "group": "Chân",
+  "used_in": [
+   "data.js EXERCISES.legcurl.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Leg Curl. The figure is lying face down on a leg curl machine, curling the pad toward the glutes. Teal glow on: hamstrings. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on hamstrings",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-calfraise",
+  "name": "Nâng bắp chân (Calf Raise)",
+  "group": "Chân",
+  "used_in": [
+   "data.js EXERCISES.calfraise.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Calf Raise. The figure is standing on a step edge rising high onto the toes, holding a dumbbell at one side. Teal glow on: calves. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on calves",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-bicepcurl",
+  "name": "Cuốn tay trước (Bicep Curl)",
+  "group": "Tay trước",
+  "used_in": [
+   "data.js EXERCISES.bicepcurl.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Bicep Curl. The figure is standing, curling two dumbbells up with palms facing up, elbows pinned to the sides. Teal glow on: biceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on biceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-hammercurl",
+  "name": "Cuốn tay búa (Hammer Curl)",
+  "group": "Tay trước",
+  "used_in": [
+   "data.js EXERCISES.hammercurl.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Hammer Curl. The figure is standing, curling two dumbbells with palms facing each other (neutral grip). Teal glow on: biceps, forearms. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on biceps, forearms",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-tricepdip",
+  "name": "Xà tay sau (Tricep Dip)",
+  "group": "Tay sau",
+  "used_in": [
+   "data.js EXERCISES.tricepdip.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Tricep Dip. The figure is supporting the body on parallel dip bars, lowering with elbows bent to about 90 degrees, torso upright. Teal glow on: triceps, chest. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on triceps, chest",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-tricepsdown",
+  "name": "Ép tay sau cáp (Tricep Pushdown)",
+  "group": "Tay sau",
+  "used_in": [
+   "data.js EXERCISES.tricepsdown.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Tricep Pushdown. The figure is standing at a cable tower pushing a straight bar down until arms are straight, elbows by the sides. Teal glow on: triceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on triceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-plank",
+  "name": "Plank",
+  "group": "Bụng",
+  "used_in": [
+   "data.js EXERCISES.plank.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Plank. The figure is forearm plank on the floor, body in a straight line from head to heels. Teal glow on: abs, core, shoulders. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on abs, core, shoulders",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-hangingleg",
+  "name": "Nâng chân treo xà (Hanging Leg Raise)",
+  "group": "Bụng",
+  "used_in": [
+   "data.js EXERCISES.hangingleg.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Hanging Leg Raise. The figure is hanging from a pull-up bar raising straight legs to hip height. Teal glow on: lower abs, hip flexors. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on lower abs, hip flexors",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-russiantwist",
+  "name": "Russian Twist",
+  "group": "Bụng",
+  "used_in": [
+   "data.js EXERCISES.russiantwist.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Russian Twist. The figure is seated on the floor leaning back slightly with feet raised, rotating the torso holding a medicine ball. Teal glow on: obliques, abs. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on obliques, abs",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-crunch",
+  "name": "Gập bụng (Crunch)",
+  "group": "Bụng",
+  "used_in": [
+   "data.js EXERCISES.crunch.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Crunch. The figure is lying on the back with knees bent, curling the upper back off the floor, hands lightly at the temples. Teal glow on: abs. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on abs",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-running",
+  "name": "Chạy bộ (Cardio ổn định)",
+  "group": "Tim mạch",
+  "used_in": [
+   "data.js EXERCISES.running.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Cardio ổn định. The figure is running in mid-stride on a treadmill, upright posture. Teal glow on: legs, glutes, faint glow over the heart area. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on legs, glutes, faint glow over the heart area",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-jumprope",
+  "name": "Nhảy dây (HIIT)",
+  "group": "Tim mạch",
+  "used_in": [
+   "data.js EXERCISES.jumprope.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: HIIT. The figure is jumping rope on the balls of the feet, rope passing under the feet. Teal glow on: calves, shoulders, faint glow over the heart area. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on calves, shoulders, faint glow over the heart area",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-rowing",
+  "name": "Máy chèo thuyền (Rowing)",
+  "group": "Tim mạch / Toàn thân",
+  "used_in": [
+   "data.js EXERCISES.rowing.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Rowing. The figure is seated on a rowing machine at the finish of the stroke, legs extended, handle pulled to the lower ribs. Teal glow on: back, legs, arms. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on back, legs, arms",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-burpee",
+  "name": "Burpee",
+  "group": "Toàn thân",
+  "used_in": [
+   "data.js EXERCISES.burpee.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Burpee. The figure is in the jump phase of a burpee, arms reaching overhead, feet just off the floor. Teal glow on: full body, legs, chest. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on full body, legs, chest",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-hipthrust",
+  "name": "Đẩy hông tạ đòn (Hip Thrust)",
+  "group": "Mông",
+  "used_in": [
+   "data.js EXERCISES.hipthrust.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Hip Thrust. The figure is upper back resting on a bench, barbell across the hips, driving hips up until the body is flat from knees to shoulders. Teal glow on: glutes, hamstrings. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on glutes, hamstrings",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-glutebridge",
+  "name": "Cầu mông (Glute Bridge)",
+  "group": "Mông",
+  "used_in": [
+   "data.js EXERCISES.glutebridge.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Glute Bridge. The figure is lying on the floor with knees bent, lifting the hips into a straight line from knees to shoulders. Teal glow on: glutes, hamstrings. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on glutes, hamstrings",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-rdl",
+  "name": "Deadlift chân thẳng (Romanian Deadlift)",
+  "group": "Đùi sau / Mông",
+  "used_in": [
+   "data.js EXERCISES.rdl.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Romanian Deadlift. The figure is standing with a barbell, hips pushed back, slight knee bend, bar sliding down the thighs to just below the knees, flat back. Teal glow on: hamstrings, glutes. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on hamstrings, glutes",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-gobletsquat",
+  "name": "Squat tạ đơn trước ngực (Goblet Squat)",
+  "group": "Chân",
+  "used_in": [
+   "data.js EXERCISES.gobletsquat.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Goblet Squat. The figure is holding one dumbbell vertically at the chest, squatting deep with an upright torso. Teal glow on: quadriceps, glutes. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on quadriceps, glutes",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-stepup",
+  "name": "Bước bục tạ đơn (Dumbbell Step-up)",
+  "group": "Chân / Mông",
+  "used_in": [
+   "data.js EXERCISES.stepup.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Dumbbell Step-up. The figure is stepping up onto a plyo box with one foot while holding dumbbells. Teal glow on: quadriceps, glutes. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on quadriceps, glutes",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-legext",
+  "name": "Duỗi chân máy (Leg Extension)",
+  "group": "Chân",
+  "used_in": [
+   "data.js EXERCISES.legext.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Leg Extension. The figure is seated on a leg extension machine straightening the knees against the pad. Teal glow on: quadriceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on quadriceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-cablerow",
+  "name": "Kéo cáp ngồi (Seated Cable Row)",
+  "group": "Lưng",
+  "used_in": [
+   "data.js EXERCISES.cablerow.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Seated Cable Row. The figure is seated at a low cable row, pulling a V-handle to the stomach with chest up. Teal glow on: mid back, lats, biceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on mid back, lats, biceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-dbrow",
+  "name": "Kéo tạ đơn một tay (Single Arm Dumbbell Row)",
+  "group": "Lưng",
+  "used_in": [
+   "data.js EXERCISES.dbrow.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Single Arm Dumbbell Row. The figure is one hand and one knee on a flat bench, rowing a dumbbell to the hip with the other arm, flat back. Teal glow on: lats, mid back. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on lats, mid back",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-dbpress",
+  "name": "Đẩy vai tạ đơn (Dumbbell Shoulder Press)",
+  "group": "Vai",
+  "used_in": [
+   "data.js EXERCISES.dbpress.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Dumbbell Shoulder Press. The figure is seated on an upright bench pressing two dumbbells overhead. Teal glow on: shoulders, triceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on shoulders, triceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-dbbench",
+  "name": "Đẩy ngực tạ đơn (Dumbbell Bench Press)",
+  "group": "Ngực",
+  "used_in": [
+   "data.js EXERCISES.dbbench.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Dumbbell Bench Press. The figure is lying on a flat bench pressing two dumbbells up over the chest. Teal glow on: chest, triceps, front shoulders. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on chest, triceps, front shoulders",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-machinepress",
+  "name": "Đẩy ngực máy (Machine Chest Press)",
+  "group": "Ngực",
+  "used_in": [
+   "data.js EXERCISES.machinepress.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Machine Chest Press. The figure is seated in a chest press machine pushing the handles forward. Teal glow on: chest, triceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on chest, triceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-kickback",
+  "name": "Đá mông cáp (Glute Kickback)",
+  "group": "Mông",
+  "used_in": [
+   "data.js EXERCISES.kickback.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Glute Kickback. The figure is standing at a cable tower with an ankle strap, kicking one straight leg back behind the body. Teal glow on: glutes. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on glutes",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-abduction",
+  "name": "Mở hông máy (Hip Abduction)",
+  "group": "Mông",
+  "used_in": [
+   "data.js EXERCISES.abduction.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Hip Abduction. The figure is seated in a hip abduction machine pushing the knees outward against the pads. Teal glow on: outer glutes. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on outer glutes",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-bwsquat",
+  "name": "Squat tay không (Bodyweight Squat)",
+  "group": "Chân",
+  "used_in": [
+   "data.js EXERCISES.bwsquat.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Bodyweight Squat. The figure is bodyweight squat with arms extended forward, thighs parallel, chest up. Teal glow on: quadriceps, glutes. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on quadriceps, glutes",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-inclinepushup",
+  "name": "Chống đẩy nghiêng (Incline Push-up)",
+  "group": "Ngực",
+  "used_in": [
+   "data.js EXERCISES.inclinepushup.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Incline Push-up. The figure is push-up with hands on a bench, body in a straight line at an incline. Teal glow on: chest, triceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on chest, triceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-invertedrow",
+  "name": "Kéo người dưới xà thấp (Inverted Row)",
+  "group": "Lưng",
+  "used_in": [
+   "data.js EXERCISES.invertedrow.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Inverted Row. The figure is lying under a low bar, body straight, pulling the chest up to the bar. Teal glow on: upper back, lats, biceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on upper back, lats, biceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-deadbug",
+  "name": "Bọ chết (Dead Bug)",
+  "group": "Bụng",
+  "used_in": [
+   "data.js EXERCISES.deadbug.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Dead Bug. The figure is lying on the back, arms pointing to the ceiling, extending one arm overhead and the opposite leg straight out low. Teal glow on: deep abs. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on deep abs",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-sideplank",
+  "name": "Plank nghiêng (Side Plank)",
+  "group": "Bụng",
+  "used_in": [
+   "data.js EXERCISES.sideplank.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Side Plank. The figure is side plank on one forearm, body in a straight line, top arm on the hip. Teal glow on: obliques, side core. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on obliques, side core",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-mountainclimber",
+  "name": "Leo núi (Mountain Climber)",
+  "group": "Tim mạch / Bụng",
+  "used_in": [
+   "data.js EXERCISES.mountainclimber.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Mountain Climber. The figure is in a high plank driving one knee toward the chest. Teal glow on: core, shoulders, hip flexors. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on core, shoulders, hip flexors",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-walking",
+  "name": "Đi bộ nhanh (Brisk Walking)",
+  "group": "Tim mạch",
+  "used_in": [
+   "data.js EXERCISES.walking.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Brisk Walking. The figure is brisk walking in mid-stride, arms swinging naturally. Teal glow on: legs, faint glow over the heart area. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on legs, faint glow over the heart area",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-kbswing",
+  "name": "Vung tạ ấm (Kettlebell Swing)",
+  "group": "Toàn thân",
+  "used_in": [
+   "data.js EXERCISES.kbswing.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Kettlebell Swing. The figure is kettlebell swing at the top, hips fully extended, arms straight, kettlebell at chest height. Teal glow on: glutes, hamstrings, core. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on glutes, hamstrings, core",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-woodchop",
+  "name": "Chặt gỗ cáp (Cable Woodchop)",
+  "group": "Bụng",
+  "used_in": [
+   "data.js EXERCISES.woodchop.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Cable Woodchop. The figure is standing beside a cable tower rotating the torso, pulling a handle diagonally from high to low. Teal glow on: obliques, core. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on obliques, core",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-skullcrusher",
+  "name": "Nằm duỗi tay sau (Skullcrusher)",
+  "group": "Tay sau",
+  "used_in": [
+   "data.js EXERCISES.skullcrusher.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Skullcrusher. The figure is lying on a flat bench lowering an EZ bar toward the forehead with elbows pointing up. Teal glow on: triceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on triceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-frontsquat",
+  "name": "Squat tạ trước (Front Squat)",
+  "group": "Chân",
+  "used_in": [
+   "data.js EXERCISES.frontsquat.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Front Squat. The figure is barbell racked on the front of the shoulders, elbows high, squatting to parallel with upright torso. Teal glow on: quadriceps, glutes, upper back. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on quadriceps, glutes, upper back",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-pullover",
+  "name": "Pullover tạ đơn (Dumbbell Pullover)",
+  "group": "Lưng",
+  "used_in": [
+   "data.js EXERCISES.pullover.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Dumbbell Pullover. The figure is upper back across a flat bench, holding one dumbbell with both hands, arms extended back over the head. Teal glow on: lats, chest. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on lats, chest",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-stretch",
+  "name": "Giãn cơ toàn thân (Full Body Stretch)",
+  "group": "Giãn cơ",
+  "used_in": [
+   "data.js EXERCISES.stretch.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Full Body Stretch. The figure is standing hamstring stretch, one heel forward on the floor, hinging gently at the hips. Teal glow on: hamstrings, lower back (soft and calm glow). TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on hamstrings, lower back (soft and calm glow)",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-bulgarian",
+  "name": "Squat tách chân Bulgaria (Bulgarian Split Squat)",
+  "group": "Chân / Mông",
+  "used_in": [
+   "data.js EXERCISES.bulgarian.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Bulgarian Split Squat. The figure is split squat with the rear foot on a bench, holding dumbbells, front knee over the mid-foot. Teal glow on: quadriceps, glutes. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on quadriceps, glutes",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-hacksquat",
+  "name": "Squat máy Hack (Hack Squat)",
+  "group": "Chân",
+  "used_in": [
+   "data.js EXERCISES.hacksquat.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Hack Squat. The figure is standing in a hack squat machine, back against the pad, squatting to about 90 degrees. Teal glow on: quadriceps, glutes. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on quadriceps, glutes",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-smithsquat",
+  "name": "Squat máy Smith (Squats on Multipress)",
+  "group": "Chân",
+  "used_in": [
+   "data.js EXERCISES.smithsquat.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Squats on Multipress. The figure is squatting under a Smith machine bar guided by vertical rails, thighs parallel. Teal glow on: quadriceps, glutes. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on quadriceps, glutes",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-csrow",
+  "name": "Kéo tạ tì ngực (Chest Supported Row)",
+  "group": "Lưng",
+  "used_in": [
+   "data.js EXERCISES.csrow.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Chest Supported Row. The figure is lying chest-down on an incline bench, rowing two dumbbells up toward the ribs. Teal glow on: mid back, rear shoulders. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on mid back, rear shoulders",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-cablelateral",
+  "name": "Dang vai cáp (Cable Lateral Raise)",
+  "group": "Vai",
+  "used_in": [
+   "data.js EXERCISES.cablelateral.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Cable Lateral Raise. The figure is standing side-on to a low cable, raising one arm out to the side to shoulder height. Teal glow on: side shoulder. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on side shoulder",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-ohtriext",
+  "name": "Duỗi tay sau qua đầu với cáp (Overhead Cable Tricep Extension)",
+  "group": "Tay sau",
+  "used_in": [
+   "data.js EXERCISES.ohtriext.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Overhead Cable Tricep Extension. The figure is facing away from a cable tower, extending a rope attachment forward from behind the head. Teal glow on: triceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on triceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-preacher",
+  "name": "Cuốn tạ ghế Scott (Preacher Curls)",
+  "group": "Tay trước",
+  "used_in": [
+   "data.js EXERCISES.preacher.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Preacher Curls. The figure is seated at a preacher curl bench, upper arms on the pad, curling an EZ bar up. Teal glow on: biceps. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on biceps",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-sledpush",
+  "name": "Đẩy xe trượt (Sled Push)",
+  "group": "Toàn thân",
+  "used_in": [
+   "data.js EXERCISES.sledpush.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Sled Push. The figure is leaning forward driving a weighted sled with straight arms, legs pushing hard. Teal glow on: quadriceps, glutes, calves. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on quadriceps, glutes, calves",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-wallball",
+  "name": "Ném bóng tường (Wall Ball)",
+  "group": "Toàn thân",
+  "used_in": [
+   "data.js EXERCISES.wallball.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Wall Ball. The figure is squatting with a medicine ball at the chest then throwing it upward toward a target on a plain wall panel. Teal glow on: legs, shoulders. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on legs, shoulders",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-farmercarry",
+  "name": "Xách tạ đi bộ (Farmer's Carry)",
+  "group": "Toàn thân / Cẳng tay",
+  "used_in": [
+   "data.js EXERCISES.farmercarry.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Farmer's Carry. The figure is walking tall holding heavy dumbbells at the sides, shoulders back. Teal glow on: forearms, upper traps, core. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on forearms, upper traps, core",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-inclinewalk",
+  "name": "Đi bộ dốc 12-3-30 (Incline Treadmill Walk)",
+  "group": "Tim mạch",
+  "used_in": [
+   "data.js EXERCISES.inclinewalk.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Incline Treadmill Walk. The figure is walking on a treadmill set to a steep incline, upright posture, no hand-rail holding. Teal glow on: glutes, calves, faint glow over the heart area. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on glutes, calves, faint glow over the heart area",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-zone2",
+  "name": "Cardio Zone 2 (Zone 2 Cardio)",
+  "group": "Tim mạch",
+  "used_in": [
+   "data.js EXERCISES.zone2.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Zone 2 Cardio. The figure is riding a stationary bike at a steady easy pace, upright posture. Teal glow on: quadriceps, faint glow over the heart area. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on quadriceps, faint glow over the heart area",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-intervalwalk",
+  "name": "Đi bộ ngắt quãng (Interval Walking)",
+  "group": "Tim mạch",
+  "used_in": [
+   "data.js EXERCISES.intervalwalk.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Interval Walking. The figure is fast walking with strong arm swing, mid-stride. Teal glow on: legs, faint glow over the heart area. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on legs, faint glow over the heart area",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ },
+ {
+  "id": "ex-pecdeck",
+  "name": "Ép ngực máy (Pec Deck / Cable Fly)",
+  "group": "Ngực",
+  "used_in": [
+   "data.js EXERCISES.pecdeck.img"
+  ],
+  "size": "1024x1024",
+  "cutout": false,
+  "prompt": "Exercise illustration: Pec Deck / Cable Fly. The figure is seated in a pec deck machine bringing the arms together in front of the chest. Teal glow on: chest. TapEasy exercise illustration style, consistent across the whole series: clean stylized 3D render, one gender-neutral athletic figure made of smooth matte graphite-grey material (#3A4651) like a sculpted mannequin, simplified face with no facial features, no hair detail, short neutral body proportions, plain dark sportswear shapes with no logos. The WORKING MUSCLES are shown with a soft glowing teal light (#33D6C9 core fading to #02BCB3 edges), like light shining from under the surface, not red, not painted anatomy. Equipment rendered in matte off-white ceramic (#E9EEF0) with thin teal accent lines, no brand marks. Background: solid deep navy (#061A24) with a subtle radial glow behind the figure and a soft floor shadow, no gym, no walls, no props other than the required equipment. Camera: three-quarter front view from slightly above, whole body and equipment fully in frame, centered, generous margin around. Soft studio lighting with a cool rim light. Correct, safe exercise technique: neutral spine, joints aligned, stable stance. Square image.",
+  "must_have": [
+   "single graphite-grey stylized figure, whole body in frame",
+   "teal glow on chest",
+   "solid deep navy background",
+   "correct safe technique"
+  ],
+  "must_not": [
+   "no red or orange muscle highlighting; muscles glow teal only",
+   "no realistic human face, no skin texture, no hair",
+   "no text, numbers, labels, arrows, watermark or logos anywhere",
+   "no gym background, walls, mirrors or other people",
+   "no copying of existing exercise-illustration libraries: no grey-skin anatomical figure with red muscles on a white background",
+   "no extra limbs, fused fingers or broken joints",
+   "no unsafe technique (rounded lower back under load, knees collapsing inward, hyper-extended elbows)"
+  ]
+ }
+]
