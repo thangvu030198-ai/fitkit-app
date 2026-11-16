@@ -845,7 +845,7 @@ function renderGroupStep(s, gi){
     items.forEach((it, k)=>{
       const c = ctxs[k], doneRows = rowsArr[k].filter(r=> r.done);
       if(!doneRows.length) return;
-      let keep = doneRows.map(r=>({ kg: num(r.kg), reps: c.timed ? 0 : num(r.reps), rpe: r.rpe ? Number(r.rpe) : undefined }));
+      let keep = doneRows.map(r=>({ kg: num(r.kg), reps: c.timed ? 0 : num(r.reps), rpe: r.rpe ? Number(r.rpe) : undefined, type: r.type || undefined }));
       if(!c.timed){ keep = fillBlankKg(c.key, keep); doneRows.forEach((r, j)=>{ if(!(num(r.kg) > 0) && keep[j].kg > 0) r.kg = keep[j].kg; }); }
       if(s.isToday){ tp.ctxItem = it; try{ recordExerciseResult(c.key, c.meta.name, it.reps, keep, c.timed); } finally { tp.ctxItem = null; } }
       s.completed.push(it.uid);

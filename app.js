@@ -1734,7 +1734,7 @@ function renderSessionStep(){
       const filled = fkFillBlankKg(rows, lastTopKg);
       rows.forEach((r, i)=>{ if(Number(filled[i].kg) > 0) r.kg = filled[i].kg; });
     }
-    const keep = doneRows.map(r=>({ kg: Number(r.kg)||0, reps: timed ? 0 : Number(r.reps)||0, rpe: r.rpe ? Number(r.rpe) : undefined }));
+    const keep = doneRows.map(r=>({ kg: Number(r.kg)||0, reps: timed ? 0 : Number(r.reps)||0, rpe: r.rpe ? Number(r.rpe) : (r.type === "f" ? 10 : undefined), type: r.type || undefined }));
     if(session.isToday) recordExerciseResult(key, meta.name, item.reps, keep, timed);
     try{ if(typeof fkTrack === "function") fkTrack("set_logged", { sets: keep.length, timed: !!timed, weighted: !!isW, exercise_index: session.idx, saved: !!session.isToday }); }catch(e){}
     session.completed.push(item.uid);
@@ -4410,7 +4410,16 @@ function recordExerciseResult(key, name, reps, sets, timed){
   state.setLog = state.setLog || {}; state.setHist = state.setHist || {};
   /* R3-CORE: chuẩn hoá hiệp trước khi ghi — kg 0–500, lần 0–200 (module khác / dữ liệu PT gửi số âm, NaN, chuỗi không làm hỏng lịch sử) */
   sets = (Array.isArray(sets) ? sets : []).filter(x=> x && typeof x === "object").slice(0, FK_MAX_SETS * 2);
-  sets.forEach(x=>{ const k = Number(x.kg), r = Number(x.reps); x.kg = Number.isFinite(k) && k > 0 ? Math.min(500, Math.round(k * 100) / 100) : 0; x.reps = Number.isFinite(r) && r > 0 ? Math.min(200, Math.round(r)) : 0; });
+  sets.forEach(x=>{ const k = Number(x.kg), r = Number(x.reps); x.kg = Number.isFinite(k) && k > 0 ? Math.min(500, Math.round(k * 100) / 100) : 0; x.reps = Number.isFinite(r) && r > 0 ? Math.min(200, Math.round(r)) : 0;
+    if(x.type !== "w" && x.type !== "d" && x.type !== "f") delete x.type; });
+  /* 16/11 (session-plus.js) — LOẠI HIỆP: "w" khởi động · "d" drop set · "f" tới hạn.
+     · Hiệp khởi động KHÔNG vào lịch sử / kỷ lục / khối lượng / tự tăng tạ (chỉ nhớ để lần sau điền sẵn).
+     · Drop set tính vào khối lượng + lịch sử nhưng KHÔNG dùng để xét "đạt / trượt" và tự tăng tạ (tạ đã hạ có chủ ý).
+     · `pattern` = cấu trúc hiệp của buổi này (để buổi sau dựng lại đúng thứ tự khởi động → chính → drop). */
+  const pattern = sets.some(x=> x.type) ? sets.map(x=> ({ t: x.type || "", kg: x.kg, reps: x.reps })) : null;
+  const work = sets.some(x=> x.type !== "w") ? sets.filter(x=> x.type !== "w") : sets.map(x=>{ delete x.type; return x; });
+  const mainSets = work.some(x=> x.type !== "d") ? work.filter(x=> x.type !== "d") : work;
+  sets = mainSets;
   const prev = state.setLog[key];
   const day = (typeof session !== "undefined" && session && typeof session.date === "string" && session.date) || todayStr();   // QT-07
   // QT-01: bài có tạ → hiệp trống kg lấy kg hiệp trước / mức tạ buổi trước (không lưu 0 kg, không kéo e1RM/khối lượng/tự tăng)
@@ -4430,6 +4439,7 @@ function recordExerciseResult(key, name, reps, sets, timed){
     ? (prev.fails >= 2 && topOf(sets) < topOf(prev.sets) ? 0 : (prev.fails||0))
     : ((prev && prev.prevFails)||0);
   state.setLog[key] = { date: day, sets, reps, fails: failed ? prevFails + 1 : 0, prevFails };
+  if(pattern) state.setLog[key].all = pattern.slice(0, FK_MAX_SETS);
   if(timed) return;
   const h = state.setHist[key] = state.setHist[key] || { name, list:[] };
   if(!Array.isArray(h.list)) h.list = [];
@@ -4440,7 +4450,7 @@ function recordExerciseResult(key, name, reps, sets, timed){
   const sid = (typeof session !== "undefined" && session && session.sid) || "_";
   const old = h.list.find(x=> x.date === day);
   const parts = old ? (old.parts && typeof old.parts === "object" ? Object.assign({}, old.parts) : { [old.sid || "_"]: Array.isArray(old.sets) ? old.sets : [] }) : {};
-  parts[sid] = sets.map(x=> { const o = { kg: Number(x.kg)||0, reps: Number(x.reps)||0 }; if(x.rpe != null && x.rpe !== "") o.rpe = x.rpe; return o; });
+  parts[sid] = work.map(x=> { const o = { kg: Number(x.kg)||0, reps: Number(x.reps)||0 }; if(x.rpe != null && x.rpe !== "") o.rpe = x.rpe; if(x.type) o.t = x.type; return o; });
   const pk = Object.keys(parts), all = pk.flatMap(k=> parts[k]);
   const best = Math.max(0, ...all.map(x=> e1rm(x.kg, x.reps)));
   const vol = all.reduce((a,x)=> a + (x.kg||0)*(x.reps||0), 0);
@@ -4452,7 +4462,7 @@ function recordExerciseResult(key, name, reps, sets, timed){
   if(h.list.length > 120) h.list = h.list.slice(-120);
   if(best > 0 && prevBest > 0 && best > prevBest + 0.4 && typeof session !== "undefined" && session){
     session.prs = session.prs || []; session.prs.push({ name, e1rm: Math.round(best) });
-    toast(`🏆 Kỷ lục mới: ${name} ~${Math.round(best)} kg`, "military_tech");
+    if(!(session._livePr && session._livePr[key])) toast(`🏆 Kỷ lục mới: ${name} ~${Math.round(best)} kg`, "military_tech");   // đã báo ngay lúc bấm ✓ (session-plus.js) thì không báo lại
   }
 }
 /* warmupHTML(kg, meta, reps?) — QT-15: theo khoảng lần. Có reps với đáy ≥ 8 lần (tăng cơ): 2 hiệp 50 %×10, 75 %×5;
