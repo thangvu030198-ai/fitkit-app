@@ -1423,7 +1423,7 @@ function renderWorkoutScreen(){
     return `
     <div class="list-item ${done?'done':''}" data-ex="${escapeHtml(item.uid)}">
       <div class="thumb-wrap">
-        ${item.clipId ? `<video muted preload="metadata" data-thumb-clip="${escapeHtml(item.clipId)}"></video>` : `<img src="${attrUrl((item.stock && item.stock.thumb) || meta.img)}" alt="${escapeHtml(meta.name)}" loading="lazy" decoding="async" data-fallback="${attrUrl(meta.img)}" onerror="this.onerror=null;if(this.dataset.fallback)this.src=this.dataset.fallback">`}
+        ${item.clipId ? `<video muted preload="metadata" data-thumb-clip="${escapeHtml(item.clipId)}"></video>` : `<img src="${attrUrl((window.fkExArt && fkExArt.thumb(item)) || (item.stock && item.stock.thumb) || meta.img)}" data-exart="${escapeHtml(item.custom ? "" : String(item.exerciseId || ""))}" alt="${escapeHtml(meta.name)}" loading="lazy" decoding="async" data-fallback="${attrUrl(meta.img)}" onerror="this.onerror=null;if(this.dataset.fallback)this.src=this.dataset.fallback">`}
         ${item.clipId ? `<div class="cam-badge"><span class="material-symbols-rounded">videocam</span></div>` : (item.stock && item.stock.url ? `<div class="cam-badge play"><span class="material-symbols-rounded">play_arrow</span></div>` : "")}
       </div>
       <div class="info">
@@ -2263,7 +2263,7 @@ function renderPlanEditorHTML(plan){
         const meta = getExerciseMeta(it);
         return `<div class="list-item" data-item="${escapeHtml(String(it.uid))}">
           <div class="thumb-wrap">
-            ${it.clipId ? `<video muted preload="metadata" data-thumb-clip="${escapeHtml(String(it.clipId))}"></video>` : `<img src="${attrUrl((it.stock && it.stock.thumb) || meta.img)}" alt="${escapeHtml(meta.name)}" loading="lazy">`}
+            ${it.clipId ? `<video muted preload="metadata" data-thumb-clip="${escapeHtml(String(it.clipId))}"></video>` : `<img src="${attrUrl((window.fkExArt && fkExArt.thumb(it)) || (it.stock && it.stock.thumb) || meta.img)}" data-exart="${escapeHtml(it.custom ? "" : String(it.exerciseId || ""))}" alt="${escapeHtml(meta.name)}" loading="lazy">`}
             ${it.clipId ? `<div class="cam-badge"><span class="material-symbols-rounded">videocam</span></div>` : ""}
           </div>
           <div class="info"><div class="name">${escapeHtml(meta.name)}</div><div class="meta">${escapeHtml(meta.muscle||"")} · ${escapeHtml(String(it.sets))} hiệp × ${escapeHtml(String(it.reps))}</div></div>
@@ -2398,7 +2398,7 @@ function openPlanItemEditor(plan, dayKey, itemUid){
       mountClipVideo("#pie-video", item.clipId);
       attachFitToggle($("#pie-fit-toggle"), "#pie-video", item.clipId);
     } else {
-      mediaEl.innerHTML = `<img src="${attrUrl((item.stock && item.stock.thumb) || meta.img)}" alt="${escapeHtml(meta.name)}" style="width:100%;height:150px;object-fit:cover;border-radius:14px;">`;   // QS-04
+      mediaEl.innerHTML = `<img src="${attrUrl((window.fkExArt && fkExArt.full(item.custom ? "" : item.exerciseId)) || (item.stock && item.stock.thumb) || meta.img)}" alt="${escapeHtml(meta.name)}" style="width:100%;height:150px;object-fit:cover;border-radius:14px;">`;   // QS-04
     }
     try{ if(window.FKEquip) FKEquip.mount({ plan, dayKey, item, host: $("#pie-media"), reopen: ()=>{ renderPlansScreen(); openPlanItemEditor(plan, dayKey, itemUid); } }); }catch(e){}   // 16/11: chọn dụng cụ
     $("#pie-attach").addEventListener("click", ()=>{

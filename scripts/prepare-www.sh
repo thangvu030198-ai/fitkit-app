@@ -28,7 +28,7 @@ cp index.html manifest.json sw.js privacy-policy.html delete-account.html \
    www/
 cp brand.css www/ 2>/dev/null || echo "⚠️ Chưa có brand.css (biến màu thương hiệu TapEasy) — app vẫn chạy với màu mặc định"
 # JS lõi (rbac.js ngay sau cloud.js; analytics.js — thống kê có đồng ý — ngay sau rbac.js)
-cp themes.js fk-lazy.js icons.js firebase-config.js media-config.js cloud.js rbac.js analytics.js data.js people-ai.js templates.js exdb.js app.js \
+cp themes.js fk-lazy.js icons.js firebase-config.js media-config.js cloud.js rbac.js analytics.js data.js people-ai.js exercise-art.js templates.js exdb.js app.js \
    meals.js meals-extra.js nutrition.js freevideos.js video.js library.js coach.js ptprofile.js pt.js \
    www/
 # JS module mở rộng (nạp sau pt.js; health-safety.js luôn cuối)

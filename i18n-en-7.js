@@ -1,6 +1,7 @@
 /* TapEasy — từ điển Anh (7): Trợ lý AI (ai-coach.js) — nhãn tĩnh. Câu dựng động viết sẵn 2 bản trong ai-coach.js (T(vi, en)). Khoá = chuỗi tiếng Việt gốc. */
 (function(){ if(typeof FK_I18N==="undefined") return; FK_I18N.add("en", {
  "Trợ lý TapEasy": "TapEasy Assistant",
+ "Động tác mẫu": "Movement demo", "Minh hoạ kỹ thuật": "Technique illustration", "Ảnh kỹ thuật": "Technique image",
  "Mở Trợ lý AI TapEasy": "Open the TapEasy AI assistant",
  "Trợ lý AI TapEasy": "TapEasy AI assistant",
  "Trò chuyện": "Chat",

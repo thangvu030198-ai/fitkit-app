@@ -308,6 +308,22 @@ function libFilterOk(x){
 function libFind(key){ return libItems(null).find(x=>x.key===key); }
 
 /* ---- Chi tiết bài ---- */
+/** Khối kỹ thuật dưới video hướng dẫn:
+ *  - bài thư viện mở (exdb): chuỗi ảnh tách khung → chạy như ảnh động
+ *  - bài lõi TapEasy: video minh hoạ phong cách TapEasy (lặp) → ảnh minh hoạ riêng của bài → ẩn
+ *    (KHÔNG dùng ảnh chung của nhóm cơ — trước đây mọi bài ngực đều ra cùng 1 ảnh tĩnh mà ghi "Ảnh động"). */
+function libTechMediaHTML(x, imgs){
+  if(x.src === "exdb"){
+    if(!imgs[0]) return "";
+    return `<div class="ld-media"><img id="ld-anim" src="${escapeHtml(imgs[0])}" class="ld-img white" alt="${escapeHtml(x.name)} — ảnh kỹ thuật" decoding="async"><span>${escapeHtml(imgs.length > 1 ? "Ảnh động kỹ thuật" : "Ảnh kỹ thuật")}</span></div>`;
+  }
+  const A = window.fkExArt;
+  const v = A && A.video ? A.video(x.id) : null;
+  if(v) return `<div class="ld-media"><video class="ld-img ld-vid${v.ratio === "9:16" ? " tall" : ""}" src="${escapeHtml(v.src)}" poster="${escapeHtml(v.poster || "")}" autoplay muted loop playsinline preload="metadata" aria-label="${escapeHtml(x.name)} — động tác mẫu"></video><span>${escapeHtml("Động tác mẫu")}</span></div>`;
+  const art = A && A.full ? A.full(x.id) : "";
+  if(art) return `<div class="ld-media"><img src="${escapeHtml(art)}" class="ld-img ld-art" alt="${escapeHtml(x.name)} — minh hoạ kỹ thuật" decoding="async"><span>${escapeHtml("Minh hoạ kỹ thuật")}</span></div>`;
+  return "";
+}
 function openLibDetail(key){
   const x = libFind(key); if(!x) return;
   const imgs = x.src==="exdb" ? (x.ex.images||[]).map((_,i)=>exdbImg(x.ex,i)) : [x.img];
@@ -316,7 +332,7 @@ function openLibDetail(key){
   openSheet(`
     <div class="sheet-header"><h3 style="font-size:18px;">${escapeHtml(x.name)}</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
     ${vb.html}
-    ${imgs[0] ? `<div class="ld-media"><img id="ld-anim" src="${escapeHtml(imgs[0])}" class="ld-img ${x.src==="exdb"?"white":""}" alt="${escapeHtml(x.name)} — ảnh kỹ thuật" decoding="async"><span>Ảnh động kỹ thuật</span></div>` : ""}
+    ${libTechMediaHTML(x, imgs)}
     <div class="chip-row" style="margin:10px 0;">
       <span class="pill">${escapeHtml(x.muscleVi)}</span><span class="pill">${escapeHtml(EXDB_EQUIP_VI[x.equip]||x.sub.split(" · ").pop())}</span><span class="pill">${escapeHtml(EXDB_LEVEL_VI[x.level]||"Mới tập")}</span>
     </div>

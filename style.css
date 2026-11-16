@@ -1305,6 +1305,9 @@ i.cnt{ background:var(--coral); color:var(--on-coral, #061A24); }
 .ld-media{ position:relative; margin-top:4px; }
 .ld-media span{ position:absolute; left:8px; bottom:8px; font-size:12px; font-weight:700; padding:2px 7px; border-radius:6px; background:rgba(6,26,36,.75); color:#fff; }
 .ld-media .ld-img{ max-height:22vh; }
+.ld-media .ld-vid, .ld-media .ld-art{ width:100%; max-height:none; aspect-ratio:16/9; object-fit:contain; background:#061A24; }
+.ld-media .ld-art{ aspect-ratio:auto; max-height:34vh; }
+.ld-media .ld-vid.tall{ aspect-ratio:9/16; max-height:46vh; }
 .exdb-anim-small{ max-height:20vh !important; margin-top:6px; }
 .vp-saved.guide{ background:var(--mint); color:var(--navy); }
 .vp-saved.ref{ background:rgba(6,26,36,.8); color:rgba(255,255,255,.85); }
