@@ -20,6 +20,11 @@ let vids = {};             // key → { src, poster, ratio }
    bản render lại (hash mới) tự hiện khi đã đạt. */
 const HOLD_VIDEO = new Set(["preacher"]);   // 17/11/2026: 3 lần render chưa có đệm preacher → dùng ảnh minh hoạ (đạt) + video nguồn gốc
 const HOLD_IMAGE = new Set([]);
+/* CÔNG TẮC TỔNG — 17/11/2026: tắt. Chủ app phát hiện nhiều clip/ảnh AI sai động tác, góc, biên độ
+   (lat pulldown, pullover, hip abduction, dead bug, calf raise, hack squat, preacher, curl…).
+   Tắt toàn bộ khối "Động tác mẫu" + ảnh AI trong danh sách cho tới khi thay bằng thư viện 3D có bản quyền.
+   App quay về ảnh & video nguồn gốc (wger/YMove/Pexels). Bật lại: ENABLED = true. */
+const ENABLED = false;
 
 function ls(get, v, k){ k = k || LS; try{ if(get) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
 function keyOf(id){ return String(id || "").replace(/^ex-/, ""); }
@@ -80,7 +85,7 @@ G.fkExArt = {
   isAi: u=> String(u || "").indexOf("/media/exercise-ai/") >= 0,
   _apply: apply, _applyVideos: applyVideos, _hold: { video: HOLD_VIDEO, image: HOLD_IMAGE }, _keys: ()=> Array.from(avail),
 };
-load();
+if(ENABLED) load();
 /* templates.js thêm ~40 bài vào EXERCISES SAU khi file này chạy → áp lại khi trang nạp xong */
 if(typeof document !== "undefined" && document.addEventListener){
   const again = ()=>{ if(lastIds.length && apply(lastIds)) swapDom(); };
