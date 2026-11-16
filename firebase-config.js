@@ -42,5 +42,5 @@ const FK_FEATURES = {
      https://tapeasy.app/__/auth/handler (workflow "Firebase — trang đăng nhập tự host"). BẮT BUỘC trước khi bật:
      Google Cloud Console → APIs & Services → Credentials → OAuth client "Web client (auto created by Google Service)"
      → Authorized redirect URIs thêm https://tapeasy.app/__/auth/handler . App tự kiểm tra file /__/auth/handler.js có thật mới dùng. */
-  ownAuthDomain: false,
+  ownAuthDomain: true,      // 16/11: đã thêm https://tapeasy.app/__/auth/handler vào OAuth client → BẬT
 };
