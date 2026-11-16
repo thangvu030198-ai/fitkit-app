@@ -144,6 +144,11 @@ const cloud = (() => {
     "auth/operation-not-allowed": "Chủ app chưa bật đăng nhập bằng hình thức này trong Firebase.",
     "auth/unauthorized-domain": "Tên miền này chưa được cho phép trong Firebase Authentication.",
     "social/not-configured": "Bản app này chưa cấu hình đăng nhập Google/Facebook. Tạm thời hãy dùng email.",
+    "social/inapp": "Bạn đang mở TapEasy trong trình duyệt của Zalo / Facebook / Messenger / TikTok… — Google không cho đăng nhập ở đây. Hãy mở bằng Chrome hoặc Safari rồi đăng nhập lại (hoặc dùng email).",
+    "auth/missing-initial-state": "Trình duyệt đã mất phiên đăng nhập (thường do mở trong Zalo / Facebook hoặc chế độ ẩn danh). Hãy mở TapEasy bằng Chrome hoặc Safari rồi thử lại.",
+    "auth/web-storage-unsupported": "Trình duyệt đang chặn lưu dữ liệu nên không đăng nhập Google được. Tắt chế độ ẩn danh / chặn cookie, hoặc mở bằng Chrome / Safari.",
+    "auth/internal-error": "Đăng nhập Google bị gián đoạn. Hãy mở TapEasy bằng Chrome hoặc Safari rồi thử lại.",
+    "auth/network-request-failed": "Mất kết nối khi đăng nhập. Kiểm tra mạng rồi thử lại.",
     "permission-denied": "Bạn không có quyền thực hiện thao tác này.",
     "join/code-taken": "Mã này đã có học viên dùng. Nhờ PT tạo mã mới cho bạn nhé.",
     "join/bad-code": "Mã gồm 6–10 ký tự chữ và số, ví dụ: K7M2QX.",
@@ -312,6 +317,13 @@ const cloud = (() => {
      · App iOS/Android (Capacitor): plugin @capacitor-firebase/authentication đăng nhập bằng SDK gốc,
        rồi đưa token cho Firebase JS (skipNativeAuth). Xem README-store.md mục "Đăng nhập Google/Facebook". */
   function isNative(){ return !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform()); }
+  /* 16/11: trình duyệt nhúng trong app khác (Zalo, Facebook, Messenger, Instagram, TikTok, Line, WebView Android…) — Google CHẶN đăng nhập
+     ở đây (lỗi disallowed_useragent) hoặc popup mở ra tab riêng mất phiên ("missing initial state") → báo người dùng mở bằng trình duyệt thật. */
+  function inAppBrowser(){
+    const ua = String((navigator && navigator.userAgent) || "");
+    return /FBAN|FBAV|FB_IAB|FBIOS|Instagram|Messenger|Zalo|Line\/|TikTok|musical_ly|Bytedance|BytedanceWebview|MicroMessenger|Snapchat|Twitter|LinkedInApp|Pinterest/i.test(ua)
+      || /Android.*; wv\)/i.test(ua) || (/iPhone|iPad|iPod/i.test(ua) && /AppleWebKit/i.test(ua) && !/Safari\//i.test(ua) && !/CriOS|FxiOS|EdgiOS/i.test(ua));
+  }
   function nativeAuthPlugin(){ return isNative() && window.Capacitor.Plugins ? Capacitor.Plugins.FirebaseAuthentication : null; }
   /* Thông tin Apple của lần xác thực gần nhất → thu hồi token khi xoá tài khoản (App Store 5.1.1(v)) */
   let lastAppleGrant = null;
@@ -332,6 +344,7 @@ const cloud = (() => {
       if(linkUser) return linkUser.linkWithCredential(credential);
       return reauthUser ? reauthUser.reauthenticateWithCredential(credential) : fb.auth.signInWithCredential(credential);
     }
+    if(kind==="google" && inAppBrowser()) throw dErr("social/inapp");
     const provider = kind==="google" ? new firebase.auth.GoogleAuthProvider() : kind==="apple" ? new firebase.auth.OAuthProvider("apple.com") : new firebase.auth.FacebookAuthProvider();
     provider.addScope("email"); if(kind==="apple") provider.addScope("name");
     if(kind==="google") provider.setCustomParameters({ prompt:"select_account" });
@@ -385,13 +398,29 @@ const cloud = (() => {
     return p;
   }
 
+  /* 16/11: trang đăng nhập cùng tên miền với app (tapeasy.app/__/auth/…) → không còn lỗi "missing initial state" do trình duyệt chặn bộ nhớ
+     giữa 2 tên miền. Chỉ bật khi FK_FEATURES.ownAuthDomain = true, đang chạy đúng trên tapeasy.app và file trợ giúp đã có trên máy chủ. */
+  async function authConfig(){
+    const cfg = Object.assign({}, FIREBASE_CONFIG);
+    try{
+      const F = typeof FK_FEATURES !== "undefined" ? FK_FEATURES : {};
+      const h = String(location.hostname || "");
+      if(F.ownAuthDomain && h === "tapeasy.app" && !isNative()){
+        const ctl = typeof AbortController === "function" ? new AbortController() : null; const t = ctl ? setTimeout(()=> ctl.abort(), 2500) : 0;
+        const r = await fetch("/__/auth/handler.js", Object.assign({ method:"HEAD", cache:"no-store" }, ctl ? { signal: ctl.signal } : {}));
+        if(t) clearTimeout(t);
+        if(r && r.ok) cfg.authDomain = h;
+      }
+    }catch(e){}
+    return cfg;
+  }
   const firebaseEngine = {
     async init(){
       const base = `https://www.gstatic.com/firebasejs/${FB_VERSION}`;
       /* R3-CLOUD-01: init có thể chạy LẠI (retryInit khi có mạng) → không nạp trùng script, không initializeApp 2 lần */
       if(typeof firebase === "undefined" || !firebase.initializeApp) await loadScript(`${base}/firebase-app-compat.js`);
       await Promise.all([firebase.auth ? null : loadScript(`${base}/firebase-auth-compat.js`), firebase.firestore ? null : loadScript(`${base}/firebase-firestore-compat.js`)]);
-      if(!(firebase.apps || []).some(a=> a.name === "[DEFAULT]")) firebase.initializeApp(FIREBASE_CONFIG);
+      if(!(firebase.apps || []).some(a=> a.name === "[DEFAULT]")) firebase.initializeApp(await authConfig());
       fb = { auth: firebase.auth(), db: firebase.firestore() };
       try{ await fb.db.enablePersistence({ synchronizeTabs:true }); }catch(e){ /* chạy tiếp không cache offline */ }
       // Hoàn tất đăng nhập Google/Facebook kiểu redirect (khi popup bị chặn): tạo hồ sơ nếu chưa có
@@ -627,6 +656,8 @@ const cloud = (() => {
     // Thống kê ẩn danh (analytics.js): chỉ ghi PHƯƠNG THỨC đăng nhập — không email/uid; tắt đồng ý → fkTrack bỏ qua
     signUp: wrap(needOnline(async (email, pw, name)=>{ await engine.signUp(email, pw, name); emit(); authTrack("signup", "email"); return user; })),
     signIn: wrap(needOnline(async (email, pw)=>{ await engine.signIn(email, pw); emit(); authTrack("login", "email"); return user; })),
+    /** Đang ở trình duyệt nhúng (Zalo/Facebook…) — màn đăng nhập dùng để hiện hướng dẫn mở bằng Chrome/Safari */
+    get inAppBrowser(){ try{ return inAppBrowser(); }catch(e){ return false; } },
     signInWithGoogle: wrap(needOnline(async ()=>{ await engine.signInSocial("google"); emit(); authTrack("login", "google"); return user; })),
     signInWithFacebook: wrap(needOnline(async ()=>{ await engine.signInSocial("facebook"); emit(); authTrack("login", "facebook"); return user; })),
     signInWithApple: wrap(needOnline(async ()=>{ await engine.signInSocial("apple"); emit(); authTrack("login", "apple"); return user; })),

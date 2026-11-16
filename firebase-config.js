@@ -36,4 +36,11 @@ const FK_FEATURES = {
   metrics: true,
   // Cách đăng nhập mạng xã hội ĐÃ bật trong Firebase Console → Authentication (bản web). Bật thêm Facebook/Apple trên Console xong thì thêm "facebook"/"apple" vào đây.
   authProviders: ["google"],
+  /* 16/11: ĐĂNG NHẬP GOOGLE QUA TÊN MIỀN RIÊNG tapeasy.app (sửa lỗi "Unable to process request due to missing initial state").
+     Trình duyệt mới (Chrome/Safari chặn chia sẻ bộ nhớ giữa các trang khác tên miền) làm hỏng đăng nhập khi trang đăng nhập nằm ở
+     tapeasy-2ce8f.firebaseapp.com còn app ở tapeasy.app. true → khi chạy trên tapeasy.app, dùng trang đăng nhập tự host tại
+     https://tapeasy.app/__/auth/handler (workflow "Firebase — trang đăng nhập tự host"). BẮT BUỘC trước khi bật:
+     Google Cloud Console → APIs & Services → Credentials → OAuth client "Web client (auto created by Google Service)"
+     → Authorized redirect URIs thêm https://tapeasy.app/__/auth/handler . App tự kiểm tra file /__/auth/handler.js có thật mới dùng. */
+  ownAuthDomain: false,
 };

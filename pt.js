@@ -929,9 +929,41 @@ function bindSocialButtons(needAgree){
       if(grants) await cloud.consent.record(grants, "signup-" + k);
       fkAutoLinkToast();
       postAuthRoute();
-    }catch(e){ err.textContent = e.message; }
+    }catch(e){ err.textContent = e.message; if(e && (e.code === "social/inapp" || e.code === "auth/missing-initial-state" || e.code === "auth/web-storage-unsupported")) fkOpenInBrowserSheet(); }
     finally{ setAuthBusy(false); }
   }));
+  /* 16/11: mở trong Zalo / Facebook… → báo trước ngay dưới nút Google */
+  try{ if(cloud.mode === "firebase" && cloud.inAppBrowser && !$("#au-inapp")){ const g = $('[data-social="google"]'); if(g && g.parentElement) g.parentElement.insertAdjacentHTML("afterend", `<p class="small-note" id="au-inapp" style="margin-top:8px;color:var(--warn,#FFB08A);">Bạn đang mở trong trình duyệt của Zalo / Facebook… Đăng nhập Google cần <a href="#" id="au-inapp-open" style="text-decoration:underline;">mở bằng Chrome / Safari</a> — hoặc dùng email bên dưới.</p>`); const a = $("#au-inapp-open"); if(a) a.addEventListener("click", ev=>{ ev.preventDefault(); fkOpenInBrowserSheet(); }); } }catch(_){}
+}
+/* 16/11: hướng dẫn thoát trình duyệt nhúng (Zalo / Facebook / Messenger / TikTok…) để đăng nhập Google */
+function fkOpenInBrowserSheet(){
+  const ua = navigator.userAgent || "", android = /Android/i.test(ua);
+  const en = !!(window.FK_I18N && FK_I18N.lang && FK_I18N.lang !== "vi"), L = (vi, e)=> en ? e : vi;
+  const url = location.origin + location.pathname;
+  const intent = "intent://" + location.host + location.pathname + "#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=" + encodeURIComponent(url) + ";end";
+  const box = document.createElement("div"); box.id = "fk-inapp"; box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true");
+  box.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(2,10,16,.72);display:flex;align-items:flex-end;justify-content:center;";
+  box.setAttribute("data-no-i18n", "");
+  const br = android ? "Chrome" : "Safari";
+  box.innerHTML = `<div style="width:100%;max-width:480px;background:var(--bg,#0B2230);color:var(--text,#fff);border-radius:22px 22px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom));">
+    <h3 style="font-size:18px;margin:0 0 8px;">${L(`Mở bằng ${br} để đăng nhập Google`, `Open in ${br} to sign in with Google`)}</h3>
+    <p class="small-note" style="line-height:1.5;margin:0 0 12px;">${L("Google không cho đăng nhập trong trình duyệt của Zalo, Facebook, Messenger, TikTok… Cách làm:", "Google does not allow sign-in inside the Zalo, Facebook, Messenger, TikTok… browsers. Here is how:")}</p>
+    <ol style="margin:0 0 14px;padding-left:20px;line-height:1.6;font-size:14px;">
+      ${android ? L(`<li>Bấm nút <b>Mở bằng Chrome</b> bên dưới.</li><li>Nếu không mở được: bấm <b>⋮</b> góc trên → <b>Mở bằng trình duyệt</b>.</li>`, `<li>Tap <b>Open in Chrome</b> below.</li><li>If that does not work: tap <b>⋮</b> at the top → <b>Open in browser</b>.</li>`)
+        : L(`<li>Bấm <b>•••</b> (hoặc biểu tượng la bàn) ở góc màn hình → <b>Mở bằng Safari / trình duyệt</b>.</li><li>Hoặc bấm <b>Sao chép link</b> rồi dán vào Safari.</li>`, `<li>Tap <b>•••</b> (or the compass icon) in a corner → <b>Open in Safari / browser</b>.</li><li>Or tap <b>Copy link</b> and paste it into Safari.</li>`)}
+      <li>${L("Vào lại TapEasy và bấm <b>Tiếp tục với Google</b>.", "Open TapEasy again and tap <b>Continue with Google</b>.")}</li></ol>
+    ${android ? `<a class="btn btn-primary btn-block" id="fk-inapp-chrome" href="${escapeHtml(intent)}">${L("Mở bằng Chrome", "Open in Chrome")}</a>` : ""}
+    <button type="button" class="btn ${android ? "btn-ghost" : "btn-primary"} btn-block" id="fk-inapp-copy" style="margin-top:8px;">${L("Sao chép link", "Copy link")}</button>
+    <button type="button" class="btn btn-ghost btn-block" id="fk-inapp-close" style="margin-top:4px;">${escapeHtml(L("Để sau — dùng email", "Later — use email"))}</button></div>`;
+  const old = document.getElementById("fk-inapp"); if(old) old.remove();
+  document.body.appendChild(box);
+  const close = ()=> box.remove();
+  box.addEventListener("click", ev=>{ if(ev.target === box) close(); });
+  box.querySelector("#fk-inapp-close").addEventListener("click", close);
+  box.querySelector("#fk-inapp-copy").addEventListener("click", async ()=>{
+    let ok = false; try{ await navigator.clipboard.writeText(url); ok = true; }catch(_){ try{ const t = document.createElement("textarea"); t.value = url; document.body.appendChild(t); t.select(); ok = document.execCommand("copy"); t.remove(); }catch(__){} }
+    try{ toast(ok ? L("Đã sao chép link — dán vào Chrome / Safari", "Link copied — paste it into Chrome / Safari") : url, ok ? "check_circle" : "info"); }catch(_){}
+  });
 }
 
 function openPrivacySheet(){
