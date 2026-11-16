@@ -67,12 +67,12 @@
   "id": "ex-bulgarian",
   "name": "Squat tách chân Bulgaria (Bulgarian Split Squat)",
   "group": "Chân / Mông",
-  "hash": "d22a71e97505bb40",
+  "hash": "136538daac41d279",
   "provider": "KVAPI/Muse",
   "kind": "image",
   "ratio": "1:1",
-  "created": "2026-11-16T17:52:01Z",
-  "seconds": 46
+  "created": "2026-11-16T18:41:24Z",
+  "seconds": 55
  },
  {
   "file": "ex-burpee.webp",
@@ -307,12 +307,12 @@
   "id": "ex-frontsquat",
   "name": "Squat tạ trước (Front Squat)",
   "group": "Chân",
-  "hash": "77232a7997e59842",
+  "hash": "e4cc0d49c53f3d3b",
   "provider": "KVAPI/Muse",
   "kind": "image",
   "ratio": "1:1",
-  "created": "2026-11-16T17:51:08Z",
-  "seconds": 49
+  "created": "2026-11-16T18:40:51Z",
+  "seconds": 40
  },
  {
   "file": "ex-glutebridge.webp",
@@ -382,12 +382,12 @@
   "id": "ex-hangingleg",
   "name": "Nâng chân treo xà (Hanging Leg Raise)",
   "group": "Bụng",
-  "hash": "bc8e7b385d98b597",
+  "hash": "1527f269c5d1c999",
   "provider": "KVAPI/Muse",
   "kind": "image",
   "ratio": "1:1",
-  "created": "2026-11-16T17:43:26Z",
-  "seconds": 30
+  "created": "2026-11-16T18:40:05Z",
+  "seconds": 41
  },
  {
   "file": "ex-hipthrust.webp",
@@ -397,12 +397,12 @@
   "id": "ex-hipthrust",
   "name": "Đẩy hông tạ đòn (Hip Thrust)",
   "group": "Mông",
-  "hash": "2130b1b0cee4554a",
+  "hash": "3ee9c7e1759f71cd",
   "provider": "KVAPI/Muse",
   "kind": "image",
   "ratio": "1:1",
-  "created": "2026-11-16T17:45:34Z",
-  "seconds": 52
+  "created": "2026-11-16T18:40:28Z",
+  "seconds": 64
  },
  {
   "file": "ex-inclinedb.webp",
@@ -592,12 +592,12 @@
   "id": "ex-legpress",
   "name": "Đẩy chân (Leg Press)",
   "group": "Chân",
-  "hash": "3126641a273430d0",
+  "hash": "f3127d8c2886106b",
   "provider": "KVAPI/Muse",
   "kind": "image",
   "ratio": "1:1",
-  "created": "2026-11-16T17:41:21Z",
-  "seconds": 41
+  "created": "2026-11-16T18:40:11Z",
+  "seconds": 47
  },
  {
   "file": "ex-lunges.webp",
@@ -682,12 +682,12 @@
   "id": "ex-pecdeck",
   "name": "Ép ngực máy (Pec Deck / Cable Fly)",
   "group": "Ngực",
-  "hash": "6ae792cd1d9d146c",
+  "hash": "c9e086db9bdeefac",
   "provider": "KVAPI/Muse",
   "kind": "image",
   "ratio": "1:1",
-  "created": "2026-11-16T17:55:21Z",
-  "seconds": 45
+  "created": "2026-11-16T18:41:29Z",
+  "seconds": 44
  },
  {
   "file": "ex-plank.webp",
@@ -967,12 +967,12 @@
   "id": "ex-walking",
   "name": "Đi bộ nhanh (Brisk Walking)",
   "group": "Tim mạch",
-  "hash": "3dae055d8091ccb2",
+  "hash": "4c6b0739e32ae909",
   "provider": "KVAPI/Muse",
   "kind": "image",
   "ratio": "1:1",
-  "created": "2026-11-16T17:50:05Z",
-  "seconds": 46
+  "created": "2026-11-16T18:40:45Z",
+  "seconds": 39
  },
  {
   "file": "ex-wallball.webp",
