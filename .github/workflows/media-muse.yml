@@ -1,0 +1,62 @@
+name: Media — hình & video bài tập phong cách TapEasy (Muse AI)
+
+# Sinh ẢNH hoặc VIDEO minh hoạ bài tập qua API KVAPI/Muse — chỉ từ mô tả chữ (scripts/ai_exercise_prompts.json), không dùng ảnh/clip của bên khác.
+# Khoá: Settings → Secrets and variables → Actions → secret MUSE_API_KEY (bắt buộc) · variable MUSE_API_BASE (tuỳ chọn).
+# Chi phí theo nhà cung cấp: ảnh 0,5 lượt · video 10 s = 1 lượt. Chạy thử vài id trước, duyệt artifact "muse-review" rồi mới chạy hết.
+on:
+  workflow_dispatch:
+    inputs:
+      kind:     { description: "image | video", default: "image", required: true }
+      ids:      { description: "Chỉ tạo các id (vd ex-benchpress,ex-squat) — trống = tất cả", default: "ex-benchpress,ex-squat,ex-pullup,ex-plank,ex-lateralraise,ex-deadlift", required: false }
+      limit:    { description: "Tối đa số mục lần này (0 = không giới hạn)", default: "0", required: false }
+      duration: { description: "Video: 10 hoặc 20 giây", default: "10", required: false }
+      force:    { description: "Làm lại cả mục đã có (1 = có)", default: "0", required: false }
+
+permissions:
+  contents: write
+
+concurrency:
+  group: media-muse
+  cancel-in-progress: false
+
+jobs:
+  gen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Cài thư viện
+        run: |
+          pip install -q requests pillow
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg > /dev/null
+      - name: Tạo media
+        env:
+          MUSE_API_KEY: ${{ secrets.MUSE_API_KEY }}
+          MUSE_API_BASE: ${{ vars.MUSE_API_BASE }}
+          MUSE_KIND: ${{ inputs.kind }}
+          MUSE_IDS: ${{ inputs.ids }}
+          MUSE_LIMIT: ${{ inputs.limit }}
+          MUSE_DURATION: ${{ inputs.duration }}
+          MUSE_FORCE: ${{ inputs.force }}
+          MUSE_WORKERS: "3"
+        run: python scripts/gen_muse_media.py
+      - name: Lưu bảng duyệt (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muse-review
+          path: |
+            media/exercise-ai/_review/
+            media/exercise-ai-video/_review/
+          if-no-files-found: ignore
+      - name: Lưu vào repo
+        if: always()
+        run: |
+          git config user.name "tapeasy-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add media/exercise-ai media/exercise-ai-video 2>/dev/null || true
+          if git diff --cached --quiet; then echo "Không có gì mới"; exit 0; fi
+          git commit -m "media: ${{ inputs.kind }} bài tập phong cách TapEasy (Muse)"
+          git pull --rebase && git push
