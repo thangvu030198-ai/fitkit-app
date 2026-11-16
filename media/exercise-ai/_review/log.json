@@ -1,11 +1,6 @@
 {
- "at": "2026-11-16T17:55:21.295328Z",
+ "at": "2026-11-16T18:07:03.022886Z",
  "kind": "image",
- "ok": 61,
- "fail": [
-  [
-   "ex-hammercurl",
-   "failed: Timed out after 120s waiting for the image"
-  ]
- ]
+ "ok": 1,
+ "fail": []
 }

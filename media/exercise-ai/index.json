@@ -360,6 +360,21 @@
   "seconds": 40
  },
  {
+  "file": "ex-hammercurl.webp",
+  "small": "ex-hammercurl-sm.webp",
+  "w": 1024,
+  "h": 1024,
+  "id": "ex-hammercurl",
+  "name": "Cuốn tay búa (Hammer Curl)",
+  "group": "Tay trước",
+  "hash": "f3876be3c39d7fc9",
+  "provider": "KVAPI/Muse",
+  "kind": "image",
+  "ratio": "1:1",
+  "created": "2026-11-16T18:07:02Z",
+  "seconds": 45
+ },
+ {
   "file": "ex-hangingleg.webp",
   "small": "ex-hangingleg-sm.webp",
   "w": 1024,
