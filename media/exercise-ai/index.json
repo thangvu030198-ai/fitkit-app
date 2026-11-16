@@ -7,12 +7,12 @@
   "id": "ex-benchpress",
   "name": "Đẩy ngực nằm (Bench Press)",
   "group": "Ngực",
-  "hash": "77a5be193406f4b9",
+  "hash": "6764d13fadfd4a44",
   "provider": "KVAPI/Muse",
   "kind": "image",
   "ratio": "1:1",
-  "created": "2026-11-16T16:37:10Z",
-  "seconds": 33
+  "created": "2026-11-16T16:52:53Z",
+  "seconds": 40
  },
  {
   "file": "ex-deadlift.webp",
@@ -22,11 +22,11 @@
   "id": "ex-deadlift",
   "name": "Deadlift (Nâng tạ từ sàn)",
   "group": "Lưng / Chân",
-  "hash": "cd5da07ddd62a2aa",
+  "hash": "6f99d7e41aa7ac98",
   "provider": "KVAPI/Muse",
   "kind": "image",
   "ratio": "1:1",
-  "created": "2026-11-16T16:37:27Z",
+  "created": "2026-11-16T16:53:02Z",
   "seconds": 49
  },
  {
@@ -37,12 +37,12 @@
   "id": "ex-lateralraise",
   "name": "Nâng tạ vai bên (Lateral Raise)",
   "group": "Vai",
-  "hash": "0ca8161a12bb94f4",
+  "hash": "f4ce5795f3b59508",
   "provider": "KVAPI/Muse",
   "kind": "image",
   "ratio": "1:1",
-  "created": "2026-11-16T16:37:48Z",
-  "seconds": 37
+  "created": "2026-11-16T16:53:36Z",
+  "seconds": 43
  },
  {
   "file": "ex-plank.webp",
@@ -52,12 +52,12 @@
   "id": "ex-plank",
   "name": "Plank",
   "group": "Bụng",
-  "hash": "55738104546cef84",
+  "hash": "7abcdb10d0c5cdc3",
   "provider": "KVAPI/Muse",
   "kind": "image",
   "ratio": "1:1",
-  "created": "2026-11-16T16:37:59Z",
-  "seconds": 32
+  "created": "2026-11-16T16:53:46Z",
+  "seconds": 43
  },
  {
   "file": "ex-pullup.webp",
@@ -67,12 +67,12 @@
   "id": "ex-pullup",
   "name": "Kéo xà (Pull-up)",
   "group": "Lưng",
-  "hash": "18199a6fd2bbadfd",
+  "hash": "98b86df74cb9253e",
   "provider": "KVAPI/Muse",
   "kind": "image",
   "ratio": "1:1",
-  "created": "2026-11-16T16:37:21Z",
-  "seconds": 43
+  "created": "2026-11-16T16:52:53Z",
+  "seconds": 40
  },
  {
   "file": "ex-squat.webp",
@@ -82,11 +82,11 @@
   "id": "ex-squat",
   "name": "Gánh tạ (Back Squat)",
   "group": "Chân",
-  "hash": "b16dfcee81942cd2",
+  "hash": "cccd569fda065f6b",
   "provider": "KVAPI/Muse",
   "kind": "image",
   "ratio": "1:1",
-  "created": "2026-11-16T16:38:15Z",
-  "seconds": 54
+  "created": "2026-11-16T16:53:31Z",
+  "seconds": 38
  }
 ]
