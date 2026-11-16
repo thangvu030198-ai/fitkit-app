@@ -1,6 +1,11 @@
 {
- "at": "2026-11-16T18:38:28.359092Z",
+ "at": "2026-11-16T18:50:20.853100Z",
  "kind": "video",
- "ok": 41,
- "fail": []
+ "ok": 7,
+ "fail": [
+  [
+   "ex-hangingleg",
+   "failed: Generation failed: Your prompt or reference image may violate content safety policies. Please review and adjust your prompt."
+  ]
+ ]
 }
