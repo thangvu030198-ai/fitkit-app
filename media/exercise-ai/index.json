@@ -307,12 +307,12 @@
   "id": "ex-frontsquat",
   "name": "Squat tạ trước (Front Squat)",
   "group": "Chân",
-  "hash": "e4cc0d49c53f3d3b",
+  "hash": "4cd96bd74b33b91c",
   "provider": "KVAPI/Muse",
   "kind": "image",
   "ratio": "1:1",
-  "created": "2026-11-16T18:40:51Z",
-  "seconds": 40
+  "created": "2026-11-16T18:46:10Z",
+  "seconds": 41
  },
  {
   "file": "ex-glutebridge.webp",
@@ -712,12 +712,12 @@
   "id": "ex-preacher",
   "name": "Cuốn tạ ghế Scott (Preacher Curls)",
   "group": "Tay trước",
-  "hash": "5701be32df38850a",
+  "hash": "b7642d1053693a6e",
   "provider": "KVAPI/Muse",
   "kind": "image",
   "ratio": "1:1",
-  "created": "2026-11-16T17:53:21Z",
-  "seconds": 36
+  "created": "2026-11-16T18:46:22Z",
+  "seconds": 53
  },
  {
   "file": "ex-pullover.webp",
