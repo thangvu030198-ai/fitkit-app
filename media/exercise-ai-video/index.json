@@ -303,16 +303,16 @@
   "file": "ex-frontsquat.mp4",
   "poster": "ex-frontsquat.jpg",
   "duration": 10.0,
-  "bytes": 247138,
+  "bytes": 230322,
   "id": "ex-frontsquat",
   "name": "Squat tạ trước (Front Squat)",
   "group": "Chân",
-  "hash": "d17ea34dea19f1fa",
+  "hash": "1c64ed084bc70ba2",
   "provider": "KVAPI/Muse",
   "kind": "video",
   "ratio": "16:9",
-  "created": "2026-11-16T18:49:22Z",
-  "seconds": 63
+  "created": "2026-11-16T18:55:43Z",
+  "seconds": 77
  },
  {
   "file": "ex-glutebridge.mp4",
@@ -393,16 +393,16 @@
   "file": "ex-hipthrust.mp4",
   "poster": "ex-hipthrust.jpg",
   "duration": 10.0,
-  "bytes": 256896,
+  "bytes": 278544,
   "id": "ex-hipthrust",
   "name": "Đẩy hông tạ đòn (Hip Thrust)",
   "group": "Mông",
-  "hash": "4f5e5543dd7504c6",
+  "hash": "bf0d3d3110ed85e9",
   "provider": "KVAPI/Muse",
   "kind": "video",
   "ratio": "16:9",
-  "created": "2026-11-16T18:48:24Z",
-  "seconds": 65
+  "created": "2026-11-16T18:55:22Z",
+  "seconds": 56
  },
  {
   "file": "ex-inclinedb.mp4",
@@ -588,16 +588,16 @@
   "file": "ex-legpress.mp4",
   "poster": "ex-legpress.jpg",
   "duration": 10.0,
-  "bytes": 267329,
+  "bytes": 347825,
   "id": "ex-legpress",
   "name": "Đẩy chân (Leg Press)",
   "group": "Chân",
-  "hash": "0d357178f7156fa8",
+  "hash": "444a936fffab1f52",
   "provider": "KVAPI/Muse",
   "kind": "video",
   "ratio": "16:9",
-  "created": "2026-11-16T18:48:18Z",
-  "seconds": 60
+  "created": "2026-11-16T18:55:37Z",
+  "seconds": 71
  },
  {
   "file": "ex-lunges.mp4",
@@ -708,16 +708,16 @@
   "file": "ex-preacher.mp4",
   "poster": "ex-preacher.jpg",
   "duration": 10.0,
-  "bytes": 333354,
+  "bytes": 287833,
   "id": "ex-preacher",
   "name": "Cuốn tạ ghế Scott (Preacher Curls)",
   "group": "Tay trước",
-  "hash": "054ee0e807d2a617",
+  "hash": "551b9678a729c96b",
   "provider": "KVAPI/Muse",
   "kind": "video",
   "ratio": "16:9",
-  "created": "2026-11-16T18:49:49Z",
-  "seconds": 64
+  "created": "2026-11-16T18:56:20Z",
+  "seconds": 58
  },
  {
   "file": "ex-pullover.mp4",
