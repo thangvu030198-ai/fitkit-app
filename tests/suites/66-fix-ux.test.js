@@ -124,7 +124,7 @@ module.exports = {
 
     /* ---------------- QU-01 (một phần) + bước 11 kế hoạch: gộp + nén trong prepare-www.sh ---------------- */
     t.test("QU-01: prepare-www.sh gộp CSS đúng thứ tự → app.<băm>.css, giữ JS từng file, giữ dấu hiệu program-builder; www chạy lại được", ()=>{
-      assert.match(sh, /BUNDLE="\$\{BUNDLE:-1\}"; MINIFY="\$\{MINIFY:-1\}"; MINIFY_JS="\$\{MINIFY_JS:-0\}"/);
+      assert.match(sh, /BUNDLE="\$\{BUNDLE:-1\}"; MINIFY="\$\{MINIFY:-1\}"; MINIFY_JS="\$\{MINIFY_JS:-1\}"/);
       assert.match(sh, /npx --yes esbuild@0\.24/, "thiếu đường dùng esbuild khi CI có mạng");
       const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "fkwww-"));
       try{

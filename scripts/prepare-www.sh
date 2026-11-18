@@ -173,12 +173,13 @@ fi
 #   ném ReferenceError (TDZ) thay vì "undefined" (đã thử: renderHomeScreen → teHomeExplore hỏng), và 1 lỗi chặn mọi module sau.
 #   Gộp JS chỉ làm được sau khi nạp lười theo nhóm (QU-01, docs/qa/FIX-ux.md §Chuyển giao).
 #   MINIFY=0     không nén CSS            (mặc định 1: bộ nén CSS an toàn viết sẵn bên dưới — đã kiểm ảnh chụp giống hệt bản gốc)
-#   MINIFY_JS=1  nén JS bằng esbuild      (mặc định 0 — CHƯA kiểm trên thiết bị; bật khi CI có mạng: esbuild trong PATH →
+#   MINIFY_JS=0  không nén JS            (mặc định 1 từ 19/11/2026 — cùng cờ với web tapeasy.app đã chạy ổn: chỉ bỏ khoảng trắng/rút cú pháp,
+#                KHÔNG đổi tên biến; tìm esbuild: PATH →
 #                node_modules/.bin → npx --yes esbuild@0.24; không có/offline → tự bỏ qua; bản nén không parse được → giữ bản gốc)
 # Luôn làm: sinh lại danh sách ASSETS + băm phiên bản cache trong www/sw.js từ CHÍNH www/index.html
 #   (không còn phải sửa tay "fitkit-vN" mỗi lần đổi file). File gốc vẫn được giữ trong www/ (mã có thể nạp lười theo tên).
 # =====================================================================================
-BUNDLE="${BUNDLE:-1}"; MINIFY="${MINIFY:-1}"; MINIFY_JS="${MINIFY_JS:-0}"
+BUNDLE="${BUNDLE:-1}"; MINIFY="${MINIFY:-1}"; MINIFY_JS="${MINIFY_JS:-1}"
 if [ "$MINIFY_JS" = 1 ] && [ -z "${ESBUILD:-}" ]; then
   TO=""; command -v timeout >/dev/null 2>&1 && TO="timeout 120"
   if command -v esbuild >/dev/null 2>&1; then ESBUILD="esbuild"
@@ -212,7 +213,7 @@ function minCss(src){
 }
 function esb(file, loader){
   if(E.MINIFY_JS !== "1" || !E.ESBUILD) return null;
-  try{ return cp.execSync(`${E.ESBUILD} --minify --loader=${loader} --charset=utf8 --log-level=error`, { input: fs.readFileSync(file), maxBuffer: 64 << 20 }).toString(); }
+  try{ return cp.execSync(`${E.ESBUILD} ${loader === "js" ? "--minify-whitespace --minify-syntax" : "--minify"} --loader=${loader} --charset=utf8 --log-level=error`, { input: fs.readFileSync(file), maxBuffer: 64 << 20 }).toString(); }
   catch(e){ console.log("⚠️ esbuild lỗi ở " + file + " — giữ bản gốc"); return null; }
 }
 
