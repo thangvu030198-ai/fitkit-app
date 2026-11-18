@@ -163,6 +163,10 @@ function normalizeState(s){
     l.source = l.source === "ai" ? "ai" : "manual";
     l.weight = numOrNull(l.weight, 15, 400); l.bodyFatPct = numOrNull(l.bodyFatPct, 2, 75); l.muscleMassKg = numOrNull(l.muscleMassKg, 5, 150);
     l.bodyWaterPct = numOrNull(l.bodyWaterPct, 20, 85); l.visceralFat = numOrNull(l.visceralFat, 1, 60);
+    /* 19/11/2026 inbody-scan.js: mỡ (kg), BMR, điểm InBody, tên máy — tuỳ chọn */
+    l.fatMassKg = numOrNull(l.fatMassKg, 1, 250); l.bmr = numOrNull(l.bmr, 600, 4500); l.score = numOrNull(l.score, 20, 120);
+    if(l.fatMassKg == null) delete l.fatMassKg; if(l.bmr == null) delete l.bmr; if(l.score == null) delete l.score;
+    if(typeof l.device === "string") l.device = l.device.replace(/[\u0000-\u001f]/g, " ").slice(0, 40); else delete l.device;
     l.note = typeof l.note === "string" ? l.note.slice(0, 300) : "";
     return l;
   });

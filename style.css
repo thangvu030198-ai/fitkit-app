@@ -1779,3 +1779,31 @@ html.fk-themed :is(.fk-consent-row, .ob-mac, .fk-an-row){ background:rgba(var(--
 .sf-rpe em{ font-style:normal; font-size:11px; opacity:.65; min-width:44px; text-align:right; }
 .sf-done.all{ background:#FF7A45; color:#fff; }
 .sf-done:active{ transform:scale(.98); }
+
+/* ===== 19/11/2026 inbody-scan.js — chụp phiếu InBody + Thành phần cơ thể ===== */
+.ibx-banner{ display:flex; gap:10px; align-items:flex-start; padding:10px 12px; margin:0 0 12px; border-radius:14px; background:rgba(94,230,199,.12); border:1px solid rgba(94,230,199,.35); }
+.ibx-banner.demo{ background:rgba(255,200,87,.12); border-color:rgba(255,200,87,.4); }
+.ibx-banner .material-symbols-rounded{ color:#5EE6C7; font-size:22px; }
+.ibx-banner b{ display:block; font-size:14px; }
+.ibx-banner span{ font-size:12.5px; opacity:.8; line-height:1.45; }
+input.ibx-ai{ box-shadow:0 0 0 2px rgba(94,230,199,.75) !important; }
+input.ibx-miss{ box-shadow:0 0 0 2px rgba(255,159,107,.85) !important; }
+.ibx-wait{ text-align:center; padding:36px 10px 26px; }
+.ibx-wait b{ display:block; margin-top:10px; font-size:16px; }
+.ibx-spin{ font-size:42px !important; color:#5EE6C7; animation:ibxPulse 1.1s ease-in-out infinite; }
+@keyframes ibxPulse{ 0%,100%{ transform:scale(1); opacity:1; } 50%{ transform:scale(1.12); opacity:.6; } }
+@media (prefers-reduced-motion: reduce){ .ibx-spin{ animation:none; } }
+.ibx-tips{ margin:8px 0 0 18px; font-size:13px; line-height:1.6; opacity:.85; }
+.ibx-verdict{ margin:2px 0 10px; font-size:14px; font-weight:600; line-height:1.45; }
+.ibx-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; }
+.ibx-cell{ padding:10px; border-radius:12px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); min-width:0; }
+.ibx-cell small{ display:block; font-size:11px; opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ibx-cell b{ display:block; font-size:18px; font-weight:800; margin-top:2px; }
+.ibx-cell b i{ font-style:normal; font-size:11px; font-weight:600; opacity:.65; margin-left:2px; }
+.ibx-d{ display:block; font-style:normal; font-size:11.5px; font-weight:700; margin-top:2px; }
+.ibx-d.good{ color:#5EE6C7; } .ibx-d.bad{ color:#FF9F6B; } .ibx-d.flat{ opacity:.6; }
+.ibx-chips{ display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; }
+.ibx-chips button{ flex:0 0 auto; height:32px; padding:0 12px; border-radius:999px; border:1px solid rgba(255,255,255,.14); background:transparent; color:inherit; font:inherit; font-size:12.5px; font-weight:600; cursor:pointer; }
+.ibx-chips button.on{ background:#5EE6C7; border-color:#5EE6C7; color:#061A24; }
+.ibx-chart{ margin-top:8px; }
+.ibx-svg{ width:100%; height:auto; display:block; }

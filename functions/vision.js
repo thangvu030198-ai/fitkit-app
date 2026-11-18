@@ -130,5 +130,63 @@ async function analyzeFoodPhotoCore(request, deps){
   return { ok: true, result: cleanResult(raw, new Set(catalog.map(c=> c[0]))), left };
 }
 
+/* ---------------------------------------------------------------------
+   analyzeInbodyReport (callable, CẦN đăng nhập) · 19/11/2026 — inbody-scan.js gọi
+   data = { image: dataURL jpeg ảnh PHIẾU KẾT QUẢ máy đo thành phần cơ thể (InBody, Tanita, Omron…) }
+   → { ok, result:{ is_report, device, date, weight, smm, bfm, pbf, tbw, visceral, bmr, score, bmi, conf, unreadable:[] }, left }
+   Dùng chung hạn mức ngày với analyzeFoodPhoto. Ảnh không lưu. Máy chủ tự viết lời nhắc.
+   Người dùng LUÔN xem & sửa lại từng số trước khi lưu (app không tự lưu).
+   --------------------------------------------------------------------- */
+function buildInbodyPrompt(){
+  return `Bạn đọc ẢNH CHỤP PHIẾU KẾT QUẢ máy đo thành phần cơ thể (InBody, Tanita, Omron, Karada Scan… — tiếng Việt, Anh, Hàn, Nhật, Trung).
+Nhiệm vụ: CHỈ CHÉP LẠI các con số IN TRÊN PHIẾU, KHÔNG tự tính, KHÔNG đoán. Số nào không đọc rõ → null và ghi tên trường vào "unreadable".
+Lưu ý:
+- weight: Cân nặng / Weight (kg). Nếu phiếu ghi lb thì đổi sang kg (lb × 0,4536).
+- smm: Khối lượng cơ xương / Skeletal Muscle Mass (kg). KHÔNG lấy "Soft Lean Mass" hay "Fat Free Mass" cho trường này.
+- bfm: Khối lượng mỡ / Body Fat Mass (kg).
+- pbf: Tỉ lệ mỡ / Percent Body Fat (%).
+- tbw: Tổng lượng nước / Total Body Water (lít hoặc kg).
+- visceral: Mức mỡ nội tạng / Visceral Fat Level (số cấp, thường 1–20). Nếu phiếu chỉ có diện tích mỡ nội tạng (cm²) thì để null.
+- bmr: Tỉ lệ trao đổi chất cơ bản / Basal Metabolic Rate (kcal).
+- score: Điểm InBody / InBody Score (thường 0–100).
+- bmi: chỉ số BMI in trên phiếu.
+- date: ngày đo in trên phiếu, dạng YYYY-MM-DD; không có → null.
+- Bảng có nhiều lần đo (lịch sử) → chỉ lấy LẦN ĐO MỚI NHẤT (cột/ô kết quả chính).
+- Ảnh không phải phiếu đo thành phần cơ thể → is_report = false.
+Chỉ trả về MỘT đối tượng JSON, không thêm chữ nào khác:
+{"is_report":true,"device":"tên máy nếu thấy, vd InBody 570","date":null,"weight":null,"smm":null,"bfm":null,"pbf":null,"tbw":null,"visceral":null,"bmr":null,"score":null,"bmi":null,"conf":0.0,"unreadable":[]}`;
+}
+const IB_FIELDS = { weight:[20, 350], smm:[5, 120], bfm:[1, 250], pbf:[3, 75], tbw:[10, 120], visceral:[1, 30], bmr:[600, 4500], score:[20, 120], bmi:[10, 80] };
+function cleanInbody(raw, nowMs){
+  const o = raw && typeof raw === "object" ? raw : {};
+  const r = { is_report: o.is_report !== false, device: str(o.device, 40), date: null, conf: num(o.conf, 0, 1, 0.5), unreadable: [] };
+  Object.keys(IB_FIELDS).forEach(k=>{ const [lo, hi] = IB_FIELDS[k]; const n = Number(o[k]); r[k] = Number.isFinite(n) && n >= lo && n <= hi ? Math.round(n * 10) / 10 : null; });
+  if(r.smm != null && r.weight != null && r.smm >= r.weight) r.smm = null;
+  if(r.bfm != null && r.weight != null && r.bfm >= r.weight) r.bfm = null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(o.date || ""));
+  if(m){ const d = Date.UTC(+m[1], +m[2] - 1, +m[3]); if(d > Date.UTC(2000, 0, 1) && d <= (nowMs || Date.now()) + 86400000) r.date = `${m[1]}-${m[2]}-${m[3]}`; }
+  r.unreadable = (Array.isArray(o.unreadable) ? o.unreadable : []).map(x=> str(x, 20)).filter(x=> Object.prototype.hasOwnProperty.call(IB_FIELDS, x)).slice(0, 9);
+  if(r.weight == null && r.smm == null && r.pbf == null && r.bfm == null) r.is_report = false;
+  return r;
+}
+async function analyzeInbodyReportCore(request, deps){
+  deps = deps || {};
+  const a = request.auth;
+  if(!a || !a.uid) throw new HttpsError("unauthenticated", "Đăng nhập để dùng đọc phiếu InBody.");
+  const d = request.data || {};
+  const img = typeof d.image === "string" && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(d.image) && d.image.length <= IMG_MAX_CHARS ? d.image : "";
+  if(!img) throw new HttpsError("invalid-argument", "Ảnh không hợp lệ hoặc quá lớn.");
+  const key = deps.key !== undefined ? deps.key : value(VISION_API_KEY, "");
+  if(!key || key === "unset") throw new HttpsError("failed-precondition", "Máy chủ chưa cấu hình AI đọc ảnh.");
+  const nowMs = deps.now ? deps.now() : Date.now();
+  const left = await (deps.rate || (uid=> rateGate(uid, nowMs, admin.firestore())))(a.uid);
+  if(left < 0) throw new HttpsError("resource-exhausted", `Bạn đã dùng hết ${DAILY_MAX} lượt đọc ảnh hôm nay. Thử lại vào ngày mai.`);
+  let raw;
+  try{ raw = await callModel([img], buildInbodyPrompt(), { key, base: deps.base || value(VISION_API_BASE, ""), model: deps.model || value(VISION_MODEL, ""), fetch: deps.fetch }); }
+  catch(e){ logger.error("analyzeInbodyReport: " + String(e && e.message || e).slice(0, 400)); throw new HttpsError("unavailable", "AI chưa đọc được phiếu này. Chụp lại rõ hơn hoặc thử sau ít phút."); }
+  return { ok: true, result: cleanInbody(raw, nowMs), left };
+}
+
 exports.analyzeFoodPhoto = onCall({ region: REGION, secrets: [VISION_API_KEY], maxInstances: 5, timeoutSeconds: 60, memory: "256MiB", invoker: "public" }, request=> analyzeFoodPhotoCore(request));
-exports._visionTest = { analyzeFoodPhotoCore, buildPrompt, cleanResult, cleanCatalog, parseJson, REFS, DAILY_MAX, IMG_MAX_CHARS };
+exports.analyzeInbodyReport = onCall({ region: REGION, secrets: [VISION_API_KEY], maxInstances: 5, timeoutSeconds: 60, memory: "256MiB", invoker: "public" }, request=> analyzeInbodyReportCore(request));
+exports._visionTest = { analyzeInbodyReportCore, buildInbodyPrompt, cleanInbody, analyzeFoodPhotoCore, buildPrompt, cleanResult, cleanCatalog, parseJson, REFS, DAILY_MAX, IMG_MAX_CHARS };
