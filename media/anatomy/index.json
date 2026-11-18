@@ -1,0 +1,114 @@
+{
+ "version": 1,
+ "hues": [
+  0,
+  60,
+  120,
+  180,
+  240,
+  300
+ ],
+ "items": [
+  {
+   "id": "body-f-back",
+   "view": "back",
+   "sex": "f",
+   "w": 363,
+   "h": 900,
+   "shade": "body-f-back-shade.webp",
+   "label": "body-f-back-label.png",
+   "groups": [
+    "Lưng",
+    "Vai",
+    "Tay sau",
+    "Mông",
+    "Đùi sau",
+    "Bắp chân"
+   ],
+   "share": {
+    "Lưng": 24.0,
+    "Vai": 2.9,
+    "Tay sau": 5.2,
+    "Mông": 9.2,
+    "Đùi sau": 15.6,
+    "Bắp chân": 11.2
+   }
+  },
+  {
+   "id": "body-f-front",
+   "view": "front",
+   "sex": "f",
+   "w": 383,
+   "h": 900,
+   "shade": "body-f-front-shade.webp",
+   "label": "body-f-front-label.png",
+   "groups": [
+    "Ngực",
+    "Vai",
+    "Tay trước",
+    "Bụng",
+    "Đùi trước",
+    "Bắp chân"
+   ],
+   "share": {
+    "Ngực": 9.9,
+    "Vai": 3.1,
+    "Tay trước": 4.3,
+    "Bụng": 12.8,
+    "Đùi trước": 17.7,
+    "Bắp chân": 6.7
+   }
+  },
+  {
+   "id": "body-m-back",
+   "view": "back",
+   "sex": "m",
+   "w": 422,
+   "h": 900,
+   "shade": "body-m-back-shade.webp",
+   "label": "body-m-back-label.png",
+   "groups": [
+    "Lưng",
+    "Vai",
+    "Tay sau",
+    "Mông",
+    "Đùi sau",
+    "Bắp chân"
+   ],
+   "share": {
+    "Lưng": 23.3,
+    "Vai": 3.3,
+    "Tay sau": 5.3,
+    "Mông": 9.0,
+    "Đùi sau": 12.6,
+    "Bắp chân": 10.0
+   }
+  },
+  {
+   "id": "body-m-front",
+   "view": "front",
+   "sex": "m",
+   "w": 407,
+   "h": 900,
+   "shade": "body-m-front-shade.webp",
+   "label": "body-m-front-label.png",
+   "groups": [
+    "Ngực",
+    "Vai",
+    "Tay trước",
+    "Bụng",
+    "Đùi trước",
+    "Bắp chân"
+   ],
+   "share": {
+    "Ngực": 9.5,
+    "Vai": 3.7,
+    "Tay trước": 4.5,
+    "Bụng": 13.7,
+    "Đùi trước": 20.4,
+    "Bắp chân": 6.7
+   }
+  }
+ ],
+ "warn": []
+}
