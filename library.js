@@ -351,7 +351,8 @@ function libDetailTabsHTML(x, key){
         ${G.prep ? `<div><h5>Tư thế chuẩn bị</h5><p>${escapeHtml(G.prep)}</p></div>` : ""}
         <div><h5>Khi thực hiện</h5><p>${escapeHtml(G.doIt || "Chưa có hướng dẫn chi tiết.")}</p></div>
         <div><h5>Hít thở</h5><p>${escapeHtml(G.breath)}</p></div>
-      </div>`}`;
+      </div>`}
+    ${typeof FKYT === "object" && FKYT && FKYT.button ? `<div style="margin-top:12px;">${FKYT.button(x.name)}</div>` : ""}`;
   const analysis = H.length ? `
     <div class="stat-grid"><div class="stat-box"><div class="num">${best ? Math.round(best) : "–"}</div><div class="cap">1RM ước tính (kg)</div></div><div class="stat-box"><div class="num">${heaviest ? escapeHtml(kg(heaviest)) : "–"}</div><div class="cap">Tạ nặng nhất</div></div><div class="stat-box"><div class="num">${H.length}</div><div class="cap">Buổi đã tập</div></div></div>
     ${trend !== null ? `<p class="ld-trend ${trend >= 0 ? "up" : "down"}">${trend >= 0 ? "▲ +" : "▼ "}${trend}% sức mạnh ước tính so với buổi đầu (${escapeHtml(first.date.slice(8,10))}/${escapeHtml(first.date.slice(5,7))})</p>` : ""}
