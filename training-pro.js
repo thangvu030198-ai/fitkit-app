@@ -889,7 +889,7 @@ function buildSummary(s){
   const now = Date.now();
   const plan = state.plans && state.plans[tp.planId];
   const day = plan && plan.days && plan.days[s.dayKey];
-  let vol = 0, sets = 0;
+  let vol = 0, sets = 0, reps = 0;
   const exercises = [];
   s.items.forEach(it=>{
     const rows = (s.sets||{})[it.uid]; if(!rows) return;
@@ -899,6 +899,7 @@ function buildSummary(s){
     if(!s.completed.includes(it.uid)) return;
     sets += done.length;
     const meta = getExerciseMeta(it), timed = isTimedReps(it.reps);
+    if(!timed) done.forEach(r=> reps += Math.max(0, Math.round(num(r.reps))));
     let best = null;
     if(!timed) done.forEach(r=>{ const e = e1rm(r.kg, r.reps); if(!best || e > best.e || (e === best.e && num(r.reps) > best.reps)) best = { kg:num(r.kg), reps:num(r.reps), e }; });
     exercises.push({ key: exKey(it), name: meta.name, muscle: meta.muscle, sets: done.length, hard: hardSets(done), timed, vol: Math.round(v),
@@ -912,7 +913,7 @@ function buildSummary(s){
     id: "tp" + now, sid: s.sid || null, date: sDate, dayKey: s.dayKey, makeup: !!s.makeup, planId: tp.planId || null,
     planName: plan ? plan.name : "", title: s._quick ? "Buổi nhanh 20 phút" : (day ? day.title : ""),
     startedAt: tp.startedAt || now, endedAt: now, dur: tp.startedAt ? Math.round((now - tp.startedAt)/1000) : 0,
-    volume: Math.round(vol), sets, completed: s.completed.length, total: s.items.length,
+    volume: Math.round(vol), sets, reps, completed: s.completed.length, total: s.items.length,
     exercises, prs, week: tp.week || 0, weeks: tp.weeks || 0, deload: !!tp.deload, note: (tp.note||"").trim(), isToday: !!s.isToday,
   };
 }
@@ -1055,21 +1056,42 @@ function drawShareCard(canvas, sum){
 /* ---- Thẻ ẢNH CỦA BẠN (18/11/2026): ảnh người dùng chọn/chụp làm nền + số liệu buổi tập đè lên.
    Ảnh chỉ xử lý trên máy (canvas), không tải lên máy chủ. 3 mẫu riêng của TapEasy · khung 4:5 hoặc 9:16.
    Thẻ số liệu cũ (drawShareCard) GIỮ NGUYÊN — đây là chế độ thêm. ---- */
-const PHOTO_TPLS = [["big", "Số lớn"], ["bar", "Thanh dưới"], ["min", "Tối giản"]];
+const PHOTO_TPLS = [["full", "Chi tiết"], ["big", "Số lớn"], ["bar", "Thanh dưới"], ["min", "Tối giản"]];
+/** kcal ước tính cho buổi tập tạ: MET 5 × cân nặng (kg) × giờ — chỉ để tham khảo, ghi rõ "~" trên ảnh */
+function estKcal(durSec, kg){
+  const w = num(kg) > 20 ? num(kg) : 0, h = num(durSec)/3600;
+  return w && h > 0 ? Math.round(5 * w * h) : 0;
+}
 function photoStats(sum){
-  const prs = (sum.prs||[]).length;
+  const prList = (sum.prs||[]).map(p=> ({ name: shortName(p.name), text: String(p.text||"") }));
+  const exs = (sum.exercises||[]).slice().sort((a,b)=> (b.vol - a.vol) || (b.sets - a.sets));
+  const mg = {};
+  (sum.exercises||[]).forEach(e=>{
+    let w = {}; try{ w = muscleWeights(e.key, e.muscle) || {}; }catch(err){ w = parseMuscle(e.muscle); }
+    for(const g in w) mg[g] = (mg[g]||0) + num(e.sets) * (w[g] >= 1 ? 1 : w[g]);
+  });
+  const muscles = Object.keys(mg).map(g=> [g, Math.round(mg[g]*10)/10]).sort((a,b)=> b[1]-a[1]).slice(0, 3);
+  let kg = 0; try{ kg = state && state.profile ? state.profile.weight : 0; }catch(e){}
+  const kgTxt = (v)=> String(v).replace(".", ",");
   return {
     dur: fmtClock(num(sum.dur)*1000),
     vol: sum.volume ? viNum(sum.volume) : "",
     sets: String(sum.sets||0),
+    reps: num(sum.reps) > 0 ? viNum(num(sum.reps)) : "",
     ex: `${sum.completed||0}/${sum.total||0}`,
-    prs,
+    prs: prList.length, prList,
+    kcal: estKcal(sum.dur, kg),
     title: String(sum.title || "Buổi tập"),
+    plan: String(sum.planName || ""),
+    week: sum.week ? `Tuần ${sum.week}/${sum.weeks}${sum.deload ? " · giảm tải" : ""}` : "",
+    top: exs.slice(0, 4).map(x=> ({ name: shortName(x.name), sets: num(x.sets),
+      best: x.best && x.best.kg ? `${kgTxt(x.best.kg)} kg × ${x.best.reps}` : x.best && x.best.reps ? `${x.best.reps} lần` : "" })),
+    muscles,
   };
 }
 function drawPhotoCard(canvas, sum, img, opt){
   opt = opt || {};
-  const W = 1080, H = opt.ratio === "9:16" ? 1920 : 1350, tpl = opt.tpl || "big";
+  const W = 1080, H = opt.ratio === "9:16" ? 1920 : 1350, tpl = opt.tpl || "full";
   canvas.width = W; canvas.height = H;
   const c = canvas.getContext("2d"); if(!c) return false;
   // nền: ảnh phủ kín (cover), không có ảnh → nền navy của TapEasy
@@ -1092,11 +1114,73 @@ function drawPhotoCard(canvas, sum, img, opt){
   c.fillText(`${p2(d.getDate())}/${p2(d.getMonth()+1)}/${d.getFullYear()}`, W - 64, 108);
   c.textAlign = "left";
   const label = (t, x, y, al)=>{ c.textAlign = al || "left"; c.fillStyle = "rgba(255,255,255,.78)"; c.font = `700 26px ${FONT}`; if(al === "center"){ c.fillText(t.split("").join(" "), x, y); } else spaced(c, t, x, y, 3); c.textAlign = "left"; };
-  if(tpl === "big"){
+  const subLine = ()=> [S.reps ? S.reps + " lần" : "", S.ex + " bài", S.kcal ? "~" + S.kcal + " kcal" : ""].filter(Boolean).join("  ·  ");
+  if(tpl === "full"){
+    // CHI TIẾT: thời gian lớn + 4 ô số liệu + nhóm cơ + bài nổi bật + kỷ lục — nền kính tối ở nửa dưới
+    const top = H === 1920 ? 660 : 280;
+    shade(top - 160, top + 80, 0, .72); c.fillStyle = "rgba(3,14,20,.72)"; c.fillRect(0, top + 80, W, H - top - 80);
+    let y = top;
+    c.fillStyle = "#5EE6C7"; c.font = `700 26px ${FONT}`; spaced(c, "HOÀN THÀNH BUỔI TẬP", 64, y, 4);
+    const meta = [S.plan, S.week].filter(Boolean).join(" · ");
+    if(meta){ c.textAlign = "right"; c.fillStyle = "rgba(255,255,255,.75)"; c.font = `600 26px ${FONT}`; c.fillText(fit(c, meta, 460), W - 64, y); c.textAlign = "left"; }
+    y += 72; c.fillStyle = "#FFFFFF"; let fs = 64; c.font = `800 ${fs}px ${FONT}`; const tt = S.title.toUpperCase();
+    while(fs > 44 && c.measureText(tt).width > W - 128){ fs -= 4; c.font = `800 ${fs}px ${FONT}`; }
+    c.fillText(fit(c, tt, W - 128), 64, y);
+    // thời gian lớn
+    y += 146; c.font = `800 126px ${FONT}`; c.fillStyle = "#FFFFFF"; c.fillText(S.dur, 58, y);
+    const dw = c.measureText(S.dur).width;
+    c.fillStyle = "rgba(255,255,255,.62)"; c.font = `700 24px ${FONT}`; c.fillText("THỜI GIAN TẬP", 58 + dw + 24, y - 12);
+    c.shadowBlur = 0;
+    // 4 ô số liệu
+    y += 72;
+    const cells = [["KHỐI LƯỢNG", S.vol ? S.vol + " kg" : "—"], ["SỐ HIỆP", S.sets], [S.reps ? "SỐ LẦN" : "BÀI TẬP", S.reps || S.ex], [S.kcal ? "KCAL ~" : "KỶ LỤC", S.kcal ? String(S.kcal) : String(S.prs)]];
+    const gw = (W - 128 - 36)/4;
+    cells.forEach((x, i)=>{
+      const cx = 64 + i*(gw + 12);
+      c.fillStyle = "rgba(255,255,255,.08)"; rr(c, cx, y, gw, 132, 24); c.fill();
+      c.strokeStyle = "rgba(255,255,255,.14)"; c.lineWidth = 2; rr(c, cx, y, gw, 132, 24); c.stroke();
+      c.fillStyle = "rgba(255,255,255,.62)"; c.font = `700 20px ${FONT}`; c.fillText(x[0], cx + 20, y + 40);
+      c.fillStyle = i === 0 ? "#5EE6C7" : "#FFFFFF"; let f2 = 50; c.font = `800 ${f2}px ${FONT}`;
+      while(f2 > 28 && c.measureText(x[1]).width > gw - 36){ f2 -= 3; c.font = `800 ${f2}px ${FONT}`; }
+      c.fillText(x[1], cx + 20, y + 102);
+    });
+    y += 132 + 54;
+    // nhóm cơ
+    if(S.muscles.length){
+      c.fillStyle = "rgba(255,255,255,.62)"; c.font = `700 22px ${FONT}`; spaced(c, "NHÓM CƠ", 64, y, 3);
+      let cx = 64 + 150; const cols = ["#5EE6C7", "#FFB08A", "#9AB8FF"];
+      S.muscles.forEach((m, i)=>{
+        const t = `${m[0]} · ${String(m[1]).replace(".", ",")} hiệp`; c.font = `700 24px ${FONT}`; const w = c.measureText(t).width + 40;
+        if(cx + w > W - 64) return;
+        c.fillStyle = "rgba(255,255,255,.08)"; rr(c, cx, y - 32, w, 46, 23); c.fill();
+        c.fillStyle = cols[i]; c.beginPath(); c.arc(cx + 18, y - 9, 6, 0, Math.PI*2); c.fill();
+        c.fillStyle = "#FFFFFF"; c.fillText(t, cx + 30, y); cx += w + 12;
+      });
+      y += 58;
+    }
+    // bài nổi bật (có nhãn PR nếu trùng tên)
+    const prNames = new Set(S.prList.map(p=> p.name));
+    const roomEx = Math.max(0, Math.floor((H - 150 - y) / 54));
+    if(S.top.length && roomEx){
+      c.fillStyle = "rgba(255,255,255,.62)"; c.font = `700 22px ${FONT}`; spaced(c, "BÀI NỔI BẬT", 64, y, 3); y += 8;
+      S.top.slice(0, Math.min(roomEx, H === 1920 ? 4 : 3)).forEach(x=>{
+        y += 52;
+        let nx = 64;
+        if(prNames.has(x.name)){ c.fillStyle = "#FF7A45"; rr(c, 64, y - 30, 54, 36, 10); c.fill(); c.fillStyle = "#061A24"; c.font = `800 20px ${FONT}`; c.fillText("PR", 76, y - 5); nx = 130; }
+        c.fillStyle = "#FFFFFF"; c.font = `600 32px ${FONT}`; c.fillText(fit(c, x.name, 560 - (nx - 64)), nx, y);
+        c.textAlign = "right"; c.fillStyle = "rgba(255,255,255,.75)"; c.font = `500 28px ${FONT}`;
+        c.fillText(fit(c, [x.best, x.sets + " hiệp"].filter(Boolean).join(" · "), 360), W - 64, y); c.textAlign = "left";
+      });
+    }
+    // chân thẻ
+    c.fillStyle = "rgba(255,255,255,.14)"; c.fillRect(64, H - 96, W - 128, 2);
+    c.fillStyle = "rgba(255,255,255,.7)"; c.font = `600 24px ${FONT}`; c.fillText(S.prs ? `${S.prs} kỷ lục mới hôm nay` : "Tập cùng TapEasy", 64, H - 50);
+    c.textAlign = "right"; c.fillStyle = "#5EE6C7"; c.font = `700 24px ${FONT}`; c.fillText("tapeasy.app", W - 64, H - 50); c.textAlign = "left";
+  }else if(tpl === "big"){
     // 3 số lớn xếp dọc giữa ảnh
     shade(H*0.22, H*0.5, 0, .45); shade(H*0.5, H, .45, .7);
     const rows = [["KHỐI LƯỢNG", S.vol ? S.vol + " kg" : "—"], ["THỜI GIAN", S.dur], ["SỐ HIỆP", S.sets]];
-    let y = H*0.36;
+    let y = H*0.33;
     rows.forEach((r, i)=>{
       label(r[0], W/2, y, "center");
       c.textAlign = "center"; c.fillStyle = i === 0 ? "#5EE6C7" : "#FFFFFF";
@@ -1105,10 +1189,19 @@ function drawPhotoCard(canvas, sum, img, opt){
       y += 250;
     });
     c.textAlign = "center"; c.fillStyle = "rgba(255,255,255,.92)"; c.font = `700 36px ${FONT}`;
-    c.fillText(fit(c, S.title.toUpperCase() + (S.prs ? ` · ${S.prs} KỶ LỤC` : ""), W - 140), W/2, H - 84); c.textAlign = "left";
+    c.fillText(fit(c, S.title.toUpperCase() + (S.prs ? ` · ${S.prs} KỶ LỤC` : ""), W - 140), W/2, H - 118);
+    c.fillStyle = "rgba(255,255,255,.75)"; c.font = `600 30px ${FONT}`; c.fillText(fit(c, subLine(), W - 140), W/2, H - 68); c.textAlign = "left";
   }else if(tpl === "bar"){
     // tên buổi + thanh kính 4 ô ở đáy
-    shade(H - 620, H, 0, .82);
+    shade(H - 860, H, 0, .85);
+    const list = S.top.slice(0, 3);
+    let ly = H - 470 - list.length*50;
+    if(list.length){ c.fillStyle = "rgba(255,255,255,.62)"; c.font = `700 22px ${FONT}`; spaced(c, "BÀI NỔI BẬT", 64, ly, 3); }
+    list.forEach(x=>{
+      ly += 50;
+      c.fillStyle = "#FFFFFF"; c.font = `600 30px ${FONT}`; c.fillText(fit(c, x.name, 600), 64, ly);
+      c.textAlign = "right"; c.fillStyle = "rgba(255,255,255,.78)"; c.font = `500 28px ${FONT}`; c.fillText(fit(c, [x.best, x.sets + " hiệp"].filter(Boolean).join(" · "), 340), W - 64, ly); c.textAlign = "left";
+    });
     c.fillStyle = "#5EE6C7"; c.font = `700 28px ${FONT}`; spaced(c, "HOÀN THÀNH BUỔI TẬP", 64, H - 400, 4);
     c.fillStyle = "#FFFFFF"; let fs = 84; c.font = `800 ${fs}px ${FONT}`; const tt = S.title.toUpperCase();
     while(fs > 52 && c.measureText(tt).width > W - 128){ fs -= 4; c.font = `800 ${fs}px ${FONT}`; }
@@ -1127,6 +1220,7 @@ function drawPhotoCard(canvas, sum, img, opt){
       c.fillText(v, cx, H - 124);
       if(i){ c.fillStyle = "rgba(255,255,255,.14)"; c.fillRect(48 + cw*i, H - 236, 2, 138); }
     });
+    c.textAlign = "center"; c.fillStyle = "rgba(255,255,255,.7)"; c.font = `600 24px ${FONT}`; c.fillText(fit(c, subLine(), W - 128), W/2, H - 34);
     c.textAlign = "left";
   }else{
     // tối giản: đồng hồ thật lớn + 1 dòng số liệu
@@ -1136,7 +1230,7 @@ function drawPhotoCard(canvas, sum, img, opt){
     while(fs > 120 && c.measureText(S.dur).width > W - 128){ fs -= 10; c.font = `800 ${fs}px ${FONT}`; }
     c.fillText(S.dur, 58, H - 170);
     c.fillStyle = "rgba(255,255,255,.92)"; c.font = `700 40px ${FONT}`;
-    const line = [S.vol ? S.vol + " kg" : "", S.sets + " hiệp", S.prs ? S.prs + " kỷ lục" : S.ex + " bài"].filter(Boolean).join("  ·  ");
+    const line = [S.vol ? S.vol + " kg" : "", S.sets + " hiệp", S.prs ? S.prs + " kỷ lục" : S.ex + " bài", S.kcal ? "~" + S.kcal + " kcal" : ""].filter(Boolean).join("  ·  ");
     c.fillText(fit(c, line, W - 128), 64, H - 92);
   }
   c.shadowBlur = 0; c.shadowColor = "transparent";
@@ -1185,7 +1279,7 @@ async function openShareCard(sum, onBack){
   try{ if(document.fonts && document.fonts.load) await Promise.race([Promise.all([document.fonts.load(`800 64px "Inter Tight"`), document.fonts.load(`600 32px "Inter"`)]), new Promise(r=> setTimeout(r, 900))]); }catch(e){}
   drawShareCard(cv, sum);
   // ---- chế độ "Ảnh của bạn" (thêm — thẻ số liệu ở trên vẫn là mặc định) ----
-  const ph = { mode: "stats", img: null, tpl: "big", ratio: "4:5" };
+  const ph = { mode: "stats", img: null, tpl: "full", ratio: "4:5" };
   const redraw = ()=>{
     if(ph.mode === "photo") drawPhotoCard(cv, sum, ph.img, ph); else drawShareCard(cv, sum);
     cv.style.aspectRatio = `${cv.width}/${cv.height}`;
@@ -1798,7 +1892,7 @@ Object.assign(TP, {
   // thuần logic (dùng cho kiểm thử)
   mondayStr, weeksBetween, defaultStart, deloadEveryFor, isDeloadWeek, cycleInfo, startCycle, endCycle, cycleResults, cycleAdherence, nextTemplate,
   groupsFor, toggleLink, isLinked, amrapKind, amrapRows, amrapLabel, kgForReps, muscleWeights, parseMuscle, hardSets, weekRange, weekVolume, plannedVolume,
-  deloadSets, deloadClone, buildSummary, fmtClock, fmtDur, drawShareCard, drawPhotoCard, photoStats, PHOTO_TPLS, shareText, volStatus, volTarget, MG,
+  deloadSets, deloadClone, buildSummary, fmtClock, fmtDur, drawShareCard, drawPhotoCard, photoStats, estKcal, PHOTO_TPLS, shareText, volStatus, volTarget, MG,
   lighterKg, ensureRows, ctxFor, isTopBack, fillDown, fillBlankKg, sameThreeTimes, cycleGap, shiftCycle, lastTrainDate, requiredDays, hasHistory, prefillNotesHTML,
   amrapRule, groupLabel, simpleMode,
   // giao diện
