@@ -31,7 +31,8 @@ FORCE = os.environ.get("MUSE_FORCE", "") in ("1", "true", "yes")
 WORKERS = max(1, min(6, int(os.environ.get("MUSE_WORKERS", "3") or 3)))
 DURATION = int(os.environ.get("MUSE_DURATION", "10") or 10)
 RATIO = (os.environ.get("MUSE_RATIO", "") or ("1:1" if KIND == "image" else "9:16")).strip()
-OUT = ROOT / ("media/exercise-ai" if KIND == "image" else "media/exercise-ai-video")
+OUT = ROOT / (os.environ.get("MUSE_OUT", "").strip() or ("media/exercise-ai" if KIND == "image" else "media/exercise-ai-video"))
+SAVE_PNG = os.environ.get("MUSE_SAVE_PNG", "") in ("1", "true", "yes")     # giữ bản gốc không nén (để tách vùng màu — media-anatomy.yml)
 REVIEW = OUT / "_review"
 POLL, MAX_WAIT = 5, 300
 
@@ -96,6 +97,7 @@ def save_image(item, data):
     im = Image.open(io.BytesIO(data)).convert("RGB")
     big = im.copy(); big.thumbnail((1024, 1024)); big.save(OUT / f"{item['id']}.webp", "WEBP", quality=84, method=6)
     sm = im.copy(); sm.thumbnail((480, 480)); sm.save(OUT / f"{item['id']}-sm.webp", "WEBP", quality=80, method=6)
+    if SAVE_PNG: im.save(OUT / f"{item['id']}.png", "PNG", optimize=True)
     return {"file": f"{item['id']}.webp", "small": f"{item['id']}-sm.webp", "w": big.width, "h": big.height}
 
 def save_video(item, data):
