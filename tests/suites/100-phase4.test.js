@@ -37,6 +37,13 @@ module.exports = {
       const floor = ["child","cat-cow","cobra","hip-flexor","ham-seat","fig4"], ids = all.list.map(x=> x.id);
       const firstFloor = ids.findIndex(i=> floor.includes(i)); assert.ok(ids.slice(firstFloor).every(i=> floor.includes(i)));
     });
+    t.test("P4-05: giãn cơ có video mẫu nhúng YouTube (nocookie, id hợp lệ, ghi nguồn), CSP cho phép", ()=>{
+      const ids = app.evj(`FKStretch.LIB.map(x=> x.yt || "")`);
+      assert.ok(ids.length >= 13 && ids.every(id=> /^[A-Za-z0-9_-]{11}$/.test(id)));
+      const src = read("stretch.js");
+      assert.ok(/youtube-nocookie\.com\/embed\//.test(src) && /stx-vslot/.test(src) && /ytBy/.test(src));
+      assert.ok(/frame-src[^;]*youtube-nocookie\.com/.test(read("index.html")));
+    });
     t.test("P4-04: 3 file nạp sau app.js, có trong cache offline + bản store", ()=>{
       const idx = read("index.html"), sw = read("sw.js"), pw = read("scripts/prepare-www.sh");
       ["recovery.js", "guide-links.js", "stretch.js"].forEach(f=>{ assert.ok(idx.indexOf(f) > idx.indexOf("training-pro.js"), f); assert.ok(sw.includes("./" + f) && pw.includes(f), f); });

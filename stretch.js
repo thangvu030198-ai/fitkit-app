@@ -16,21 +16,30 @@ const esc = s=> (typeof escapeHtml === "function" ? escapeHtml(String(s == null 
 const HOLD = 30;
 /* id, tên, nhóm cơ, 2 bên?, cách làm */
 const LIB = [
-  { id:"door-chest", name:"Giãn ngực ở khung cửa", g:["Ngực","Vai"], two:false, how:"Đặt hai cẳng tay lên khung cửa, khuỷu ngang vai. Bước nhẹ một chân lên trước đến khi thấy căng ở ngực, giữ lưng thẳng." },
-  { id:"cross-arm", name:"Kéo tay ngang ngực", g:["Vai","Lưng"], two:true, how:"Đưa một tay ngang trước ngực, tay kia giữ ở khuỷu và kéo nhẹ về phía ngực. Vai hạ xuống, không nhún." },
-  { id:"oh-tricep", name:"Giãn tay sau qua đầu", g:["Tay sau","Vai"], two:true, how:"Đưa một tay lên cao rồi gập khuỷu, bàn tay chạm giữa lưng. Tay kia đẩy nhẹ khuỷu về phía sau đầu." },
-  { id:"wall-bicep", name:"Giãn tay trước áp tường", g:["Tay trước","Ngực"], two:true, how:"Duỗi thẳng tay, lòng bàn tay áp tường ngang vai, ngón tay chỉ ra sau. Xoay người nhẹ ra xa tường." },
-  { id:"child", name:"Tư thế em bé", g:["Lưng","Vai"], two:false, how:"Quỳ, ngồi lùi về gót, cúi người và duỗi hai tay dài ra trước sát sàn. Thở chậm, để lưng thả lỏng." },
-  { id:"cat-cow", name:"Mèo – bò chậm", g:["Lưng","Bụng"], two:false, how:"Chống tay và gối. Hít vào võng lưng, ngẩng nhẹ; thở ra cong lưng lên, cằm hướng ngực. Làm chậm theo nhịp thở." },
-  { id:"cobra", name:"Rắn hổ mang", g:["Bụng","Lưng"], two:false, how:"Nằm sấp, hai tay đặt dưới vai, đẩy nhẹ ngực lên, hông vẫn sát sàn. Không ngửa cổ quá mức, dừng ở mức thoải mái." },
-  { id:"quad-stand", name:"Kéo gót chân về mông", g:["Đùi trước"], two:true, how:"Đứng thẳng (vịn tường nếu cần), gập một gối, tay cầm cổ chân kéo gót về phía mông. Hai đầu gối sát nhau, hông đẩy nhẹ ra trước." },
-  { id:"hip-flexor", name:"Giãn cơ gập hông tư thế quỳ", g:["Đùi trước","Mông"], two:true, how:"Quỳ một gối, chân kia bước trước tạo góc 90°. Siết mông, đẩy hông ra trước đến khi thấy căng phía trước hông của chân quỳ." },
-  { id:"ham-seat", name:"Ngồi duỗi chân, gập người", g:["Đùi sau","Lưng"], two:true, how:"Ngồi, duỗi thẳng một chân, chân kia gập vào trong. Giữ lưng thẳng, gập từ hông về phía mũi chân duỗi." },
-  { id:"fig4", name:"Hình số 4 nằm ngửa", g:["Mông","Đùi sau"], two:true, how:"Nằm ngửa, gác cổ chân lên gối chân kia. Ôm đùi chân dưới kéo về phía ngực đến khi thấy căng ở mông." },
-  { id:"calf-wall", name:"Ép bắp chân vào tường", g:["Bắp chân"], two:true, how:"Chống tay vào tường, một chân lùi sau duỗi thẳng, gót sát sàn. Dồn hông về trước đến khi bắp chân sau căng." },
-  { id:"side-reach", name:"Nghiêng người với tay", g:["Bụng","Lưng"], two:true, how:"Đứng rộng bằng vai, đưa một tay qua đầu và nghiêng người sang bên kia. Hông giữ yên, không xoay người." },
+  { id:"door-chest", yt:"069o76BafTk", ytBy:"OMPT Specialists", name:"Giãn ngực ở khung cửa", g:["Ngực","Vai"], two:false, how:"Đặt hai cẳng tay lên khung cửa, khuỷu ngang vai. Bước nhẹ một chân lên trước đến khi thấy căng ở ngực, giữ lưng thẳng." },
+  { id:"cross-arm", yt:"XXKy2jMP7Qo", ytBy:"The Human Movement Institute", name:"Kéo tay ngang ngực", g:["Vai","Lưng"], two:true, how:"Đưa một tay ngang trước ngực, tay kia giữ ở khuỷu và kéo nhẹ về phía ngực. Vai hạ xuống, không nhún." },
+  { id:"oh-tricep", yt:"Uvk1Y8O1_yM", ytBy:"Baptist Health", name:"Giãn tay sau qua đầu", g:["Tay sau","Vai"], two:true, how:"Đưa một tay lên cao rồi gập khuỷu, bàn tay chạm giữa lưng. Tay kia đẩy nhẹ khuỷu về phía sau đầu." },
+  { id:"wall-bicep", yt:"QY4gCIYbGQk", ytBy:"Baptist Health", name:"Giãn tay trước áp tường", g:["Tay trước","Ngực"], two:true, how:"Duỗi thẳng tay, lòng bàn tay áp tường ngang vai, ngón tay chỉ ra sau. Xoay người nhẹ ra xa tường." },
+  { id:"child", yt:"0tJeK9cCHbk", ytBy:"Glen Abbey Physiotherapy", name:"Tư thế em bé", g:["Lưng","Vai"], two:false, how:"Quỳ, ngồi lùi về gót, cúi người và duỗi hai tay dài ra trước sát sàn. Thở chậm, để lưng thả lỏng." },
+  { id:"cat-cow", yt:"NMvdB11V1YE", ytBy:"Natural Health Practices", name:"Mèo – bò chậm", g:["Lưng","Bụng"], two:false, how:"Chống tay và gối. Hít vào võng lưng, ngẩng nhẹ; thở ra cong lưng lên, cằm hướng ngực. Làm chậm theo nhịp thở." },
+  { id:"cobra", yt:"E0cgDedrWz0", ytBy:"Ashburn Physical Therapy", name:"Rắn hổ mang", g:["Bụng","Lưng"], two:false, how:"Nằm sấp, hai tay đặt dưới vai, đẩy nhẹ ngực lên, hông vẫn sát sàn. Không ngửa cổ quá mức, dừng ở mức thoải mái." },
+  { id:"quad-stand", yt:"Td-9CSgSFhs", ytBy:"Lurie Children's Hospital", name:"Kéo gót chân về mông", g:["Đùi trước"], two:true, how:"Đứng thẳng (vịn tường nếu cần), gập một gối, tay cầm cổ chân kéo gót về phía mông. Hai đầu gối sát nhau, hông đẩy nhẹ ra trước." },
+  { id:"hip-flexor", yt:"KhfvsyeGCjo", ytBy:"Zion Physical Therapy", name:"Giãn cơ gập hông tư thế quỳ", g:["Đùi trước","Mông"], two:true, how:"Quỳ một gối, chân kia bước trước tạo góc 90°. Siết mông, đẩy hông ra trước đến khi thấy căng phía trước hông của chân quỳ." },
+  { id:"ham-seat", yt:"1qiwib-PElI", ytBy:"Plyosport Physical Therapy", name:"Ngồi duỗi chân, gập người", g:["Đùi sau","Lưng"], two:true, how:"Ngồi, duỗi thẳng một chân, chân kia gập vào trong. Giữ lưng thẳng, gập từ hông về phía mũi chân duỗi." },
+  { id:"fig4", yt:"-g0nuyTHMrI", ytBy:"Ask Doctor Jo", name:"Hình số 4 nằm ngửa", g:["Mông","Đùi sau"], two:true, how:"Nằm ngửa, gác cổ chân lên gối chân kia. Ôm đùi chân dưới kéo về phía ngực đến khi thấy căng ở mông." },
+  { id:"calf-wall", yt:"EFnLllHNbQQ", ytBy:"Rehab My Patient", name:"Ép bắp chân vào tường", g:["Bắp chân"], two:true, how:"Chống tay vào tường, một chân lùi sau duỗi thẳng, gót sát sàn. Dồn hông về trước đến khi bắp chân sau căng." },
+  { id:"side-reach", yt:"6ybJI7jsAK4", ytBy:"Reclamation Strength & Wellness", name:"Nghiêng người với tay", g:["Bụng","Lưng"], two:true, how:"Đứng rộng bằng vai, đưa một tay qua đầu và nghiêng người sang bên kia. Hông giữ yên, không xoay người." },
 ];
 const ALL = ["Ngực","Lưng","Vai","Tay trước","Tay sau","Đùi trước","Đùi sau","Mông","Bắp chân","Bụng"];
+/* Video mẫu: NHÚNG trình phát chính thức của YouTube (youtube-nocookie, chỉ những video chủ kênh cho phép nhúng — đã kiểm bằng oEmbed 19/11/2026).
+   App không tải/lưu video. Không có mạng → chỉ còn chữ hướng dẫn. */
+const YT_ID = /^[A-Za-z0-9_-]{11}$/;
+function ytEmbed(x, auto){
+  if(!x || !YT_ID.test(String(x.yt || ""))) return "";
+  const q = auto ? `autoplay=1&mute=1&loop=1&playlist=${x.yt}&` : "";
+  return `<div class="stx-vid"><iframe src="https://www.youtube-nocookie.com/embed/${x.yt}?${q}playsinline=1&rel=0&modestbranding=1" title="${esc("Video hướng dẫn: " + x.name)}" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    <p class="stx-src">Video: ${esc(x.ytBy || "YouTube")} · YouTube</p>`;
+}
 function secOf(x){ return x.two ? HOLD * 2 : HOLD; }
 function totalSec(list){ return (list || []).reduce((a, x)=> a + secOf(x), 0); }
 /** chọn n động tác phủ nhiều nhóm cơ nhất (ưu tiên theo thứ tự groups) */
@@ -79,10 +88,15 @@ function render(){
   const p = 1 - left / HOLD, C = 2 * Math.PI * 54;
   const done = R.list.slice(0, R.i).reduce((a, y)=> a + secOf(y), 0) + (x.two && R.side === 2 ? HOLD : 0) + (HOLD - left);
   const tot = totalSec(R.list);
-  sc.querySelector(".stx-play").innerHTML = `
+  const play = sc.querySelector(".stx-play"); if(!play) return;
+  /* khung video giữ nguyên giữa các nhịp đếm (chỉ đổi khi sang động tác khác) — tránh tải lại trình phát mỗi 0,25 giây */
+  let vs = play.querySelector(".stx-vslot"), live = play.querySelector(".stx-live");
+  if(!vs || !live){ play.innerHTML = `<div class="stx-vslot"></div><div class="stx-live"></div>`; vs = play.querySelector(".stx-vslot"); live = play.querySelector(".stx-live"); }
+  if(vs.getAttribute("data-i") !== String(R.i)){ vs.setAttribute("data-i", String(R.i)); vs.innerHTML = ytEmbed(x, true); }
+  live.innerHTML = `
     <div class="stx-top"><span>Động tác ${R.i + 1}/${R.list.length}</span><span>Còn ${mmss(Math.max(0, tot - done))}</span></div>
     <div class="stx-dots">${R.list.map((y, k)=> `<i class="${k < R.i ? "done" : k === R.i ? "on" : ""}"></i>`).join("")}</div>
-    <div class="stx-ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="54" class="bg"/><circle cx="60" cy="60" r="54" class="fg" style="stroke-dasharray:${C.toFixed(1)};stroke-dashoffset:${(C * (1 - p)).toFixed(1)}"/></svg>
+    <div class="stx-ring${x.yt ? " sm" : ""}"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="54" class="bg"/><circle cx="60" cy="60" r="54" class="fg" style="stroke-dasharray:${C.toFixed(1)};stroke-dashoffset:${(C * (1 - p)).toFixed(1)}"/></svg>
       <div><b>${left}</b><small>giây</small></div></div>
     <h3 class="stx-name">${esc(x.name)}${x.two ? `<em>${R.side === 1 ? "Bên trái" : "Bên phải"}</em>` : ""}</h3>
     <p class="stx-how">${esc(x.how)}</p>
@@ -128,7 +142,7 @@ function open(groups, opts){
   openSheet(`<div class="sheet-header"><h3>Giãn cơ ${Math.round(P.sec / 60)} phút</h3><button class="icon-btn" data-stx="close" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
     <div class="stx-play">
       <p class="small-note">Cho: <b>${esc(label)}</b> · ${P.list.length} động tác, giữ ${HOLD} giây (bài 2 bên: mỗi bên ${HOLD} giây).</p>
-      <ol class="stx-list">${P.list.map(x=> `<li><b>${esc(x.name)}</b><small>${esc(x.g.join(" · "))}${x.two ? " · 2 bên" : ""}</small></li>`).join("")}</ol>
+      <ol class="stx-list">${P.list.map(x=> `<li><b>${esc(x.name)}</b><small>${esc(x.g.join(" · "))}${x.two ? " · 2 bên" : ""}${x.yt ? " · có video mẫu" : ""}</small></li>`).join("")}</ol>
       <button type="button" class="btn btn-primary btn-block" data-stx="start"><span class="material-symbols-rounded">play_arrow</span>Bắt đầu</button>
       <p class="small-note" style="margin-top:8px;">Giãn tĩnh hợp nhất sau buổi tập hoặc ngày nghỉ. Trước buổi tập nên khởi động động (xoay khớp, hiệp nhẹ) thay vì giữ lâu.</p>
     </div>`);
