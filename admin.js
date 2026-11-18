@@ -200,6 +200,11 @@ function reauthHTML(){
     + (w.social.length ? `${w.pw ? `<p class="adm-sub">Hoặc xác thực bằng tài khoản đã liên kết:</p>` : `<p class="adm-sub">Tài khoản này đăng nhập bằng ${w.social.map(k=> SOCIAL_LABEL[k]).join(" / ")} — xác thực lại bằng nút dưới đây.</p>`}`
       + w.social.map(k=> `<button class="adm-btn ${w.pw ? "" : "pri "}block" data-adm="login-social" data-v="${k}">${ic("adm_unlock")}Xác thực bằng ${SOCIAL_LABEL[k]}</button>`).join("") : "");
 }
+function pwButtonsHTML(demoSocial){
+  if(demoSocial || !authWays().pw) return "";
+  return `<button class="adm-btn pri block" data-adm="login">${ic("adm_unlock")}Vào bảng quản trị</button>
+      <button class="adm-btn ghost block" data-adm="reset-pw">${ic("adm_lock")}Quên mật khẩu? Gửi email đặt lại</button>`;
+}
 async function renderLogin(){
   const root = ensureRoot();
   const u = cloud.user, c = R.current(), lockS = R.lockedFor();
@@ -216,8 +221,7 @@ async function renderLogin(){
     body = `<div class="adm-who"><span class="adm-av lg">${esc(initial(u.name))}</span><div><b>${esc(u.name)}</b><small>${esc(u.email || "")}</small>${roleBadge(c.role)}</div></div>
       <p class="adm-sub">Vì an toàn, nhập lại mật khẩu mỗi khi mở bảng quản trị. Phiên tự khoá sau ${R.config.idleMin} phút không thao tác.</p>
       ${demoSocial ? `<p class="adm-note warn">Bản demo: tài khoản Google/Facebook giả lập không có mật khẩu nên không vào được bảng quản trị. Dùng tài khoản email + mật khẩu.</p>` : reauthHTML()}
-      ${demoSocial || !authWays().pw ? "" : `<button class="adm-btn pri block" data-adm="login">${ic("adm_unlock")}Vào bảng quản trị</button>
-      <button class="adm-btn ghost block" data-adm="reset-pw">${ic("adm_lock")}Quên mật khẩu? Gửi email đặt lại</button>`}`;
+      ${pwButtonsHTML(demoSocial)}`;
   } else {
     const boot = hasOwner === false || (hasOwner === null && CA.mode === "firebase");
     body = `<div class="adm-who"><span class="adm-av lg">${esc(initial(u.name))}</span><div><b>${esc(u.name)}</b><small>${esc(u.email || "")}</small>${roleBadge(null)}</div></div>

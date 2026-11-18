@@ -138,7 +138,7 @@ function anonymizeOrder(o){
   return Object.assign(out, { uid: null, anonymized: true, anonymizedAt: Date.now() });
 }
 
-async function cleanupUserData(db, uid, email){
+async function cleanupUserData(db, uid, email, emailVerified){
   const out = { ownedClients: 0, joinCodes: 0, unlinked: 0, notes: 0, userDocs: 0, routines: 0, ugc: 0, anonymized: 0, files: 0 };
   const writer = db.bulkWriter();
   writer.onWriteError(err=>{ if(err.failedAttempts < 3) return true; logger.warn("Dọn dữ liệu: bỏ qua 1 bản ghi", { path: err.documentRef && err.documentRef.path, message: err.message }); return false; });
@@ -179,7 +179,8 @@ async function cleanupUserData(db, uid, email){
   }
   // d) Lời mời: PT đã gửi + gửi tới email của người này + lời mời đã nhận (studentUid)
   for(const d of await safeQ(db.collection("invites").where("ptId", "==", uid))) del(d.ref);
-  if(email) for(const d of await safeQ(db.collection("invites").where("email", "==", String(email).toLowerCase()))) del(d.ref);
+  // audit C12 (19/11/2026): chỉ xoá lời mời gửi tới email khi email ĐÃ XÁC MINH (tài khoản chưa xác minh có thể mượn email người khác)
+  if(email && emailVerified === true) for(const d of await safeQ(db.collection("invites").where("email", "==", String(email).toLowerCase()))) del(d.ref);
   for(const d of await safeQ(db.collection("invites").where("studentUid", "==", uid))) del(d.ref);
 
   // e) Cộng đồng: routine của mình (+ con) và dấu thích / lưu / sao chép mình để lại trên routine người khác
@@ -188,10 +189,18 @@ async function cleanupUserData(db, uid, email){
   if(soc.exists){
     const s = soc.data() || {};
     const marks = [["likes", s.liked], ["saves", s.saved], ["copies", s.copied], ["reports", s.reported]];
-    for(const [kind, ids] of marks) for(const rid of (Array.isArray(ids) ? ids : []).slice(0, 2000)){
-      const ref = db.collection("routines").doc(String(rid)).collection(kind).doc(uid);
-      del(ref);
-      if(kind === "likes" || kind === "saves") writer.update(db.collection("routines").doc(String(rid)), { [kind]: FV.increment(-1) }).catch(()=>{});
+    /* audit C7 (19/11/2026): userSocial do người dùng tự ghi → bỏ trùng, chỉ trừ bộ đếm khi DẤU thích/lưu thật sự tồn tại */
+    for(const [kind, ids] of marks){
+      const uniq = [...new Set((Array.isArray(ids) ? ids : []).map(String))].filter(r=> /^[A-Za-z0-9_-]{1,128}$/.test(r)).slice(0, 2000);
+      for(let i = 0; i < uniq.length; i += 50){
+        const refs = uniq.slice(i, i + 50).map(rid=> db.collection("routines").doc(rid).collection(kind).doc(uid));
+        const snaps = await Promise.all(refs.map(r=> r.get().catch(()=> null)));
+        snaps.forEach((sn, j)=>{
+          if(!sn || !sn.exists) return;
+          del(refs[j]);
+          if(kind === "likes" || kind === "saves") writer.update(db.collection("routines").doc(uniq[i + j]), { [kind]: FV.increment(-1) }).catch(()=>{});
+        });
+      }
     }
   }
   // vòng 2: dấu báo cáo có trường uid ở mọi nơi khác (đánh giá PT ptListings/*/reviews/*/reports/{uid}, routine) — collectionGroup
@@ -274,7 +283,7 @@ exports.deleteMyAccount = onCall(
         try{ apple = await revokeAppleFor(auth, g); }catch(e){ apple = { revoked: false, error: e.message }; }
       } else apple = { revoked: false, reason: "no-grant" };
     }
-    const res = await cleanupUserData(db, uid, user.email);
+    const res = await cleanupUserData(db, uid, user.email, user.emailVerified === true);
     await admin.auth().deleteUser(uid);                        // cleanupDeletedUser chạy lại (idempotent)
     logger.info("Người dùng tự xoá tài khoản", Object.assign({ uid, apple: apple.revoked }, res));
     return Object.assign({ ok: true, appleRevoked: !!apple.revoked }, res);
@@ -288,7 +297,7 @@ exports.cleanupDeletedUser = functionsV1
   .onDelete(async (user) => {
     const db = admin.firestore();
     await handleOwnerDeleted(db, user.uid).catch(e=> logger.error("handleOwnerDeleted", { message: e.message }));
-    const res = await cleanupUserData(db, user.uid, user.email);
+    const res = await cleanupUserData(db, user.uid, user.email, user.emailVerified === true);
     const isApple = (user.providerData || []).some(p => p.providerId === "apple.com");
     logger.info("Đã dọn dữ liệu tài khoản bị xoá", Object.assign({ uid: user.uid, apple: isApple }, res));
     if(isApple) logger.info("Tài khoản Apple: token phải được thu hồi bởi revokeAppleToken trước khi xoá (Admin SDK không giữ token Apple).", { uid: user.uid });

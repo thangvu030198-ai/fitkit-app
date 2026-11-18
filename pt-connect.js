@@ -37,6 +37,9 @@ const hm = ts=>{ const d = new Date(ts); return `${p2(d.getHours())}:${p2(d.getM
 const ddmm = d=>{ const m = String(d == null ? "" : d).match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${m[3]}/${m[2]}` : "—"; };   // QS-04: chỉ số, không cắt chuỗi thô
 const viN = n=> Math.round(Number(n)||0).toLocaleString("vi-VN");
 const kgS = n=> (Math.round((Number(n)||0)*10)/10).toLocaleString("vi-VN");
+/* 19/11/2026 (audit C15): số đến từ dữ liệu của NGƯỜI KHÁC (trainingSync / studentLog / proxyLog) — luôn ép về số trước khi vào HTML */
+const nS = v=>{ const n = Number(v); return Number.isFinite(n) ? String(Math.round(n*10)/10) : "—"; };
+const arr = v=> Array.isArray(v) ? v : [];
 const warn = (...a)=>{ try{ console.warn("[pt-connect]", ...a); }catch(e){} };
 const safe = (fn, label)=> function(){ try{ return fn.apply(this, arguments); }catch(e){ warn(label || "", e); } };
 const amPT = ()=> !!(cloud.profile && cloud.profile.isPT);
@@ -308,8 +311,8 @@ function progressHTML(c, role){
   const first = sel ? sel.pts[0].v : 0;
   return `
     <div class="sc-kpis">
-      <div><b>${m.streak != null ? m.streak : "—"}</b><small>ngày liên tiếp</small></div>
-      <div><b>${m.s30 != null ? m.s30 : "—"}</b><small>buổi / 30 ngày</small></div>
+      <div><b>${m.streak != null ? nS(m.streak) : "—"}</b><small>ngày liên tiếp</small></div>
+      <div><b>${m.s30 != null ? nS(m.s30) : "—"}</b><small>buổi / 30 ngày</small></div>
       <div><b>${m.rate != null ? m.rate + "%" : "—"}</b><small>chuyên cần với PT</small></div>
     </div>
     <div class="card sc-chart-card mint">
@@ -1030,10 +1033,10 @@ function tabTrack(body, c){
     ${progressHTML(c, role)}
     ${wk.length ? `<div class="card"><div class="card-title">${ic("history")}Nhật ký buổi tập (${wk.length})</div>
       ${wk.slice(0, 14).map(w=> `<div class="sc-wk"><div class="date-chip"><b>${ddmm(w.d)}</b><small>${esc((rel(w.d)||"").split(",")[0])}</small></div>
-        <div class="t"><b>${esc(w.t || "Buổi tập")}</b><small>${w.n ? `${w.n}${w.tot ? "/" + w.tot : ""} bài` : "Hoàn thành"}${w.vol ? ` · ${viN(w.vol)} kg` : ""}${w.dur ? ` · ${w.dur} phút` : ""}</small></div>
+        <div class="t"><b>${esc(w.t || "Buổi tập")}</b><small>${w.n ? `${nS(w.n)}${w.tot ? "/" + nS(w.tot) : ""} bài` : "Hoàn thành"}${w.vol ? ` · ${viN(w.vol)} kg` : ""}${w.dur ? ` · ${nS(w.dur)} phút` : ""}</small></div>
         <span class="sc-tag ${byLabel[w.by] ? byLabel[w.by][1] : ""}">${esc(byLabel[w.by] ? byLabel[w.by][0] : "Tự tập")}</span></div>`).join("")}</div>` : ""}
     ${exs.length && role === "pt" ? `<div class="card"><div class="card-title">${ic("fitness_center")}Mức tạ gần nhất</div>
-      ${exs.map(([k, e])=> `<div class="tb-row"><span>${esc(String(e.n).split("(")[0].trim())}</span><b>${e.last ? e.last.s.map(x=> `${kgS(x[0])}×${x[1]}`).join(" · ") : "—"}</b><small>${e.last ? ddmm(e.last.d) : ""}</small></div>`).join("")}</div>` : ""}`;
+      ${exs.map(([k, e])=> `<div class="tb-row"><span>${esc(String(e.n).split("(")[0].trim())}</span><b>${e && e.last ? arr(e.last.s).map(x=> `${kgS(arr(x)[0])}×${nS(arr(x)[1])}`).join(" · ") : "—"}</b><small>${e && e.last ? ddmm(e.last.d) : ""}</small></div>`).join("")}</div>` : ""}`;
   bindProgress(body, ()=> renderClientForm());
   const px = q("[data-px-start]", body); if(px) px.addEventListener("click", ()=> openProxyLogger(c.id, pickProxySession(c.id)));
 }
@@ -1084,10 +1087,10 @@ function postTab(c){
 }
 function resultCardHTML(s){
   const log = s.proxyLog || s.studentLog;
-  const exs = log.exercises || [];
+  const exs = arr(log.exercises);
   return `<div class="card sc-result">
     <div class="card-title">${ic(s.proxyLog ? "sports_gymnastics" : "done_all")}${s.proxyLog ? `PT ${esc(s.proxyLog.byName || "")} ghi thay` : "Kết quả học viên ghi"}${log.volume ? `<span class="sc-delta up">${viN(log.volume)} kg</span>` : ""}</div>
-    ${exs.map(e=> `<div class="tb-row"><span>${esc(String(e.name||"").split("(")[0].trim())}</span><b>${(e.sets||[]).map(x=> e.timed ? "✓" : `${kgS(x.kg)}×${x.reps}`).join(" · ")}</b></div>`).join("")}
+    ${exs.map(e=> `<div class="tb-row"><span>${esc(String(e.name||"").split("(")[0].trim())}</span><b>${arr(e.sets).map(x=> e.timed ? "✓" : `${kgS(x && x.kg)}×${nS(x && x.reps)}`).join(" · ")}</b></div>`).join("")}
     ${s.proxyLog && s.proxyLog.note ? `<p class="small-note">${esc(s.proxyLog.note)}</p>` : ""}
     ${s.proxyLog ? `<p class="small-note">${s.proxyApplied ? "Đã vào nhật ký của học viên." : "Sẽ vào nhật ký của học viên khi học viên mở app."}</p>` : ""}
   </div>`;
@@ -1146,7 +1149,7 @@ function renderPx(){
     <div class="sc-px-ex">
       ${it.img ? `<img src="${esc(it.img)}" alt="" onerror="this.style.display='none'">` : `<span class="sc-px-n">${P.idx+1}</span>`}
       <div><b>${esc(it.name)}</b><small>Mục tiêu ${esc(it.target)} hiệp × ${esc(it.reps)} · nghỉ ${esc(it.restSec)}s</small>
-        ${last ? `<small class="sc-px-last">${ic("history")}Lần trước HV (${ddmm(last.d)}): ${last.s.map(x=> `${kgS(x[0])}×${x[1]}`).join(" · ")}</small>` : ""}</div>
+        ${last ? `<small class="sc-px-last">${ic("history")}Lần trước HV (${ddmm(last.d)}): ${arr(last.s).map(x=> `${kgS(arr(x)[0])}×${nS(arr(x)[1])}`).join(" · ")}</small>` : ""}</div>
     </div>
     <div class="set-table sc-px-table">
       <div class="set-head"><span>Hiệp</span>${it.timed ? `<span style="flex:2">Mục tiêu</span>` : `<span>Kg</span><span>Lần</span><span class="rpe-h">RPE</span>`}<span></span></div>

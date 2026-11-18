@@ -218,11 +218,14 @@ function store(db){
   };
 }
 
+const GLOBAL_DAILY = 5000;   // audit C14: trần lượt gọi AI toàn app / ngày
 /* ---------------- aiChat ---------------- */
 async function aiChatCore(request, deps){
   deps = deps || {};
   const a = request.auth;
   if(!a || !a.uid) throw new HttpsError("unauthenticated", "Đăng nhập để dùng Trợ lý AI.");
+  /* audit C14 (19/11/2026): không cho tài khoản ẩn danh (uid mới miễn phí → vượt hạn mức/người); có trần chung toàn app/ngày */
+  if(a.token && a.token.firebase && a.token.firebase.sign_in_provider === "anonymous") throw new HttpsError("permission-denied", "Đăng nhập bằng tài khoản (email / Google / Apple) để dùng Trợ lý AI.");
   const S = deps.store || store(admin.firestore());
   const nowMs = deps.now ? deps.now() : Date.now();
   const d = request.data || {};
@@ -233,6 +236,7 @@ async function aiChatCore(request, deps){
   const mode = d.mode === "plan" ? "plan" : "chat";
   const messages = cleanMessages(d.messages);
   if(!messages.length) throw new HttpsError("invalid-argument", "Thiếu câu hỏi.");
+  if(!deps.store && await S.rate("_all", nowMs, GLOBAL_DAILY) < 0) throw new HttpsError("resource-exhausted", "Trợ lý AI đang quá tải hôm nay. Thử lại vào ngày mai — app vẫn gợi ý được từ dữ liệu có sẵn.");
   const left = await S.rate(a.uid, nowMs, cfg.dailyLimit);
   if(left < 0) throw new HttpsError("resource-exhausted", `Bạn đã dùng hết ${cfg.dailyLimit} lượt hỏi AI hôm nay. Mai quay lại nhé — hôm nay app vẫn gợi ý được từ dữ liệu có sẵn.`);   // (client English tự hiện câu tiếng Anh tương ứng)
   const sys = buildSystem(cfg, mode, str(d.context, CTX_MAX), d.lang === "en" ? "en" : "vi");
@@ -273,6 +277,8 @@ async function adminAiConfigCore(request, deps){
     const newKey = rawKey ? cleanKey(rawKey) : "";
     if(rawKey && !newKey) throw new HttpsError("invalid-argument", "Khoá API không hợp lệ (8–400 ký tự, không có khoảng trắng).");
     const clearKey = d.clearKey === true && !newKey;
+    /* audit C13 (19/11/2026): khoá đã lưu gắn với URL gốc đã lưu — đổi URL thì phải nhập lại khoá (không cho đem khoá cũ sang máy chủ khác) */
+    if(key && !newKey && !clearKey && next.baseUrl && cfg.baseUrl && next.baseUrl !== cfg.baseUrl) throw new HttpsError("failed-precondition", "Đổi URL gốc thì cần nhập lại khoá API (khoá cũ không được gửi sang máy chủ mới).");
     const hasKey = clearKey ? false : !!(newKey || key);
     if(next.enabled && !(next.baseUrl && next.model && hasKey)) throw new HttpsError("failed-precondition", "Cần đủ URL gốc, khoá API và model chính trước khi bật Trợ lý AI.");
     await S.save(next, newKey, clearKey, actor.uid);
@@ -282,7 +288,12 @@ async function adminAiConfigCore(request, deps){
     return { ok: true, config: next, keySet: hasKey, keyTail: clearKey ? "" : tailOf(newKey || key) };
   }
   const base = d.baseUrl ? cleanBase(d.baseUrl) : cfg.baseUrl;
-  const useKey = d.apiKey ? cleanKey(d.apiKey) : key;
+  const fresh = d.apiKey ? cleanKey(d.apiKey) : "";
+  /* audit C13: KHÔNG ghép khoá đã lưu với URL do người gọi đưa vào — chỉ dùng khoá đã lưu với đúng URL đã lưu */
+  if(!fresh && base && base !== cfg.baseUrl) throw new HttpsError("failed-precondition", "Thử URL gốc mới thì cần nhập khoá API đi kèm (khoá đã lưu chỉ dùng cho URL đã lưu).");
+  const useKey = fresh || key;
+  try{ await (deps.audit || A.writeAudit)(actor, "settings.ai_probe", { type: "settings", id: "ai" }, { op, host: (()=>{ try{ return new URL(base).host; }catch(e){ return "-"; } })(), key: fresh ? "khoá nhập tay" : "khoá đã lưu" }); }
+  catch(e){ logger.warn("aiConfig probe audit: " + String(e && e.message || e).slice(0, 200)); }
   if(!base) throw new HttpsError("failed-precondition", "Chưa có URL gốc hợp lệ.");
   if(!useKey) throw new HttpsError("failed-precondition", "Chưa có khoá API.");
   if(op === "models"){

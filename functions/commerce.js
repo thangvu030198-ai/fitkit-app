@@ -183,9 +183,15 @@ function normOrderInput(d){
     voucherCode: d.voucherCode || (d.voucher && typeof d.voucher === "object" ? d.voucher.code : d.voucher) || "",
   });
 }
+const MAX_OPEN_ORDERS = 3;
 async function createOrderFor(uid, d){
   await notBanned(uid);
   await A.rateLimit(`${uid}_order`, 20, 3600);
+  /* audit C11 (19/11/2026): đơn chưa xác nhận (COD / chờ chuyển khoản) đã trừ kho → giới hạn số đơn đang mở mỗi người để không khoá hàng của người khác */
+  try{
+    const open = await db().collection("orders").where("uid", "==", uid).where("status", "in", ["pending", "awaiting_payment"]).limit(MAX_OPEN_ORDERS).get();
+    if(open.size >= MAX_OPEN_ORDERS) throw new HttpsError("resource-exhausted", `Bạn đang có ${MAX_OPEN_ORDERS} đơn chưa xác nhận. Chờ shop xác nhận hoặc huỷ bớt rồi đặt tiếp nhé.`);
+  }catch(e){ if(e instanceof HttpsError) throw e; logger.warn("open-orders check: " + String(e && e.message || e).slice(0, 200)); }
   d = normOrderInput(d);
   const ship = d.ship === "express" ? "express" : "standard";
   const payVia = ["cod", "bank", "vietqr"].includes(d.payment) ? d.payment : "cod";
@@ -250,9 +256,12 @@ exports.claimVoucher = onCall({ region: REGION, maxInstances: 10, timeoutSeconds
     const hs = await tx.get(db().collection("voucherHolds").where("code", "==", code));
     if(voucherAvailable(v, hs.docs.map(x=> x.data()), a.uid, at) <= 0) return { ok: false, error: "Mã đang được giữ chỗ cho giỏ hàng khác hoặc đã hết lượt — thử lại sau 30 phút." };
     hs.docs.forEach(x=>{ const h = x.data() || {}; if(h.uid !== a.uid && tsMs(h.exp) <= at) tx.delete(x.ref); });
-    tx.set(holdRef, { code, uid: a.uid, at, exp: at + HOLD_MS });
+    /* audit C10 (19/11/2026): KHÔNG gia hạn giữ chỗ đang còn hiệu lực (trước: gọi lại mỗi <30 phút → giữ mã vô hạn, chặn người khác) */
+    const mine = hs.docs.map(x=> x.data() || {}).find(h=> h.uid === a.uid && tsMs(h.exp) > at);
+    const exp = mine ? tsMs(mine.exp) : at + HOLD_MS;
+    if(!mine) tx.set(holdRef, { code, uid: a.uid, at, exp });
     const n = normVoucher(Object.assign({ code }, v));
-    return { ok: true, server: true, claimId: holdRef.id, holdUntil: at + HOLD_MS, code, voucher: { code, kind: n.kind, value: n.value, min: n.min, max: n.max, title: n.title } };
+    return { ok: true, server: true, claimId: holdRef.id, holdUntil: exp, code, voucher: { code, kind: n.kind, value: n.value, min: n.min, max: n.max, title: n.title } };
   });
 });
 
@@ -420,10 +429,11 @@ function capAggregate(ch, entry, claim, today, at){
 }
 /** Xếp hạng kiểu 1-2-2-4 theo value (thuần) */
 function rankEntries(list){
-  const rows = arr(list).filter(e=> e && e.uid).map(e=> ({ uid: e.uid, name: str(e.name, 40), value: Number(e.value) || 0, done: !!e.done }))
-    .sort((x, y)=> y.value - x.value);
+  const rows = arr(list).filter(e=> e && e.uid).map(e=> ({ uid: e.uid, name: str(e.name, 40), value: Number(e.value) || 0, done: !!e.done, at: Number(e.serverAt) || Number(e.updatedAt) || 0 }))
+    .sort((x, y)=> (y.value - x.value) || (x.at - y.at) || String(x.uid).localeCompare(String(y.uid)));
   let rank = 0, prev = null;
-  rows.forEach((r, i)=>{ if(prev === null || r.value !== prev){ rank = i + 1; prev = r.value; } r.rank = rank; });
+  /* rank: hiển thị kiểu 1-2-2-4 · pos: vị trí DUY NHẤT (hoà → ai đạt sớm hơn đứng trước) — audit C9: quà/thưởng hạng trao theo pos, không trao cho mọi người hoà */
+  rows.forEach((r, i)=>{ if(prev === null || r.value !== prev){ rank = i + 1; prev = r.value; } r.rank = rank; r.pos = i + 1; });
   return rows;
 }
 const RANK_BONUS = [500, 300, 150];
@@ -473,12 +483,12 @@ exports.settleChallenge = onCall({ region: REGION, maxInstances: 2, timeoutSecon
     const spec = challengeVoucherFor(ch, r);
     if(spec){ const v = await issueChallengeVoucher(r.uid, id, spec); if(v && !v.already) voucherN++; }
     if(r.done && Number(ch.points)) if(await awardPoints(r.uid, Number(ch.points), `done_${id}`, `Hoàn thành: ${ch.title}`)) awarded++;
-    if(r.rank <= 3 && r.value > 0) if(await awardPoints(r.uid, RANK_BONUS[r.rank - 1], `rank_${id}`, `Hạng ${r.rank}: ${ch.title}`)) awarded++;
-    if(r.rank <= top && r.value > 0 && gifts.length){
-      const g = gifts[Math.min(r.rank - 1, gifts.length - 1)];
+    if(r.pos <= 3 && r.value > 0) if(await awardPoints(r.uid, RANK_BONUS[r.pos - 1], `rank_${id}`, `Hạng ${r.pos}: ${ch.title}`)) awarded++;
+    if(r.pos <= top && r.value > 0 && gifts.length){
+      const g = gifts[Math.min(r.pos - 1, gifts.length - 1)];
       const gRef = db().collection("gifts").doc(`g_${id}_${r.uid}`);
-      if(!(await gRef.get()).exists){ await gRef.set({ uid: r.uid, name: r.name, title: `Quà hạng ${r.rank}: ${str(g && g.title || g, 80)}`, item: str(g && g.title || g, 80),
-        pid: str(g && g.pid, 80), reason: `Hạng ${r.rank}/${rows.length} · ${str(ch.title, 80)}`, status: "new", freeShip: true, source: { type: "challenge", id, rank: r.rank },
+      if(!(await gRef.get()).exists){ await gRef.set({ uid: r.uid, name: r.name, title: `Quà hạng ${r.pos}: ${str(g && g.title || g, 80)}`, item: str(g && g.title || g, 80),
+        pid: str(g && g.pid, 80), reason: `Hạng ${r.pos}/${rows.length} · ${str(ch.title, 80)}`, status: "new", freeShip: true, source: { type: "challenge", id, rank: r.pos },
         createdAt: nowMs(), updatedAt: nowMs() }); giftN++; }
     }
   }

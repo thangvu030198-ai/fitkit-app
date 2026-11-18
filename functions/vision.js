@@ -100,27 +100,32 @@ async function callModel(images, prompt, deps){
   const text = j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
   return parseJson(Array.isArray(text) ? text.map(p=> p.text || "").join("") : text);
 }
-async function rateGate(uid, nowMs, db){
+/* audit C14 (19/11/2026): tài khoản ẩn danh không được dùng AI trả phí (tạo uid mới miễn phí → vượt hạn mức/người); thêm trần chung toàn app/ngày */
+const GLOBAL_MAX = 3000;
+const isAnon = a=> !!(a && a.token && a.token.firebase && a.token.firebase.sign_in_provider === "anonymous");
+async function rateGate(uid, nowMs, db, max){
+  max = max || DAILY_MAX;
   const day = new Date(nowMs + 7 * 3600000).toISOString().slice(0, 10);
   const ref = db.collection("vision_rate").doc(`${uid}_${day}`);
   return db.runTransaction(async tx=>{
     const s = await tx.get(ref), n = (s.exists && Number(s.data().n)) || 0;
-    if(n >= DAILY_MAX) return -1;
+    if(n >= max) return -1;
     tx.set(ref, { n: n + 1, day, at: nowMs }, { merge: true });
-    return DAILY_MAX - n - 1;
+    return max - n - 1;
   });
 }
 async function analyzeFoodPhotoCore(request, deps){
   deps = deps || {};
   const a = request.auth;
   if(!a || !a.uid) throw new HttpsError("unauthenticated", "Đăng nhập để dùng chụp ảnh tính calo.");
+  if(isAnon(a)) throw new HttpsError("permission-denied", "Đăng nhập bằng tài khoản (email / Google / Apple) để dùng tính năng AI.");
   const d = request.data || {};
   const images = (Array.isArray(d.images) ? d.images : []).slice(0, 2).filter(u=> typeof u === "string" && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(u) && u.length <= IMG_MAX_CHARS);
   if(!images.length) throw new HttpsError("invalid-argument", "Ảnh không hợp lệ hoặc quá lớn.");
   const key = deps.key !== undefined ? deps.key : value(VISION_API_KEY, "");
   if(!key || key === "unset") throw new HttpsError("failed-precondition", "Máy chủ chưa cấu hình AI đọc ảnh.");
   const nowMs = deps.now ? deps.now() : Date.now();
-  const left = await (deps.rate || (uid=> rateGate(uid, nowMs, admin.firestore())))(a.uid);
+  const left = await (deps.rate || (async uid=>{ const db = admin.firestore(); if(await rateGate("_all", nowMs, db, GLOBAL_MAX) < 0) throw new HttpsError("resource-exhausted", "AI đọc ảnh đang quá tải hôm nay. Thử lại vào ngày mai."); return rateGate(uid, nowMs, db); }))(a.uid);
   if(left < 0) throw new HttpsError("resource-exhausted", `Bạn đã dùng hết ${DAILY_MAX} lượt chụp hôm nay. Thử lại vào ngày mai.`);
   const catalog = cleanCatalog(d.catalog), ref = Object.prototype.hasOwnProperty.call(REFS, d.ref) ? d.ref : "none";
   const prompt = buildPrompt(ref, str(d.note, 200), catalog, images.length);
@@ -173,13 +178,14 @@ async function analyzeInbodyReportCore(request, deps){
   deps = deps || {};
   const a = request.auth;
   if(!a || !a.uid) throw new HttpsError("unauthenticated", "Đăng nhập để dùng đọc phiếu InBody.");
+  if(isAnon(a)) throw new HttpsError("permission-denied", "Đăng nhập bằng tài khoản (email / Google / Apple) để dùng tính năng AI.");
   const d = request.data || {};
   const img = typeof d.image === "string" && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(d.image) && d.image.length <= IMG_MAX_CHARS ? d.image : "";
   if(!img) throw new HttpsError("invalid-argument", "Ảnh không hợp lệ hoặc quá lớn.");
   const key = deps.key !== undefined ? deps.key : value(VISION_API_KEY, "");
   if(!key || key === "unset") throw new HttpsError("failed-precondition", "Máy chủ chưa cấu hình AI đọc ảnh.");
   const nowMs = deps.now ? deps.now() : Date.now();
-  const left = await (deps.rate || (uid=> rateGate(uid, nowMs, admin.firestore())))(a.uid);
+  const left = await (deps.rate || (async uid=>{ const db = admin.firestore(); if(await rateGate("_all", nowMs, db, GLOBAL_MAX) < 0) throw new HttpsError("resource-exhausted", "AI đọc ảnh đang quá tải hôm nay. Thử lại vào ngày mai."); return rateGate(uid, nowMs, db); }))(a.uid);
   if(left < 0) throw new HttpsError("resource-exhausted", `Bạn đã dùng hết ${DAILY_MAX} lượt đọc ảnh hôm nay. Thử lại vào ngày mai.`);
   let raw;
   try{ raw = await callModel([img], buildInbodyPrompt(), { key, base: deps.base || value(VISION_API_BASE, ""), model: deps.model || value(VISION_MODEL, ""), fetch: deps.fetch }); }

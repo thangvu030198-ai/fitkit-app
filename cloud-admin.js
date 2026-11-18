@@ -391,7 +391,12 @@ const api = {
   }),
   setListing: wrap(async (uid, hidden, note)=>{
     const c = actor("listings.moderate"); note = str(note, 300);
-    if(isFb()) await fdb().collection("users").doc(uid).set({ listingHidden: !!hidden, listingNote: note, listingBy: c.uid, listingAt: now() }, { merge:true });
+    if(isFb()){
+      await fdb().collection("users").doc(uid).set({ listingHidden: !!hidden, listingNote: note, listingBy: c.uid, listingAt: now() }, { merge:true });
+      /* audit C3 (19/11/2026): ghi CẢ ptListings.hidden — trường mà truy vấn công khai + firestore.rules thực sự kiểm */
+      try{ const lref = fdb().collection("ptListings").doc(uid); if((await lref.get()).exists) await lref.update({ hidden: !!hidden, hiddenReason: note, hiddenBy: c.uid, hiddenAt: now() }); }
+      catch(e){ console.warn("setListing → ptListings:", e && e.code); }
+    }
     else { const d = load(); d.listings[uid] = { hidden: !!hidden, note, by: c.uid, at: now() }; save(d); }
     _ptCache[uid] = Object.assign(_ptCache[uid] || {}, { listingHidden: !!hidden });
     await api.appendAudit({ action: hidden ? "listing.hide" : "listing.show", target:{ type:"pt", id:uid }, details:{ note } });

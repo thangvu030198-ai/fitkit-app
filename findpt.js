@@ -508,7 +508,7 @@ function openPhotoCredits(){
    --------------------------------------------------------------------- */
 function toProfile(l){
   return { uid: l.uid || l.id, name: l.name, brandName: l.brandName || l.name, area: L.areaText(l), specialty: (l.specs || []).join(", "),
-    years: l.years || 0, stats: Object.assign({}, l.stats || {}, l.seed ? { seed:true } : {}, l.statsVerified ? { verified:true } : {}), bio: l.bio || "", photo: l.cover || "", phone: l.showPhone ? (l.phone || "") : "" };
+    years: l.years || 0, stats: Object.assign({}, l.stats || {}, l.statsVerified || {}, l.seed ? { seed:true } : {}, { verified: !!l.statsVerified }), bio: l.bio || "", photo: l.cover || "", phone: l.showPhone ? (l.phone || "") : "" };
 }
 async function openListing(id, opts){
   opts = opts || {};
@@ -610,7 +610,7 @@ const isVer = l=> !!(l && l.verified && !l.seed);
 function statsSrc(l){
   const s = (l && l.stats) || {};
   if(l && l.seed) return "số liệu minh hoạ";
-  if(l && (l.statsVerified || s.verified)) return "TapEasy xác nhận từ buổi PT đã dạy";
+  if(l && l.statsVerified) return "TapEasy xác nhận từ buổi PT đã dạy";   // audit C1: chỉ statsVerified (máy chủ ghi) — stats.verified là PT tự ghi
   if(s.src === "app") return "đếm từ form có học viên thật · PT tự đồng bộ";
   return "PT tự khai — chưa đối chiếu";
 }
@@ -681,8 +681,8 @@ function extHTML(l, o){
       <div class="fp-facts">
         <div><span>Tỉ lệ phản hồi</span><b>${respR == null || !isFinite(respR) ? "—" : Math.round(respR) + "%"}</b><small>${respR == null ? "chưa đủ 3 yêu cầu" : `trong 24 giờ · ${Number(l.respN) || 0} yêu cầu/90 ngày`}</small></div>
         <div><span>Thời gian trả lời</span><b>${esc(L.fmtMins(l.respMins))}</b><small>trung bình</small></div>
-        <div><span>Học viên</span><b>${Math.max(0, Math.round(Number((l.stats || {}).students) || 0))}</b><small>đã/đang theo tập · ${esc(statsSrc(l))}</small></div>
-        <div><span>Buổi đã dạy</span><b>${Math.max(0, Math.round(Number((l.stats || {}).sessions) || 0)).toLocaleString("vi-VN")}</b><small>ghi trên TapEasy · ${esc(statsSrc(l))}</small></div>
+        <div><span>Học viên</span><b>${Math.max(0, Math.round(Number((l.statsVerified || l.stats || {}).students) || 0))}</b><small>đã/đang theo tập · ${esc(statsSrc(l))}</small></div>
+        <div><span>Buổi đã dạy</span><b>${Math.max(0, Math.round(Number((l.statsVerified || l.stats || {}).sessions) || 0)).toLocaleString("vi-VN")}</b><small>ghi trên TapEasy · ${esc(statsSrc(l))}</small></div>
         <div><span>Giới tính</span><b>${l.gender === "female" ? "Nữ" : l.gender === "male" ? "Nam" : "—"}</b><small>&nbsp;</small></div>
         <div><span>Cập nhật hồ sơ</span><b>${l.updatedAt ? esc(dmy(l.updatedAt)) : "—"}</b><small>&nbsp;</small></div>
       </div>

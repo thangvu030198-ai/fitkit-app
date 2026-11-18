@@ -43,7 +43,7 @@ exports.joinByCode = onCall({ region: REGION, maxInstances: 10, timeoutSeconds: 
   if(bs.exists && !bs.data().liftedAt) throw new HttpsError("permission-denied", "Tài khoản đang bị khoá.");
   await A.rateLimit(`${uid}_join`, 10, 3600);
   const d = obj(request.data);
-  let clientId = "", via = "code";
+  let clientId = "", via = "code", invPtId = "";
   if(d.code != null){
     const code = normCode(d.code);
     if(code.length < 6 || code.length > 10) throw new HttpsError("invalid-argument", "Mã gồm 6–10 ký tự chữ và số, ví dụ: K7M2QXAB.");
@@ -57,13 +57,17 @@ exports.joinByCode = onCall({ region: REGION, maxInstances: 10, timeoutSeconds: 
     if(!email) throw new HttpsError("failed-precondition", "Xác minh email của tài khoản trước khi nhận lời mời.");
     const inv = await db().collection("invites").where("clientId", "==", clientId).where("email", "==", email).where("status", "==", "pending").limit(1).get();
     if(!inv.docs.length) throw new HttpsError("permission-denied", "Lời mời không còn hiệu lực hoặc gửi cho email khác.");
+    invPtId = String((inv.docs[0].data() || {}).ptId || "");
   }
+  if(!/^[A-Za-z0-9_-]{1,128}$/.test(clientId)) throw new HttpsError("not-found", "Mã không đúng hoặc đã bị xoá. Hỏi lại PT của bạn nhé.");
   const uSnap = await db().collection("users").doc(uid).get();
   const name = str((uSnap.exists && uSnap.data().name) || tok.name || (tok.email ? String(tok.email).split("@")[0] : "Học viên"), 80);
   const ref = db().collection("clients").doc(clientId);
   const out = await db().runTransaction(async tx=>{
     const s = await tx.get(ref); const c = s.exists ? s.data() : null;
     const p = linkProblem(c, uid); if(p) throw new HttpsError(p.code, p.msg);
+    // audit C4 (19/11/2026): lời mời phải do CHÍNH PT của form gửi
+    if(via === "invite" && invPtId !== c.ptId) throw new HttpsError("permission-denied", "Lời mời không còn hiệu lực hoặc gửi cho email khác.");
     if(c.studentUid === uid) return Object.assign({ id: clientId, already: true }, c);
     const patch = { studentUid: uid, studentName: name, studentEmail: tok.email ? String(tok.email).toLowerCase() : null, joinedAt: nowMs(), linkedVia: via, updatedAt: nowMs() };
     tx.update(ref, patch);

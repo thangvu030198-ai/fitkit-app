@@ -443,7 +443,9 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/clients/$(request.resource.data.clientId)).data.get('studentUid', null) == null;
       allow read: if signedIn() && (resource.data.ptId == me() || (myEmail() != '' && resource.data.email == myEmail()));
       allow update: if signedIn() && (
-        (resource.data.ptId == me() && request.resource.data.ptId == me())
+        (resource.data.ptId == me() && request.resource.data.ptId == me()
+          // audit C4 (19/11/2026): lời mời gắn cố định với form + email lúc tạo — PT không đổi sang form/email khác
+          && request.resource.data.clientId == resource.data.clientId && request.resource.data.email == resource.data.email)
         || (myEmail() != '' && resource.data.email == myEmail() && resource.data.status == 'pending'
             && request.resource.data.status in ['accepted', 'declined']
             && request.resource.data.studentUid == me()
@@ -598,7 +600,8 @@ service cloud.firestore {
               && get(/databases/$(database)/documents/events/$(id)/regs/$(rid)).data.status == 'checked_in')
           || (isRecap() && hasPerm('events.manage') && request.resource.data.kind == 'recap' && okText() && okMedia()
               && !request.resource.data.keys().hasAny(guarded()));
-        allow update: if (!isRecap() && signedIn() && me() == rid && request.resource.data.stars in [1, 2, 3, 4, 5] && okText() && okMedia()
+        allow update: if (!isRecap() && signedIn() && me() == rid && request.resource.data.kind == 'review' && request.resource.data.uid == rid   // audit C5
+              && request.resource.data.stars in [1, 2, 3, 4, 5] && okText() && okMedia()
               && !request.resource.data.diff(resource.data).affectedKeys().hasAny(guarded()))
           || (isRecap() && hasPerm('events.manage') && okText() && okMedia() && !request.resource.data.diff(resource.data).affectedKeys().hasAny(guarded()))
           || (signedIn() && only(['likeCount']) && ((delta('likeCount') == 1 && !exists(likeDoc()) && existsAfter(likeDoc()))
@@ -683,14 +686,18 @@ service cloud.firestore {
       // Ai cũng xem được niêm yết công khai (kể cả chưa đăng nhập) — truy vấn phải có where status=='public' & hidden==false
       allow get, list: if (resource.data.status == 'public' && resource.data.hidden == false)
                        || isOwner() || hasPerm('listings.moderate') || hasPerm('pt.verify');
-      allow create: if isOwner() && validListing(request.resource.data)
+      // audit C1: stats do PT tự ghi KHÔNG được mang cờ verified (chỉ statsVerified do máy chủ ghi mới là "TapEasy xác nhận")
+      function noFakeStats(d) { return !(d.get('stats', {}) is map) || d.get('stats', {}).get('verified', false) == false; }
+      // audit C2/C3: niêm yết bị ẩn ở Quản trị (users.listingHidden) → không tạo lại được
+      function adminHidden() { return exists(/databases/$(database)/documents/users/$(lid)) && get(/databases/$(database)/documents/users/$(lid)).data.get('listingHidden', false) == true; }
+      allow create: if isOwner() && validListing(request.resource.data) && noFakeStats(request.resource.data) && !adminHidden()
                     && request.resource.data.hidden == false && request.resource.data.verified == false
                     && !request.resource.data.keys().hasAny(lockedKeys().removeAll(['hidden', 'verified']));
-      allow update: if (isOwner() && validListing(request.resource.data)
+      allow update: if (isOwner() && validListing(request.resource.data) && noFakeStats(request.resource.data)
                         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(lockedKeys()))
                     || (hasPerm('pt.verify') && onlyKeys(['verified', 'verifiedAt', 'verifiedBy', 'verifyNote']))
                     || (hasPerm('listings.moderate') && onlyKeys(['hidden', 'hiddenReason', 'hiddenBy', 'hiddenAt']));
-      allow delete: if isOwner();
+      allow delete: if isOwner() && resource.data.get('hidden', false) != true;   // audit C2: bị kiểm duyệt ẩn thì không tự xoá-tạo lại
 
       // Đánh giá: id = uid người viết (1 đánh giá / người / PT). CÔNG KHAI. PT không xoá / không ẩn được.
       match /reviews/{ruid} {
@@ -757,12 +764,19 @@ service cloud.firestore {
         }
         allow create: if signedIn() && notBanned() && me() != lid && request.resource.data.uid == me()
                       && request.resource.data.status == 'pending' && request.resource.data.respondedAt == 0
+                      // audit C8: createdAt phải là giờ hiện tại (±5 phút) — không lùi/đẩy giờ để làm lệch tỉ lệ phản hồi của PT
+                      && request.resource.data.createdAt is int
+                      && request.resource.data.createdAt > request.time.toMillis() - 300000 && request.resource.data.createdAt < request.time.toMillis() + 300000
                       && request.resource.data.kind in ['trial', 'connect', 'question']
                       && request.resource.data.msgs is list && request.resource.data.msgs.size() <= 1
                       && !blockedBy(lid, me());
         allow read: if signedIn() && (resource.data.uid == me() || me() == lid);
         allow update: if signedIn() && request.resource.data.msgs.size() <= 30 && (
               (me() == lid && onlyKeys(['status', 'respondedAt', 'msgs', 'updatedAt', 'clientId'])
+                 // audit C8: respondedAt chỉ đặt 1 lần, đúng giờ hiện tại (±5 phút)
+                 && (request.resource.data.get('respondedAt', 0) == resource.data.get('respondedAt', 0)
+                     || (resource.data.get('respondedAt', 0) == 0 && request.resource.data.respondedAt is int
+                         && request.resource.data.respondedAt > request.time.toMillis() - 300000 && request.resource.data.respondedAt < request.time.toMillis() + 300000))
                  && request.resource.data.status in ['pending', 'accepted', 'declined', 'done']
                  && (msgsSame() || appended('pt')))
            || (resource.data.uid == me() && notBanned() && onlyKeys(['msgs', 'status', 'updatedAt'])
