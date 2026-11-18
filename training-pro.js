@@ -925,6 +925,47 @@ function saveLog(sum){
   save();
   return e;
 }
+
+/* ---- Tóm tắt buổi chi tiết (18/11/2026): nhóm cơ, bài theo khối lượng, so với buổi trước ---- */
+function muscleSets(sum){
+  const mg = {};
+  (sum.exercises||[]).forEach(e=>{
+    let w = {}; try{ w = muscleWeights(e.key, e.muscle) || {}; }catch(err){ w = parseMuscle(e.muscle); }
+    for(const g in w) mg[g] = (mg[g]||0) + num(e.sets) * (w[g] >= 1 ? 1 : w[g]);
+  });
+  return Object.keys(mg).map(g=> [g, Math.round(mg[g]*10)/10]).sort((a,b)=> b[1]-a[1]);
+}
+/** buổi trước cùng ngày tập của cùng giáo án (hoặc cùng tên buổi) — để so khối lượng */
+function prevSession(sum, log){
+  const L = (log || store().log || []).filter(e=> e && e.id !== sum.id && (e.endedAt||0) < (sum.endedAt || Date.now()));
+  for(let i = L.length - 1; i >= 0; i--){
+    const e = L[i];
+    if(sum.planId && e.planId === sum.planId && sum.dayKey && e.dayKey === sum.dayKey) return e;
+    if(sum.title && e.title === sum.title) return e;
+  }
+  return null;
+}
+function pctChange(now, before){ now = num(now); before = num(before); return before > 0 ? Math.round((now - before) / before * 100) : null; }
+function finishDetailHTML(sum){
+  const S = photoStats(sum), prev = prevSession(sum);
+  const pv = prev ? pctChange(sum.volume, prev.volume) : null;
+  const ms = muscleSets(sum), maxM = ms.length ? ms[0][1] : 1;
+  const prNames = new Set(S.prList.map(p=> p.name));
+  const exs = (sum.exercises||[]).slice().sort((a,b)=> (b.vol - a.vol) || (b.sets - a.sets));
+  const kgTxt = (v)=> String(v).replace(".", ",");
+  const chips = [S.reps ? `${S.reps} lần` : "", `${S.ex} bài`, S.kcal ? `~${S.kcal} kcal` : "", S.prs ? `${S.prs} kỷ lục` : ""].filter(Boolean);
+  return `
+  <div class="tp-fin-more">
+    <div class="tp-fin-chips">${chips.map(t=> `<span>${esc(t)}</span>`).join("")}</div>
+    ${pv !== null ? `<p class="tp-fin-cmp ${pv >= 0 ? "up" : "down"}"><span class="material-symbols-rounded">${pv >= 0 ? "trending_up" : "trending_down"}</span>Khối lượng ${pv >= 0 ? "+" : ""}${pv}% so với buổi trước (${esc(viNum(num(prev.volume)))} kg · ${esc(ddmm(prev.date))})</p>` : ""}
+    ${ms.length ? `<div class="tp-fin-sec"><h4>Nhóm cơ đã tập</h4>${ms.slice(0, 6).map(m=> `
+      <div class="tp-fin-mg"><span>${esc(m[0])}</span><i><b style="width:${Math.max(8, Math.round(m[1]/maxM*100))}%"></b></i><em>${esc(kgTxt(m[1]))} hiệp</em></div>`).join("")}</div>` : ""}
+    ${exs.length ? `<div class="tp-fin-sec"><h4>Bài theo khối lượng</h4>${exs.map(x=> `
+      <div class="tp-fin-ex"><div><b>${esc(shortName(x.name))}</b>${prNames.has(shortName(x.name)) ? ` <span class="tp-pr-tag">PR</span>` : ""}
+        <small>${esc(x.sets)} hiệp${x.best && x.best.kg ? ` · tốt nhất ${esc(kgTxt(x.best.kg))} kg × ${esc(x.best.reps)}` : x.best && x.best.reps ? ` · tốt nhất ${esc(x.best.reps)} lần` : ""}</small></div>
+        <span class="tp-fin-vol">${x.vol ? esc(viNum(x.vol)) + " kg" : "—"}</span></div>`).join("")}</div>` : ""}
+  </div>`;
+}
 function finishDecorate(sum, entry){
   const sheet = document.getElementById("sheet-content"); if(!sheet) return;
   const xong = Array.from(sheet.querySelectorAll("button.btn-primary")).pop();
@@ -935,6 +976,7 @@ function finishDecorate(sum, entry){
       <div class="stat-box"><div class="num">${sum.sets}</div><div class="cap">Hiệp đã tập</div></div>
       <div class="stat-box"><div class="num">${sum.volume ? viNum(sum.volume) : "–"}</div><div class="cap">Khối lượng (kg)</div></div>
     </div>
+    ${finishDetailHTML(sum)}
     ${sum.week ? `<p class="small-note tp-fin-wk">Chu kỳ: tuần ${sum.week}/${sum.weeks}${sum.deload ? " · tuần giảm tải — tạ & hiệp nhẹ là đúng kế hoạch" : ""}</p>` : ""}
     ${(sum.prs||[]).filter(p=> /kỷ lục số lần/.test(p.text)).length ? `<div class="pr-list">${sum.prs.filter(p=> /kỷ lục số lần/.test(p.text)).map(p=>`<div><span class="material-symbols-rounded">military_tech</span> <b>${esc(p.name)}</b> — ${esc(p.text)}</div>`).join("")}</div>` : ""}
     ${entry ? `<div class="field tp-fin-note"><label for="tp-fin-note">Ghi chú buổi tập</label><textarea id="tp-fin-note" rows="3" maxlength="600" placeholder="Cảm giác, giấc ngủ, chỗ đau mỏi, điều chỉnh lần sau…">${esc(sum.note)}</textarea></div>
@@ -1892,11 +1934,11 @@ Object.assign(TP, {
   // thuần logic (dùng cho kiểm thử)
   mondayStr, weeksBetween, defaultStart, deloadEveryFor, isDeloadWeek, cycleInfo, startCycle, endCycle, cycleResults, cycleAdherence, nextTemplate,
   groupsFor, toggleLink, isLinked, amrapKind, amrapRows, amrapLabel, kgForReps, muscleWeights, parseMuscle, hardSets, weekRange, weekVolume, plannedVolume,
-  deloadSets, deloadClone, buildSummary, fmtClock, fmtDur, drawShareCard, drawPhotoCard, photoStats, estKcal, PHOTO_TPLS, shareText, volStatus, volTarget, MG,
+  deloadSets, deloadClone, buildSummary, fmtClock, fmtDur, drawShareCard, drawPhotoCard, photoStats, estKcal, PHOTO_TPLS, muscleSets, prevSession, pctChange, finishDetailHTML, shareText, volStatus, volTarget, MG,
   lighterKg, ensureRows, ctxFor, isTopBack, fillDown, fillBlankKg, sameThreeTimes, cycleGap, shiftCycle, lastTrainDate, requiredDays, hasHistory, prefillNotesHTML,
   amrapRule, groupLabel, simpleMode,
   // giao diện
-  openCycleSheet, openSupersetEditor, openLogSheet, openShareCard, insertVolumeCard, decorateWorkout, store,
+  openCycleSheet, openSupersetEditor, openLogSheet, openShareCard, reopenFinish, insertVolumeCard, decorateWorkout, store,
 });
 try{
   if(typeof state !== "undefined" && state){
