@@ -66,12 +66,13 @@ function barHTML(c){
   const reps = rpIn ? rpIn.value : "";
   const prev = prevText(c.row);
   const n = c.i + 1;
+  const step = stepNow(kg === "" || kg === null ? null : numv(kg));
   return `<div class="sf-head"><b>Hiệp ${n}/${total}</b>${prev ? `<span>${esc(prev)}</span>` : ""}${headTools()}</div>${histOpen ? histHTML() : ""}${undoHTML()}
     ${minimized ? "" : `<div class="sf-steppers">
       ${kg !== null ? `<div class="sf-step" aria-label="Kg hiệp ${n}">
-        <button type="button" data-sf="kg-" aria-label="Giảm ${fmt(kgStep)} kg">−</button>
-        <div class="sf-val"><b data-sf-kg>${esc(kg === "" ? "–" : fmt(numv(kg)))}</b><small>KG <i data-sf-stepkg role="button" tabindex="0" aria-label="Đổi bước tạ, đang ${fmt(kgStep)} kg">±${esc(fmt(kgStep))}</i></small></div>
-        <button type="button" data-sf="kg+" aria-label="Tăng ${fmt(kgStep)} kg">+</button>
+        <button type="button" data-sf="kg-" aria-label="Giảm ${fmt(step)} kg">−</button>
+        <div class="sf-val"><b data-sf-kg>${esc(kg === "" ? "–" : fmt(numv(kg)))}</b><small>KG <i data-sf-stepkg role="button" tabindex="0" aria-label="Đổi bước tạ, đang ${fmt(step)} kg">±${esc(fmt(step))}</i></small></div>
+        <button type="button" data-sf="kg+" aria-label="Tăng ${fmt(step)} kg">+</button>
       </div>` : ""}
       ${rpIn ? `<div class="sf-step" aria-label="Số lần hiệp ${n}">
         <button type="button" data-sf="r-" aria-label="Bớt 1 lần">−</button>
@@ -92,10 +93,19 @@ function rpeHTML(row, n){
 function rpeHint(v){ return ({ "6":"còn 4", "7":"còn 3", "8":"còn 2", "9":"còn 1", "10":"hết sức" })[v] || (v ? "" : "tuỳ chọn"); }
 function nextLabel(){ const b = document.getElementById("btn-session-done"); return b ? (b.textContent || "").replace(/^check\s*/i, "").trim() || "Xong bài" : "Xong bài"; }
 
-let lastKey = "";
+let lastKey = "", stepOverride = null;
+/* nấc −/+ : người dùng tự đổi (chạm ±) cho bài này → giữ; đang chọn phòng tập (gyms.js) → nấc theo dụng cụ của phòng; còn lại → nấc đã nhớ */
+function stepNow(kg){
+  if(stepOverride != null) return stepOverride;
+  try{
+    if(G.FKGyms && G.FKGyms.active()){ const ss = typeof session !== "undefined" ? session : null; const it = ss && ss.items && ss.items[ss.idx];
+      const st = it && typeof getExerciseMeta === "function" ? G.FKGyms.stepFor(getExerciseMeta(it), kg) : null; if(st) return st; }
+  }catch(e){}
+  return kgStep;
+}
 function paint(){
   const sc = sheet(); if(!sc) return;
-  const k = curKey(); if(k !== lastKey){ lastKey = k; histOpen = false; lastDone = null; }
+  const k = curKey(); if(k !== lastKey){ lastKey = k; histOpen = false; lastDone = null; stepOverride = null; }
   let bar = sc.querySelector(".sf-bar");
   if(!document.getElementById("btn-session-done") || !rows().length){ if(bar) bar.remove(); return; }
   const c = current(); if(!c) return;
@@ -116,13 +126,13 @@ function bind(bar){
     }
     if(t.hasAttribute("data-sf-next")){ const b = document.getElementById("btn-session-done"); if(b) b.click(); return; }
     if(!c.row) return;
-    if(t.hasAttribute("data-sf-stepkg")){ kgStep = STEPS[(STEPS.indexOf(kgStep) + 1) % STEPS.length]; try{ localStorage.setItem(LS, String(kgStep)); }catch(err){} buzz(); paint(); return; }
+    if(t.hasAttribute("data-sf-stepkg")){ const cur = stepNow(); const i = STEPS.indexOf(cur); kgStep = STEPS[(i + 1) % STEPS.length]; stepOverride = kgStep; try{ localStorage.setItem(LS, String(kgStep)); }catch(err){} buzz(); paint(); return; }
     const kgIn = c.row.querySelector("input[data-kg]"), rpIn = c.row.querySelector("input[data-reps]");
     const k = t.dataset.sf;
     if(k === "kg+" || k === "kg-"){
       let base = numv(kgIn && kgIn.value);
       if(!base && kgIn){ const p = c.list.slice(0, c.i).reverse().map(r=> numv((r.querySelector("input[data-kg]")||{}).value)).find(v=> v > 0); base = p || 0; }
-      const v = Math.max(0, Math.round((base + (k === "kg+" ? kgStep : -kgStep)) * 100) / 100);
+      const sp = stepNow(base); const v = Math.max(0, Math.round((base + (k === "kg+" ? sp : -sp)) * 100) / 100);
       setVal(kgIn, v ? String(v) : ""); buzz(); paint(); return;
     }
     if(k === "r+" || k === "r-"){ const v = Math.max(0, Math.min(200, Math.round(numv(rpIn && rpIn.value) + (k === "r+" ? 1 : -1)))); setVal(rpIn, String(v)); buzz(); paint(); return; }

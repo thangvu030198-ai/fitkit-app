@@ -1907,3 +1907,13 @@ input.ibx-miss{ box-shadow:0 0 0 2px rgba(255,159,107,.85) !important; }
 .tips-notify{ display:flex; align-items:center; gap:8px; font-size:13px; opacity:.9; margin-top:4px; cursor:pointer; }
 .tips-notify input{ width:18px; height:18px; accent-color:#5EE6C7; }
 .tips-notify small{ opacity:.6; }
+
+/* ===== 19/11/2026 gyms.js — nhiều phòng tập ===== */
+.gym-chip{ display:flex; align-items:center; gap:8px; width:100%; margin-top:10px; padding:10px 14px; border-radius:14px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05); color:inherit; font:inherit; font-size:13.5px; cursor:pointer; text-align:left; }
+.gym-chip b{ margin-left:2px; } .gym-chip .material-symbols-rounded:last-child{ margin-left:auto; opacity:.5; }
+.gym-list{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+.gym-row{ display:flex; gap:6px; align-items:center; } .gym-row .gym-item{ flex:1; }
+.gym-item{ display:flex; gap:10px; align-items:center; width:100%; text-align:left; padding:10px 12px; border-radius:14px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:inherit; font:inherit; cursor:pointer; }
+.gym-item.on{ border-color:#5EE6C7; background:rgba(94,230,199,.08); } .gym-item.on .material-symbols-rounded{ color:#5EE6C7; }
+.gym-item b{ display:block; font-size:14px; } .gym-item small{ font-size:12px; opacity:.7; line-height:1.4; }
+.tb-title small{ opacity:.6; font-weight:500; }

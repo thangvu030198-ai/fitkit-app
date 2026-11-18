@@ -54,7 +54,7 @@ function build(date){
         if(top && last && Array.isArray(last.sets)){
           const work = last.sets.filter(r=> r.t !== "w" && num(r.kg) > 0);
           if(work.length >= 2 && work.every(r=> num(r.reps) >= top)){
-            const kg = Math.max(...work.map(r=> num(r.kg))), step = stepFor(key, meta);
+            const kg = Math.max(...work.map(r=> num(r.kg))), step = (G.FKTips && G.FKTips.PROG_STEP ? G.FKTips.PROG_STEP(key, meta) : stepFor(key, meta)) || stepFor(key, meta);
             out.up.push({ name: short(meta.name), from: kg, to: Math.round((kg + step) * 100) / 100, reps: top });
           }
         }
