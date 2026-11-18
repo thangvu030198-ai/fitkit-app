@@ -53,7 +53,7 @@ jobs:
           set -e
           mkdir -p _site
           rsync -a --exclude ".git" --exclude ".github" --exclude "node_modules" --exclude "_test" --exclude "_site" \
-                --exclude "tests" --exclude "functions" ./ _site/
+                --exclude "tests" --exclude "functions" --exclude "scripts" --exclude "docs" --exclude "store" ./ _site/
           cd _site
           before=0; after=0; kept=0
           for f in *.js; do
@@ -69,7 +69,7 @@ jobs:
           cb=0; ca=0
           for f in *.css; do
             s0=$(stat -c%s "$f"); cb=$((cb+s0))
-            if esbuild "$f" --loader=css --minify --charset=utf8 --log-level=error --outfile=/tmp/min.css; then
+            if esbuild "$f" --minify --charset=utf8 --log-level=error --outfile=/tmp/min.css; then
               s1=$(stat -c%s /tmp/min.css); [ "$s1" -gt 0 ] && [ "$s1" -lt "$s0" ] && mv /tmp/min.css "$f"
             else echo "⚠️ giữ bản gốc: $f"; fi
             ca=$((ca+$(stat -c%s "$f")))
