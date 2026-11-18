@@ -12,6 +12,8 @@ if(G.FKFocus) return;
 const LS = "fk_focus_kgstep";
 const STEPS = [1, 2, 2.5, 5];
 let kgStep = 2.5;
+let minimized = false, histOpen = false, lastDone = null;     // thu gọn thanh · mở lịch sử nhanh · hoàn tác hiệp vừa xong
+try{ minimized = localStorage.getItem("fk_focus_min") === "1"; }catch(e){}
 try{ const v = Number(localStorage.getItem(LS)); if(STEPS.includes(v)) kgStep = v; }catch(e){}
 
 const esc = (s)=> (typeof escapeHtml === "function") ? escapeHtml(String(s == null ? "" : s)) : String(s == null ? "" : s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -38,10 +40,25 @@ function setVal(inp, v){
 }
 function buzz(){ try{ if(navigator.vibrate) navigator.vibrate(8); }catch(e){} }
 
+/** 5 buổi gần nhất của bài đang tập (state.setHist) — xem nhanh ngay trên thanh, không đổi màn */
+function curKey(){ try{ const ss = typeof session !== "undefined" ? session : null; const it = ss && ss.items && ss.items[ss.idx]; return it && typeof exKey === "function" ? exKey(it) : ""; }catch(e){ return ""; } }
+function histHTML(){
+  let L = [];
+  try{ const h = state.setHist && state.setHist[curKey()]; L = h && Array.isArray(h.list) ? h.list.slice(-5).reverse() : []; }catch(e){}
+  if(!L.length) return `<div class="sf-hist"><p>Chưa có buổi nào của bài này.</p></div>`;
+  return `<div class="sf-hist">${L.map(x=> `<div><span>${esc(String(x.date || "").slice(8, 10))}/${esc(String(x.date || "").slice(5, 7))}</span><b>${(x.sets || []).filter(r=> r.t !== "w").map(r=> `${Number(r.kg) > 0 ? esc(fmt(r.kg)) + "×" : ""}${esc(r.reps)}`).join(" · ")}</b>${x.e1rm ? `<small>1RM ~${Math.round(x.e1rm)}</small>` : ""}</div>`).join("")}</div>`;
+}
+function undoHTML(){
+  if(!lastDone || Date.now() - lastDone.at > 6000) return "";
+  return `<button type="button" class="sf-undo" data-sf-undo><span class="material-symbols-rounded">undo</span>Hoàn tác hiệp ${lastDone.i + 1}</button>`;
+}
+function headTools(){
+  return `<span class="sf-tools"><button type="button" data-sf-hist aria-expanded="${histOpen}" aria-label="Lịch sử nhanh bài này"><span class="material-symbols-rounded">history</span></button><button type="button" data-sf-min aria-label="${minimized ? "Mở rộng thanh hiệp" : "Thu gọn thanh hiệp"}"><span class="material-symbols-rounded">${minimized ? "expand_less" : "expand_more"}</span></button></span>`;
+}
 function barHTML(c){
   const total = c.list.length;
   if(!c.row){
-    return `<div class="sf-head"><b>Đã xong ${total}/${total} hiệp</b><span>Chuyển sang bài tiếp theo khi sẵn sàng</span></div>
+    return `<div class="sf-head"><b>Đã xong ${total}/${total} hiệp</b><span>Chuyển sang bài tiếp theo khi sẵn sàng</span>${headTools()}</div>${histOpen ? histHTML() : ""}${undoHTML()}
       <button type="button" class="sf-done all" data-sf-next><span class="material-symbols-rounded">check</span>${esc(nextLabel())}</button>`;
   }
   const kgIn = c.row.querySelector("input[data-kg]"), rpIn = c.row.querySelector("input[data-reps]");
@@ -49,8 +66,8 @@ function barHTML(c){
   const reps = rpIn ? rpIn.value : "";
   const prev = prevText(c.row);
   const n = c.i + 1;
-  return `<div class="sf-head"><b>Hiệp ${n}/${total}</b>${prev ? `<span>${esc(prev)}</span>` : ""}</div>
-    <div class="sf-steppers">
+  return `<div class="sf-head"><b>Hiệp ${n}/${total}</b>${prev ? `<span>${esc(prev)}</span>` : ""}${headTools()}</div>${histOpen ? histHTML() : ""}${undoHTML()}
+    ${minimized ? "" : `<div class="sf-steppers">
       ${kg !== null ? `<div class="sf-step" aria-label="Kg hiệp ${n}">
         <button type="button" data-sf="kg-" aria-label="Giảm ${fmt(kgStep)} kg">−</button>
         <div class="sf-val"><b data-sf-kg>${esc(kg === "" ? "–" : fmt(numv(kg)))}</b><small>KG <i data-sf-stepkg role="button" tabindex="0" aria-label="Đổi bước tạ, đang ${fmt(kgStep)} kg">±${esc(fmt(kgStep))}</i></small></div>
@@ -62,7 +79,7 @@ function barHTML(c){
         <button type="button" data-sf="r+" aria-label="Thêm 1 lần">+</button>
       </div>` : ""}
     </div>
-    ${rpeHTML(c.row, n)}
+    ${rpeHTML(c.row, n)}`}
     <button type="button" class="sf-done" data-sf-done><span class="material-symbols-rounded">check</span>XONG HIỆP ${n}<small>${kg !== null && kg !== "" ? `${esc(fmt(numv(kg)))} kg × ` : ""}${esc(reps || "–")} lần</small></button>`;
 }
 /* RPE: chỉ hiện khi bảng hiệp đang có cột RPE (tôn trọng chế độ đơn giản / nút "Hiện cột RPE") */
@@ -75,18 +92,28 @@ function rpeHTML(row, n){
 function rpeHint(v){ return ({ "6":"còn 4", "7":"còn 3", "8":"còn 2", "9":"còn 1", "10":"hết sức" })[v] || (v ? "" : "tuỳ chọn"); }
 function nextLabel(){ const b = document.getElementById("btn-session-done"); return b ? (b.textContent || "").replace(/^check\s*/i, "").trim() || "Xong bài" : "Xong bài"; }
 
+let lastKey = "";
 function paint(){
   const sc = sheet(); if(!sc) return;
+  const k = curKey(); if(k !== lastKey){ lastKey = k; histOpen = false; lastDone = null; }
   let bar = sc.querySelector(".sf-bar");
   if(!document.getElementById("btn-session-done") || !rows().length){ if(bar) bar.remove(); return; }
   const c = current(); if(!c) return;
   if(!bar){ bar = document.createElement("div"); bar.className = "sf-bar"; bar.setAttribute("role", "region"); bar.setAttribute("aria-label", "Hiệp đang tập"); sc.appendChild(bar); bind(bar); }
+  bar.classList.toggle("min", minimized);
   bar.innerHTML = barHTML(c);
 }
 function bind(bar){
   bar.addEventListener("click", (e)=>{
     const t = e.target.closest ? e.target.closest("button,[data-sf-stepkg]") : null; if(!t) return;
     const c = current(); if(!c) return;
+    if(t.hasAttribute("data-sf-min")){ minimized = !minimized; try{ localStorage.setItem("fk_focus_min", minimized ? "1" : "0"); }catch(err){} paint(); return; }
+    if(t.hasAttribute("data-sf-hist")){ histOpen = !histOpen; paint(); return; }
+    if(t.hasAttribute("data-sf-undo")){
+      const L = rows(), r = lastDone && L[lastDone.i]; lastDone = null;
+      if(r && r.classList.contains("done")){ const chk = r.querySelector("[data-done]"); if(chk) chk.click(); try{ stopSetRest(); }catch(err){} }
+      buzz(); setTimeout(paint, 30); return;
+    }
     if(t.hasAttribute("data-sf-next")){ const b = document.getElementById("btn-session-done"); if(b) b.click(); return; }
     if(!c.row) return;
     if(t.hasAttribute("data-sf-stepkg")){ kgStep = STEPS[(STEPS.indexOf(kgStep) + 1) % STEPS.length]; try{ localStorage.setItem(LS, String(kgStep)); }catch(err){} buzz(); paint(); return; }
@@ -105,7 +132,7 @@ function bind(bar){
       setVal(sel, String(sel.value) === v ? "" : v); buzz(); paint(); return;
     }
     if(t.hasAttribute("data-sf-done")){
-      const chk = c.row.querySelector("[data-done]"); if(chk){ chk.click(); buzz(); }
+      const chk = c.row.querySelector("[data-done]"); if(chk){ chk.click(); buzz(); lastDone = { i: c.i, at: Date.now() }; setTimeout(paint, 6100); }
       setTimeout(paint, 30);
     }
   });

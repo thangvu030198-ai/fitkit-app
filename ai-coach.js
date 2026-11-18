@@ -199,7 +199,50 @@ function profileText(){
   const it = (st.aiCoach && st.aiCoach.intake) || null;
   if(it) lines.push(intakeText(it));
   try{ const h = st.health || {}; const inj = (it && it.inj) || []; if(inj.length) lines.push("VÙNG CẦN TRÁNH QUÁ TẢI: " + inj.join(", ")); if(h.under18) lines.push("LƯU Ý: người dùng dưới 18 tuổi."); }catch(e){}
+  try{ const t = trainingLogText(); if(t) lines.push(t); }catch(e){}
   return lines.join("\n");
+}
+
+/* 19/11/2026 (góp ý người dùng): AI đọc NHẬT KÝ CHI TIẾT — 10 buổi gần nhất (từng bài, kg × lần @RPE, kỷ lục, ghi chú),
+   mức phục hồi từng nhóm cơ, giấc ngủ 7 đêm, InBody mới nhất. Gọn ≤ ~3.800 ký tự để còn chỗ cho kiến thức app. */
+function trainingLogText(){
+  const st = ST() || {}, out = [];
+  const dm = d=> String(d || "").slice(8, 10) + "/" + String(d || "").slice(5, 7);
+  const kg = n=> String(Math.round((Number(n) || 0) * 10) / 10).replace(".", ",");
+  try{
+    const T = G.FKTP, L = T && T.store ? (T.store().log || []).slice(-10).reverse() : [];
+    if(L.length){
+      out.push("NHẬT KÝ TẬP 10 BUỔI GẦN NHẤT (mới nhất trước; kg×lần@RPE):");
+      L.forEach(e=>{
+        const ex = (e.exercises || []).map(x=>{
+          let sets = "";
+          try{ const h = st.setHist && st.setHist[x.key], en = h && Array.isArray(h.list) ? h.list.find(y=> y.date === e.date) : null;
+            const arr = en ? (en.parts && e.sid && en.parts[e.sid] ? en.parts[e.sid] : en.sets) : null;
+            if(Array.isArray(arr)) sets = arr.filter(r=> r.t !== "w").map(r=> `${Number(r.kg) > 0 ? kg(r.kg) + "×" : ""}${r.reps}${r.rpe ? "@" + r.rpe : ""}`).join(",");
+          }catch(err){}
+          return `${String(x.name || "").replace(/\s*\(.*\)$/, "")}${sets ? " " + sets : x.timed ? " (tính giờ)" : ` ${x.sets} hiệp`}`;
+        }).join(" | ");
+        const pr = (e.prs || []).map(p=> p.name).filter(Boolean);
+        out.push(`- ${dm(e.date)} ${e.title || "Buổi tập"} (${Math.round((Number(e.dur) || 0) / 60)} phút, ${Math.round(Number(e.volume) || 0)} kg, ${e.completed}/${e.total} bài${e.deload ? ", tuần giảm tải" : ""}): ${ex || "—"}${pr.length ? ` · KỶ LỤC: ${pr.join(", ")}` : ""}${e.note ? ` · GHI CHÚ: "${String(e.note).slice(0, 120)}"` : ""}`);
+      });
+    } else out.push("NHẬT KÝ TẬP: chưa có buổi nào được ghi.");
+  }catch(e){}
+  try{
+    const R = G.FKRecovery && G.FKTP ? G.FKRecovery.compute(G.FKTP.store().log, Date.now()) : null;
+    if(R && R.sessions){
+      const g = Object.keys(R.groups).filter(k=> R.groups[k].f >= 0.25).sort((a, b)=> R.groups[b].f - R.groups[a].f);
+      out.push("PHỤC HỒI CƠ (ước tính): " + (g.length ? g.map(k=> `${k} mới hồi ${Math.round((1 - R.groups[k].f) * 100)}%`).join(", ") : "các nhóm cơ đã hồi phục"));
+    }
+  }catch(e){}
+  try{
+    const days = Object.keys(st.sleepLog || {}).sort().slice(-7);
+    if(days.length) out.push("GIẤC NGỦ 7 ĐÊM: " + days.map(d=> `${dm(d)} ${Math.round((Number(st.sleepLog[d].hours) || 0) * 10) / 10}h`).join(", "));
+  }catch(e){}
+  try{
+    const ib = (st.inbodyLogs || []).slice().sort((a, b)=> b.ts - a.ts)[0];
+    if(ib) out.push(`INBODY GẦN NHẤT (${new Date(ib.ts).toLocaleDateString("vi-VN")}): ${ib.weight ? ib.weight + " kg" : ""}${ib.bodyFatPct != null ? `, mỡ ${ib.bodyFatPct}%` : ""}${ib.muscleMassKg != null ? `, cơ xương ${ib.muscleMassKg} kg` : ""}`);
+  }catch(e){}
+  return out.join("\n").slice(0, 3800);
 }
 function intakeText(it){
   return `THÔNG TIN NGƯỜI DÙNG NHẬP: mục tiêu ${GOALS[it.goal] || "?"}; trình độ ${EXPS[it.exp] || "?"}; ${it.daysN} buổi/tuần, mỗi buổi ~${it.minutes} phút; tập ở ${it.place === "home" ? "nhà" + ((it.equip || []).length ? " (có: " + it.equip.join(", ") + ")" : " (không dụng cụ)") : "phòng gym đủ máy"}; ngủ trung bình ${it.sleepH} giờ, thường dậy lúc ${it.wake}; chế độ ăn: ${DIETS[it.diet] || "bình thường"}${it.allergy ? `; dị ứng / không ăn: ${it.allergy}` : ""}${it.note ? `; ghi chú: ${it.note}` : ""}.`;
@@ -862,7 +905,7 @@ function install(){
   try{ if(G.FK_I18N && G.FK_I18N.onChange) G.FK_I18N.onChange(()=>{ _docs = null;
     try{ const ov = document.getElementById("fk-coach"); if(ov && ov.classList.contains("open") && !ui.busy) render(); if(document.querySelector("#screen-workout.active")) cardioCard(); }catch(e){} }); }catch(e){}
 }
-G.FKCoach = { __v: 1, lang: LANG, suggest, nm, open, close, send, status, lib: { docs, retrieve, GUIDE, TOPICS }, buildContext, profileText, intakeText, cleanIntake, defaultIntake, localPlan, validatePlan, toAppPlan, localAnswer,
+G.FKCoach = { trainingLogText, __v: 1, lang: LANG, suggest, nm, open, close, send, status, lib: { docs, retrieve, GUIDE, TOPICS }, buildContext, profileText, intakeText, cleanIntake, defaultIntake, localPlan, validatePlan, toAppPlan, localAnswer,
   cardioFor, fixCardio, heavyDay, dietOk, targets, fmt, cardioCard, syncFab, DISCLAIMER, _reset: ()=>{ _docs = null; _status = { at: 0, enabled: false }; } };
 try{ install(); }catch(e){}
 })(typeof window !== "undefined" ? window : globalThis);

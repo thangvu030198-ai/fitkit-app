@@ -21,7 +21,7 @@ module.exports = {
     t.test("FOCUS-03: chỉ điều khiển ô/nút sẵn có (không tự lưu dữ liệu riêng)", ()=>{
       const src = fs.readFileSync(path.join(__dirname, "..", "..", "session-focus.js"), "utf8");
       assert.ok(/querySelector\("\[data-done\]"\)/.test(src) && /dispatchEvent\(new Event\("change"/.test(src));
-      assert.ok(!/state\.|saveState|store\(\)/.test(src));
+      assert.ok(!/state\.[\w.\[\]"]+\s*=[^=]|saveState|store\(\)/.test(src), "chỉ đọc state, không ghi");
     });
     t.test("FOCUS-04: RPE nhanh 6–10 chỉ hiện khi bảng có cột RPE, ghi vào ô RPE của hàng", ()=>{
       const src = fs.readFileSync(path.join(__dirname, "..", "..", "session-focus.js"), "utf8");
