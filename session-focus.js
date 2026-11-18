@@ -62,8 +62,17 @@ function barHTML(c){
         <button type="button" data-sf="r+" aria-label="Thêm 1 lần">+</button>
       </div>` : ""}
     </div>
+    ${rpeHTML(c.row, n)}
     <button type="button" class="sf-done" data-sf-done><span class="material-symbols-rounded">check</span>XONG HIỆP ${n}<small>${kg !== null && kg !== "" ? `${esc(fmt(numv(kg)))} kg × ` : ""}${esc(reps || "–")} lần</small></button>`;
 }
+/* RPE: chỉ hiện khi bảng hiệp đang có cột RPE (tôn trọng chế độ đơn giản / nút "Hiện cột RPE") */
+const RPE_CHIPS = ["6", "7", "8", "9", "10"];
+function rpeHTML(row, n){
+  const sel = row.querySelector("select.rpe"); if(!sel) return "";
+  const cur = String(sel.value || "");
+  return `<div class="sf-rpe" role="group" aria-label="RPE hiệp ${n}"><span>RPE</span>${RPE_CHIPS.map(v=> `<button type="button" data-sf-rpe="${v}" class="${cur === v ? "on" : ""}" aria-pressed="${cur === v}">${v}</button>`).join("")}<em>${esc(rpeHint(cur))}</em></div>`;
+}
+function rpeHint(v){ return ({ "6":"còn 4", "7":"còn 3", "8":"còn 2", "9":"còn 1", "10":"hết sức" })[v] || (v ? "" : "tuỳ chọn"); }
 function nextLabel(){ const b = document.getElementById("btn-session-done"); return b ? (b.textContent || "").replace(/^check\s*/i, "").trim() || "Xong bài" : "Xong bài"; }
 
 function paint(){
@@ -90,6 +99,11 @@ function bind(bar){
       setVal(kgIn, v ? String(v) : ""); buzz(); paint(); return;
     }
     if(k === "r+" || k === "r-"){ const v = Math.max(0, Math.min(200, Math.round(numv(rpIn && rpIn.value) + (k === "r+" ? 1 : -1)))); setVal(rpIn, String(v)); buzz(); paint(); return; }
+    if(t.hasAttribute("data-sf-rpe")){
+      const sel = c.row.querySelector("select.rpe"); if(!sel) return;
+      const v = t.getAttribute("data-sf-rpe");
+      setVal(sel, String(sel.value) === v ? "" : v); buzz(); paint(); return;
+    }
     if(t.hasAttribute("data-sf-done")){
       const chk = c.row.querySelector("[data-done]"); if(chk){ chk.click(); buzz(); }
       setTimeout(paint, 30);

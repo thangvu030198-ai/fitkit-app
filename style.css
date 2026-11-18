@@ -1757,7 +1757,7 @@ html.fk-themed :is(.fk-consent-row, .ob-mac, .fk-an-row){ background:rgba(var(--
 #client-tabs{ gap:18px; scroll-padding-inline:16px; }
 
 /* 18/11/2026 — thanh hiệp hiện tại (session-focus.js) */
-.sf-bar{ position:sticky; bottom:-20px; z-index:5; margin:14px -20px -20px; padding:12px 20px calc(12px + env(safe-area-inset-bottom)); background:rgba(6,26,36,.94); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); border-top:1px solid rgba(255,255,255,.12); box-shadow:0 -10px 24px rgba(0,0,0,.35); }
+.sf-bar{ position:sticky; bottom:0; z-index:5; margin:14px -20px -20px; padding:12px 20px calc(12px + env(safe-area-inset-bottom)); background:rgba(6,26,36,.94); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); border-top:1px solid rgba(255,255,255,.12); box-shadow:0 -10px 24px rgba(0,0,0,.35); }
 .sf-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:8px; }
 .sf-head b{ font-size:15px; }
 .sf-head span{ font-size:12px; opacity:.72; text-align:right; }
@@ -1771,5 +1771,11 @@ html.fk-themed :is(.fk-consent-row, .ob-mac, .fk-an-row){ background:rgba(var(--
 .sf-val small i{ font-style:normal; margin-left:4px; padding:1px 6px; border-radius:8px; background:rgba(94,230,199,.16); color:#5EE6C7; cursor:pointer; }
 .sf-done{ width:100%; min-height:56px; display:flex; align-items:center; justify-content:center; gap:8px; border:0; border-radius:16px; background:#5EE6C7; color:#061A24; font:inherit; font-size:16px; font-weight:800; letter-spacing:.02em; cursor:pointer; }
 .sf-done small{ font-size:12.5px; font-weight:600; opacity:.75; margin-left:4px; }
+.sf-bar::after{ content:""; position:absolute; left:0; right:0; top:100%; height:120px; background:inherit; pointer-events:none; }
+.sf-rpe{ display:flex; align-items:center; gap:6px; margin:0 0 10px; }
+.sf-rpe span{ font-size:11px; font-weight:800; letter-spacing:.06em; opacity:.7; margin-right:2px; }
+.sf-rpe button{ flex:1; min-width:0; height:36px; border-radius:10px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:inherit; font:inherit; font-size:14px; font-weight:700; cursor:pointer; }
+.sf-rpe button.on{ background:#C8F560; border-color:#C8F560; color:#0B1A10; }
+.sf-rpe em{ font-style:normal; font-size:11px; opacity:.65; min-width:44px; text-align:right; }
 .sf-done.all{ background:#FF7A45; color:#fff; }
 .sf-done:active{ transform:scale(.98); }
