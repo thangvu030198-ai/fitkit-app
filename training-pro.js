@@ -1380,11 +1380,136 @@ async function openShareCard(sum, onBack){
   });
 }
 
+
+/* ---- Tổng kết tháng (18/11/2026): số buổi, tổng tấn, giờ tập, kỷ lục, chuỗi ngày, khối lượng theo tuần, top nhóm cơ.
+   Tính từ nhật ký buổi tập trên máy (store().log). Có thẻ ảnh 1080×1350 để lưu/chia sẻ. ---- */
+const MONTHS_VI = ["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
+function ymOf(ds){ return String(ds||"").slice(0, 7); }
+function ymShift(ym, n){ const a = ym.split("-").map(Number); const d = new Date(a[0], a[1]-1+n, 1); return `${d.getFullYear()}-${p2(d.getMonth()+1)}`; }
+function monthStats(log, ym){
+  const L = (log||[]).filter(e=> e && ymOf(e.date) === ym);
+  const a = ym.split("-").map(Number), daysIn = new Date(a[0], a[1], 0).getDate();
+  let volume = 0, dur = 0, prs = 0, sets = 0;
+  const days = new Set(), mg = {};
+  L.forEach(e=>{
+    volume += num(e.volume); dur += num(e.dur); prs += (e.prs||[]).length; sets += num(e.sets); days.add(e.date);
+    muscleSets(e).forEach(m=> mg[m[0]] = (mg[m[0]]||0) + m[1]);
+  });
+  // chuỗi ngày tập liên tiếp dài nhất trong tháng
+  let best = 0, run = 0;
+  for(let d = 1; d <= daysIn; d++){ if(days.has(`${ym}-${p2(d)}`)){ run++; best = Math.max(best, run); } else run = 0; }
+  // khối lượng theo tuần trong tháng (tuần 1 = ngày 1–7…)
+  const weeks = [0,0,0,0,0].slice(0, Math.ceil(daysIn/7));
+  L.forEach(e=>{ const d = Number(String(e.date).slice(8,10)) || 1; weeks[Math.min(weeks.length-1, Math.floor((d-1)/7))] += num(e.volume); });
+  let kg = 0; try{ kg = state && state.profile ? state.profile.weight : 0; }catch(err){}
+  const top = Object.keys(mg).map(g=> [g, Math.round(mg[g])]).sort((x,y)=> y[1]-x[1]).slice(0, 3);
+  return { ym, count: L.length, days: days.size, volume: Math.round(volume), tonnes: Math.round(volume/100)/10, hours: Math.round(dur/360)/10,
+           dur, prs, sets, bestStreak: best, weeks, top, kcal: estKcal(dur, kg) };
+}
+function monthLabel(ym){ const a = ym.split("-").map(Number); return `${MONTHS_VI[(a[1]||1)-1]}/${a[0]}`; }
+function drawMonthCard(canvas, M, prev){
+  canvas.width = CARD_W; canvas.height = CARD_H;
+  const c = canvas.getContext("2d"); if(!c) return false;
+  const W = CARD_W, H = CARD_H;
+  const bg = c.createLinearGradient(0, 0, W, H); bg.addColorStop(0, "#0C3140"); bg.addColorStop(.55, "#061A24"); bg.addColorStop(1, "#030E14");
+  c.fillStyle = bg; c.fillRect(0, 0, W, H);
+  const g = c.createRadialGradient(W*.85, 260, 0, W*.85, 260, 520); g.addColorStop(0, "rgba(94,230,199,.22)"); g.addColorStop(1, "rgba(0,0,0,0)"); c.fillStyle = g; c.fillRect(0, 0, W, H);
+  c.textAlign = "left"; c.textBaseline = "alphabetic";
+  c.fillStyle = "#FFFFFF"; c.font = `800 54px ${FONT}`; const lx = spaced(c, "Tap", 72, 120, 2); c.fillStyle = "#5EE6C7"; spaced(c, "Easy", lx + 2, 120, 2);
+  c.textAlign = "right"; c.fillStyle = "rgba(255,255,255,.8)"; c.font = `700 30px ${FONT}`; c.fillText(monthLabel(M.ym).toUpperCase(), W - 72, 112); c.textAlign = "left";
+  c.fillStyle = "#5EE6C7"; c.font = `700 28px ${FONT}`; spaced(c, "TỔNG KẾT THÁNG", 72, 236, 4);
+  c.fillStyle = "#FFFFFF"; c.font = `800 62px ${FONT}`; c.fillText(fit(c, `${M.count} buổi tập · ${M.prs} kỷ lục mới`, W - 144), 72, 318);
+  c.fillStyle = "rgba(255,255,255,.6)"; c.font = `600 34px ${FONT}`; c.fillText(M.count ? "Một tháng bền bỉ." : "Tháng này chưa có buổi tập nào.", 72, 370);
+  // tổng tấn
+  c.fillStyle = "rgba(255,255,255,.62)"; c.font = `700 26px ${FONT}`; spaced(c, "TỔNG KHỐI LƯỢNG", 72, 470, 3);
+  c.fillStyle = "#5EE6C7"; c.font = `800 170px ${FONT}`; const tTxt = String(M.tonnes).replace(".", ","); c.fillText(tTxt, 64, 630);
+  const tw = c.measureText(tTxt).width; c.fillStyle = "#FFFFFF"; c.font = `700 52px ${FONT}`; c.fillText("tấn", 64 + tw + 18, 626);
+  const pv = prev && prev.volume ? pctChange(M.volume, prev.volume) : null;
+  if(pv !== null){ c.textAlign = "right"; c.fillStyle = pv >= 0 ? "#5EE6C7" : "#FFB08A"; c.font = `700 30px ${FONT}`; c.fillText(`${pv >= 0 ? "▲ +" : "▼ "}${pv}% so với tháng trước`, W - 72, 626); c.textAlign = "left"; }
+  // 4 ô
+  const cells = [["BUỔI", String(M.count)], ["GIỜ TẬP", String(M.hours).replace(".", ",")], ["KỶ LỤC", String(M.prs)], ["CHUỖI NGÀY", String(M.bestStreak)]];
+  const cw = (W - 144 - 36)/4;
+  cells.forEach((x, i)=>{
+    const cx = 72 + i*(cw + 12), y = 680;
+    c.fillStyle = "rgba(255,255,255,.07)"; rr(c, cx, y, cw, 150, 26); c.fill();
+    c.strokeStyle = "rgba(255,255,255,.14)"; c.lineWidth = 2; rr(c, cx, y, cw, 150, 26); c.stroke();
+    c.fillStyle = i === 2 ? "#FF7A45" : "#FFFFFF"; c.font = `800 64px ${FONT}`; c.fillText(fit(c, x[1], cw - 40), cx + 24, y + 82);
+    c.fillStyle = "rgba(255,255,255,.62)"; c.font = `700 20px ${FONT}`; c.fillText(x[0], cx + 24, y + 124);
+  });
+  // khối lượng theo tuần
+  const chY = 892, chH = 156, maxW = Math.max(1, ...M.weeks);
+  c.fillStyle = "rgba(255,255,255,.62)"; c.font = `700 24px ${FONT}`; spaced(c, "KHỐI LƯỢNG THEO TUẦN", 72, chY, 3);
+  const bw = (W - 144 - (M.weeks.length-1)*18) / M.weeks.length;
+  M.weeks.forEach((v, i)=>{
+    const h = Math.max(6, Math.round(v / maxW * chH)), x = 72 + i*(bw + 18), y = chY + 54 + chH - h;
+    const isMax = v === maxW && v > 0;
+    c.fillStyle = isMax ? "#5EE6C7" : "rgba(94,230,199,.45)"; rr(c, x, y, bw, h, 14); c.fill();
+    c.textAlign = "center"; c.fillStyle = "rgba(255,255,255,.7)"; c.font = `600 22px ${FONT}`; c.fillText(`T${i+1}`, x + bw/2, chY + chH + 88);
+    if(isMax){ c.fillStyle = "#FFFFFF"; c.font = `700 24px ${FONT}`; c.fillText(String(Math.round(v/100)/10).replace(".", ",") + " t", x + bw/2, y - 12); }
+    c.textAlign = "left";
+  });
+  // top nhóm cơ
+  let cx = 72; const y2 = 1248; const cols = ["#5EE6C7", "#FFB08A", "#9AB8FF"];
+  if(M.top.length){ c.fillStyle = "rgba(255,255,255,.62)"; c.font = `700 22px ${FONT}`; spaced(c, "TẬP NHIỀU NHẤT", 72, y2 - 52, 3); }
+  M.top.forEach((m, i)=>{
+    const t = `${i+1}. ${m[0]}`; c.font = `700 28px ${FONT}`; const w = c.measureText(t).width + 44;
+    c.fillStyle = "rgba(255,255,255,.08)"; rr(c, cx, y2 - 34, w, 52, 26); c.fill();
+    c.fillStyle = cols[i]; c.fillText(t, cx + 22, y2 + 2); cx += w + 14;
+  });
+  c.fillStyle = "rgba(255,255,255,.5)"; c.font = `600 24px ${FONT}`; c.textAlign = "right"; c.fillText("tapeasy.app", W - 72, H - 44); c.textAlign = "left";
+  return true;
+}
+async function shareCanvasImage(cv, fname, text){
+  const blob = await canvasBlob(cv);
+  try{
+    if(blob && typeof File === "function" && navigator.canShare){
+      const file = new File([blob], fname, { type:"image/png" });
+      if(navigator.canShare({ files:[file] })){ await navigator.share({ files:[file], title:"TapEasy", text }); return true; }
+    }
+  }catch(e){ if(e && /abort|cancel/i.test(e.name + " " + e.message)) return true; }
+  return false;
+}
+function openMonthRecap(ym, onBack){
+  const log = store().log || [];
+  ym = ym || ymOf(dstr(new Date()));
+  const M = monthStats(log, ym), prev = monthStats(log, ymShift(ym, -1));
+  const nowYm = ymOf(dstr(new Date()));
+  openSheet(`
+    <div class="sheet-header">${onBack ? `<button class="icon-btn" id="tp-mr-back" aria-label="Quay lại"><span class="material-symbols-rounded">arrow_back</span></button>` : ""}<h3 style="flex:1;margin-left:8px;font-size:17px;">Tổng kết tháng</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
+    <div class="tp-mr-nav"><button class="icon-btn" id="tp-mr-prev" aria-label="Tháng trước"><span class="material-symbols-rounded">chevron_left</span></button><b>${esc(monthLabel(ym))}</b><button class="icon-btn" id="tp-mr-next" aria-label="Tháng sau" ${ym >= nowYm ? "disabled" : ""}><span class="material-symbols-rounded">chevron_right</span></button></div>
+    <div class="tp-share-wrap"><canvas id="tp-mr-canvas" class="tp-share-canvas" width="1080" height="1350" aria-label="Thẻ tổng kết tháng"></canvas></div>
+    <div class="tp-share-actions">
+      <button class="btn btn-outline" id="tp-mr-save"><span class="material-symbols-rounded">download</span>Lưu ảnh</button>
+      <button class="btn btn-primary" id="tp-mr-share"><span class="material-symbols-rounded">share</span>Chia sẻ</button>
+    </div>
+    <p class="small-note" style="text-align:center;margin-top:8px;">${M.count ? `${M.days} ngày tập · ${esc(viNum(M.sets))} hiệp${M.kcal ? ` · ~${esc(viNum(M.kcal))} kcal` : ""} — tính từ nhật ký trên máy này.` : "Hoàn thành buổi tập trong tháng để có số liệu tổng kết."}</p>
+    <div id="tp-mr-fallback"></div>`);
+  const back = document.getElementById("tp-mr-back"); if(back) back.addEventListener("click", onBack);
+  document.getElementById("tp-mr-prev").addEventListener("click", ()=> openMonthRecap(ymShift(ym, -1), onBack));
+  const nx = document.getElementById("tp-mr-next"); if(nx && !nx.disabled) nx.addEventListener("click", ()=> openMonthRecap(ymShift(ym, 1), onBack));
+  const cv = document.getElementById("tp-mr-canvas");
+  drawMonthCard(cv, M, prev);
+  const fname = `tapeasy-thang-${ym}.png`;
+  const text = `${monthLabel(ym)}: ${M.count} buổi tập, ${String(M.tonnes).replace(".", ",")} tấn, ${M.prs} kỷ lục mới. Tập cùng TapEasy!`;
+  const fallback = ()=>{ let url = ""; try{ url = cv.toDataURL("image/png"); }catch(e){} const fb = document.getElementById("tp-mr-fallback"); if(fb && url) fb.innerHTML = `<p class="small-note" style="margin-top:10px;">Nhấn giữ ảnh bên dưới và chọn <b>Lưu ảnh</b>.</p><img src="${url}" alt="Tổng kết tháng" style="width:100%;border-radius:16px;margin-top:6px;">`; };
+  const native = (()=>{ try{ return !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform()); }catch(e){ return false; } })();
+  document.getElementById("tp-mr-save").addEventListener("click", async ()=>{
+    if(native){ fallback(); return; }
+    const blob = await canvasBlob(cv); if(!blob){ fallback(); return; }
+    try{ const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=> URL.revokeObjectURL(url), 4000); toast("Đã lưu ảnh tổng kết tháng", "download"); }catch(e){ fallback(); }
+  });
+  document.getElementById("tp-mr-share").addEventListener("click", async ()=>{
+    if(await shareCanvasImage(cv, fname, text)) return;
+    fallback();
+    try{ await navigator.clipboard.writeText(text); toast("Đã chép nội dung — lưu ảnh rồi đăng kèm nhé", "content_copy"); }catch(e){ toast("Nhấn giữ ảnh để lưu rồi chia sẻ", "image"); }
+  });
+}
 /* ---- Nhật ký buổi tập ---- */
 function openLogSheet(){
   const L = store().log.slice().reverse().slice(0, 40);
   openSheet(`
     <div class="sheet-header"><h3>Nhật ký buổi tập</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
+    ${L.length ? `<button class="btn btn-outline btn-block btn-sm tp-mr-open" id="tp-mr-open"><span class="material-symbols-rounded">calendar_month</span>Tổng kết tháng</button>` : ""}
     ${L.length ? `<div class="tp-log">${L.map(e=>`
       <div class="tp-log-item" data-log="${esc(e.id)}">
         <div class="tp-log-h"><b>${ddmm(e.date)} · ${esc(e.title || "Buổi tập")}</b>${e.week ? `<span class="tp-wk ${e.deload?'tp-dl':''}">T${e.week}/${e.weeks}</span>` : ""}</div>
@@ -1395,6 +1520,7 @@ function openLogSheet(){
       : `<p class="empty-hint">Chưa có buổi tập nào được ghi. Hoàn thành một buổi để xem thời gian, khối lượng và ghi chú tại đây.</p>`}
   `);
   const find = (id)=> store().log.find(x=> x.id === id);
+  const mro = document.getElementById("tp-mr-open"); if(mro) mro.addEventListener("click", ()=> openMonthRecap(null, openLogSheet));
   document.querySelectorAll("[data-log-card]").forEach(b=> b.addEventListener("click", ()=>{ const e = find(b.dataset.logCard); if(e) openShareCard(e, openLogSheet); }));
   document.querySelectorAll("[data-log-note]").forEach(b=> b.addEventListener("click", ()=>{
     const e = find(b.dataset.logNote); if(!e) return;
@@ -1934,7 +2060,7 @@ Object.assign(TP, {
   // thuần logic (dùng cho kiểm thử)
   mondayStr, weeksBetween, defaultStart, deloadEveryFor, isDeloadWeek, cycleInfo, startCycle, endCycle, cycleResults, cycleAdherence, nextTemplate,
   groupsFor, toggleLink, isLinked, amrapKind, amrapRows, amrapLabel, kgForReps, muscleWeights, parseMuscle, hardSets, weekRange, weekVolume, plannedVolume,
-  deloadSets, deloadClone, buildSummary, fmtClock, fmtDur, drawShareCard, drawPhotoCard, photoStats, estKcal, PHOTO_TPLS, muscleSets, prevSession, pctChange, finishDetailHTML, shareText, volStatus, volTarget, MG,
+  deloadSets, deloadClone, buildSummary, fmtClock, fmtDur, drawShareCard, drawPhotoCard, photoStats, estKcal, PHOTO_TPLS, muscleSets, prevSession, pctChange, finishDetailHTML, monthStats, ymShift, drawMonthCard, openMonthRecap, shareText, volStatus, volTarget, MG,
   lighterKg, ensureRows, ctxFor, isTopBack, fillDown, fillBlankKg, sameThreeTimes, cycleGap, shiftCycle, lastTrainDate, requiredDays, hasHistory, prefillNotesHTML,
   amrapRule, groupLabel, simpleMode,
   // giao diện

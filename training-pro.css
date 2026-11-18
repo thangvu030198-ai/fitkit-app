@@ -231,3 +231,9 @@
 .tp-fin-ex b{ font-size:14px; } .tp-fin-ex small{ display:block; opacity:.7; font-size:12px; margin-top:2px; }
 .tp-fin-vol{ font-weight:700; font-size:13.5px; white-space:nowrap; color:#5EE6C7; }
 .tp-pr-tag{ display:inline-block; padding:1px 6px; border-radius:6px; background:#FF7A45; color:#061A24; font-size:10.5px; font-weight:800; vertical-align:2px; }
+
+/* tổng kết tháng */
+.tp-mr-open{ margin:0 0 12px; }
+.tp-mr-nav{ display:flex; align-items:center; justify-content:space-between; margin:0 0 10px; }
+.tp-mr-nav b{ font-size:16px; }
+.tp-mr-nav .icon-btn[disabled]{ opacity:.3; }

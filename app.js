@@ -2644,6 +2644,7 @@ function renderProgressRecordsTab(){
   const links = [
     typeof FKAch === "object" && FKAch && typeof FKAch.open === "function" ? `<button type="button" class="btn btn-outline btn-sm" data-prl="ach"><span class="material-symbols-rounded">military_tech</span>Thành tích &amp; huy hiệu</button>` : "",
     typeof FKTP === "object" && FKTP && typeof FKTP.openLogSheet === "function" ? `<button type="button" class="btn btn-outline btn-sm" data-prl="log"><span class="material-symbols-rounded">history</span>Nhật ký buổi tập</button>` : "",
+    typeof FKTP === "object" && FKTP && typeof FKTP.openMonthRecap === "function" ? `<button type="button" class="btn btn-outline btn-sm" data-prl="month"><span class="material-symbols-rounded">calendar_month</span>Tổng kết tháng</button>` : "",
   ].join("");
   box.innerHTML = `
     <p class="small-note">Kỷ lục tự cập nhật sau mỗi buổi tập có ghi kg × lần. 1RM ước tính theo công thức Epley.</p>
@@ -2657,7 +2658,7 @@ function renderProgressRecordsTab(){
     ${links ? `<div class="chip-row" style="margin-top:4px;">${links}</div>` : ""}`;
   $$("#progress-content [data-pr]").forEach(r=> r.addEventListener("click", ()=>{ const h = (state.setHist || {})[r.dataset.pr]; if(h) openExerciseHistory(r.dataset.pr, h.name); }));
   $$("#progress-content [data-prr]").forEach(r=> r.addEventListener("click", ()=>{ const h = (state.setHist || {})[r.dataset.prr]; if(h) openExerciseHistory(r.dataset.prr, h.name); }));
-  $$("#progress-content [data-prl]").forEach(b=> b.addEventListener("click", ()=>{ try{ if(b.dataset.prl === "ach") FKAch.open(); else FKTP.openLogSheet(); }catch(e){} }));
+  $$("#progress-content [data-prl]").forEach(b=> b.addEventListener("click", ()=>{ try{ if(b.dataset.prl === "ach") FKAch.open(); else if(b.dataset.prl === "month") FKTP.openMonthRecap(); else FKTP.openLogSheet(); }catch(e){} }));
 }
 
 function photoRowHTML(p){
