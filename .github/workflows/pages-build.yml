@@ -1,0 +1,96 @@
+name: Web — build (nén JS/CSS) & đưa lên tapeasy.app
+
+# 19/11/2026 (tối ưu tốc độ): Pages chuyển sang "GitHub Actions". Mã nguồn trong repo GIỮ NGUYÊN (dễ đọc/sửa);
+# bản đưa lên web được nén: JS bỏ khoảng trắng/chú thích (KHÔNG đổi tên biến — các file dùng chung biến toàn cục),
+# CSS nén đầy đủ. File nén không qua được kiểm tra cú pháp → giữ bản gốc. Không gộp file (giữ đúng thứ tự <script>).
+# Chạy khi: push lên main, hoặc sau các workflow tự commit (giải nén gói, media…) vì commit bằng GITHUB_TOKEN không kích hoạt push.
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+  workflow_run:
+    workflows:
+      - "Giải nén gói mã nguồn (deploy-bundle.zip)"
+      - "Firebase — trang đăng nhập tự host (tapeasy.app/__/auth)"
+      - "Media — hình giải phẫu cho bản đồ phục hồi cơ (Muse AI)"
+      - "Media — hình & video bài tập phong cách TapEasy (Muse AI)"
+      - "Media — hình minh hoạ bài tập phong cách TapEasy (AI)"
+      - "Media — video bổ sung (Pexels / Wikimedia)"
+      - "Media — ảnh món ăn tạo bằng AI (API ảnh)"
+      - "Media — ảnh món ăn thật, tách nền (Pixabay + rembg)"
+      - "Media — nhận video từ Google Drive (duyệt trước khi gắn)"
+      - "Media — video giới thiệu TapEasy (intro dọc + ngang)"
+      - "Media — ảnh có người tạo bằng AI (API ảnh)"
+      - "Media — chuỗi video ngắn TapEasy (TikTok / Reels / Shorts 9:16)"
+      - "Media — giọng đọc mẫu (nghe & chọn)"
+      - "Media — clip nền màn chào (đen trắng, nét cao)"
+      - "Media — tải & nén video bài tập wger (CC BY-SA)"
+      - "Vendor — morphicons (icon biến hình, MIT)"
+    types: [ completed ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - name: Cài esbuild
+        run: npm i -g esbuild@0.24 >/dev/null && esbuild --version
+      - name: Tạo bản web nén
+        run: |
+          set -e
+          mkdir -p _site
+          rsync -a --exclude ".git" --exclude ".github" --exclude "node_modules" --exclude "_test" --exclude "_site" \
+                --exclude "tests" --exclude "functions" ./ _site/
+          cd _site
+          before=0; after=0; kept=0
+          for f in *.js; do
+            [ "$f" = "sw.js" ] && continue
+            s0=$(stat -c%s "$f"); before=$((before+s0))
+            if esbuild "$f" --minify-whitespace --minify-syntax --charset=utf8 --log-level=error --outfile=/tmp/min.js && node --check /tmp/min.js 2>/dev/null; then
+              s1=$(stat -c%s /tmp/min.js)
+              if [ "$s1" -lt "$s0" ]; then mv /tmp/min.js "$f"; else kept=$((kept+1)); fi
+            else echo "⚠️ giữ bản gốc: $f"; kept=$((kept+1)); fi
+            after=$((after+$(stat -c%s "$f")))
+          done
+          echo "JS: $((before/1024)) KB → $((after/1024)) KB (giữ gốc $kept file)"
+          cb=0; ca=0
+          for f in *.css; do
+            s0=$(stat -c%s "$f"); cb=$((cb+s0))
+            if esbuild "$f" --loader=css --minify --charset=utf8 --log-level=error --outfile=/tmp/min.css; then
+              s1=$(stat -c%s /tmp/min.css); [ "$s1" -gt 0 ] && [ "$s1" -lt "$s0" ] && mv /tmp/min.css "$f"
+            else echo "⚠️ giữ bản gốc: $f"; fi
+            ca=$((ca+$(stat -c%s "$f")))
+          done
+          echo "CSS: $((cb/1024)) KB → $((ca/1024)) KB"
+          # kiểm tra: mọi <script src> / stylesheet cục bộ trong index.html đều có file
+          miss=0
+          for s in $(grep -oE '(src|href)="[^"#?:]+\.(js|css)' index.html | sed -E 's/^(src|href)="//'); do [ -f "$s" ] || { echo "::error::Thiếu $s"; miss=1; }; done
+          [ $miss = 0 ]
+          test -f CNAME && echo "CNAME: $(cat CNAME)"
+          echo "Kích thước site: $(du -sh . | cut -f1)"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: _site }
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.d.outputs.page_url }}
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v4
