@@ -1051,6 +1051,108 @@ function drawShareCard(canvas, sum){
   c.fillStyle = "#061A24"; c.font = `800 22px ${FONT}`; c.textAlign = "center"; c.fillText("TapEasy", CARD_W - 72 - 60, CARD_H - 62); c.textAlign = "left";
   return true;
 }
+
+/* ---- Thẻ ẢNH CỦA BẠN (18/11/2026): ảnh người dùng chọn/chụp làm nền + số liệu buổi tập đè lên.
+   Ảnh chỉ xử lý trên máy (canvas), không tải lên máy chủ. 3 mẫu riêng của TapEasy · khung 4:5 hoặc 9:16.
+   Thẻ số liệu cũ (drawShareCard) GIỮ NGUYÊN — đây là chế độ thêm. ---- */
+const PHOTO_TPLS = [["big", "Số lớn"], ["bar", "Thanh dưới"], ["min", "Tối giản"]];
+function photoStats(sum){
+  const prs = (sum.prs||[]).length;
+  return {
+    dur: fmtClock(num(sum.dur)*1000),
+    vol: sum.volume ? viNum(sum.volume) : "",
+    sets: String(sum.sets||0),
+    ex: `${sum.completed||0}/${sum.total||0}`,
+    prs,
+    title: String(sum.title || "Buổi tập"),
+  };
+}
+function drawPhotoCard(canvas, sum, img, opt){
+  opt = opt || {};
+  const W = 1080, H = opt.ratio === "9:16" ? 1920 : 1350, tpl = opt.tpl || "big";
+  canvas.width = W; canvas.height = H;
+  const c = canvas.getContext("2d"); if(!c) return false;
+  // nền: ảnh phủ kín (cover), không có ảnh → nền navy của TapEasy
+  c.fillStyle = "#061A24"; c.fillRect(0, 0, W, H);
+  if(img && (img.naturalWidth || img.width)){
+    const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+    const k = Math.max(W/iw, H/ih), dw = iw*k, dh = ih*k;
+    try{ c.drawImage(img, (W - dw)/2, (H - dh)/2, dw, dh); }catch(e){}
+  }
+  // lớp phủ tối để chữ luôn đọc được
+  const shade = (y0, y1, a0, a1)=>{ const g = c.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, `rgba(3,14,20,${a0})`); g.addColorStop(1, `rgba(3,14,20,${a1})`); c.fillStyle = g; c.fillRect(0, Math.min(y0,y1), W, Math.abs(y1-y0)); };
+  shade(0, 320, .62, 0);
+  const S = photoStats(sum), d = parseD(sum.date || dstr(new Date()));
+  c.textBaseline = "alphabetic"; c.textAlign = "left";
+  c.shadowColor = "rgba(0,0,0,.55)"; c.shadowBlur = 18;
+  // đầu thẻ: logo + ngày
+  c.fillStyle = "#FFFFFF"; c.font = `800 54px ${FONT}`;
+  const lx = spaced(c, "Tap", 64, 116, 2); c.fillStyle = "#5EE6C7"; spaced(c, "Easy", lx + 2, 116, 2);
+  c.textAlign = "right"; c.fillStyle = "rgba(255,255,255,.9)"; c.font = `600 30px ${FONT}`;
+  c.fillText(`${p2(d.getDate())}/${p2(d.getMonth()+1)}/${d.getFullYear()}`, W - 64, 108);
+  c.textAlign = "left";
+  const label = (t, x, y, al)=>{ c.textAlign = al || "left"; c.fillStyle = "rgba(255,255,255,.78)"; c.font = `700 26px ${FONT}`; if(al === "center"){ c.fillText(t.split("").join(" "), x, y); } else spaced(c, t, x, y, 3); c.textAlign = "left"; };
+  if(tpl === "big"){
+    // 3 số lớn xếp dọc giữa ảnh
+    shade(H*0.22, H*0.5, 0, .45); shade(H*0.5, H, .45, .7);
+    const rows = [["KHỐI LƯỢNG", S.vol ? S.vol + " kg" : "—"], ["THỜI GIAN", S.dur], ["SỐ HIỆP", S.sets]];
+    let y = H*0.36;
+    rows.forEach((r, i)=>{
+      label(r[0], W/2, y, "center");
+      c.textAlign = "center"; c.fillStyle = i === 0 ? "#5EE6C7" : "#FFFFFF";
+      let fs = 150; c.font = `800 ${fs}px ${FONT}`; while(fs > 80 && c.measureText(r[1]).width > W - 120){ fs -= 8; c.font = `800 ${fs}px ${FONT}`; }
+      c.fillText(r[1], W/2, y + 138); c.textAlign = "left";
+      y += 250;
+    });
+    c.textAlign = "center"; c.fillStyle = "rgba(255,255,255,.92)"; c.font = `700 36px ${FONT}`;
+    c.fillText(fit(c, S.title.toUpperCase() + (S.prs ? ` · ${S.prs} KỶ LỤC` : ""), W - 140), W/2, H - 84); c.textAlign = "left";
+  }else if(tpl === "bar"){
+    // tên buổi + thanh kính 4 ô ở đáy
+    shade(H - 620, H, 0, .82);
+    c.fillStyle = "#5EE6C7"; c.font = `700 28px ${FONT}`; spaced(c, "HOÀN THÀNH BUỔI TẬP", 64, H - 400, 4);
+    c.fillStyle = "#FFFFFF"; let fs = 84; c.font = `800 ${fs}px ${FONT}`; const tt = S.title.toUpperCase();
+    while(fs > 52 && c.measureText(tt).width > W - 128){ fs -= 4; c.font = `800 ${fs}px ${FONT}`; }
+    c.fillText(fit(c, tt, W - 128), 64, H - 310);
+    c.shadowBlur = 0;
+    c.fillStyle = "rgba(6,26,36,.72)"; rr(c, 48, H - 262, W - 96, 190, 34); c.fill();
+    c.strokeStyle = "rgba(255,255,255,.2)"; c.lineWidth = 2; rr(c, 48, H - 262, W - 96, 190, 34); c.stroke();
+    const cells = [["KHỐI LƯỢNG", S.vol ? S.vol : "—", S.vol ? "kg" : ""], ["THỜI GIAN", S.dur, ""], ["HIỆP", S.sets, ""], [S.prs ? "KỶ LỤC" : "BÀI", S.prs ? String(S.prs) : S.ex, ""]];
+    const cw = (W - 96)/4;
+    cells.forEach((x, i)=>{
+      const cx = 48 + cw*i + cw/2;
+      c.textAlign = "center"; c.fillStyle = "rgba(255,255,255,.7)"; c.font = `700 22px ${FONT}`; c.fillText(x[0], cx, H - 212);
+      c.fillStyle = i === 0 ? "#5EE6C7" : (i === 3 && S.prs ? "#FF7A45" : "#FFFFFF");
+      let f2 = 62; c.font = `800 ${f2}px ${FONT}`; const v = x[1] + (x[2] ? " " + x[2] : "");
+      while(f2 > 34 && c.measureText(v).width > cw - 24){ f2 -= 4; c.font = `800 ${f2}px ${FONT}`; }
+      c.fillText(v, cx, H - 124);
+      if(i){ c.fillStyle = "rgba(255,255,255,.14)"; c.fillRect(48 + cw*i, H - 236, 2, 138); }
+    });
+    c.textAlign = "left";
+  }else{
+    // tối giản: đồng hồ thật lớn + 1 dòng số liệu
+    shade(H - 560, H, 0, .78);
+    label("THỜI GIAN TẬP", 64, H - 372);
+    c.fillStyle = "#FFFFFF"; let fs = 230; c.font = `800 ${fs}px ${FONT}`;
+    while(fs > 120 && c.measureText(S.dur).width > W - 128){ fs -= 10; c.font = `800 ${fs}px ${FONT}`; }
+    c.fillText(S.dur, 58, H - 170);
+    c.fillStyle = "rgba(255,255,255,.92)"; c.font = `700 40px ${FONT}`;
+    const line = [S.vol ? S.vol + " kg" : "", S.sets + " hiệp", S.prs ? S.prs + " kỷ lục" : S.ex + " bài"].filter(Boolean).join("  ·  ");
+    c.fillText(fit(c, line, W - 128), 64, H - 92);
+  }
+  c.shadowBlur = 0; c.shadowColor = "transparent";
+  return true;
+}
+/** đọc ảnh người dùng chọn → HTMLImageElement (thu nhỏ khi vẽ; ảnh không rời máy) */
+function loadUserPhoto(file){
+  return new Promise((res)=>{
+    if(!file || !/^image\//.test(file.type || "")){ res(null); return; }
+    let url = ""; try{ url = URL.createObjectURL(file); }catch(e){ res(null); return; }
+    const im = new Image();
+    im.onload = ()=>{ res(im); setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(e){} }, 60000); };
+    im.onerror = ()=>{ try{ URL.revokeObjectURL(url); }catch(e){} res(null); };
+    im.src = url;
+  });
+}
 function shareText(sum){
   return `Vừa hoàn thành buổi ${sum.title || "tập"}${sum.week ? ` (tuần ${sum.week}/${sum.weeks})` : ""}: ${sum.completed}/${sum.total} bài · ${sum.sets} hiệp · ${sum.volume ? viNum(sum.volume) + " kg" : ""} · ${fmtClock(num(sum.dur)*1000)}. Tập cùng TapEasy!`;
 }
@@ -1058,18 +1160,57 @@ function canvasBlob(canvas){ return new Promise(res=>{ try{ canvas.toBlob(b=> re
 async function openShareCard(sum, onBack){
   openSheet(`
     <div class="sheet-header">${onBack ? `<button class="icon-btn" id="tp-sc-back" aria-label="Quay lại"><span class="material-symbols-rounded">arrow_back</span></button>` : ""}<h3 style="flex:1;margin-left:8px;font-size:17px;">Thẻ tổng kết</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
+    <div class="tp-share-modes" role="tablist" aria-label="Kiểu thẻ chia sẻ">
+      <button class="tp-share-mode active" data-sc-mode="stats" role="tab" aria-selected="true"><span class="material-symbols-rounded">bar_chart</span>Thẻ số liệu</button>
+      <button class="tp-share-mode" data-sc-mode="photo" role="tab" aria-selected="false"><span class="material-symbols-rounded">photo_camera</span>Ảnh của bạn</button>
+    </div>
+    <div id="tp-sc-photo" class="tp-share-photo" hidden>
+      <div class="tp-share-pick">
+        <label class="btn btn-outline btn-sm"><span class="material-symbols-rounded">photo_library</span>Chọn ảnh<input type="file" id="tp-sc-file" accept="image/*" hidden></label>
+        <label class="btn btn-outline btn-sm"><span class="material-symbols-rounded">photo_camera</span>Chụp mới<input type="file" id="tp-sc-cam" accept="image/*" capture="environment" hidden></label>
+      </div>
+      <div class="chip-row tp-share-chips" id="tp-sc-tpls">${PHOTO_TPLS.map((t, i)=> `<button class="tp-sc-chip ${i === 0 ? "active" : ""}" data-sc-tpl="${esc(t[0])}">${esc(t[1])}</button>`).join("")}</div>
+      <div class="chip-row tp-share-chips" id="tp-sc-ratios"><button class="tp-sc-chip active" data-sc-ratio="4:5">Bài đăng 4:5</button><button class="tp-sc-chip" data-sc-ratio="9:16">Story / TikTok 9:16</button></div>
+    </div>
     <div class="tp-share-wrap"><canvas id="tp-share-canvas" class="tp-share-canvas" width="1080" height="1350" aria-label="Thẻ tổng kết buổi tập"></canvas></div>
     <div class="tp-share-actions">
       <button class="btn btn-outline" id="tp-sc-save"><span class="material-symbols-rounded">download</span>Lưu ảnh</button>
       <button class="btn btn-primary" id="tp-sc-share"><span class="material-symbols-rounded">share</span>Chia sẻ</button>
     </div>
-    <p class="small-note" style="text-align:center;margin-top:8px;">Ảnh 1080×1350 — vừa khung bài đăng Instagram / Facebook / Zalo.</p>
+    <p class="small-note" id="tp-sc-note" style="text-align:center;margin-top:8px;">Ảnh 1080×1350 — vừa khung bài đăng Instagram / Facebook / Zalo.</p>
     <div id="tp-sc-fallback"></div>
   `);
   const back = document.getElementById("tp-sc-back"); if(back) back.addEventListener("click", onBack);
   const cv = document.getElementById("tp-share-canvas");
   try{ if(document.fonts && document.fonts.load) await Promise.race([Promise.all([document.fonts.load(`800 64px "Inter Tight"`), document.fonts.load(`600 32px "Inter"`)]), new Promise(r=> setTimeout(r, 900))]); }catch(e){}
   drawShareCard(cv, sum);
+  // ---- chế độ "Ảnh của bạn" (thêm — thẻ số liệu ở trên vẫn là mặc định) ----
+  const ph = { mode: "stats", img: null, tpl: "big", ratio: "4:5" };
+  const redraw = ()=>{
+    if(ph.mode === "photo") drawPhotoCard(cv, sum, ph.img, ph); else drawShareCard(cv, sum);
+    cv.style.aspectRatio = `${cv.width}/${cv.height}`;
+    const note = document.getElementById("tp-sc-note");
+    if(note) note.textContent = ph.mode === "photo"
+      ? (ph.img ? `Ảnh ${cv.width}×${cv.height} — ảnh của bạn chỉ xử lý trên máy, không tải lên máy chủ.` : "Chọn hoặc chụp một tấm ảnh ở phòng tập để làm nền.")
+      : "Ảnh 1080×1350 — vừa khung bài đăng Instagram / Facebook / Zalo.";
+    const fb = document.getElementById("tp-sc-fallback"); if(fb) fb.innerHTML = "";
+  };
+  document.querySelectorAll("[data-sc-mode]").forEach(b=> b.addEventListener("click", ()=>{
+    ph.mode = b.dataset.scMode === "photo" ? "photo" : "stats";
+    document.querySelectorAll("[data-sc-mode]").forEach(x=>{ const on = x === b; x.classList.toggle("active", on); x.setAttribute("aria-selected", on ? "true" : "false"); });
+    const box = document.getElementById("tp-sc-photo"); if(box) box.hidden = ph.mode !== "photo";
+    redraw();
+  }));
+  const onPick = async (e)=>{
+    const f = e.target.files && e.target.files[0]; e.target.value = "";
+    if(!f) return;
+    const im = await loadUserPhoto(f);
+    if(!im){ toast("Không đọc được ảnh này — thử ảnh khác nhé", "error"); return; }
+    ph.img = im; redraw();
+  };
+  ["tp-sc-file", "tp-sc-cam"].forEach(id=>{ const el = document.getElementById(id); if(el) el.addEventListener("change", onPick); });
+  document.querySelectorAll("[data-sc-tpl]").forEach(b=> b.addEventListener("click", ()=>{ ph.tpl = b.dataset.scTpl; document.querySelectorAll("[data-sc-tpl]").forEach(x=> x.classList.toggle("active", x === b)); redraw(); }));
+  document.querySelectorAll("[data-sc-ratio]").forEach(b=> b.addEventListener("click", ()=>{ ph.ratio = b.dataset.scRatio === "9:16" ? "9:16" : "4:5"; document.querySelectorAll("[data-sc-ratio]").forEach(x=> x.classList.toggle("active", x === b)); redraw(); }));
   const fname = `tapeasy-${sum.date || dstr(new Date())}.png`;
   const showFallback = ()=>{
     let url = ""; try{ url = cv.toDataURL("image/png"); }catch(e){}
@@ -1657,7 +1798,7 @@ Object.assign(TP, {
   // thuần logic (dùng cho kiểm thử)
   mondayStr, weeksBetween, defaultStart, deloadEveryFor, isDeloadWeek, cycleInfo, startCycle, endCycle, cycleResults, cycleAdherence, nextTemplate,
   groupsFor, toggleLink, isLinked, amrapKind, amrapRows, amrapLabel, kgForReps, muscleWeights, parseMuscle, hardSets, weekRange, weekVolume, plannedVolume,
-  deloadSets, deloadClone, buildSummary, fmtClock, fmtDur, drawShareCard, shareText, volStatus, volTarget, MG,
+  deloadSets, deloadClone, buildSummary, fmtClock, fmtDur, drawShareCard, drawPhotoCard, photoStats, PHOTO_TPLS, shareText, volStatus, volTarget, MG,
   lighterKg, ensureRows, ctxFor, isTopBack, fillDown, fillBlankKg, sameThreeTimes, cycleGap, shiftCycle, lastTrainDate, requiredDays, hasHistory, prefillNotesHTML,
   amrapRule, groupLabel, simpleMode,
   // giao diện

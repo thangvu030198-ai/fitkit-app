@@ -139,6 +139,19 @@
 .tp-share-wrap{ border-radius:18px; overflow:hidden; border:1px solid rgba(255,255,255,.14); background:#061A24; box-shadow:0 12px 30px rgba(0,0,0,.4); }
 .tp-share-canvas{ display:block; width:100%; height:auto; aspect-ratio:1080/1350; }
 .tp-share-actions{ display:flex; gap:10px; margin-top:12px; }
+/* 18/11/2026 — 2 kiểu thẻ: số liệu (cũ) · ảnh của bạn (mới) */
+.tp-share-modes{ display:flex; gap:6px; padding:4px; margin-bottom:10px; border-radius:14px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); }
+.tp-share-mode{ flex:1; display:flex; align-items:center; justify-content:center; gap:6px; min-height:42px; border:0; border-radius:11px; background:transparent; color:inherit; font:inherit; font-weight:700; font-size:14px; opacity:.7; cursor:pointer; }
+.tp-share-mode.active{ background:rgba(94,230,199,.16); color:#5EE6C7; opacity:1; }
+.tp-share-mode .material-symbols-rounded{ font-size:18px; }
+.tp-share-photo{ margin-bottom:10px; }
+.tp-share-pick{ display:flex; gap:8px; margin-bottom:8px; }
+.tp-share-pick .btn{ flex:1; cursor:pointer; }
+.tp-share-chips{ margin:6px 0; flex-wrap:wrap; }
+.tp-sc-chip{ min-height:36px; padding:7px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:inherit; font:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+.tp-sc-chip.active{ background:rgba(94,230,199,.16); border-color:rgba(94,230,199,.55); color:#5EE6C7; }
+.tp-share-wrap{ text-align:center; }
+.tp-share-canvas{ width:auto; max-width:100%; max-height:62vh; margin:0 auto; }
 .tp-share-actions .btn{ flex:1; }
 
 /* ---- Nhật ký buổi tập ---- */
