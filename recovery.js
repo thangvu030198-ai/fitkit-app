@@ -91,6 +91,61 @@ function mapSVG(res, small){
   return `<svg viewBox="0 0 210 156" class="rcv-map${small ? " sm" : ""}" role="img" aria-label="Bản đồ phục hồi cơ: trước và sau">${front}${back}
     ${small ? "" : `<text x="50" y="155" text-anchor="middle" font-size="7" fill="currentColor" opacity=".55">TRƯỚC</text><text x="160" y="155" text-anchor="middle" font-size="7" fill="currentColor" opacity=".55">SAU</text>`}</svg>`;
 }
+
+/* ---- hình giải phẫu AI (media/anatomy, workflow media-anatomy.yml): ảnh bóng xám + ảnh nhãn nhóm cơ → tô màu trạng thái trên máy ----
+   Chưa có ảnh / lỗi mạng → giữ hình khối SVG ở trên. Tài khoản nữ → hình nữ. */
+const ABASE = "https://tapeasy.app/media/anatomy/";
+const RGB = { tired:[255,138,91], mid:[255,200,87], ready:[94,230,199], none:[92,108,122], grey:[70,80,90] };
+let AIDX = null, aLoading = null;
+const aCache = {};
+function sexOf(){ try{ return state && state.profile && state.profile.gender === "female" ? "f" : "m"; }catch(e){ return "m"; } }
+function loadIndex(){
+  if(AIDX || aLoading || typeof fetch !== "function") return aLoading;
+  aLoading = fetch(ABASE + "index.json", { cache: "no-cache" }).then(r=> r.ok ? r.json() : null).then(j=>{
+    if(j && Array.isArray(j.items)) AIDX = j.items.filter(x=> x && /^body-[mf]-(front|back)$/.test(x.id) && Array.isArray(x.groups) && x.groups.length === 6);
+    return AIDX;
+  }).catch(()=> null);
+  return aLoading;
+}
+function anatFor(sex){ if(!AIDX) return null; const f = AIDX.find(x=> x.id === `body-${sex}-front`), b = AIDX.find(x=> x.id === `body-${sex}-back`); return f && b ? [f, b] : null; }
+function img(src){ return new Promise((ok, no)=>{ const im = new Image(); im.crossOrigin = "anonymous"; im.onload = ()=> ok(im); im.onerror = no; im.src = src; }); }
+async function pixels(e){
+  if(aCache[e.id]) return aCache[e.id];
+  const p = Promise.all([img(ABASE + e.shade), img(ABASE + e.label)]).then(([sh, lb])=>{
+    const w = sh.naturalWidth, h = sh.naturalHeight, cv = D.createElement("canvas"); cv.width = w; cv.height = h;
+    const x = cv.getContext("2d"); x.drawImage(sh, 0, 0); const S = x.getImageData(0, 0, w, h);
+    x.clearRect(0, 0, w, h); x.drawImage(lb, 0, 0, w, h); const L = x.getImageData(0, 0, w, h);
+    return { w, h, S: S.data, L: L.data };
+  });
+  aCache[e.id] = p; p.catch(()=>{ delete aCache[e.id]; });
+  return p;
+}
+function tone(res, g){ const o = res.groups[g]; return !o || (!o.sets && !o.f) ? "none" : statusOf(o.f).k; }
+async function paintAnat(box, res){
+  const pair = anatFor(sexOf()); if(!pair || !box) return false;
+  const P = await Promise.all(pair.map(pixels));
+  const cvs = P.map((px, i)=>{
+    const cv = D.createElement("canvas"); cv.width = px.w; cv.height = px.h; cv.className = "rcv-cv";
+    cv.setAttribute("role", "img"); cv.setAttribute("aria-label", i ? "Phía sau" : "Phía trước");
+    const x = cv.getContext("2d"), out = x.createImageData(px.w, px.h), o = out.data, S = px.S, L = px.L;
+    const cols = [RGB.grey].concat(pair[i].groups.map(g=> RGB[tone(res, g)]));
+    for(let k = 0; k < o.length; k += 4){
+      const a = S[k + 3]; if(!a) continue;
+      const lab = L[k], c = lab >= 1 && lab <= 6 ? cols[lab] : cols[0], sh = S[k] / 255, m = lab >= 1 && lab <= 6 ? (0.26 + 0.95 * sh) : (0.35 + 0.8 * sh);
+      o[k] = Math.min(255, c[0] * m); o[k + 1] = Math.min(255, c[1] * m); o[k + 2] = Math.min(255, c[2] * m); o[k + 3] = a;
+    }
+    x.putImageData(out, 0, 0); return cv;
+  });
+  if(!box.isConnected) return false;
+  box.innerHTML = ""; box.classList.add("anat"); cvs.forEach(c=> box.appendChild(c));
+  return true;
+}
+function mapBox(res, small){ return `<div class="rcv-mapbox${small ? " sm" : ""}" data-rcv-map>${mapSVG(res, small)}</div>`; }
+function upgrade(root, res){
+  const boxes = root ? root.querySelectorAll("[data-rcv-map]") : [];
+  if(!boxes.length) return;
+  Promise.resolve(loadIndex()).then(()=>{ boxes.forEach(b=>{ paintAnat(b, res).catch(()=>{}); }); });
+}
 function legend(){ return `<div class="rcv-legend"><span><i style="background:${COL.ready}"></i>Sẵn sàng</span><span><i style="background:${COL.mid}"></i>Đang hồi</span><span><i style="background:${COL.tired}"></i>Còn mỏi</span><span><i style="background:${COL.none}"></i>Chưa tập gần đây</span></div>`; }
 
 /* ---- nhóm cơ của buổi đang chọn ở màn Tập ---- */
@@ -115,7 +170,7 @@ function cardHTML(res){
     : rows.length ? "Đang hồi: " + rows.slice(0, 3).map(([g, o])=> `${g} ${Math.round((1 - o.f) * 100)}%`).join(" · ")
     : "Các nhóm cơ đã hồi phục — sẵn sàng tập nặng.";
   return `<div class="card rcv-card" id="rcv-card" role="button" tabindex="0" aria-label="Mở bản đồ phục hồi cơ">
-    ${mapSVG(res, true)}
+    ${mapBox(res, true)}
     <div class="rcv-txt"><b>Phục hồi cơ <small>ước tính</small></b><span>${esc(line)}</span>
       ${warn.length ? `<em>Buổi này có ${esc(warn.join(", "))} — còn mỏi: giảm tạ / số hiệp, hoặc đổi buổi.</em>` : ""}</div>
     <span class="material-symbols-rounded rcv-go">chevron_right</span></div>`;
@@ -125,12 +180,13 @@ function open(){
   const T = TP(); const res = compute(T && T.store ? T.store().log : [], Date.now());
   const list = MG.map(g=> [g, res.groups[g]]).sort((a, b)=> b[1].f - a[1].f);
   openSheet(`<div class="sheet-header"><h3>Phục hồi cơ</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
-    <div class="rcv-big">${mapSVG(res, false)}</div>${legend()}
+    <div class="rcv-big">${mapBox(res, false)}</div>${legend()}
     <div class="rcv-list">${list.map(([g, o])=>{ const st = statusOf(o.f), has = o.sets > 0 || o.f > 0;
       return `<div class="rcv-row"><i style="background:${has ? COL[st.k] : COL.none}"></i><span>${esc(g)}</span>
         <div class="rcv-bar"><b style="width:${has ? Math.round((1 - o.f) * 100) : 100}%;background:${has ? COL[st.k] : COL.none}"></b></div>
         <small>${has ? `${Math.round((1 - o.f) * 100)}%${o.f >= 0.25 && o.readyAt ? " · " + esc(whenTxt(o.readyAt, res.now)) : ""}` : "—"}</small></div>`; }).join("")}</div>
     <p class="small-note" style="margin-top:10px;">Ước tính từ số hiệp hiệu quả 5 ngày qua: cơ lớn (ngực, lưng, đùi, mông) cần khoảng 48–72 giờ, cơ nhỏ khoảng 24–48 giờ tuỳ khối lượng. Giấc ngủ, ăn uống và cảm giác đau mỏi thật của bạn quan trọng hơn con số này.</p>`);
+  upgrade(D.getElementById("sheet-content"), res);
 }
 function decorate(){
   const host = D && D.getElementById("today-card"); if(!host) return;
@@ -138,7 +194,7 @@ function decorate(){
   const T = TP(); if(!T || !T.store) return;
   const res = compute(T.store().log, Date.now());
   host.insertAdjacentHTML("afterend", cardHTML(res));
-  const c = D.getElementById("rcv-card"); if(c){ c.addEventListener("click", open); c.addEventListener("keydown", e=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } }); }
+  const c = D.getElementById("rcv-card"); upgrade(c, res); if(c){ c.addEventListener("click", open); c.addEventListener("keydown", e=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } }); }
 }
 function install(){
   if(typeof renderWorkoutScreen !== "function" || renderWorkoutScreen.__rcv) return false;
@@ -148,6 +204,6 @@ function install(){
   try{ const w = D.getElementById("screen-workout"); if(w && w.classList.contains("active")) decorate(); }catch(e){}
   return true;
 }
-G.FKRecovery = { compute, statusOf, mapSVG, cardHTML, open, decorate, install, BIG, HOURS, MG };
+G.FKRecovery = { compute, statusOf, mapSVG, cardHTML, open, decorate, install, BIG, HOURS, MG, _anat: { loadIndex, anatFor, paintAnat, sexOf, ABASE } };
 if(!install() && D) D.addEventListener("DOMContentLoaded", install, { once: true });
 })(typeof window !== "undefined" ? window : globalThis);

@@ -49,6 +49,13 @@ def process(path):
     # làm sạch nhãn: lọc mode loại hạt lẻ, giữ nền
     L = Image.fromarray(lab, "L").filter(ImageFilter.ModeFilter(7))
     lab = np.asarray(L).copy(); lab[bg] = 255
+    if view == "back":
+        # mông nhỡ (gluteus medius) đôi khi bị AI tô màu đùi sau: phần xanh dương nằm CAO hơn đáy mông → trả về Mông
+        cy = np.where(lab == 4)[0]
+        if len(cy) > 200:
+            yc = int(np.percentile(cy, 75))
+            blue = (lab == 5); blue[yc:, :] = False
+            lab[blue] = 4
     # bóng sáng: chuẩn hoá V theo từng nhãn để màu khoá sáng/tối khác nhau không làm lệch khối
     shade = np.zeros(v.shape, np.float32)
     for kk in range(0, 7):

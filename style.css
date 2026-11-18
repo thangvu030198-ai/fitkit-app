@@ -1854,3 +1854,9 @@ input.ibx-miss{ box-shadow:0 0 0 2px rgba(255,159,107,.85) !important; }
 .stx-end .material-symbols-rounded{ font-size:46px; color:#5EE6C7; }
 .stx-end b{ display:block; font-size:20px; margin:6px 0; }
 @media (prefers-reduced-motion: reduce){ .stx-ring .fg{ transition:none; } }
+.rcv-mapbox{ display:flex; gap:6px; justify-content:center; align-items:flex-end; }
+.rcv-mapbox.sm{ flex:0 0 96px; width:96px; }
+.rcv-mapbox.sm .rcv-map{ width:96px; }
+.rcv-mapbox.anat .rcv-cv{ display:block; height:auto; width:calc(50% - 3px); max-width:150px; filter:drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
+.rcv-mapbox.sm.anat .rcv-cv{ width:44px; }
+.rcv-big .rcv-mapbox.anat{ gap:14px; }
