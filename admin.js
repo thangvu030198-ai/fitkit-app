@@ -185,6 +185,21 @@ async function updateBadges(){
 /* ---------------------------------------------------------------------
    3. ĐĂNG NHẬP QUẢN TRỊ (thay "chạm 7 lần")
    --------------------------------------------------------------------- */
+/* 19/11/2026: cách xác thực lại theo MỌI cách đăng nhập đã liên kết (trước chỉ xem profile.provider → tài khoản Google/Apple bị hỏi mật khẩu
+   không tồn tại → "auth/invalid-credential"). Google/Apple trong app iOS/Android chạy bằng SDK gốc (cloud.reauth). */
+function authWays(){
+  let provs = []; try{ provs = (cloud.linked && cloud.linked.providers()) || []; }catch(e){}
+  const social = provs.filter(k=> k === "google" || k === "apple" || k === "facebook");
+  const pw = CA.mode !== "firebase" || provs.includes("password") || !social.length;
+  return { pw, social };
+}
+const SOCIAL_LABEL = { google:"Google", apple:"Apple", facebook:"Facebook" };
+function reauthHTML(){
+  const w = authWays();
+  return (w.pw ? `<div class="adm-f"><label for="adm-l-pw">Mật khẩu</label><input id="adm-l-pw" type="password" autocomplete="current-password" maxlength="128"></div>` : "")
+    + (w.social.length ? `${w.pw ? `<p class="adm-sub">Hoặc xác thực bằng tài khoản đã liên kết:</p>` : `<p class="adm-sub">Tài khoản này đăng nhập bằng ${w.social.map(k=> SOCIAL_LABEL[k]).join(" / ")} — xác thực lại bằng nút dưới đây.</p>`}`
+      + w.social.map(k=> `<button class="adm-btn ${w.pw ? "" : "pri "}block" data-adm="login-social" data-v="${k}">${ic("adm_unlock")}Xác thực bằng ${SOCIAL_LABEL[k]}</button>`).join("") : "");
+}
 async function renderLogin(){
   const root = ensureRoot();
   const u = cloud.user, c = R.current(), lockS = R.lockedFor();
@@ -200,10 +215,9 @@ async function renderLogin(){
   } else if(c){
     body = `<div class="adm-who"><span class="adm-av lg">${esc(initial(u.name))}</span><div><b>${esc(u.name)}</b><small>${esc(u.email || "")}</small>${roleBadge(c.role)}</div></div>
       <p class="adm-sub">Vì an toàn, nhập lại mật khẩu mỗi khi mở bảng quản trị. Phiên tự khoá sau ${R.config.idleMin} phút không thao tác.</p>
-      ${demoSocial ? `<p class="adm-note warn">Bản demo: tài khoản Google/Facebook giả lập không có mật khẩu nên không vào được bảng quản trị. Dùng tài khoản email + mật khẩu.</p>` :
-        CA.mode === "firebase" && social ? `<p class="adm-note">Tài khoản đăng nhập bằng Google/Apple/Facebook — bấm xác nhận để xác thực lại trong cửa sổ đăng nhập.</p>` :
-        `<div class="adm-f"><label for="adm-l-pw">Mật khẩu</label><input id="adm-l-pw" type="password" autocomplete="current-password" maxlength="128"></div>`}
-      <button class="adm-btn pri block" data-adm="login">${ic("adm_unlock")}Vào bảng quản trị</button>`;
+      ${demoSocial ? `<p class="adm-note warn">Bản demo: tài khoản Google/Facebook giả lập không có mật khẩu nên không vào được bảng quản trị. Dùng tài khoản email + mật khẩu.</p>` : reauthHTML()}
+      ${demoSocial || !authWays().pw ? "" : `<button class="adm-btn pri block" data-adm="login">${ic("adm_unlock")}Vào bảng quản trị</button>
+      <button class="adm-btn ghost block" data-adm="reset-pw">${ic("adm_lock")}Quên mật khẩu? Gửi email đặt lại</button>`}`;
   } else {
     const boot = hasOwner === false || (hasOwner === null && CA.mode === "firebase");
     body = `<div class="adm-who"><span class="adm-av lg">${esc(initial(u.name))}</span><div><b>${esc(u.name)}</b><small>${esc(u.email || "")}</small>${roleBadge(null)}</div></div>
@@ -226,13 +240,13 @@ async function renderLogin(){
   const f = q("#adm-l-email", root) || q("#adm-b-code", root) || q("#adm-l-pw", root); if(f) setTimeout(()=>{ try{ f.focus(); }catch(e){} }, 50);
   qa("input", root).forEach(i=> i.addEventListener("keydown", e=>{ if(e.key === "Enter"){ const b = q(".adm-login .adm-btn.pri", root); if(b) b.click(); } }));
 }
-async function doLogin(kind, btn){
+async function doLogin(kind, btn, via){
   const pw = (q("#adm-l-pw", A.root) || {}).value || "";
   busy(btn, true);
   try{
     if(kind === "full"){ const em = (q("#adm-l-email", A.root) || {}).value || ""; await cloud.signIn(em, pw); }
     if(kind === "bootstrap"){ await CA.bootstrapOwner((q("#adm-b-code", A.root) || {}).value || ""); }
-    await R.login(pw);
+    await R.login(pw, via);
     A.sec = "overview"; renderShell(); say("Đã vào bảng quản trị", "adm_unlock");
   }catch(e){
     busy(btn, false);
@@ -275,18 +289,20 @@ function ask(o){
   });
 }
 function askPassword(){
-  const social = !!(cloud.profile && cloud.profile.provider && cloud.profile.provider !== "password");
+  const w = authWays();
   return new Promise(res=>{
     A._mres = res;
-    const m = modal(`${mHead(ic("adm_lock") + "Xác nhận lại mật khẩu", "Thao tác nhạy cảm (phân quyền, chuyển nhượng, tài khoản nhận tiền)")}
-      ${social ? `<p class="adm-sub">Tài khoản đăng nhập bằng mạng xã hội — bấm Xác nhận để xác thực lại.</p>` : `<div class="adm-f"><label for="adm-su-pw">Mật khẩu</label><input id="adm-su-pw" type="password" autocomplete="current-password" maxlength="128"></div>`}
-      <div class="adm-mf"><button class="adm-btn ghost" data-adm="mclose">Huỷ</button><button class="adm-btn pri" id="adm-su-ok">Xác nhận</button></div>`);
+    const m = modal(`${mHead(ic("adm_lock") + "Xác nhận lại tài khoản", "Thao tác nhạy cảm (phân quyền, chuyển nhượng, tài khoản nhận tiền)")}
+      ${w.pw ? `<div class="adm-f"><label for="adm-su-pw">Mật khẩu</label><input id="adm-su-pw" type="password" autocomplete="current-password" maxlength="128"></div>` : ""}
+      ${w.social.map(k=> `<button class="adm-btn block" data-su-via="${k}">${ic("adm_unlock")}Xác thực bằng ${SOCIAL_LABEL[k]}</button>`).join("")}
+      <div class="adm-mf"><button class="adm-btn ghost" data-adm="mclose">Huỷ</button>${w.pw ? `<button class="adm-btn pri" id="adm-su-ok">Xác nhận</button>` : ""}</div>`);
     if(!m) return res(false);
-    const go = async ()=>{ const b = q("#adm-su-ok", m); busy(b, true);
-      try{ await R.stepUp((q("#adm-su-pw", m) || {}).value || ""); A._mres = null; closeModal(); res(true); }
+    const go = async (b, via)=>{ busy(b, true);
+      try{ await R.stepUp((q("#adm-su-pw", m) || {}).value || "", via); A._mres = null; closeModal(); res(true); }
       catch(e){ busy(b, false); say(e.message, "adm_x", "err"); } };
-    q("#adm-su-ok", m).addEventListener("click", go);
-    const pw = q("#adm-su-pw", m); if(pw) pw.addEventListener("keydown", e=>{ if(e.key === "Enter") go(); });
+    const ok = q("#adm-su-ok", m); if(ok) ok.addEventListener("click", ()=> go(ok));
+    qa("[data-su-via]", m).forEach(b=> b.addEventListener("click", ()=> go(b, b.dataset.suVia)));
+    const pw = q("#adm-su-pw", m); if(pw) pw.addEventListener("keydown", e=>{ if(e.key === "Enter" && ok) go(ok); });
   });
 }
 /** Chạy thao tác ghi: tự hỏi xác thực lại khi cần, báo lỗi tiếng Việt, vẽ lại mục */
@@ -946,7 +962,9 @@ const ACT = {
   close: ()=> close(), side: ()=> { const s = q(".adm-shell", A.root); if(s) s.classList.toggle("side-open"); },
   nav: id=>{ A.sec = id; const s = q(".adm-shell", A.root); if(s) s.classList.remove("side-open"); renderShell(); },
   logout: ()=>{ R.logout(); renderLogin(); }, relogin: ()=> renderLogin(),
-  login: (id, b)=> doLogin("session", b), "login-full": (id, b)=> doLogin("full", b), bootstrap: (id, b)=> doLogin("bootstrap", b),
+  login: (id, b)=> doLogin("session", b), "login-social": (id, b)=> doLogin("session", b, b.dataset.v),
+  "reset-pw": async (id, b)=>{ const em = cloud.user && cloud.user.email; if(!em){ say("Tài khoản chưa có email", "adm_x", "err"); return; }
+    busy(b, true); try{ await cloud.resetPassword(em); say("Đã gửi email đặt lại mật khẩu tới " + em + " (xem cả mục Spam)", "adm_unlock"); }catch(e){ say(e.message, "adm_x", "err"); } busy(b, false); }, "login-full": (id, b)=> doLogin("full", b), bootstrap: (id, b)=> doLogin("bootstrap", b),
   copy: (id, b)=>{ const v = b.dataset.v || ""; try{ navigator.clipboard.writeText(v).then(()=> say("Đã chép", "adm_copy"), ()=> say(v, "adm_copy")); }catch(e){ say(v, "adm_copy"); } },
   mclose: ()=> closeModal(),
   uf: id=>{ A.uf = id; PG.u = 1; qa('[data-adm="uf"]', A.root).forEach(b=>{ b.classList.toggle("on", b.dataset.id === id); b.setAttribute("aria-selected", String(b.dataset.id === id)); }); drawUsers(); },

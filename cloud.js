@@ -152,6 +152,9 @@ const cloud = (() => {
     "permission-denied": "Bạn không có quyền thực hiện thao tác này.",
     "join/code-taken": "Mã này đã có học viên dùng. Nhờ PT tạo mã mới cho bạn nhé.",
     "join/bad-code": "Mã gồm 6–10 ký tự chữ và số, ví dụ: K7M2QX.",
+    "auth/no-password": "Tài khoản này chưa có mật khẩu (đăng nhập bằng Google/Apple). Bấm nút xác thực bằng Google/Apple bên dưới, hoặc đặt mật khẩu trong Hồ sơ → Tài khoản liên kết.",
+    "auth/missing-password": "Nhập mật khẩu tài khoản.",
+    "auth/reauth-wrong": "Mật khẩu không đúng. Quên mật khẩu? Bấm \"Gửi email đặt lại mật khẩu\" bên dưới.",
     "owner/must-transfer": "Bạn đang là Chủ sở hữu ứng dụng. Hãy chuyển nhượng quyền Chủ sở hữu (Quản trị → Đội ngũ) trước khi xoá tài khoản.",
     "functions/resource-exhausted": "Thao tác quá nhiều lần, vui lòng thử lại sau.",
     "unavailable": "Máy chủ tạm thời không truy cập được, kiểm tra mạng.",
@@ -1010,6 +1013,24 @@ const cloud = (() => {
     cancel(){ phonePending = null; },
   };
 
+  /** 19/11/2026 — Xác thực lại tài khoản ĐANG đăng nhập (bảng quản trị, thao tác nhạy cảm).
+      kind: "password" (cần pw) | "google" | "apple" | "facebook"; bỏ trống → có pw + tài khoản có mật khẩu thì dùng mật khẩu, không thì mạng xã hội đầu tiên.
+      Trước đây rbac.js chỉ nhìn providerData[0] và gọi popup (không chạy trong app iOS/Android) → tài khoản Google/Apple không vào được bảng quản trị. */
+  api.reauth = wrap(async (pw, kind)=>{
+    if(!user) throw dErr("auth/requires-recent-login");
+    if(mode !== "firebase"){ if(!pw) throw dErr("auth/missing-password"); try{ await engine.signIn(user.email, String(pw)); }catch(e){ throw dErr("auth/reauth-wrong"); } return "password"; }
+    const u = fb.auth.currentUser; if(!u) throw dErr("auth/requires-recent-login");
+    const pids = (u.providerData || []).map(x=> x.providerId);
+    const social = pids.find(x=> /^(google|apple|facebook)\.com$/.test(x));
+    let k = kind || ((pids.includes("password") && pw) ? "password" : social ? social.split(".")[0] : "password");
+    if(k === "password"){
+      if(!pids.includes("password")) throw dErr("auth/no-password");
+      if(!pw) throw dErr("auth/missing-password");
+      try{ await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, String(pw))); }
+      catch(e){ if(e && /invalid-credential|wrong-password|invalid-login-credentials/.test(String(e.code))) throw dErr("auth/reauth-wrong"); throw e; }
+    } else await socialCredentialSignIn(k, u);
+    return k;
+  });
   /** Đặt mật khẩu mới cho tài khoản ĐANG đăng nhập (sau OTP số điện thoại, hoặc thêm mật khẩu cho tài khoản Google/Apple/Facebook) */
   api.setPassword = wrap(needOnline(async newPw=>{
     if(!user) throw new Error("Chưa đăng nhập.");

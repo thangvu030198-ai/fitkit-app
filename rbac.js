@@ -329,16 +329,14 @@ function lockedFor(){ const l = lockInfo(); return l.until > now() ? Math.ceil((
 function err(msg, code){ const e = new Error(msg); e.code = code || "rbac/error"; return e; }
 
 /** Xác thực lại mật khẩu của tài khoản đang đăng nhập (demo: đăng nhập lại; firebase: reauthenticate) */
-async function reauth(pw){
+async function reauth(pw, kind){
   const u = cloudUser(); if(!u) throw err("Bạn cần đăng nhập tài khoản trước.", "rbac/auth");
   if(mode() === "firebase"){
-    const fu = firebase.auth().currentUser; if(!fu) throw err("Bạn cần đăng nhập tài khoản trước.", "rbac/auth");
-    const pid = (fu.providerData[0] && fu.providerData[0].providerId) || "password";
-    if(pid === "password") await fu.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(fu.email, String(pw || "")));
-    else {
-      const prov = pid.startsWith("google") ? new firebase.auth.GoogleAuthProvider() : pid.startsWith("apple") ? new firebase.auth.OAuthProvider("apple.com") : new firebase.auth.FacebookAuthProvider();
-      await fu.reauthenticateWithPopup(prov);
-    }
+    if(!firebase.auth().currentUser) throw err("Bạn cần đăng nhập tài khoản trước.", "rbac/auth");
+    /* 19/11/2026: dùng cloud.reauth — chọn đúng cách theo MỌI cách đăng nhập đã liên kết (không chỉ providerData[0]),
+       Google/Apple chạy bằng SDK gốc trong app iOS/Android (popup không chạy trong app), lỗi trả về tiếng Việt */
+    if(cloud.reauth) await cloud.reauth(pw, kind);
+    else await firebase.auth().currentUser.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(firebase.auth().currentUser.email, String(pw || "")));
     await loadClaims(true);
     return true;
   }
@@ -349,12 +347,13 @@ async function reauth(pw){
   try{ await cloud.signIn(u.email, String(pw)); }catch(e){ throw err("Mật khẩu không đúng.", "rbac/password"); }
   return true;
 }
-async function login(pw){
+async function login(pw, kind){
   const wait = lockedFor();
   if(wait) throw err(`Sai quá nhiều lần. Thử lại sau ${Math.ceil(wait/60)} phút.`, "rbac/locked");
   const u = cloudUser(); if(!u) throw err("Bạn cần đăng nhập tài khoản trước.", "rbac/auth");
-  try{ await reauth(pw); }
+  try{ await reauth(pw, kind); }
   catch(e){
+    if(e && /popup-closed|cancel/i.test(String(e.code || e.message))) throw e;   // người dùng tự đóng cửa sổ Google/Apple — không tính sai
     const l = lockInfo(); l.fails++;
     if(l.fails >= CFG.maxFails){ l.until = now() + CFG.lockMin * 60000; l.fails = 0; }
     setLock(l);
@@ -371,9 +370,9 @@ async function login(pw){
   emit("session");
   return c;
 }
-async function stepUp(pw){
+async function stepUp(pw, kind){
   if(!active()) throw err("Phiên quản trị đã hết hạn — đăng nhập lại.", "rbac/session");
-  await reauth(pw);
+  await reauth(pw, kind);
   const s = readSession(); s.step = now(); s.last = now(); writeSession(s);
   return true;
 }
