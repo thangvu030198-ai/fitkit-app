@@ -1308,6 +1308,23 @@ i.cnt{ background:var(--coral); color:var(--on-coral, #061A24); }
 .ld-media .ld-vid, .ld-media .ld-art{ width:100%; max-height:none; aspect-ratio:16/9; object-fit:contain; background:#061A24; }
 .ld-media .ld-art{ aspect-ratio:auto; max-height:34vh; }
 .ld-media .ld-vid.tall{ aspect-ratio:9/16; max-height:46vh; }
+/* chi tiết bài 3 tab (18/11/2026) */
+.ld-tabs{ display:flex; gap:4px; padding:4px; margin:12px 0 10px; border-radius:14px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); }
+.ld-tab{ flex:1; min-height:40px; border:0; border-radius:10px; background:transparent; color:inherit; font:inherit; font-weight:700; font-size:14px; opacity:.65; cursor:pointer; }
+.ld-tab.active{ background:rgba(94,230,199,.16); color:#5EE6C7; opacity:1; }
+.ld-tab em{ font-style:normal; font-size:11px; padding:1px 6px; border-radius:8px; background:rgba(255,255,255,.12); margin-left:4px; }
+.ld-mg{ display:flex; flex-wrap:wrap; gap:6px; margin:2px 0; }
+.ld-mg-chip{ display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:12px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); font-size:13px; font-weight:600; }
+.ld-mg-chip i{ width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.4); }
+.ld-mg-chip.main i{ background:#5EE6C7; }
+.ld-mg-chip small{ font-size:10.5px; opacity:.6; font-weight:600; }
+.ld-guide{ display:flex; flex-direction:column; gap:10px; margin-top:12px; }
+.ld-guide > div{ padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); }
+.ld-guide h5{ margin:0 0 4px; font-size:12px; letter-spacing:.05em; text-transform:uppercase; color:#5EE6C7; }
+.ld-guide p{ margin:0; font-size:14px; line-height:1.55; opacity:.88; }
+.ld-trend{ margin:10px 0 0; font-size:13px; font-weight:700; } .ld-trend.up{ color:#5EE6C7; } .ld-trend.down{ color:#FFB08A; }
+.ld-hist{ display:grid; grid-template-columns:52px 1fr auto; gap:8px; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.07); font-size:13px; }
+.ld-hist b{ font-weight:600; } .ld-hist small{ opacity:.65; font-size:12px; white-space:nowrap; }
 .exdb-anim-small{ max-height:20vh !important; margin-top:6px; }
 .vp-saved.guide{ background:var(--mint); color:var(--navy); }
 .vp-saved.ref{ background:rgba(6,26,36,.8); color:rgba(255,255,255,.85); }

@@ -307,6 +307,78 @@ function libFilterOk(x){
 }
 function libFind(key){ return libItems(null).find(x=>x.key===key); }
 
+
+/* ---- Chi tiết bài: 3 tab Hướng dẫn · Phân tích · Lịch sử (18/11/2026) ----
+   Hướng dẫn: nhóm cơ chính/phụ, hiệp–lần–nghỉ, kỹ thuật chia "Chuẩn bị / Khi thực hiện / Hít thở".
+   Phân tích + Lịch sử: đọc state.setHist của chính người dùng (1RM ước tính Epley, tạ nặng nhất, biểu đồ, các buổi). */
+function libHistKey(x){ return x.src === "fitkit" ? x.id : "c:" + x.name; }
+function libHist(x){
+  const h = (state.setHist || {})[libHistKey(x)];
+  return (h && Array.isArray(h.list) ? h.list : []).filter(r=> r && typeof r === "object")
+    .map(r=> ({ date: String(r.date || ""), sets: Array.isArray(r.sets) ? r.sets : [], vol: Number(r.vol) || 0, e1rm: Number(r.e1rm) || 0, top: Number(r.top) || 0 }));
+}
+function libMuscleSplit(x){
+  let w = {};
+  try{ if(window.FKTP && FKTP.muscleWeights) w = FKTP.muscleWeights(x.src === "fitkit" ? x.id : "", x.muscleVi) || {}; }catch(e){ w = {}; }
+  const main = [], side = [];
+  Object.keys(w).forEach(g=> (w[g] >= 1 ? main : side).push(g));
+  if(!main.length && !side.length && x.muscleVi) main.push(x.muscleVi);
+  return { main, side };
+}
+/** câu hướng dẫn → 3 phần; câu đầu là tư thế chuẩn bị, phần còn lại là khi thực hiện */
+function libGuideParts(x){
+  const timed = typeof isTimedReps === "function" ? isTimedReps(x.reps) : /giây|phút/.test(String(x.reps||""));
+  const sentences = String(x.guide || "").split(/(?<=[.!?])\s+/).map(t=> t.trim()).filter(Boolean);
+  const prep = sentences.length > 1 ? sentences[0] : "";
+  const doIt = sentences.length > 1 ? sentences.slice(1).join(" ") : (sentences[0] || "");
+  const breath = timed ? "Thở đều, sâu bằng mũi — không nín thở trong lúc giữ tư thế."
+    : "Thở ra ở pha gắng sức (lúc đẩy, kéo hoặc nâng tạ), hít vào ở pha hạ về có kiểm soát. Không nín thở kéo dài.";
+  return { prep, doIt, breath };
+}
+function libDetailTabsHTML(x, key){
+  const ms = libMuscleSplit(x), H = libHist(x), exdb = x.src === "exdb";
+  const best = H.reduce((a,r)=> r.e1rm > a ? r.e1rm : a, 0), heaviest = H.reduce((a,r)=> Math.max(a, r.top), 0);
+  const last = H[H.length-1], first = H[0];
+  const trend = H.length >= 2 && first.e1rm > 0 ? Math.round((last.e1rm - first.e1rm) / first.e1rm * 100) : null;
+  const G = libGuideParts(x);
+  const kg = (n)=> typeof fmtKg === "function" ? fmtKg(n) : String(n);
+  const guide = `
+    <div class="ld-mg">${ms.main.map(g=> `<span class="ld-mg-chip main"><i></i>${escapeHtml(g)}<small>Chính</small></span>`).join("")}${ms.side.map(g=> `<span class="ld-mg-chip"><i></i>${escapeHtml(g)}<small>Phụ</small></span>`).join("")}</div>
+    <div class="chip-row" style="margin:10px 0;"><span class="pill">${escapeHtml(EXDB_EQUIP_VI[x.equip]||x.sub.split(" · ").pop())}</span><span class="pill">${escapeHtml(EXDB_LEVEL_VI[x.level]||"Mới tập")}</span></div>
+    <div class="stat-grid"><div class="stat-box"><div class="num">${escapeHtml(String(x.sets))}</div><div class="cap">Hiệp</div></div><div class="stat-box"><div class="num">${escapeHtml(String(x.reps))}</div><div class="cap">Lần</div></div><div class="stat-box"><div class="num">${escapeHtml(String(x.restSec))}s</div><div class="cap">Nghỉ</div></div></div>
+    ${exdb ? `<div class="card-title" style="margin-top:14px;font-size:13px;">Hướng dẫn (tiếng Anh)</div><ol class="ld-steps">${(x.ex.instructions||[]).map(t=>`<li>${escapeHtml(t)}</li>`).join("")}</ol>`
+      : `<div class="ld-guide">
+        ${G.prep ? `<div><h5>Tư thế chuẩn bị</h5><p>${escapeHtml(G.prep)}</p></div>` : ""}
+        <div><h5>Khi thực hiện</h5><p>${escapeHtml(G.doIt || "Chưa có hướng dẫn chi tiết.")}</p></div>
+        <div><h5>Hít thở</h5><p>${escapeHtml(G.breath)}</p></div>
+      </div>`}`;
+  const analysis = H.length ? `
+    <div class="stat-grid"><div class="stat-box"><div class="num">${best ? Math.round(best) : "–"}</div><div class="cap">1RM ước tính (kg)</div></div><div class="stat-box"><div class="num">${heaviest ? escapeHtml(kg(heaviest)) : "–"}</div><div class="cap">Tạ nặng nhất</div></div><div class="stat-box"><div class="num">${H.length}</div><div class="cap">Buổi đã tập</div></div></div>
+    ${trend !== null ? `<p class="ld-trend ${trend >= 0 ? "up" : "down"}">${trend >= 0 ? "▲ +" : "▼ "}${trend}% sức mạnh ước tính so với buổi đầu (${escapeHtml(first.date.slice(8,10))}/${escapeHtml(first.date.slice(5,7))})</p>` : ""}
+    <div class="card-title" style="font-size:13px;margin-top:10px;">1RM ước tính qua các buổi</div>
+    ${typeof sparkSVG === "function" ? sparkSVG(H.map(r=> r.e1rm)) : ""}
+    ${last ? `<p class="small-note" style="margin-top:6px;">Buổi gần nhất: ${escapeHtml(kg(last.vol))} kg khối lượng · ${last.sets.length} hiệp.</p>` : ""}`
+    : `<p class="empty-hint">Chưa có dữ liệu — tập bài này và ghi kg × lần để app tính 1RM ước tính, tạ nặng nhất và xu hướng tiến bộ.</p>`;
+  const history = H.length ? H.slice(-15).reverse().map(r=> `
+    <div class="ld-hist"><span>${escapeHtml(r.date.slice(8,10))}/${escapeHtml(r.date.slice(5,7))}</span><b>${r.sets.map(t=> `${escapeHtml(kg(t && t.kg))}×${Number(t && t.reps)||0}`).join(" · ") || "—"}</b><small>${r.e1rm ? "1RM ~" + Math.round(r.e1rm) : ""}</small></div>`).join("")
+    : `<p class="empty-hint">Chưa có buổi nào cho bài này.</p>`;
+  return `
+    <div class="ld-tabs" role="tablist">
+      <button class="ld-tab active" data-ld-tab="guide" role="tab" aria-selected="true">Hướng dẫn</button>
+      <button class="ld-tab" data-ld-tab="ana" role="tab" aria-selected="false">Phân tích</button>
+      <button class="ld-tab" data-ld-tab="hist" role="tab" aria-selected="false">Lịch sử${H.length ? ` <em>${H.length}</em>` : ""}</button>
+    </div>
+    <div class="ld-pane" data-ld-pane="guide">${guide}</div>
+    <div class="ld-pane" data-ld-pane="ana" hidden>${analysis}</div>
+    <div class="ld-pane" data-ld-pane="hist" hidden>${history}</div>`;
+}
+function libBindDetailTabs(){
+  $$("[data-ld-tab]").forEach(b=> b.addEventListener("click", ()=>{
+    const t = b.dataset.ldTab;
+    $$("[data-ld-tab]").forEach(x=>{ const on = x === b; x.classList.toggle("active", on); x.setAttribute("aria-selected", on ? "true" : "false"); });
+    $$("[data-ld-pane]").forEach(p=> p.hidden = p.dataset.ldPane !== t);
+  }));
+}
 /* ---- Chi tiết bài ---- */
 /** Khối kỹ thuật dưới video hướng dẫn:
  *  - bài thư viện mở (exdb): chuỗi ảnh tách khung → chạy như ảnh động
@@ -333,12 +405,7 @@ function openLibDetail(key){
     <div class="sheet-header"><h3 style="font-size:18px;">${escapeHtml(x.name)}</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
     ${vb.html}
     ${libTechMediaHTML(x, imgs)}
-    <div class="chip-row" style="margin:10px 0;">
-      <span class="pill">${escapeHtml(x.muscleVi)}</span><span class="pill">${escapeHtml(EXDB_EQUIP_VI[x.equip]||x.sub.split(" · ").pop())}</span><span class="pill">${escapeHtml(EXDB_LEVEL_VI[x.level]||"Mới tập")}</span>
-    </div>
-    <div class="stat-grid"><div class="stat-box"><div class="num">${escapeHtml(String(x.sets))}</div><div class="cap">Hiệp</div></div><div class="stat-box"><div class="num">${escapeHtml(String(x.reps))}</div><div class="cap">Lần</div></div><div class="stat-box"><div class="num">${escapeHtml(String(x.restSec))}s</div><div class="cap">Nghỉ</div></div></div>
-    <div class="card-title" style="margin-top:14px;font-size:13px;">${x.src==="exdb" ? "Hướng dẫn (tiếng Anh)" : "Hướng dẫn kỹ thuật"}</div>
-    ${x.src==="exdb" ? `<ol class="ld-steps">${(x.ex.instructions||[]).map(s=>`<li>${escapeHtml(s)}</li>`).join("")}</ol>` : `<p class="small-note" style="line-height:1.6;">${escapeHtml(x.guide)}</p>`}
+    ${libDetailTabsHTML(x, key)}
     <button class="btn btn-primary btn-block" id="ld-add" style="margin-top:14px;"><span class="material-symbols-rounded">add</span>Thêm vào giáo án</button>
   `);
   if(imgs.length > 1){
@@ -346,6 +413,7 @@ function openLibDetail(key){
     onSheetCloseHook = ()=> clearInterval(timer);
   }
   $("#ld-add").addEventListener("click", ()=> openAddToPlan(key));
+  libBindDetailTabs();
   const vMeta = { name:x.name, guide:x.guide, equipment: x.src==="fitkit" ? ((EXERCISES[x.id]||{}).equipment || "") : (x.ex && x.ex.equipment || x.equip || "") };   // có dụng cụ → lọc đúng video (BUG-07)
   mountVideoBlock(vb.id, videoQueryFor({ name:x.name, muscle:x.muscleVi }), { name:x.name, meta:vMeta });
 }
