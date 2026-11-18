@@ -1,7 +1,7 @@
 /* TapEasy — themes-modules.css (SINH TỰ ĐỘNG, đừng sửa tay)
    Lớp màu theo theme cho CSS của các module. Nạp SAU CÙNG (sau mọi file .css module).
    Tạo lại: python3 scripts/gen_themes_layer.py --modules [a.css,b.css]
-   Nguồn: achievements.css, admin.css, community.css, events.css, findpt.css, health-safety.css, kb.css, nutrition-pro.css, press-feel.css, program-builder.css, pt-connect.css, pt-pro.css, shop.css, training-pro.css — tổng 1636 luật. */
+   Nguồn: achievements.css, admin.css, community.css, events.css, findpt.css, health-safety.css, kb.css, nutrition-pro.css, press-feel.css, program-builder.css, pt-connect.css, pt-pro.css, shop.css, training-pro.css — tổng 1650 luật. */
 /* ===== achievements.css: 109 luật ===== */
 :where(html.fk-themed) .ach-bar{ background:rgba(var(--fk-ov-rgb),calc(.14 * var(--fk-ov-k))); } /*L7*/
 :where(html.fk-themed) .ach-bar > i{ background:linear-gradient(90deg, var(--mint-2), var(--mint) 60%, var(--coral)); } /*L8*/
@@ -1559,7 +1559,7 @@ html:where(.fk-themed).lowfx .sc-bub{ background:var(--glass-solid, rgba(var(--f
 :where(html.fk-themed) .sx-rail span{ color:var(--te-muted, rgba(var(--fk-ink-rgb),calc(.8 + (1 - .8) * var(--fk-text-boost)))); } /*L501*/
 :where(html.fk-themed) .sx-links button{ border:1px solid var(--te-line, rgba(var(--fk-ov-rgb),calc(.2 * var(--fk-line-k)))); background:rgba(var(--te-ov, 255,255,255), calc(.06 * var(--te-k, 1))); color:var(--te-ink, var(--fk-ink)); } /*L504*/
 :where(html.fk-themed) .sx-soon-card{ border:1px dashed var(--border, rgba(127,127,127,.35)); } /*L559*/
-/* ===== training-pro.css: 97 luật ===== */
+/* ===== training-pro.css: 111 luật ===== */
 :where(html.fk-themed) .tp-cycle:focus-visible{ outline:2px solid var(--mint); outline-offset:2px; } /*L8*/
 :where(html.fk-themed) .tp-cyc-top small{ color:var(--text-muted); } /*L10*/
 :where(html.fk-themed) .tp-cyc-top b{ color:var(--fk-ink); } /*L11*/
@@ -1632,28 +1632,42 @@ html:where(.fk-themed).lowfx .sc-bub{ background:var(--glass-solid, rgba(var(--f
 :where(html.fk-themed) .tp-fin .pr-list svg, :where(html.fk-themed) .tp-fin .pr-list .material-symbols-rounded{ color:var(--coral); } /*L135*/
 :where(html.fk-themed) .tp-fin-note label{ color:var(--text-muted); } /*L137*/
 :where(html.fk-themed) .tp-share-wrap{ border:1px solid rgba(var(--fk-ov-rgb),calc(.14 * var(--fk-line-k))); background:var(--navy); box-shadow:0 12px 30px rgba(0,0,0,.4); } /*L139*/
-:where(html.fk-themed) .tp-log-item{ background:rgba(var(--fk-ov-rgb),calc(.06 * var(--fk-ov-k))); border:1px solid rgba(var(--fk-ov-rgb),calc(.12 * var(--fk-line-k))); } /*L146*/
-:where(html.fk-themed) .tp-log-item small{ color:var(--text-muted); } /*L149*/
-:where(html.fk-themed) .tp-log-note{ color:#E6F4F1; } /*L150*/
-:where(html.fk-themed) .tp-log-note.empty{ color:var(--text-dim,#6f6b6b); } /*L151*/
-:where(html.fk-themed) .tp-vol-nav small{ color:var(--text-muted); } /*L161*/
-:where(html.fk-themed) .tp-vol-svg .band{ fill:rgba(var(--mint-rgb),.10); stroke:rgba(var(--mint-rgb),.25); } /*L167*/
-:where(html.fk-themed) .tp-vol-svg .grid{ stroke:rgba(var(--fk-ov-rgb),calc(.12 * var(--fk-ov-k))); } /*L168*/
-:where(html.fk-themed) .tp-vol-svg .ax{ fill:var(--text-muted); } /*L169*/
-:where(html.fk-themed) .tp-vol-svg .lab{ fill:#fff; } /*L170*/
-:where(html.fk-themed) .tp-vol-svg .track{ fill:rgba(var(--fk-ov-rgb),calc(.06 * var(--fk-ov-k))); } /*L171*/
-:where(html.fk-themed) .tp-vol-svg .bar.ok{ fill:var(--mint); } /*L172*/
-:where(html.fk-themed) .tp-vol-svg .bar.low{ fill:var(--coral-2); } /*L173*/
-:where(html.fk-themed) .tp-vol-svg .bar.low2{ fill:rgba(var(--coral-rgb),.75); } /*L174*/
-:where(html.fk-themed) .tp-vol-svg .bar.high{ fill:#F5C542; } /*L175*/
-:where(html.fk-themed) .tp-vol-svg .plan{ stroke:#fff; } /*L176*/
-:where(html.fk-themed) .tp-vol-svg .val{ fill:#fff; } /*L177*/
-:where(html.fk-themed) .tp-vol-svg .val.ok{ fill:var(--mint-2); } /*L178*/
-:where(html.fk-themed) .tp-vol-svg .val.low, :where(html.fk-themed) .tp-vol-svg .val.low2{ fill:var(--coral-2); } /*L179*/
-:where(html.fk-themed) .tp-vol-svg .val.high{ fill:#F5C542; } /*L180*/
-:where(html.fk-themed) .tp-legend{ color:var(--text-muted); } /*L181*/
-:where(html.fk-themed) .tp-legend i.ok{ background:var(--mint); } /*L184*/
-:where(html.fk-themed) .tp-legend i.low{ background:var(--coral-2); } /*L184*/
-:where(html.fk-themed) .tp-legend i.high{ background:#F5C542; } /*L184*/
-:where(html.fk-themed) .tp-legend i.plan{ background:#fff; } /*L185*/
-:where(html.fk-themed) .tp-vol-tip b{ color:var(--fk-ink); } /*L187*/
+:where(html.fk-themed) .tp-share-modes{ background:rgba(var(--fk-ov-rgb),calc(.06 * var(--fk-ov-k))); border:1px solid rgba(var(--fk-ov-rgb),calc(.1 * var(--fk-line-k))); } /*L143*/
+:where(html.fk-themed) .tp-share-mode{ border:0; background:transparent; color:inherit; } /*L144*/
+:where(html.fk-themed) .tp-share-mode.active{ background:rgba(var(--mint-rgb),.16); color:var(--mint); } /*L145*/
+:where(html.fk-themed) .tp-sc-chip{ border:1px solid rgba(var(--fk-ov-rgb),calc(.16 * var(--fk-line-k))); background:rgba(var(--fk-ov-rgb),calc(.06 * var(--fk-ov-k))); color:inherit; } /*L151*/
+:where(html.fk-themed) .tp-sc-chip.active{ background:rgba(var(--mint-rgb),.16); border-color:rgba(var(--mint-rgb),.55); color:var(--mint); } /*L152*/
+:where(html.fk-themed) .tp-log-item{ background:rgba(var(--fk-ov-rgb),calc(.06 * var(--fk-ov-k))); border:1px solid rgba(var(--fk-ov-rgb),calc(.12 * var(--fk-line-k))); } /*L159*/
+:where(html.fk-themed) .tp-log-item small{ color:var(--text-muted); } /*L162*/
+:where(html.fk-themed) .tp-log-note{ color:#E6F4F1; } /*L163*/
+:where(html.fk-themed) .tp-log-note.empty{ color:var(--text-dim,#6f6b6b); } /*L164*/
+:where(html.fk-themed) .tp-vol-nav small{ color:var(--text-muted); } /*L174*/
+:where(html.fk-themed) .tp-vol-svg .band{ fill:rgba(var(--mint-rgb),.10); stroke:rgba(var(--mint-rgb),.25); } /*L180*/
+:where(html.fk-themed) .tp-vol-svg .grid{ stroke:rgba(var(--fk-ov-rgb),calc(.12 * var(--fk-ov-k))); } /*L181*/
+:where(html.fk-themed) .tp-vol-svg .ax{ fill:var(--text-muted); } /*L182*/
+:where(html.fk-themed) .tp-vol-svg .lab{ fill:#fff; } /*L183*/
+:where(html.fk-themed) .tp-vol-svg .track{ fill:rgba(var(--fk-ov-rgb),calc(.06 * var(--fk-ov-k))); } /*L184*/
+:where(html.fk-themed) .tp-vol-svg .bar.ok{ fill:var(--mint); } /*L185*/
+:where(html.fk-themed) .tp-vol-svg .bar.low{ fill:var(--coral-2); } /*L186*/
+:where(html.fk-themed) .tp-vol-svg .bar.low2{ fill:rgba(var(--coral-rgb),.75); } /*L187*/
+:where(html.fk-themed) .tp-vol-svg .bar.high{ fill:#F5C542; } /*L188*/
+:where(html.fk-themed) .tp-vol-svg .plan{ stroke:#fff; } /*L189*/
+:where(html.fk-themed) .tp-vol-svg .val{ fill:#fff; } /*L190*/
+:where(html.fk-themed) .tp-vol-svg .val.ok{ fill:var(--mint-2); } /*L191*/
+:where(html.fk-themed) .tp-vol-svg .val.low, :where(html.fk-themed) .tp-vol-svg .val.low2{ fill:var(--coral-2); } /*L192*/
+:where(html.fk-themed) .tp-vol-svg .val.high{ fill:#F5C542; } /*L193*/
+:where(html.fk-themed) .tp-legend{ color:var(--text-muted); } /*L194*/
+:where(html.fk-themed) .tp-legend i.ok{ background:var(--mint); } /*L197*/
+:where(html.fk-themed) .tp-legend i.low{ background:var(--coral-2); } /*L197*/
+:where(html.fk-themed) .tp-legend i.high{ background:#F5C542; } /*L197*/
+:where(html.fk-themed) .tp-legend i.plan{ background:#fff; } /*L198*/
+:where(html.fk-themed) .tp-vol-tip b{ color:var(--fk-ink); } /*L200*/
+:where(html.fk-themed) .tp-fin-chips span{ background:rgba(var(--fk-ov-rgb),calc(.07 * var(--fk-ov-k))); border:1px solid rgba(var(--fk-ov-rgb),calc(.12 * var(--fk-line-k))); } /*L219*/
+:where(html.fk-themed) .tp-fin-cmp.up{ color:var(--mint); } /*L221*/
+:where(html.fk-themed) .tp-fin-cmp.down{ color:var(--coral-2); } /*L221*/
+:where(html.fk-themed) .tp-fin-mg i{ background:rgba(var(--fk-ov-rgb),calc(.08 * var(--fk-ov-k))); } /*L226*/
+:where(html.fk-themed) .tp-fin-mg b{ background:linear-gradient(90deg,#2BB8A4,var(--mint)); } /*L227*/
+:where(html.fk-themed) .tp-fin-ex{ border-bottom:1px solid rgba(var(--fk-ov-rgb),calc(.07 * var(--fk-line-k))); } /*L229*/
+:where(html.fk-themed) .tp-fin-ex:last-child{ border-bottom:0; } /*L230*/
+:where(html.fk-themed) .tp-fin-vol{ color:var(--mint); } /*L232*/
+:where(html.fk-themed) .tp-pr-tag{ background:var(--coral); color:var(--on-mint); } /*L233*/

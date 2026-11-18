@@ -168,9 +168,10 @@ module.exports = {
     });
 
     /* ---------------- QU-09: service worker ---------------- */
-    t.test("QU-09: sw.js — HTML mạng trước có hạn giờ 3 s, JS/CSS/ảnh stale-while-revalidate, font cache-first, cài từng file", ()=>{
+    t.test("QU-09: sw.js — HTML mạng trước có hạn giờ 1,5 s, JS/CSS/ảnh stale-while-revalidate, font cache-first, cài từng file", ()=>{
       new Function(sw);
-      assert.match(sw, /const HTML_TIMEOUT_MS = 3000;/);
+      assert.match(sw, /const HTML_TIMEOUT_MS = 1500;/);   // 19/11/2026: 3 s → 1,5 s (tối ưu tốc độ mở app)
+      assert.match(sw, /if\(pre\) return caches\.open\(name\)/, "file đã cache theo phiên bản: trả thẳng, không tải lại nền");
       assert.match(sw, /function staleWhileRevalidate\(e(?:, name)?\)/);
       assert.match(sw, /return e\.respondWith\(networkFirstHTML\(e\)\)/);
       assert.match(sw, /return e\.respondWith\(staleWhileRevalidate\(e(?:, CACHE)?\)\)/);

@@ -697,7 +697,10 @@ function goto(screen){
   if(screen==="sleep") renderSleepScreen();
   if(screen==="reminders") renderRemindersScreen();
   if(screen==="profile") renderProfileScreen();   // QU-02/03: màn được vẽ lười khi vào (renderAll không vẽ trước màn ẩn)
-  $("#app-scroll").scrollTo(0,0);
+  /* 19/11/2026 (tốc độ): cuộn về đầu ở khung hình kế tiếp — gọi scrollTo ngay ép trình duyệt tính bố cục cả màn (~0,3 s lúc mở app ở CPU 4×)
+     trong khi các module còn đang vẽ thêm thẻ; để tới khung hình kế tiếp thì chỉ tính bố cục 1 lần. */
+  const as = $("#app-scroll");
+  if(as){ if(typeof requestAnimationFrame === "function") requestAnimationFrame(()=>{ try{ as.scrollTop = 0; }catch(e){} }); else as.scrollTop = 0; }
 }
 $$("[data-goto]").forEach(el=> el.addEventListener("click", ()=> goto(el.dataset.goto)));
 $$("[data-back]").forEach(el=> el.addEventListener("click", ()=> goto(el.dataset.back)));
