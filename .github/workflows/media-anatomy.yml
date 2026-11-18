@@ -1,0 +1,56 @@
+name: Media — hình giải phẫu cho bản đồ phục hồi cơ (Muse AI)
+
+# Sinh 4 hình giải phẫu (nam/nữ × trước/sau) tô MÀU KHOÁ theo nhóm cơ — chỉ từ mô tả chữ (scripts/ai_anatomy_prompts.json),
+# rồi scripts/anatomy_masks.py tách vùng → media/anatomy/*-shade.webp + *-label.png (recovery.js tô màu trạng thái trên máy).
+# Khoá: secret MUSE_API_KEY (… _2/_3/_4 tự xoay khi hết lượt). 4 ảnh ≈ 2 lượt. Duyệt media/anatomy/_review/*.jpg trước khi bật trong app.
+on:
+  workflow_dispatch:
+    inputs:
+      ids:   { description: "Các id (body-m-front,body-m-back,body-f-front,body-f-back) — gõ all = cả 4", default: "all", required: false }
+      force: { description: "Vẽ lại cả hình đã có (1 = có)", default: "0", required: false }
+      only_masks: { description: "Chỉ tách vùng lại từ ảnh gốc đã có, không gọi AI (1 = có)", default: "0", required: false }
+
+permissions:
+  contents: write
+
+concurrency:
+  group: media-muse
+  cancel-in-progress: false
+
+jobs:
+  gen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -q requests pillow numpy
+      - name: Vẽ hình (Muse)
+        if: ${{ inputs.only_masks != '1' }}
+        env:
+          MUSE_API_KEY: ${{ secrets.MUSE_API_KEY }}
+          MUSE_API_KEY_2: ${{ secrets.MUSE_API_KEY_2 }}
+          MUSE_API_KEY_3: ${{ secrets.MUSE_API_KEY_3 }}
+          MUSE_API_KEY_4: ${{ secrets.MUSE_API_KEY_4 }}
+          MUSE_API_BASE: ${{ vars.MUSE_API_BASE }}
+          MUSE_KIND: image
+          MUSE_MANIFEST: scripts/ai_anatomy_prompts.json
+          MUSE_OUT: media/anatomy/raw
+          MUSE_SAVE_PNG: "1"
+          MUSE_RATIO: "9:16"
+          MUSE_IDS: ${{ inputs.ids }}
+          MUSE_FORCE: ${{ inputs.force }}
+          MUSE_WORKERS: "4"
+        run: python scripts/gen_muse_media.py
+      - name: Tách vùng nhóm cơ
+        run: python scripts/anatomy_masks.py
+      - name: Lưu vào repo
+        if: always()
+        run: |
+          git config user.name "tapeasy-bot"
+          git config user.email "actions@users.noreply.github.com"
+          [ -d media/anatomy ] && git add -A media/anatomy
+          if git diff --cached --quiet; then echo "Không có gì mới"; exit 0; fi
+          git commit -m "media: hình giải phẫu bản đồ phục hồi cơ (Muse)"
+          git pull --rebase && git push
