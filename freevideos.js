@@ -124,6 +124,12 @@ function fvSameName(target, v){
   if(v.equip && !c.equip.includes(v.equip) && v.equip !== "machine") c.equip.push(v.equip);
   return !!c.core.length && (k(t) === k(c) || (t.core.slice().sort().join(" ") === c.core.slice().sort().join(" ") && !t.equip.length));
 }
+/* Bài cốt lõi của app ↔ id free-exercise-db tương ứng (để video 3D gắn theo id exdb cũng hiện cho bài cốt lõi) */
+const FV_CORE_EXDB = { benchpress:"Barbell_Bench_Press_-_Medium_Grip", inclinedb:"Incline_Dumbbell_Press", pushup:"Pushups", cablefly:"Cable_Crossover",
+  pullup:"Pullups", bentoverrow:"Bent_Over_Barbell_Row", latpulldown:"Wide-Grip_Lat_Pulldown", deadlift:"Barbell_Deadlift", overheadpress:"Barbell_Shoulder_Press",
+  lateralraise:"Side_Lateral_Raise", facepull:"Face_Pull", squat:"Barbell_Squat", legpress:"Leg_Press", lunges:"Dumbbell_Lunges", legcurl:"Lying_Leg_Curls",
+  calfraise:"Standing_Calf_Raises", bicepcurl:"Dumbbell_Bicep_Curl", hammercurl:"Hammer_Curls", tricepdip:"Dips_-_Triceps_Version", tricepsdown:"Triceps_Pushdown",
+  plank:"Plank", hangingleg:"Hanging_Leg_Raise", russiantwist:"Russian_Twist", crunch:"Crunches", running:"Running_Treadmill", jumprope:"Rope_Jumping", rowing:"Rowing_Stationary" };
 function fvCoreId(m){
   try{ if(m && typeof EXERCISES !== "undefined") for(const k in EXERCISES){ if(EXERCISES[k] === m || (EXERCISES[k] && m.name && EXERCISES[k].name === m.name)) return k; } }catch(e){}
   return "";
@@ -252,7 +258,7 @@ async function findFreeExerciseVideos(meta){
   const posture = fvTargetPosture(m, target);
   const [wg, ex, e3] = await Promise.all([loadWgerIndex(), loadExtraIndex(), loadEx3dIndex()]);
   const pool = [...e3, ...YMOVE_FREE, ...wg, ...ex];
-  const exId = m && m.exDbId ? String(m.exDbId) : "", coreId = fvCoreId(m);
+  const coreId = fvCoreId(m), exId = m && m.exDbId ? String(m.exDbId) : (FV_CORE_EXDB[coreId] || "");
   return pool.map(v=>{
     if(v.ex3d){   // video 3D: chỉ gắn khi đúng id bài, hoặc tên trùng KHÍT (không ăn theo biến thể — vd Reverse Curl ≠ Curl)
       if((exId && v.ids.includes(exId)) || (coreId && v.core.includes(coreId))) return { v, s: 1000 };
