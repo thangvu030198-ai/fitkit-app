@@ -230,7 +230,7 @@ function css(){
 .fk-scan-veil{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(10,6,4,.45), rgba(10,6,4,0) 28%, rgba(10,6,4,0) 62%, rgba(10,6,4,.7)); pointer-events:none; opacity:0; transition:opacity .3s; }
 #fk-scan.busy .fk-scan-veil{ opacity:1; }
 /* khung quét: 4 góc bo + lưới chấm */
-.fk-scan-frame{ position:absolute; left:12%; right:12%; top:calc(env(safe-area-inset-top, 0px) + 78px); bottom:calc(var(--sh, 45%) + 74px); pointer-events:none; transition:top .6s cubic-bezier(.22,1,.36,1), bottom .6s cubic-bezier(.22,1,.36,1), opacity .3s; }
+.fk-scan-frame{ position:absolute; left:12%; right:12%; top:calc(env(safe-area-inset-top, 0px) + 78px); bottom:calc(var(--sh, 45%) + 118px); pointer-events:none; transition:top .6s cubic-bezier(.22,1,.36,1), bottom .6s cubic-bezier(.22,1,.36,1), opacity .3s; }
 #fk-scan.busy .fk-scan-frame, #fk-scan.done .fk-scan-frame{ top:20%; bottom:26%; }
 #fk-scan.done .fk-scan-frame{ opacity:0; }
 .fk-scan-frame .c{ position:absolute; width:34px; height:34px; border:3px solid #fff; filter:drop-shadow(0 1px 4px rgba(0,0,0,.35)); }
