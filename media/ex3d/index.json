@@ -874,18 +874,6 @@
 "source": "free-exercise-db-with-videos"
 },
 {
-"slug": "45-degree-bycicle-twisting-crunch-1",
-"file": "45-degree-bycicle-twisting-crunch-1.mp4",
-"thumb": "45-degree-bycicle-twisting-crunch-1.jpg",
-"name": "45-Degree Bicycle Twisting Crunch",
-"equip": "",
-"ids": [],
-"core": [],
-"src": "hv",
-"duration": 6,
-"source": "free-exercise-db-with-videos"
-},
-{
 "slug": "45-degree-hyperextension",
 "file": "45-degree-hyperextension.mp4",
 "thumb": "45-degree-hyperextension.jpg",
@@ -989,9 +977,7 @@
 "thumb": "band-leg-curl.jpg",
 "name": "Band Prone Leg Curl",
 "equip": "",
-"ids": [
-"Seated_Band_Hamstring_Curl"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -1111,9 +1097,7 @@
 "thumb": "band-standing-leg-curl.jpg",
 "name": "Band Standing Leg Curl",
 "equip": "",
-"ids": [
-"Seated_Band_Hamstring_Curl"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -1125,9 +1109,7 @@
 "thumb": "band-standing-lift.jpg",
 "name": "Band Standing Lift",
 "equip": "",
-"ids": [
-"Hip_Lift_with_Band"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -1189,9 +1171,7 @@
 "thumb": "barbell-clean-and-press.jpg",
 "name": "Barbell Clean And Press",
 "equip": "barbell",
-"ids": [
-"Clean_and_Press"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 11,
@@ -1269,9 +1249,7 @@
 "thumb": "barbell-rear-delt-raise.jpg",
 "name": "Barbell Rear Delt Raise",
 "equip": "barbell",
-"ids": [
-"Lying_Rear_Delt_Raise"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -1362,8 +1340,7 @@
 "name": "Bench Dips",
 "equip": "",
 "ids": [
-"Bench_Dips",
-"Dips_-_Triceps_Version"
+"Bench_Dips"
 ],
 "core": [],
 "src": "hv",
@@ -1376,10 +1353,7 @@
 "thumb": "bench-pull-ups.jpg",
 "name": "Bench Pull-Up",
 "equip": "",
-"ids": [
-"Flat_Bench_Leg_Pull-In",
-"Seated_Flat_Bench_Leg_Pull-In"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -1415,9 +1389,7 @@
 "thumb": "cable-crossover-reverse-fly.jpg",
 "name": "Cable Crossover Reverse Fly",
 "equip": "cable",
-"ids": [
-"Cable_Rear_Delt_Fly"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -1462,14 +1434,24 @@
 "source": "free-exercise-db-with-videos"
 },
 {
+"slug": "cable-one-arm-twisting-seated-row",
+"file": "cable-one-arm-twisting-seated-row.mp4",
+"thumb": "cable-one-arm-twisting-seated-row.jpg",
+"name": "Cable One-Arm Twisting Seated Row",
+"equip": "cable",
+"ids": [],
+"core": [],
+"src": "hv",
+"duration": 7,
+"source": "free-exercise-db-with-videos"
+},
+{
 "slug": "cable-pulldown",
 "file": "cable-pulldown.mp4",
 "thumb": "cable-pulldown.jpg",
 "name": "Cable Pulldown",
 "equip": "cable",
-"ids": [
-"One_Arm_Lat_Pulldown"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -1481,10 +1463,7 @@
 "thumb": "cable-pushdown-rope-attachment.jpg",
 "name": "Cable Rope Triceps Pushdown",
 "equip": "cable",
-"ids": [
-"Cable_Lying_Triceps_Extension",
-"Cable_One_Arm_Tricep_Extension"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -1526,9 +1505,7 @@
 "equip": "cable",
 "ids": [
 "Cable_Crunch",
-"Cable_Seated_Crunch",
-"Rope_Crunch",
-"Standing_Rope_Crunch"
+"Cable_Seated_Crunch"
 ],
 "core": [],
 "src": "hv",
@@ -1541,11 +1518,7 @@
 "thumb": "cable-standing-inner-curl.jpg",
 "name": "Cable Standing Inner Curl",
 "equip": "cable",
-"ids": [
-"Lying_Cable_Curl",
-"Standing_Biceps_Cable_Curl",
-"Standing_One-Arm_Cable_Curl"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -1620,8 +1593,7 @@
 "name": "Chest Dips",
 "equip": "",
 "ids": [
-"Dips_-_Chest_Version",
-"Parallel_Bar_Dip"
+"Dips_-_Chest_Version"
 ],
 "core": [],
 "src": "hv",
@@ -1658,12 +1630,7 @@
 "thumb": "chin-ups-pull-ups.jpg",
 "name": "Pull-Up / Chin-Up",
 "equip": "",
-"ids": [
-"Chin-Up",
-"One_Arm_Chin-Up",
-"Pullups",
-"V-Bar_Pullup"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -1723,9 +1690,7 @@
 "thumb": "crunch-floor-female.jpg",
 "name": "Floor Crunch",
 "equip": "",
-"ids": [
-"Crunches"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 5,
@@ -1737,9 +1702,7 @@
 "thumb": "crunch-leg-raise.jpg",
 "name": "Leg Raise Crunch",
 "equip": "",
-"ids": [
-"Reverse_Crunch"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -1808,15 +1771,24 @@
 "source": "free-exercise-db-with-videos"
 },
 {
+"slug": "dumbbell-alternate-seated-biceps-curl",
+"file": "dumbbell-alternate-seated-biceps-curl.mp4",
+"thumb": "dumbbell-alternate-seated-biceps-curl.jpg",
+"name": "Seated Alternating Dumbbell Curl",
+"equip": "dumbbell",
+"ids": [],
+"core": [],
+"src": "hv",
+"duration": 13,
+"source": "free-exercise-db-with-videos"
+},
+{
 "slug": "dumbbell-alternate-shoulder-press",
 "file": "dumbbell-alternate-shoulder-press.mp4",
 "thumb": "dumbbell-alternate-shoulder-press.jpg",
 "name": "Dumbbell Alternating Shoulder Press",
 "equip": "dumbbell",
-"ids": [
-"Dumbbell_One-Arm_Shoulder_Press",
-"Dumbbell_Shoulder_Press"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -1853,12 +1825,8 @@
 "name": "Seated Dumbbell Shoulder Press",
 "equip": "dumbbell",
 "ids": [
-"Dumbbell_Bench_Press",
 "Dumbbell_One-Arm_Shoulder_Press",
-"Dumbbell_Shoulder_Press",
-"One_Arm_Dumbbell_Bench_Press",
-"Seated_Dumbbell_Press",
-"Standing_Dumbbell_Press"
+"Dumbbell_Shoulder_Press"
 ],
 "core": [],
 "src": "hv",
@@ -1871,10 +1839,7 @@
 "thumb": "dumbbell-concentration-curl.jpg",
 "name": "Dumbbell Concentration Curl",
 "equip": "dumbbell",
-"ids": [
-"Concentration_Curls",
-"Standing_Concentration_Curl"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -1924,9 +1889,7 @@
 "thumb": "dumbbell-incline-biceps-curl.jpg",
 "name": "Dumbbell Incline Biceps Curl",
 "equip": "dumbbell",
-"ids": [
-"Incline_Dumbbell_Curl"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -1966,9 +1929,7 @@
 "thumb": "dumbbell-incline-fly-on-exercise-ball.jpg",
 "name": "Dumbbell Incline Fly On Exercise Ball",
 "equip": "dumbbell",
-"ids": [
-"Incline_Dumbbell_Flyes"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -1980,9 +1941,7 @@
 "thumb": "dumbbell-incline-hammer-curl.jpg",
 "name": "Dumbbell Incline Hammer Curl",
 "equip": "dumbbell",
-"ids": [
-"Incline_Hammer_Curls"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2054,9 +2013,7 @@
 "thumb": "dumbbell-kickback.jpg",
 "name": "Dumbbell Kickback",
 "equip": "dumbbell",
-"ids": [
-"Tricep_Dumbbell_Kickback"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2068,12 +2025,7 @@
 "thumb": "dumbbell-lying-alternate-extension.jpg",
 "name": "Dumbbell Lying Alternate Extension",
 "equip": "dumbbell",
-"ids": [
-"Dumbbell_One-Arm_Triceps_Extension",
-"Lying_Dumbbell_Tricep_Extension",
-"Standing_Dumbbell_Triceps_Extension",
-"Standing_One-Arm_Dumbbell_Triceps_Extension"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2085,10 +2037,19 @@
 "thumb": "dumbbell-lying-femoral.jpg",
 "name": "Dumbbell Lying Leg Curl",
 "equip": "dumbbell",
-"ids": [
-"Seated_Dumbbell_Press",
-"Standing_Dumbbell_Press"
-],
+"ids": [],
+"core": [],
+"src": "hv",
+"duration": 7,
+"source": "free-exercise-db-with-videos"
+},
+{
+"slug": "dumbbell-lying-hammer-press",
+"file": "dumbbell-lying-hammer-press.mp4",
+"thumb": "dumbbell-lying-hammer-press.jpg",
+"name": "Dumbbell Lying Hammer Press",
+"equip": "dumbbell",
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2112,9 +2073,7 @@
 "thumb": "dumbbell-one-arm-zottman-preacher-curl.jpg",
 "name": "Dumbbell One Arm Zottman Preacher Curl",
 "equip": "dumbbell",
-"ids": [
-"Zottman_Preacher_Curl"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 10,
@@ -2150,11 +2109,7 @@
 "thumb": "dumbbell-preacher-curl-over-exercise-ball.jpg",
 "name": "Dumbbell Preacher Curl Over Exercise Ball",
 "equip": "dumbbell",
-"ids": [
-"One_Arm_Dumbbell_Preacher_Curl",
-"Preacher_Curl",
-"Two-Arm_Dumbbell_Preacher_Curl"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2166,14 +2121,7 @@
 "thumb": "dumbbell-pronate-grip-triceps-extension.jpg",
 "name": "Dumbbell Pronate-grip Triceps Extension",
 "equip": "dumbbell",
-"ids": [
-"Dumbbell_One-Arm_Triceps_Extension",
-"Dumbbell_Tricep_Extension_-Pronated_Grip",
-"Lying_Dumbbell_Tricep_Extension",
-"One_Arm_Pronated_Dumbbell_Triceps_Extension",
-"Standing_Dumbbell_Triceps_Extension",
-"Standing_One-Arm_Dumbbell_Triceps_Extension"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2194,18 +2142,6 @@
 "source": "free-exercise-db-with-videos"
 },
 {
-"slug": "dumbbell-rear-delt-row",
-"file": "dumbbell-rear-delt-row.mp4",
-"thumb": "dumbbell-rear-delt-row.jpg",
-"name": "Dumbbell Rear Delt Row",
-"equip": "dumbbell",
-"ids": [],
-"core": [],
-"src": "hv",
-"duration": 7,
-"source": "free-exercise-db-with-videos"
-},
-{
 "slug": "dumbbell-seated-calf-raise",
 "file": "dumbbell-seated-calf-raise.mp4",
 "thumb": "dumbbell-seated-calf-raise.jpg",
@@ -2214,20 +2150,6 @@
 "ids": [
 "Calf_Raise_On_A_Dumbbell",
 "Standing_Dumbbell_Calf_Raise"
-],
-"core": [],
-"src": "hv",
-"duration": 7,
-"source": "free-exercise-db-with-videos"
-},
-{
-"slug": "dumbbell-seated-kickback",
-"file": "dumbbell-seated-kickback.mp4",
-"thumb": "dumbbell-seated-kickback.jpg",
-"name": "Dumbbell Seated Kickback",
-"equip": "dumbbell",
-"ids": [
-"Tricep_Dumbbell_Kickback"
 ],
 "core": [],
 "src": "hv",
@@ -2254,7 +2176,6 @@
 "equip": "dumbbell",
 "ids": [
 "One_Arm_Dumbbell_Preacher_Curl",
-"Preacher_Curl",
 "Two-Arm_Dumbbell_Preacher_Curl"
 ],
 "core": [],
@@ -2297,9 +2218,7 @@
 "name": "Dumbbell Single Leg Calf Raise",
 "equip": "dumbbell",
 "ids": [
-"Calf_Raise_On_A_Dumbbell",
-"Dumbbell_Seated_One-Leg_Calf_Raise",
-"Standing_Dumbbell_Calf_Raise"
+"Dumbbell_Seated_One-Leg_Calf_Raise"
 ],
 "core": [],
 "src": "hv",
@@ -2333,17 +2252,12 @@
 "source": "free-exercise-db-with-videos"
 },
 {
-"slug": "dumbbell-standing-calf-raise",
-"file": "dumbbell-standing-calf-raise.mp4",
-"thumb": "dumbbell-standing-calf-raise.jpg",
-"name": "Dumbbell Standing Calf Raise",
+"slug": "dumbbell-stiff-leg-deadlift",
+"file": "dumbbell-stiff-leg-deadlift.mp4",
+"thumb": "dumbbell-stiff-leg-deadlift.jpg",
+"name": "Dumbbell Stiff Leg Deadlift",
 "equip": "dumbbell",
-"ids": [
-"Calf_Raise_On_A_Dumbbell",
-"Seated_Calf_Raise",
-"Standing_Calf_Raises",
-"Standing_Dumbbell_Calf_Raise"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2370,9 +2284,7 @@
 "thumb": "front-plank-female.jpg",
 "name": "Front Plank",
 "equip": "",
-"ids": [
-"Plank"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2384,9 +2296,7 @@
 "thumb": "hanging-leg-hip-raise.jpg",
 "name": "Hanging Leg Hip Raise",
 "equip": "",
-"ids": [
-"Hanging_Leg_Raise"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2398,9 +2308,7 @@
 "thumb": "hanging-straight-leg-raise.jpg",
 "name": "Hanging Straight Leg Raise",
 "equip": "",
-"ids": [
-"Hanging_Leg_Raise"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2463,9 +2371,7 @@
 "thumb": "inverted-row-between-chairs.jpg",
 "name": "Inverted Row Between Chairs",
 "equip": "",
-"ids": [
-"Inverted_Row"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2491,9 +2397,7 @@
 "thumb": "jack-knife-floor.jpg",
 "name": "Jackknife Floor",
 "equip": "",
-"ids": [
-"Jackknife_Sit-Up"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2529,9 +2433,7 @@
 "thumb": "jump-rope.jpg",
 "name": "Jump Rope",
 "equip": "",
-"ids": [
-"Rope_Jumping"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 15,
@@ -2555,9 +2457,7 @@
 "thumb": "jumping-jack.jpg",
 "name": "Jumping Jack",
 "equip": "",
-"ids": [
-"Star_Jump"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 5,
@@ -2641,9 +2541,7 @@
 "thumb": "lever-incline-hammer-chest-press.jpg",
 "name": "Lever Incline Hammer Chest Press",
 "equip": "machine",
-"ids": [
-"Leverage_Incline_Chest_Press"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2703,10 +2601,7 @@
 "thumb": "lever-seated-calf-raise.jpg",
 "name": "Lever Seated Calf Raise",
 "equip": "machine",
-"ids": [
-"Seated_Calf_Raise",
-"Standing_Calf_Raises"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2718,9 +2613,7 @@
 "thumb": "lever-seated-crunch-1.jpg",
 "name": "Lever Seated Crunch",
 "equip": "machine",
-"ids": [
-"Ab_Crunch_Machine"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2753,18 +2646,6 @@
 "source": "free-exercise-db-with-videos"
 },
 {
-"slug": "lever-standing-calf-raise",
-"file": "lever-standing-calf-raise.mp4",
-"thumb": "lever-standing-calf-raise.jpg",
-"name": "Lever Standing Calf Raise",
-"equip": "machine",
-"ids": [],
-"core": [],
-"src": "hv",
-"duration": 7,
-"source": "free-exercise-db-with-videos"
-},
-{
 "slug": "lever-standing-hip-extension",
 "file": "lever-standing-hip-extension.mp4",
 "thumb": "lever-standing-hip-extension.jpg",
@@ -2782,9 +2663,7 @@
 "thumb": "lever-t-bar-row.jpg",
 "name": "Lever T-Bar Row",
 "equip": "machine",
-"ids": [
-"Lying_T-Bar_Row"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2835,7 +2714,6 @@
 "name": "Lying Scissor Kick",
 "equip": "",
 "ids": [
-"Flutter_Kicks",
 "Scissor_Kick"
 ],
 "core": [],
@@ -2849,9 +2727,7 @@
 "thumb": "lying-straight-leg-raise.jpg",
 "name": "Lying Straight Leg Raise",
 "equip": "",
-"ids": [
-"Leg_Lift"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2863,10 +2739,7 @@
 "thumb": "lying-supine-dumbbell-curl.jpg",
 "name": "Supine Dumbbell Biceps Curl",
 "equip": "dumbbell",
-"ids": [
-"Lying_Supine_Dumbbell_Curl",
-"Seated_Dumbbell_Curl"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2878,9 +2751,7 @@
 "thumb": "medicine-ball-sit-up-wall.jpg",
 "name": "Medicine Ball Wall Sit-Up",
 "equip": "",
-"ids": [
-"One-Arm_Medicine_Ball_Slam"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -2983,12 +2854,7 @@
 "thumb": "reverse-grip-pull-up.jpg",
 "name": "Reverse Grip Pull-Up",
 "equip": "",
-"ids": [
-"Chin-Up",
-"One_Arm_Chin-Up",
-"Pullups",
-"V-Bar_Pullup"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 6,
@@ -3016,6 +2882,18 @@
 "core": [],
 "src": "hv",
 "duration": 10,
+"source": "free-exercise-db-with-videos"
+},
+{
+"slug": "running",
+"file": "running.mp4",
+"thumb": "running.jpg",
+"name": "Running",
+"equip": "",
+"ids": [],
+"core": [],
+"src": "hv",
+"duration": 4,
 "source": "free-exercise-db-with-videos"
 },
 {
@@ -3084,35 +2962,7 @@
 "thumb": "side-bridge-side-plank.jpg",
 "name": "Side Plank",
 "equip": "",
-"ids": [
-"Side_Bridge"
-],
-"core": [],
-"src": "hv",
-"duration": 7,
-"source": "free-exercise-db-with-videos"
-},
-{
-"slug": "single-dumbbell-stiff-leg-deadlift",
-"file": "single-dumbbell-stiff-leg-deadlift.mp4",
-"thumb": "single-dumbbell-stiff-leg-deadlift.jpg",
-"name": "Single Dumbbell Stiff-Leg Deadlift",
-"equip": "dumbbell",
 "ids": [],
-"core": [],
-"src": "hv",
-"duration": 7,
-"source": "free-exercise-db-with-videos"
-},
-{
-"slug": "sit-up",
-"file": "sit-up.mp4",
-"thumb": "sit-up.jpg",
-"name": "Sit-Up",
-"equip": "",
-"ids": [
-"Sit-Up"
-],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -3124,10 +2974,7 @@
 "thumb": "sit-up-on-exercise-ball.jpg",
 "name": "Exercise Ball Sit-Up",
 "equip": "",
-"ids": [
-"Exercise_Ball_Crunch",
-"Hug_A_Ball"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -3167,9 +3014,7 @@
 "thumb": "smith-deadlift-deadlift-1.jpg",
 "name": "Smith Machine Deadlift",
 "equip": "smith",
-"ids": [
-"Leverage_Deadlift"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -3195,10 +3040,7 @@
 "thumb": "squat.jpg",
 "name": "Squat",
 "equip": "",
-"ids": [
-"Barbell_Squat",
-"Bodyweight_Squat"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -3210,9 +3052,7 @@
 "thumb": "stretching-above-head-chest-stretch.jpg",
 "name": "Overhead Chest Stretch",
 "equip": "",
-"ids": [
-"Behind_Head_Chest_Stretch"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -3279,18 +3119,6 @@
 "source": "free-exercise-db-with-videos"
 },
 {
-"slug": "stretching-bridge-pose-setu-bandhasana-1",
-"file": "stretching-bridge-pose-setu-bandhasana-1.mp4",
-"thumb": "stretching-bridge-pose-setu-bandhasana-1.jpg",
-"name": "Bridge Pose (Setu Bandhasana)",
-"equip": "",
-"ids": [],
-"core": [],
-"src": "hv",
-"duration": 14,
-"source": "free-exercise-db-with-videos"
-},
-{
 "slug": "stretching-butterfly-yoga-pose",
 "file": "stretching-butterfly-yoga-pose.mp4",
 "thumb": "stretching-butterfly-yoga-pose.jpg",
@@ -3320,9 +3148,7 @@
 "thumb": "stretching-calf-stretch-with-strap.jpg",
 "name": "Calf Stretch with Strap",
 "equip": "",
-"ids": [
-"Seated_Calf_Stretch"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 6,
@@ -3422,9 +3248,7 @@
 "thumb": "stretching-front-toe-touch.jpg",
 "name": "Front Toe Touch Stretch",
 "equip": "",
-"ids": [
-"Hamstring_Stretch"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 12,
@@ -3474,9 +3298,7 @@
 "thumb": "stretching-hip-flexor-and-quad-stretch.jpg",
 "name": "Hip Flexor and Quadriceps Stretch",
 "equip": "",
-"ids": [
-"Intermediate_Hip_Flexor_and_Quad_Stretch"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -3512,9 +3334,7 @@
 "thumb": "stretching-knee-raise.jpg",
 "name": "Standing Knee Raise Stretch",
 "equip": "",
-"ids": [
-"Bent-Knee_Hip_Raise"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 6,
@@ -3616,23 +3436,7 @@
 "thumb": "stretching-quadriceps-lying-stretch.jpg",
 "name": "Lying Quadriceps Stretch",
 "equip": "",
-"ids": [
-"Quad_Stretch"
-],
-"core": [],
-"src": "hv",
-"duration": 6,
-"source": "free-exercise-db-with-videos"
-},
-{
-"slug": "stretching-quadriceps-stretch",
-"file": "stretching-quadriceps-stretch.mp4",
-"thumb": "stretching-quadriceps-stretch.jpg",
-"name": "Standing Quadriceps Stretch",
-"equip": "",
-"ids": [
-"Quad_Stretch"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 6,
@@ -3668,9 +3472,7 @@
 "thumb": "stretching-runners-stretch.jpg",
 "name": "Runner's Stretch",
 "equip": "",
-"ids": [
-"Runners_Stretch"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -3780,9 +3582,7 @@
 "thumb": "stretching-sitting-bent-over-back-stretch.jpg",
 "name": "Seated Bent Over Back Stretch",
 "equip": "",
-"ids": [
-"Spinal_Stretch"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -3818,9 +3618,7 @@
 "thumb": "stretching-spine-stretch.jpg",
 "name": "Spine Stretch",
 "equip": "",
-"ids": [
-"Spinal_Stretch"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -3844,9 +3642,7 @@
 "thumb": "stretching-standing-back-rotation-stretch.jpg",
 "name": "Standing Back Rotation Stretch",
 "equip": "",
-"ids": [
-"Torso_Rotation"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -3858,9 +3654,7 @@
 "thumb": "stretching-standing-bench-calf-stretch.jpg",
 "name": "Standing Bench Calf Stretch",
 "equip": "",
-"ids": [
-"Seated_Calf_Stretch"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -3873,8 +3667,6 @@
 "name": "Standing Lateral Stretch",
 "equip": "",
 "ids": [
-"Overhead_Stretch",
-"Seated_Overhead_Stretch",
 "Standing_Lateral_Stretch"
 ],
 "core": [],
@@ -3900,9 +3692,7 @@
 "thumb": "stretching-standing-side-bend-bent-arm.jpg",
 "name": "Standing Side Bend Stretch (Bent Arm)",
 "equip": "",
-"ids": [
-"Standing_Lateral_Stretch"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 6,
@@ -3941,7 +3731,6 @@
 "name": "Triceps Dips",
 "equip": "",
 "ids": [
-"Bench_Dips",
 "Dips_-_Triceps_Version"
 ],
 "core": [],
@@ -3955,10 +3744,7 @@
 "thumb": "twisting-crunch.jpg",
 "name": "Twisting Crunch",
 "equip": "",
-"ids": [
-"Cross-Body_Crunch",
-"Oblique_Crunches"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -3970,11 +3756,7 @@
 "thumb": "v-up.jpg",
 "name": "V-Up",
 "equip": "",
-"ids": [
-"Crunches",
-"Jackknife_Sit-Up",
-"Sit-Up"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -3998,9 +3780,7 @@
 "thumb": "weighted-leg-extension-crunch.jpg",
 "name": "Weighted Leg Extension Crunch",
 "equip": "",
-"ids": [
-"Weighted_Crunches"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
@@ -4038,10 +3818,7 @@
 "thumb": "weighted-standing-curl.jpg",
 "name": "Weighted Standing Curl",
 "equip": "",
-"ids": [
-"Dumbbell_Bicep_Curl",
-"Seated_Dumbbell_Curl"
-],
+"ids": [],
 "core": [],
 "src": "hv",
 "duration": 7,
