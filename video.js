@@ -335,6 +335,8 @@ renderSessionStep = function(){
   if(!session || session.idx >= session.items.length) return;
   const item = session.items[session.idx];
   if(item && !item.clipId){
+    // 19/11: bài có video YouTube hướng dẫn → khối media duy nhất của ex-guide.js lo phần video (không chồng 2 khung)
+    try{ if(window.FKYT && FKYT.exKeyOf && FKYT.exKeyOf(item, getExerciseMeta(item).name)) return; }catch(e){}
     const img = $("#sheet-content img"); if(!img) return;
     const vb = videoBlockHTML(); const w = document.createElement("div"); w.innerHTML = vb.html; img.replaceWith(w.firstElementChild);
     const sm = getExerciseMeta(item);

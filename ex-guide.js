@@ -97,27 +97,62 @@ function itemMeta(item){
   return ex ? Object.assign({ _id: item.exerciseId }, ex) : null;
 }
 
-/* (a) clip 3D đầu màn tập */
+/* (a) KHỐI MEDIA DUY NHẤT đầu màn tập (19/11 — làm lại theo góp ý "rối, quá nhiều video"):
+   1 khung trên cùng, vuốt ngang / chạm tab để đổi: [3D] → [Góc 1] → [Góc 2] (video YouTube hướng dẫn, chỉ tải khi chạm).
+   Không còn khối video thứ 2 / dải YouTube riêng bên dưới trong màn tập (video.js + guide-links.js bỏ qua khi bài có khối này).
+   Bài có clip riêng của người dùng (item.clipId) → giữ nguyên clip đó. */
 let seq = 0;
+function ytIdsFor(item, meta){
+  try{ if(!G.FKYT || !FKYT.exKeyOf) return []; const k = FKYT.exKeyOf(item, meta && meta.name); return k ? FKYT.idsFor(k) : []; }catch(e){ return []; }
+}
+function mediaHTML(slides, idx, total){
+  return `<div class="exm-track" tabindex="0" aria-label="Video hướng dẫn — vuốt ngang để đổi góc xem">${slides.map((s, i)=> s.k === "3d"
+      ? `<div class="exm-slide" data-i="${i}"><video src="${esc(s.url)}" ${s.thumb ? `poster="${esc(s.thumb)}"` : ""} autoplay muted loop playsinline preload="auto" aria-label="Video 3D động tác"></video></div>`
+      : `<div class="exm-slide yt" data-i="${i}"><button type="button" class="exm-yt" data-exm-yt="${esc(s.id)}" aria-label="Phát ${esc(s.label)}"><img src="https://i.ytimg.com/vi/${esc(s.id)}/hqdefault.jpg" alt="" loading="lazy"><span class="exm-play"><span class="material-symbols-rounded">play_arrow</span></span></button></div>`).join("")}</div>
+    <span class="exg-now">BÀI ${idx + 1}/${total}</span>
+    ${slides.length > 1 ? `<div class="exm-tabs" role="tablist">${slides.map((s, i)=> `<button type="button" role="tab" class="exm-tab${i ? "" : " on"}" data-exm-go="${i}" aria-selected="${!i}">${esc(s.label)}</button>`).join("")}</div>` : `<span class="exg-tag">${esc(slides[0].label)}</span>`}`;
+}
+function wireMedia(box){
+  const track = box.querySelector(".exm-track"); const tabs = Array.from(box.querySelectorAll("[data-exm-go]"));
+  const setOn = i=>{ tabs.forEach((t, j)=>{ t.classList.toggle("on", j === i); t.setAttribute("aria-selected", j === i); });
+    box.querySelectorAll(".exm-slide video").forEach(v=>{ const sl = v.closest(".exm-slide"); try{ if(+sl.dataset.i === i){ const p = v.play(); if(p && p.catch) p.catch(()=>{}); } else v.pause(); }catch(e){} }); };
+  tabs.forEach(t=> t.addEventListener("click", ()=>{ const i = +t.dataset.exmGo; track.scrollTo({ left: track.clientWidth * i, behavior: "smooth" }); setOn(i); }));
+  let tm = 0; track.addEventListener("scroll", ()=>{ clearTimeout(tm); tm = setTimeout(()=> setOn(Math.round(track.scrollLeft / Math.max(1, track.clientWidth))), 90); }, { passive: true });
+  box.querySelectorAll("[data-exm-yt]").forEach(b=> b.addEventListener("click", ()=>{
+    const id = b.getAttribute("data-exm-yt"); if(!/^[A-Za-z0-9_-]{11}$/.test(id)) return;
+    const f = D.createElement("iframe"); f.className = "exm-frame";
+    f.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&playsinline=1&rel=0&modestbranding=1`;
+    f.setAttribute("allow", "autoplay; encrypted-media; picture-in-picture; fullscreen"); f.setAttribute("allowfullscreen", ""); f.setAttribute("title", "Video hướng dẫn");
+    f.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+    const sl = b.closest(".exm-slide"); b.replaceWith(f);
+    sl.insertAdjacentHTML("beforeend", `<button type="button" class="exm-open" data-yt="https://www.youtube.com/watch?v=${id}"><span class="material-symbols-rounded">play_circle</span>YouTube</button>`);
+    box.querySelectorAll(".exm-slide video").forEach(v=>{ try{ v.pause(); }catch(e){} });
+  }));
+}
 async function mount3D(){
   const sc = D && D.getElementById("sheet-content");
   if(!sc || typeof session === "undefined" || !session || session.finished) return;
   const item = session.items && session.items[session.idx]; if(!item || item.clipId) return;   // bài có clip riêng của người dùng → giữ nguyên
   const my = ++seq;
-  const meta = itemMeta(item); if(!meta || typeof findFreeExerciseVideos !== "function") return;
+  const meta = itemMeta(item); if(!meta) return;
+  const yt = ytIdsFor(item, meta);
   let v = null;
-  try{ v = (await findFreeExerciseVideos(meta.exDbId ? meta : (G.EXERCISES && EXERCISES[item.exerciseId]) || meta))[0]; }catch(e){ v = null; }
-  if(my !== seq || !v || !v.ex3d) return;
-  const sc2 = D.getElementById("sheet-content"); if(!sc2 || sc2.querySelector(".exg-3d")) return;
-  const img = Array.from(sc2.children).find(el=> el.tagName === "IMG");
+  if(typeof findFreeExerciseVideos === "function"){ try{ v = (await findFreeExerciseVideos(meta.exDbId ? meta : (G.EXERCISES && EXERCISES[item.exerciseId]) || meta))[0]; }catch(e){ v = null; } }
+  if(my !== seq) return;
+  const slides = [];
+  if(v && v.ex3d) slides.push({ k: "3d", label: "3D", url: v.url, thumb: v.thumb });
+  yt.forEach((id, i)=> slides.push({ k: "yt", label: "Góc " + (i + 1), id }));
+  if(!slides.length) return;
+  const sc2 = D.getElementById("sheet-content"); if(!sc2 || sc2.querySelector(".exm")) return;
+  const old = Array.from(sc2.children).find(el=> el.tagName === "IMG" || (el.classList && el.classList.contains("vblock")));
   const box = D.createElement("div");
-  box.className = "exg-3d";
-  box.innerHTML = `<video src="${esc(v.url)}" ${v.thumb ? `poster="${esc(v.thumb)}"` : ""} autoplay muted loop playsinline preload="auto" aria-label="Video 3D động tác ${esc(meta.name)}"></video>
-    <span class="exg-now">BÀI ${session.idx + 1}/${session.items.length}</span><span class="exg-tag">3D</span>`;
-  if(img) img.replaceWith(box); else sc2.insertBefore(box, sc2.children[2] || null);
+  box.className = "exm exg-3d";
+  box.innerHTML = mediaHTML(slides, session.idx, session.items.length);
+  if(old) old.replaceWith(box); else sc2.insertBefore(box, sc2.children[2] || null);
+  wireMedia(box);
   const vid = box.querySelector("video");
-  try{ const p = vid.play(); if(p && p.catch) p.catch(()=>{}); }catch(e){}
-  vid.addEventListener("error", ()=>{ if(img) box.replaceWith(img); else box.remove(); }, { once: true });
+  if(vid){ try{ const p = vid.play(); if(p && p.catch) p.catch(()=>{}); }catch(e){}
+    vid.addEventListener("error", ()=>{ const sl = vid.closest(".exm-slide"); if(slides.length > 1){ const t = box.querySelector('[data-exm-go="0"]'); if(t) t.remove(); sl.remove(); } else if(old) box.replaceWith(old); else box.remove(); }, { once: true }); }
 }
 /* (b) màn tập: khối "Hướng dẫn kỹ thuật" → 3 phần */
 function upgradeSessionGuide(){
@@ -190,5 +225,5 @@ function install(){
 }
 install();
 if(D && D.readyState === "loading") D.addEventListener("DOMContentLoaded", install);
-G.FKGuide = { parts, html, breath, musclesOf, _mount3D: mount3D };
+G.FKGuide = { parts, html, breath, musclesOf, _mount3D: mount3D, ytIdsFor, mediaHTML };
 })(typeof window !== "undefined" ? window : globalThis);

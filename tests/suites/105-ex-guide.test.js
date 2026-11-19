@@ -43,7 +43,12 @@ module.exports = {
     });
     t.test("EXG-05: màn tập — clip 3D chỉ khi video là ex3d, giữ clip riêng của người dùng, lỗi tải → trả ảnh cũ", ()=>{
       const s = read("ex-guide.js");
-      assert.ok(/if\(!item \|\| item\.clipId\) return;/.test(s) && /!v\.ex3d\) return;/.test(s));
+      assert.ok(/if\(!item \|\| item\.clipId\) return;/.test(s) && /if\(v && v\.ex3d\) slides\.push/.test(s));
+      // 19/11: 1 khối media duy nhất (3D + Góc 1/2 YouTube) — video.js / guide-links.js không chèn khung thứ 2 trong màn tập
+      assert.match(s, /data-exm-go/); assert.match(s, /youtube-nocookie\.com\/embed\//);
+      assert.match(read("video.js"), /FKYT\.exKeyOf\(item, getExerciseMeta\(item\)\.name\)\) return;/);
+      const h = app.ev(`FKGuide.mediaHTML([{k:"3d",label:"3D",url:"x.mp4"},{k:"yt",label:"Góc 1",id:"abcdefghijk"}], 0, 5)`);
+      assert.match(h, /BÀI 1\/5/); assert.match(h, /data-exm-go="1"/); assert.doesNotMatch(h, /<iframe/);
       assert.ok(/autoplay muted loop playsinline/.test(s) && /addEventListener\("error"/.test(s));
     });
   }

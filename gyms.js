@@ -148,7 +148,7 @@ function decorateWorkout(){
   after.insertAdjacentElement("afterend", w);
 }
 function decorateSession(){
-  const sc = D.getElementById("sheet-content"); if(!sc || !D.getElementById("btn-session-done") || sc.querySelector(".gym-chip")) return;
+  const sc = D.getElementById("sheet-content"); if(!sc || !D.getElementById("btn-session-done") || sc.querySelector(".gym-chip, .gym-chip-s")) return;
   const host = sc.querySelector(".rv-today-btn"); if(!host) return;
   const g = active();
   const b = D.createElement("button"); b.type = "button"; b.className = "rv-today-btn gym-chip-s"; b.setAttribute("data-gym-open", "s");

@@ -112,8 +112,7 @@ function addStrip(sc, item, name, where){
 }
 function addToSession(){
   const sc = D && D.getElementById("sheet-content"); if(!sc) return;
-  { const g0 = Array.from(sc.querySelectorAll("details.set-guide")).find(d=>{ const sm = d.querySelector("summary"); return sm && /Hướng dẫn kỹ thuật/.test(sm.textContent); });
-    if(g0) addStrip(sc, curItem(), sheetName(), g0); }
+  // 19/11: màn tập KHÔNG chèn dải video riêng nữa — video YouTube nằm trong khối media trên cùng (ex-guide.js), ở đây chỉ còn nút tìm thêm trong mục Hướng dẫn
   if(sc.querySelector(".yt-btn")) return;
   const g = Array.from(sc.querySelectorAll("details.set-guide")).find(d=>{ const sm = d.querySelector("summary"); return sm && /Hướng dẫn kỹ thuật/.test(sm.textContent); });
   if(!g) return;
