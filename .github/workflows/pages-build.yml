@@ -11,6 +11,7 @@ on:
   workflow_run:
     workflows:
       - "Giải nén gói mã nguồn (deploy-bundle.zip)"
+      - "Media — video hướng dẫn YouTube cho Thư viện bài tập"
       - "Firebase — trang đăng nhập tự host (tapeasy.app/__/auth)"
       - "Media — hình giải phẫu cho bản đồ phục hồi cơ (Muse AI)"
       - "Media — hình & video bài tập phong cách TapEasy (Muse AI)"
