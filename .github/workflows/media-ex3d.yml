@@ -1,0 +1,59 @@
+name: Media — video 3D bài tập (kho riêng + free-exercise-db-with-videos)
+
+# 1) ex3d-pack.zip (ở gốc repo, do chủ app tải lên) → giải nén vào media/ex3d (clip 3D đã nén + index.json, src=local).
+# 2) Bổ sung từ github.com/harshvishu/free-exercise-db-with-videos: CHỈ động tác chưa có trong kho riêng (scripts/ex3d_github.py).
+on:
+  workflow_dispatch:
+    inputs:
+      limit: { description: "Tối đa số video tải thêm từ GitHub", default: "400", required: false }
+      skip_github: { description: "Chỉ giải nén kho riêng, không tải từ GitHub (1 = có)", default: "0", required: false }
+  push:
+    branches: [ main ]
+    paths: [ "ex3d-pack.zip" ]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: media-ex3d
+  cancel-in-progress: false
+
+jobs:
+  ex3d:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Cài ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
+      - name: Giải nén kho clip riêng
+        run: |
+          set -e
+          if [ -f ex3d-pack.zip ]; then
+            mkdir -p /tmp/pack media/ex3d
+            unzip -q -o ex3d-pack.zip -d /tmp/pack
+            if find /tmp/pack -type l | grep -q .; then echo "::error::Gói có symlink"; exit 1; fi
+            find /tmp/pack -type f ! -name "*.mp4" ! -name "*.jpg" ! -name "index.json" -print -delete
+            cp -a /tmp/pack/. media/ex3d/
+            git rm -q --cached ex3d-pack.zip || true
+            rm -f ex3d-pack.zip
+            echo "Kho riêng: $(ls media/ex3d/*.mp4 | wc -l) clip"
+          fi
+      - name: Bổ sung từ GitHub (bỏ động tác đã có)
+        if: ${{ inputs.skip_github != '1' }}
+        env:
+          EX3D_LIMIT: ${{ inputs.limit || '400' }}
+        run: python scripts/ex3d_github.py
+      - name: Lưu vào repo
+        if: always()
+        run: |
+          git config user.name "tapeasy-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A media/ex3d
+          git add -A ex3d-pack.zip 2>/dev/null || true
+          if git diff --cached --quiet; then echo "Không có gì mới"; exit 0; fi
+          echo "media/ex3d: $(du -sh media/ex3d | cut -f1), $(ls media/ex3d/*.mp4 | wc -l) video"
+          git commit -m "media: video 3D bài tập (kho riêng + free-exercise-db-with-videos)"
+          git pull --rebase && git push
