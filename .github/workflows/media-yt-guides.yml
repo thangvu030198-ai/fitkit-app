@@ -1,0 +1,43 @@
+name: Media — video hướng dẫn YouTube cho Thư viện bài tập
+
+# Tìm 1–2 video hướng dẫn YouTube (nhúng được, ≤ 10 phút) cho từng bài trong Thư viện 800+ (scripts/yt_guides.py).
+# Cần secret YT_API_KEY (YouTube Data API v3) — Settings → Secrets and variables → Actions → New repository secret.
+# Hạn mức miễn phí ~90 bài/ngày → chạy tự động mỗi ngày đến khi đủ; bài đã có video thì bỏ qua.
+on:
+  workflow_dispatch:
+    inputs:
+      limit: { description: "Số bài tối đa lần này (hạn mức ~95/ngày)", default: "90", required: false }
+      retry_empty: { description: "Tìm lại bài lần trước không ra video (1 = có)", default: "0", required: false }
+  schedule:
+    - cron: "17 20 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: media-yt-guides
+  cancel-in-progress: false
+
+jobs:
+  yt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Tìm video
+        env:
+          YT_API_KEY: ${{ secrets.YT_API_KEY }}
+          YT_LIMIT: ${{ inputs.limit || '90' }}
+          YT_RETRY_EMPTY: ${{ inputs.retry_empty || '0' }}
+        run: python scripts/yt_guides.py
+      - name: Lưu vào repo
+        if: always()
+        run: |
+          git config user.name "tapeasy-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A media/yt
+          if git diff --cached --quiet; then echo "Không có gì mới"; exit 0; fi
+          git commit -m "media: video hướng dẫn YouTube cho Thư viện bài tập"
+          git pull --rebase && git push
