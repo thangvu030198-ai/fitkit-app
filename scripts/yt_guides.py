@@ -22,6 +22,8 @@ RETRY_EMPTY = os.environ.get("YT_RETRY_EMPTY") == "1"
 API = "https://www.googleapis.com/youtube/v3/"
 STOP = {"the", "with", "on", "and", "a", "of", "to", "exercise", "version", "alternate", "alternating", "v", "bar"}
 BAD = re.compile(r"\b(workout routine|full workout|compilation|follow along|minute workout|min workout|music|playlist|reaction|asmr|vlog|day in the life)\b", re.I)
+EQUIP = ["smith", "barbell", "dumbbell", "cable", "kettlebell", "band", "machine", "lever", "ez", "trap", "sled", "landmine", "bodyweight"]
+NEG = re.compile(r"\b(stop|don'?t|never|worst|why you|is useless|overrated|vs\.?|versus)\b", re.I)
 GOOD = re.compile(r"\b(how to|form|technique|tutorial|proper|correct|guide|tips|mistakes|demo|demonstration)\b", re.I)
 
 def get(path, **q):
@@ -71,7 +73,9 @@ def pick(ex_id):
         dur = iso_dur(d.get("contentDetails", {}).get("duration"))
         if dur < 8 or dur > 600: continue
         title = sn.get("title", "")
-        if BAD.search(title): continue
+        if BAD.search(title) or NEG.search(title): continue
+        tl = title.lower(); nl = name.lower()
+        if any(e in tl and e not in nl for e in EQUIP if not (e == "machine" and "lever" in nl) and not (e == "lever" and "machine" in nl)): continue   # khác dụng cụ
         tw = set(words(title)); hit = sum(1 for w in key_w if w in tw or (len(w) > 4 and any(t.startswith(w[:5]) for t in tw)))
         if not key_w or hit / len(key_w) < 0.5: continue
         views = int(d.get("statistics", {}).get("viewCount", 0) or 0)
@@ -95,6 +99,11 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     data = json.loads(IDX.read_text(encoding="utf-8")) if IDX.exists() else {}
     items, tried = data.get("items", {}), data.get("tried", {})
+    ov_p = ROOT / "scripts/yt_overrides.json"          # chủ app duyệt: "drop" = tìm lại bài đó; "force" = gắn cứng video đã chọn
+    if ov_p.exists():
+        ov = json.loads(ov_p.read_text(encoding="utf-8"))
+        for k in ov.get("drop", []): items.pop(k, None); tried.pop(k, None)
+        for k, v in (ov.get("force") or {}).items(): items[k] = [x for x in v if re.fullmatch(r"[A-Za-z0-9_-]{11}", x)][:3]
     todo = [i for i in priority_ids(exdb_ids()) if i not in items and (RETRY_EMPTY or i not in tried)]
     print(f"Thư viện: {len(exdb_ids())} bài · đã có video: {len(items)} · còn: {len(todo)} · lần này tối đa {LIMIT}")
     today = datetime.date.today().isoformat(); n = 0

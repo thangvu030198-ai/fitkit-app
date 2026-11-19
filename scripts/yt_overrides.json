@@ -1,0 +1,8 @@
+{
+ "_note": "drop = bài cần tìm lại (video chưa đúng); force = gắn cứng video đã kiểm",
+ "drop": [
+  "Machine_Bench_Press",
+  "Narrow_Stance_Leg_Press"
+ ],
+ "force": {}
+}

@@ -96,8 +96,8 @@ function exKeyOf(item, name){
   try{
     if(item && item.exerciseId && EX_YT[item.exerciseId]) return item.exerciseId;
     const xid = item && item.custom && item.custom.exDbId;
-    if(xid && Array.isArray(YT_EXDB[xid]) && YT_EXDB[xid].length) return "x:" + xid;          // video tìm riêng cho đúng bài thư viện
-    if(xid && EXDB_ALIAS[xid] && EX_YT[EXDB_ALIAS[xid]]) return EXDB_ALIAS[xid];             // cùng động tác + dụng cụ với bài của app
+    if(xid && EXDB_ALIAS[xid] && EX_YT[EXDB_ALIAS[xid]]) return EXDB_ALIAS[xid];             // cùng động tác + dụng cụ với bài của app (video đã kiểm tay — ưu tiên)
+    if(xid && Array.isArray(YT_EXDB[xid]) && YT_EXDB[xid].length) return "x:" + xid;          // video tìm tự động cho đúng bài thư viện
     if(xid && typeof FV_CORE_EXDB !== "undefined"){ const k = Object.keys(FV_CORE_EXDB).find(k=> FV_CORE_EXDB[k] === xid); if(k && EX_YT[k]) return k; }
     const n = String(name || (item && item.custom && item.custom.name) || "").toLowerCase().trim();
     if(n && typeof EXERCISES !== "undefined"){
