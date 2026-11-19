@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "media/yt"; IDX = OUT / "index.json"
 KEY = os.environ.get("YT_API_KEY", "").strip()
-LIMIT = int(os.environ.get("YT_LIMIT", "90") or 90)
+LIMIT = int(os.environ.get("YT_LIMIT", "97") or 97)   # 10.000 đơn vị/ngày ÷ (100 search + 1 videos.list)
 RETRY_EMPTY = os.environ.get("YT_RETRY_EMPTY") == "1"
 API = "https://www.googleapis.com/youtube/v3/"
 STOP = {"the", "with", "on", "and", "a", "of", "to", "exercise", "version", "alternate", "alternating", "v", "bar"}
@@ -105,6 +105,9 @@ def main():
         for k in ov.get("drop", []): items.pop(k, None); tried.pop(k, None)
         for k, v in (ov.get("force") or {}).items(): items[k] = [x for x in v if re.fullmatch(r"[A-Za-z0-9_-]{11}", x)][:3]
     todo = [i for i in priority_ids(exdb_ids()) if i not in items and (RETRY_EMPTY or i not in tried)]
+    if not todo:                                        # hàng chờ hết → tự tìm lại những bài lần trước chưa ra video (sau ≥ 7 ngày)
+        old = (datetime.date.today() - datetime.timedelta(days=7)).isoformat()
+        todo = [i for i in priority_ids(exdb_ids()) if i not in items and str(tried.get(i, "")) <= old]
     print(f"Thư viện: {len(exdb_ids())} bài · đã có video: {len(items)} · còn: {len(todo)} · lần này tối đa {LIMIT}")
     today = datetime.date.today().isoformat(); n = 0
     for ex_id in todo[:LIMIT]:
