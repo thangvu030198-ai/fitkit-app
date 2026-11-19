@@ -53,7 +53,7 @@ function fvIdxBlocked(k){
 }
 function fvIdxFail(k){ const f = FV_IDX_FAIL[k]; f.n = Math.min(f.n + 1, 8); f.at = Date.now(); }
 function fvIdxOk(k){ const f = FV_IDX_FAIL[k]; f.n = 0; f.at = 0; }
-try{ if(typeof window !== "undefined" && typeof window.addEventListener === "function") window.addEventListener("online", ()=>{ fvIdxOk("extra"); fvIdxOk("wger"); }); }catch(e){}
+try{ if(typeof window !== "undefined" && typeof window.addEventListener === "function") window.addEventListener("online", ()=>{ fvIdxOk("extra"); fvIdxOk("wger"); if(FV_IDX_FAIL.ex3d) fvIdxOk("ex3d"); }); }catch(e){}
 
 /* 3. Video bổ sung chọn tay (Pexels License / Wikimedia Commons CC BY, CC BY-SA, Public domain) */
 let _extraIdx = null, _extraLoading = null;
@@ -94,6 +94,40 @@ const WGER_EQUIP = {
   "Triceps Extensions on Cable":"cable", "One Arm Triceps Extensions on Cable":"cable",
 };
 let _wgerIdx = null, _wgerLoading = null;
+/* 19/11/2026 — VIDEO 3D (media/ex3d/index.json): clip hoạt hình 3D có giấy phép của chủ app (kho E:\khovideogym) + bổ sung từ
+   free-exercise-db-with-videos. Mỗi clip gắn CHÍNH XÁC theo id bài (ids = id free-exercise-db, core = id bài trong EXERCISES)
+   → ưu tiên tuyệt đối khi khớp id; không khớp id thì vẫn so tên như nguồn khác. */
+let _ex3dIdx = null, _ex3dLoading = null;
+FV_IDX_FAIL.ex3d = { at:0, n:0 };
+async function loadEx3dIndex(){
+  if(_ex3dIdx) return _ex3dIdx;
+  if(_ex3dLoading) return _ex3dLoading;
+  if(fvIdxBlocked("ex3d")) return [];
+  _ex3dLoading = (async ()=>{
+    try{
+      const r = await fetch(FV_REPO_CDN + "media/ex3d/index.json");
+      if(!r.ok) throw new Error("HTTP " + r.status);
+      _ex3dIdx = (await r.json()).filter(x=> x && x.file && /^[\w.-]+$/.test(x.file)).map(x=>({
+        provider:"TapEasy 3D", name:x.name, equip:x.equip || "", ids:(x.ids||[]).map(String), core:(x.core||[]).map(String), ex3d:true,
+        url:FV_REPO_CDN+"media/ex3d/"+x.file, thumb:FV_REPO_CDN+"media/ex3d/"+(x.thumb||""), author:"TapEasy", authorUrl:"", pageUrl:"", license:"", duration:x.duration||0, tags:"",
+      }));
+      fvIdxOk("ex3d");
+      return _ex3dIdx;
+    }catch(e){ fvIdxFail("ex3d"); return []; }
+    finally{ _ex3dLoading = null; }
+  })();
+  return _ex3dLoading;
+}
+function fvSameName(target, v){
+  const t = fvTokens(target), c = fvTokens(v.name);
+  const k = x=> x.core.concat(x.equip).sort().join(" ");
+  if(v.equip && !c.equip.includes(v.equip) && v.equip !== "machine") c.equip.push(v.equip);
+  return !!c.core.length && (k(t) === k(c) || (t.core.slice().sort().join(" ") === c.core.slice().sort().join(" ") && !t.equip.length));
+}
+function fvCoreId(m){
+  try{ if(m && typeof EXERCISES !== "undefined") for(const k in EXERCISES){ if(EXERCISES[k] === m || (EXERCISES[k] && m.name && EXERCISES[k].name === m.name)) return k; } }catch(e){}
+  return "";
+}
 async function loadWgerIndex(){
   if(_wgerIdx) return _wgerIdx;
   if(_wgerLoading) return _wgerLoading;
@@ -116,7 +150,7 @@ async function loadWgerIndex(){
 }
 
 /** integrator: cả 2 index đã tải được chưa (tải nếu cần — tôn trọng nhớ lỗi) → refreshPlanVideos chỉ chạy khi có đủ dữ liệu */
-async function fvIndexesReady(){ await Promise.all([loadWgerIndex(), loadExtraIndex()]); return !!(_wgerIdx && _extraIdx); }
+async function fvIndexesReady(){ await Promise.all([loadWgerIndex(), loadExtraIndex(), loadEx3dIndex()]); return !!(_wgerIdx && _extraIdx); }
 
 /* ---- So khớp tên bài ---- */
 const FV_SYN = [
@@ -216,9 +250,14 @@ async function findFreeExerciseVideos(meta){
   const target = fvMatchName(m || meta);
   const bwOnly = fvBodyweightOnly(m);
   const posture = fvTargetPosture(m, target);
-  const [wg, ex] = await Promise.all([loadWgerIndex(), loadExtraIndex()]);
-  const pool = [...YMOVE_FREE, ...wg, ...ex];
+  const [wg, ex, e3] = await Promise.all([loadWgerIndex(), loadExtraIndex(), loadEx3dIndex()]);
+  const pool = [...e3, ...YMOVE_FREE, ...wg, ...ex];
+  const exId = m && m.exDbId ? String(m.exDbId) : "", coreId = fvCoreId(m);
   return pool.map(v=>{
+    if(v.ex3d){   // video 3D: chỉ gắn khi đúng id bài, hoặc tên trùng KHÍT (không ăn theo biến thể — vd Reverse Curl ≠ Curl)
+      if((exId && v.ids.includes(exId)) || (coreId && v.core.includes(coreId))) return { v, s: 1000 };
+      return { v, s: fvSameName(target, v) ? 500 : 0 };
+    }
     let s = fvScore(target, v);
     if(s > 0 && bwOnly && s < 60){
       const ce = fvTokens(v.name).equip.concat(v.equip && v.equip !== "bodyweight" ? [v.equip] : []);
