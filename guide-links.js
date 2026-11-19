@@ -78,11 +78,14 @@ function loadExdbIndex(){
   try{
     if(typeof fetch !== "function") return;
     const base = (G.location && /^https?:/.test(G.location.protocol) && !/tapeasy\.app$/.test(G.location.hostname)) ? "https://tapeasy.app/" : "";
-    fetch(base + "media/yt/index.json", { cache: "no-cache" }).then(r=> r.ok ? r.json() : null).then(j=>{
-      if(!j || !j.items || typeof j.items !== "object") return;
-      const out = {}; Object.keys(j.items).forEach(k=>{ const a = j.items[k]; if(/^[A-Za-z0-9_().,'-]{2,90}$/.test(k) && Array.isArray(a)) out[k] = a.filter(x=> YT_ID.test(x)).slice(0, 3); });
+    // 2 nguồn: media/yt/index.json (tìm tự động mỗi đêm) + yt-manual.json (chọn tay, ưu tiên hơn)
+    const get = u=> fetch(base + u, { cache: "no-cache" }).then(r=> r.ok ? r.json() : null).catch(()=> null);
+    Promise.all([get("media/yt/index.json"), get("yt-manual.json")]).then(([a, m])=>{
+      const out = {}, add = obj=>{ if(!obj || typeof obj !== "object") return; Object.keys(obj).forEach(k=>{ const v = obj[k]; if(/^[A-Za-z0-9_().,'-]{2,90}$/.test(k) && Array.isArray(v)){ const ids = v.filter(x=> YT_ID.test(x)).slice(0, 3); if(ids.length) out[k] = ids; } }); };
+      add(a && a.items); add(m && (m.items || m));
+      if(!Object.keys(out).length) return;
       YT_EXDB = out; try{ localStorage.setItem("fk_yt_exdb", JSON.stringify(out)); }catch(e){}
-    }).catch(()=>{});
+    });
   }catch(e){}
 }
 loadExdbIndex();

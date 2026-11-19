@@ -581,6 +581,29 @@ try{ document.addEventListener("click", e=>{
 
 /* Sắp xếp khối con trực tiếp của #home-content — chạy sau mỗi lần vẽ (microtask) và khi module chèn thẻ muộn.
    Chỉ di chuyển phần tử lệch chỗ (không vẽ lại) → giữ nguyên trình nghe sự kiện của module. */
+/* Chế độ gọn (góp ý người dùng: "clean hơn, gọn mắt hơn") — giữ nguyên giao diện, chỉ ẩn khối phụ ở Trang chủ + thẻ phụ ở Hồ sơ.
+   Lưu trong state.ui.compact (đồng bộ cùng dữ liệu); mặc định TẮT. */
+function fkCompactOn(){ try{ return !!(state.ui && state.ui.compact); }catch(e){ return false; } }
+function fkCompactSync(){
+  const on = fkCompactOn();
+  try{ document.documentElement.classList.toggle("fk-compact", on); }catch(e){}
+  const t = document.getElementById("fk-compact-toggle"), r = document.getElementById("fk-compact-row");
+  if(t) t.classList.toggle("on", on);
+  if(r) r.setAttribute("aria-checked", on ? "true" : "false");
+}
+function fkCompactSet(on){
+  try{ state.ui = Object.assign({}, state.ui, { compact: !!on }); saveState(); }catch(e){}
+  fkCompactSync();
+  try{ teHomeLayout(); }catch(e){}
+  try{ toast(on ? "Đã bật chế độ gọn" : "Đã tắt chế độ gọn", "success"); }catch(e){}
+}
+try{
+  document.addEventListener("click", e=>{ const r = e.target && e.target.closest ? e.target.closest("#fk-compact-row") : null; if(r){ e.preventDefault(); fkCompactSet(!fkCompactOn()); } });
+  document.addEventListener("keydown", e=>{ if((e.key === "Enter" || e.key === " ") && e.target && e.target.id === "fk-compact-row"){ e.preventDefault(); fkCompactSet(!fkCompactOn()); } });
+  fkCompactSync(); window.addEventListener("load", fkCompactSync);
+  window.fkCompactSet = fkCompactSet; window.fkCompactOn = fkCompactOn;
+}catch(e){}
+
 function teHomeLayout(){
   const el = document.getElementById("home-content");
   if(!el || !el.children || !el.children.length) return;
@@ -636,6 +659,9 @@ function teHomeLayout(){
   alerts.forEach((a, k)=> zone.set(a.n, k === 0 ? 1 : 7.6));
   // 3. ẩn thẻ trùng (đã gộp vào Khám phá) — không xoá để module không chèn lại
   kids.forEach(n=>{ const merged = zone.get(n) === 99; if(n.classList && n.classList.contains("te-merged") !== merged) n.classList.toggle("te-merged", merged); });
+  // 3b. CHẾ ĐỘ GỌN: chỉ giữ Chào · 1 cảnh báo · Tuần · Buổi hôm nay · Chỉ số · PT · Khám phá — khối phụ (vùng ≥ 7) ẩn, không xoá
+  const cpt = fkCompactOn();
+  kids.forEach(n=>{ const hide = cpt && zone.get(n) >= 7 && zone.get(n) !== 99; if(n.classList && n.classList.contains("fk-cpt-hide") !== hide) n.classList.toggle("fk-cpt-hide", hide); });
   // 4. sắp xếp ổn định theo vùng, chỉ di chuyển phần tử lệch chỗ
   const want = kids.map((n, i)=> ({ n, i, z: zone.get(n) })).sort((a, b)=> a.z - b.z || a.i - b.i).map(x=> x.n);
   for(let i = 0; i < want.length; i++){

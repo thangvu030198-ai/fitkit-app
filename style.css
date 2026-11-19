@@ -1509,6 +1509,9 @@ html.fk-light .splash-brand img.on-light{ display:block; }
    Ô ≥ 44 px chạm, chữ ≥ 12 px; màu theo token theme (--glass, --border, --text*).
    ===================================================================== */
 #home-content > .te-merged{ display:none !important; }   /* thẻ module đã có ô Khám phá thay thế */
+/* Chế độ gọn: ẩn khối phụ ở Trang chủ (pt.js teHomeLayout) + thẻ "Cơ sở khoa học" ở Hồ sơ */
+#home-content > .fk-cpt-hide{ display:none !important; }
+html.fk-compact #profile-science-card{ display:none; }
 .te-explore{ display:flex; flex-direction:column; gap:8px; min-width:0; }
 .te-explore-head{ display:flex; align-items:baseline; justify-content:space-between; padding:0 2px; }
 .te-explore-head h3{ font-size:17px; font-weight:600; }

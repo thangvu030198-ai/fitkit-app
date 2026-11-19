@@ -99,6 +99,11 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     data = json.loads(IDX.read_text(encoding="utf-8")) if IDX.exists() else {}
     items, tried = data.get("items", {}), data.get("tried", {})
+    man_p = ROOT / "yt-manual.json"                    # video chọn tay (anh/em tìm thủ công) → coi như đã có, không tốn lượt tìm
+    if man_p.exists():
+        man = json.loads(man_p.read_text(encoding="utf-8")); man = man.get("items", man)
+        for k, v in man.items():
+            if isinstance(v, list) and v: items[k] = v[:3]
     ov_p = ROOT / "scripts/yt_overrides.json"          # chủ app duyệt: "drop" = tìm lại bài đó; "force" = gắn cứng video đã chọn
     if ov_p.exists():
         ov = json.loads(ov_p.read_text(encoding="utf-8"))

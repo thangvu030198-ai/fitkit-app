@@ -3790,6 +3790,7 @@ function renderProfileScreen(){
   const bmi = p.height ? (typeof bodyAnalysis === "function" ? bodyAnalysis(p).bmi : fmt1(p.weight/((p.height/100)**2))) : "--";   // cùng cách hiển thị với thẻ phân tích (BUG-09)
   $("#stat-bmi").textContent = bmi;
   $("#stat-streak").textContent = calcStreak();
+  try{ if(typeof fkCompactSync === "function") fkCompactSync(); }catch(e){}   // công tắc "Chế độ gọn" (pt.js)
 
   /* integrator (FIX-nutrition vòng 2 #3): "Ẩn số calo" → ẩn dòng BMR/TDEE, mục tiêu hiện "Theo khẩu phần" (không có số kcal) */
   const hideK = fkHideKcal();
