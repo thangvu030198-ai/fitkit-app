@@ -16,7 +16,7 @@ const { scriptOrder, APP_DIR } = require("../lib/harness");
 const read = f=> fs.readFileSync(path.join(APP_DIR, f), "utf8");
 const strip = s=> s.replace(/\/\*[\s\S]*?\*\//g, "");
 const THEMES = ["navy", "ocean", "sunset", "forest", "midnight", "light",
-  "aurora", "espresso", "alpine", "wellness", "sanctuary", "ember", "volt", "violet", "lime"];
+  "aurora", "espresso", "alpine", "wellness", "sanctuary", "ember", "volt", "violet", "lime", "spatial"];
 const NEW_PACKS = ["ember", "volt", "violet", "lime"];
 const REQ = ["--accent", "--accent-2", "--accent-rgb", "--on-accent", "--cta-bg", "--cta-solid", "--cta-rgb", "--cta-fg", "--cta-shadow",
   "--link", "--logo-mark", "--logo-text", "--gauge-a", "--gauge-b", "--ring-1", "--ring-2", "--ring-3"];
@@ -26,6 +26,7 @@ const SURF = {
   midnight:["#0E0A26", "#1A1342"], light:["#EDF2F5", "#FFFFFF"], aurora:["#000000", "#1A1A1A"], espresso:["#180A06", "#3A1F14"],
   alpine:["#EAE6DE", "#F4F0E9"], wellness:["#34414D", "#4A5764"], sanctuary:["#2A2322", "#3E342D"],
   ember:["#F4F4F2", "#FFFFFF"], volt:["#0B0B0C", "#1A1A1C"], violet:["#15161C", "#1F2029"], lime:["#FFFFFF", "#F3F4EF"],
+  spatial:["#1B1C17", "#3A3C35"],
 };
 
 /* ---------- màu & WCAG ---------- */
@@ -81,9 +82,9 @@ module.exports = {
       assert.deepEqual(app.loadErrors.map(e=> e.file), [], "nạp lỗi");
     });
 
-    t.test("Đủ token accent cho 15 theme (6 cũ + 9 gói) và khớp danh sách bộ chọn", ()=>{
+    t.test("Đủ token accent cho 16 theme (6 cũ + 10 gói) và khớp danh sách bộ chọn", ()=>{
       const ids = app.evj("fkTheme.list.map(x=> x.id)").filter(x=> x !== "auto");
-      assert.deepEqual(ids, THEMES, "bộ chọn = 15 theme");
+      assert.deepEqual(ids, THEMES, "bộ chọn = 16 theme");
       for(const id of THEMES){
         const T = tokensOf(ACSS, id); assert.ok(T, "thiếu khối token " + id);
         const miss = REQ.filter(k=> !T[k]); assert.deepEqual(miss, [], id + " thiếu token");

@@ -228,7 +228,7 @@
     "Chàm · Oải hương · Ngọc": "Indigo · Lavender · Jade", "Nền sáng, chữ đậm (AA)": "Light background, bold text (AA)", "Nâu ấm · kính lỏng · ánh cam": "Warm brown · liquid glass · orange glow",
     "Tối · tím · chỉ số nhiều màu": "Dark · violet · colorful stats", "Xanh xám sương · kính viền sáng": "Misty blue-grey · bright-edged glass", "Sáng · kem & hổ phách · nhãn mono": "Light · cream & amber · mono labels",
     "Sáng · cam rực · thẻ trắng bo lớn": "Light · vivid orange · big rounded white cards", "Đen · chanh điện · chữ in hoa đậm": "Black · electric lime · bold caps",
-    "Trắng · chip chanh · thẻ ảnh bo lớn": "White · lime chips · big rounded photo cards", "Đen tuyệt đối · tối giản · chữ trắng": "Pure black · minimal · white text",
+    "Trắng · chip chanh · thẻ ảnh bo lớn": "White · lime chips · big rounded photo cards", "Kính nổi · nền phòng tập · nhấn bạc hà": "Floating glass · gym backdrop · mint accent", "Đen tuyệt đối · tối giản · chữ trắng": "Pure black · minimal · white text",
     "Nâu cà phê · kem · chữ mảnh editorial": "Coffee brown · cream · thin editorial type", "màu · chất liệu · font · chuyển động": "color · material · font · motion",
     "Cảm giác chạm": "Touch feel", "Rung khi chạm": "Haptic feedback", "Đã bật rung khi chạm": "Haptics turned on", "Đã tắt rung khi chạm": "Haptics turned off",
     "Rung nhẹ khi bấm nút, đổi tab, xong hiệp và lưu thành công.": "A light buzz when you tap buttons, switch tabs, finish a set or save.",

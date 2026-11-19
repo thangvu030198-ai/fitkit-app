@@ -690,3 +690,83 @@ html.lowfx[data-theme="violet"] .sig-gauge-card{ background:#1F2029 !important; 
   html:is([data-theme="volt"], [data-theme="lime"]) .btn-block.btn-primary::after{ transition:none; }
   html:is([data-theme="volt"], [data-theme="lime"]) .btn-block.btn-primary:is(:hover, :focus-visible)::after{ transform:none; }
 }
+
+/* #########################################################################
+   GÓI "SPATIAL" (19/11) — kính nổi trên nền phòng tập (phong cách giao diện không gian):
+   nền = ảnh phòng tập đen trắng của app (biến --tp-photo do themes.js gán từ MEDIA_CONFIG.welcomePoster lúc chạy —
+   KHÔNG ghi đường dẫn ảnh trong CSS; thiếu ảnh/ngoại tuyến → gradient ô-liu ấm), phủ ấm + ánh bạc hà + nắng góc trái;
+   thẻ kính mờ xám-ô-liu viền sáng trong, chip/tab đang chọn TRẮNG chữ mực, nhấn bạc hà #7EE8D0, CTA gradient chanh→bạc hà→ngọc,
+   Manrope 400–800, bo lớn, vào màn = mờ → rõ + trồi lên. Chỉ đổi giao diện — bố cục/thông tin của app giữ nguyên.
+   Token accent ở theme-accent.css §1.
+   ######################################################################### */
+:root[data-theme="spatial"]{
+  --bg:#1B1C17;
+  --navy:#1B1C17; --navy-2:#262822; --navy-3:#34372F; --navy-4:#4A4D44;
+  --mint:#7EE8D0; --mint-2:#C8F7E9; --mint-3:#3CC4B4;
+  --coral:#8EF0D6; --coral-2:#E3FBB0; --coral-3:#3CC4B4; --coral-4:#C8F7E9; --coral-hot:#FF8A6B;
+  --navy-rgb:27,28,23; --mint-rgb:126,232,208; --coral-rgb:142,240,214; --coral-2-rgb:227,251,176;
+  --on-mint:#0F3B36; --on-coral:#0F3B36;
+  --text-muted:rgba(255,255,255,.84); --text-dim:rgba(255,255,255,.76);
+  --fk-text-boost:.35;
+  --fk-veil-rgb:27,28,23; --fk-scrim-rgb:20,21,16;
+  --fk-sheet-1-rgb:58,60,53; --fk-sheet-2-rgb:33,35,29;
+  --fk-toast-rgb:255,255,255; --fk-toast-ink:#1B1D19; --fk-toast-accent:#0F6B5E;
+  --fk-dock-bg:linear-gradient(180deg, rgba(110,114,104,.42), rgba(86,90,82,.38)); --fk-chip-bg:rgba(255,255,255,.10);
+  --glass:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.065)); --glass-blur:blur(26px) saturate(135%);
+  --glass-solid:linear-gradient(180deg, #3A3C35, #33352F);
+  --fk-shell-bg:
+    radial-gradient(60% 34% at 20% 4%, rgba(255,236,190,.22), transparent 70%),
+    linear-gradient(160deg, rgba(126,232,208,.10), rgba(227,251,176,.04) 45%, rgba(60,196,180,.10)),
+    linear-gradient(180deg, rgba(27,28,23,.38) 0%, rgba(27,28,23,.56) 50%, rgba(20,21,16,.88) 100%),
+    linear-gradient(rgba(92,74,44,.30), rgba(92,74,44,.30)),
+    var(--tp-photo, linear-gradient(160deg, #55554A, #2A2B24)) center 30% / cover no-repeat,
+    #1B1C17;
+  --fk-shell-blend:normal; --fk-theme-color:#1B1C17;
+  --font-ui:'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-head:'Manrope', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --tp-r-card:28px; --tp-r-tile:22px; --tp-r-btn:999px; --tp-r-input:18px; --tp-r-dock:34px; --tp-btn-h:54px;
+  --tp-head-w:800; --tp-head-track:-.02em;
+  --tp-ease:cubic-bezier(.16,1,.3,1); --tp-stagger:.08s; --tp-rise:22px; --tp-rise-dur:.9s;
+  --tp-gauge-a:#E3FBB0; --tp-gauge-b:#3CC4B4;
+  --sig-step-on-bg:#FFFFFF; --sig-step-on-ink:#1B1D19; --sig-step-off-bg:rgba(255,255,255,.10);
+  --tp-hero-grad:radial-gradient(90% 80% at 0% 0%, rgba(255,236,190,.18), transparent 60%), linear-gradient(160deg, rgba(126,232,208,.18), rgba(27,28,23,.4)), #2A2B24;
+}
+
+/* =========================================================================
+   14. SPATIAL — kính nổi, chip/tab chọn trắng, quầng bạc hà
+   ========================================================================= */
+html[data-theme="spatial"] #app-shell::before{ opacity:.6; }
+html[data-theme="spatial"] :is(.card, .nu-gauge-card, .sig-gauge-card, .home-hero, .nu-meal, .nu-water, .plan-card, .tpl-card){
+  border:1px solid rgba(255,255,255,.16) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22), 0 24px 60px -26px rgba(10,10,6,.65) !important; }
+html[data-theme="spatial"] .card::after{ opacity:.5; }
+html[data-theme="spatial"] :is(.stat-box, .metric, .list-item, .entry-tile, .quick-row button){ background:rgba(255,255,255,.075) !important; border-color:rgba(255,255,255,.12) !important; }
+html[data-theme="spatial"] :is(.pill.active, .pill.hot, .choice-card.selected, .pb-opt.on, .fk-seg button[aria-checked="true"]){
+  background:#FFFFFF !important; color:#1B1D19 !important; border-color:#FFFFFF !important; box-shadow:0 8px 22px -8px rgba(0,0,0,.45) !important; }
+html[data-theme="spatial"] :is(.choice-card.selected, .pb-opt.on) :is(small, .material-symbols-rounded){ color:rgba(27,29,25,.78) !important; }
+html[data-theme="spatial"] .pill:not(.active):not(.hot){ background:rgba(255,255,255,.09) !important; border-color:rgba(255,255,255,.16) !important; }
+html[data-theme="spatial"] .btn-outline{ background:rgba(255,255,255,.08) !important; border-color:rgba(255,255,255,.22) !important; }
+html[data-theme="spatial"] .topbar .icon-btn{ background-color:rgba(255,255,255,.10) !important; }
+html[data-theme="spatial"] .bottom-nav{ border:1px solid rgba(255,255,255,.22) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 24px 60px -20px rgba(10,10,6,.6) !important; }
+html[data-theme="spatial"] .nav-item.active .material-symbols-rounded{ background:#FFFFFF; color:#1B1D19; box-shadow:0 6px 18px -6px rgba(0,0,0,.5); }
+html[data-theme="spatial"] .nav-item.active{ color:#FFFFFF; }
+html[data-theme="spatial"] .wd.today{ background:#FFFFFF !important; border-color:#FFFFFF !important; }
+html[data-theme="spatial"] .wd.today :is(small, b){ color:#1B1D19 !important; }
+html[data-theme="spatial"] .wd.done i{ background:linear-gradient(135deg, #E3FBB0, #8EF0D6 45%, #3CC4B4) !important; color:#0F3B36 !important; }
+html[data-theme="spatial"] .streak-chip{ background:rgba(255,255,255,.10) !important; border-color:rgba(255,255,255,.18) !important; }
+html[data-theme="spatial"] :is(.btn-fab, .tp-halo){ box-shadow:0 0 0 5px rgba(126,232,208,.18), 0 0 28px 4px rgba(126,232,208,.45) !important; }
+html[data-theme="spatial"] .sheet{ border-top:1px solid rgba(255,255,255,.26); }
+html[data-theme="spatial"] .sig-gauge-card{ background:radial-gradient(80% 60% at 0% 0%, rgba(255,236,190,.14), transparent 60%), rgba(255,255,255,.07) !important; }
+/* clip 3D đầu màn tập: viền kính như thẻ */
+html[data-theme="spatial"] .exg-3d{ border-radius:24px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.2), 0 20px 50px -24px rgba(0,0,0,.6); }
+@keyframes tpSpatialIn{ from{ opacity:0; transform:translate3d(0, var(--tp-rise, 22px), 0) scale(.985); filter:blur(10px); } to{ opacity:1; transform:none; filter:none; } }
+@media (prefers-reduced-motion: no-preference){
+  html[data-theme="spatial"]:not(.lowfx) .screen.enter .content > *{ animation-name:tpSpatialIn; }
+}
+html.lowfx[data-theme="spatial"] :is(.card, .nu-gauge-card, .sig-gauge-card, .home-hero, .bottom-nav, .stat-box, .metric, .list-item, .pill, .btn-outline){
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+html.lowfx[data-theme="spatial"] :is(.card, .nu-gauge-card, .sig-gauge-card, .bottom-nav){ background:#33352F !important; box-shadow:none !important; }
+@media (prefers-reduced-transparency: reduce){
+  html[data-theme="spatial"] :is(.card, .nu-gauge-card, .sig-gauge-card, .bottom-nav){ background:#33352F !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+}

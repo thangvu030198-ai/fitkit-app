@@ -16,6 +16,8 @@ const PACKS = ["aurora", "espresso", "alpine", "wellness", "sanctuary"];
 /* (12/11, vòng accent) +4 gói học từ ảnh mẫu chủ app — kiểm chi tiết ở tests/suites/72-theme-accent.test.js */
 const NEW_PACKS = ["ember", "volt", "violet", "lime"];
 const LIGHT_PACKS = ["alpine", "ember", "lime"];
+/* (19/11) gói Spatial — kính nổi trên nền phòng tập; kiểm chi tiết ở tests/suites/106-theme-spatial.test.js */
+const SPATIAL = ["spatial"];
 const CLASSIC = ["navy", "ocean", "sunset", "forest", "midnight", "light"];
 
 /* ---------- màu & tương phản WCAG 2.x ---------- */
@@ -86,8 +88,8 @@ module.exports = {
       const list = app.evj("fkTheme.list.map(x=> ({ id:x.id, name:x.name, pack:!!x.pack, pv:!!x.pv, fonts:x.fonts || [], mode:x.mode || 'dark' }))");
       assert.deepEqual(list.filter(x=> !x.pack).map(x=> x.id), ["auto", ...CLASSIC]);
       assert.deepEqual(list.filter(x=> !x.pack).map(x=> x.name), ["Tự động","Mặc định","Đại dương","Hoàng hôn","Rừng","Tím đêm","Sáng"]);
-      assert.deepEqual(list.filter(x=> x.pack).map(x=> x.id), [...PACKS, ...NEW_PACKS]);
-      assert.deepEqual(list.filter(x=> x.pack).map(x=> x.name), ["Aurora","Espresso","Thu Alpine","Sương Wellness","Sanctuary","Cam năng lượng","Volt","Tím Đêm Pro","Chanh sáng"]);
+      assert.deepEqual(list.filter(x=> x.pack).map(x=> x.id), [...PACKS, ...NEW_PACKS, ...SPATIAL]);
+      assert.deepEqual(list.filter(x=> x.pack).map(x=> x.name), ["Aurora","Espresso","Thu Alpine","Sương Wellness","Sanctuary","Cam năng lượng","Volt","Tím Đêm Pro","Chanh sáng","Spatial"]);
       assert.ok(list.filter(x=> x.pack).every(x=> x.pv && x.fonts.length), "gói thiếu pv / fonts");
       for(const id of LIGHT_PACKS) assert.equal(list.find(x=> x.id === id).mode, "light", id + " là gói SÁNG");
       const fams = [...new Set(list.flatMap(x=> x.fonts).map(f=> f.split(":")[0].replace(/\+/g, " ")))].sort();
@@ -95,13 +97,13 @@ module.exports = {
       assert.match(TJS, /const GF = "https:\/\/fonts\.googleapis\.com\/css2\?"/);
       app.run("fkTheme.set('navy')");
       const card = app.lastHtml("fk-theme-card");
-      assert.equal((card.match(/data-fk-theme="/g) || []).length, 16, "16 lựa chọn (Tự động + 6 + 9 gói)");
-      assert.equal((card.match(/class="fk-pack-pv"/g) || []).length, 9, "9 ảnh xem trước");
+      assert.equal((card.match(/data-fk-theme="/g) || []).length, 17, "17 lựa chọn (Tự động + 6 + 10 gói)");
+      assert.equal((card.match(/class="fk-pack-pv"/g) || []).length, 10, "10 ảnh xem trước");
       assert.match(card, /role="radiogroup"/); assert.match(card, /Gói giao diện/);
     });
 
     t.test("Áp gói: data-theme/data-pack, class tp-pack, fk-light cho Thu Alpine, lưu state.theme; về Mặc định gỡ tp-pack", ()=>{
-      for(const id of [...PACKS, ...NEW_PACKS]){
+      for(const id of [...PACKS, ...NEW_PACKS, ...SPATIAL]){
         app.run(`fkTheme.set(${JSON.stringify(id)})`);
         const r = app.evj(`({ th:document.documentElement.getAttribute("data-theme"), pk:document.documentElement.getAttribute("data-pack"),
           tp:document.documentElement.classList.contains("tp-pack"), lt:document.documentElement.classList.contains("fk-light"), st:state.theme })`);

@@ -4,7 +4,7 @@
    + "Tự động" (theo cài đặt sáng/tối của máy).
    - Màu bảng cũ nằm ở themes.css; token của gói nằm ở theme-packs.css (+ hiệu ứng ở theme-packs.js).
    - Lưu: state.theme ("auto"|"navy"|"ocean"|"sunset"|"forest"|"midnight"|"light"|"aurora"|"espresso"|"alpine"|"wellness"|"sanctuary"
-            |"ember"|"volt"|"violet"|"lime") — 9 gói; token accent (nút/chip/tab/logo) ở theme-accent.css
+            |"ember"|"volt"|"violet"|"lime"|"spatial") — 10 gói; token accent (nút/chip/tab/logo) ở theme-accent.css
    - Áp dụng: <html data-theme data-theme-pref class="fk-themed fk-light|fk-dark [tp-pack]">,
      <meta name="theme-color">, thanh trạng thái Capacitor (nếu có plugin StatusBar), font Google của gói (nạp lười).
    - Bộ chọn giao diện: thẻ "Giao diện" trong màn Hồ sơ (ghi đè renderProfileScreen), gói có ảnh xem trước nhỏ.
@@ -60,6 +60,12 @@
     { id:"lime",     name:"Chanh sáng",     desc:"Trắng · chip chanh · thẻ ảnh bo lớn", meta:"#FFFFFF", pack:true, mode:"light",
       fonts:["Inter:wght@400;500;600;700","Inter+Tight:wght@600;700"],
       pv:{ bg:"#FFFFFF", card:"#F3F4EF", ink:"#0B0B0C", acc:"#4D6600", cta:"#DFFF4F", ctaInk:"#0B0B0C", r:"16px", font:"'Inter Tight',sans-serif", w:700 } },
+    /* ---- Spatial (19/11): kính nổi trên nền phòng tập — ảnh nền gán lúc chạy (photo:true → --tp-photo từ MEDIA_CONFIG.welcomePoster) ---- */
+    { id:"spatial",  name:"Spatial",        desc:"Kính nổi · nền phòng tập · nhấn bạc hà", meta:"#1B1C17", pack:true, photo:true,
+      fonts:["Manrope:wght@400;500;600;700;800"],
+      pv:{ bg:"radial-gradient(70% 50% at 20% 8%, rgba(255,236,190,.30), transparent 70%), linear-gradient(160deg, #5A5A4E, #1B1C17)",
+           card:"rgba(255,255,255,.14)", ink:"#FFFFFF", acc:"#7EE8D0", cta:"linear-gradient(135deg,#E3FBB0,#8EF0D6 45%,#3CC4B4)", ctaInk:"#0F3B36",
+           r:"16px", font:"'Manrope',sans-serif", w:800 } },
   ];
   let IDS = THEMES.map(t=>t.id);
   const DEFAULT = "navy";
@@ -114,6 +120,7 @@
     root.classList.toggle("tp-pack", !!def.pack);
     if(def.pack) root.setAttribute("data-pack", id); else root.removeAttribute("data-pack");
     ensureFonts(def);
+    setPhoto(def);
     const color = def.meta || "#061A24";
     setMetaColor(color);
     setStatusBar(light, color);
@@ -122,6 +129,15 @@
       if(prev !== null){ try{ window.dispatchEvent(new CustomEvent("fk:themechange", { detail:{ id, pref, prev, pack:!!def.pack, light } })); }catch(e){} }
     }
     return id;
+  }
+  /* Gói có ảnh nền (photo:true): --tp-photo = ảnh phòng tập của app (MEDIA_CONFIG.welcomePoster, nạp sau themes.js →
+     lần áp đầu trong <head> chưa có, hookApp áp lại sau DOMContentLoaded). Không có ảnh → CSS dùng gradient dự phòng. */
+  function setPhoto(def){
+    try{
+      const src = def.photo && typeof MEDIA_CONFIG !== "undefined" && MEDIA_CONFIG && MEDIA_CONFIG.welcomePoster;
+      if(src && !window.TP_NO_PHOTO) root.style.setProperty("--tp-photo", 'url("' + String(src).replace(/["\\()\s]/g, "") + '")');
+      else root.style.removeProperty("--tp-photo");
+    }catch(e){}
   }
   function setMetaColor(color){
     let m = document.querySelector('meta[name="theme-color"]');

@@ -115,6 +115,13 @@
   --link:#4D6600; --logo-mark:#4D6600; --logo-text:#0B0B0C;                                         /* 6,5:1 trắng */
   --gauge-a:#ECFF94; --gauge-b:#B8E000; --ring-1:#0B0B0C; --ring-2:#B8E000; --ring-3:#7A8A99;
 }
+:root[data-theme="spatial"]{                                     /* Spatial — kính nổi trên phòng tập, nhấn bạc hà */
+  --accent:#7EE8D0; --accent-2:#C8F7E9; --accent-rgb:126,232,208; --on-accent:#0F3B36;
+  --cta-bg:linear-gradient(135deg, #E3FBB0 0%, #8EF0D6 45%, #3CC4B4 100%); --cta-solid:#8EF0D6; --cta-rgb:142,240,214; --cta-fg:#0F3B36;
+  --cta-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 10px 28px rgba(60,196,180,.32);
+  --link:#8EF0D6; --logo-mark:#7EE8D0; --logo-text:#FFFFFF;
+  --gauge-a:#E3FBB0; --gauge-b:#3CC4B4; --ring-1:#7EE8D0; --ring-2:#E3FBB0; --ring-3:#3CC4B4;
+}
 
 /* ---------- 2. "Đảo tối" của theme SÁNG (phần tử nằm trên ảnh/video, màn chào) + sheet kem Sanctuary ---------- */
 html.fk-light :is(.hero, #screen-workout > .topbar.transparent, .mg-card, .wl, #auth.wl-mode, .auth-hero,
