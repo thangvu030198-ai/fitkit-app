@@ -11,6 +11,13 @@ const FKP = d=>d.split("|").map(s=> s.startsWith("c:") ? (a=>`<circle cx="${a[0]
 const FK_CAL = "r:3,4,18,18,2.5|M16 2v4|M8 2v4|M3 10h18";
 const FK_USER = "c:12,8,4|M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1";
 const FK_LINE = {
+  /* 19/11 — icon còn thiếu (trước đây hiện chấm tròn dự phòng) */
+  accessibility_new:"c:12,4,2|M4 8l8 1.5L20 8|M12 9.5V14|M9 21l3-7 3 7", cable:"M7 3v5|M17 3v5|r:5,8,4,5,1|r:15,8,4,5,1|M7 13v3a5 5 0 0 0 10 0v-3",
+  gavel:"M14 4l6 6|M11 7l6 6|M12.5 5.5l-5 5 6 6 5-5|M9.5 13.5L3 20|M3 21h9", list_alt:"r:3,4,18,16,2|M7 9h1|M11 9h6|M7 13h1|M11 13h6|M7 17h1|M11 17h6",
+  low_priority:"M3 6h10|M3 12h7|M3 18h7|M17 8v10|M14 15l3 3 3-3", mark_email_read:"M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7|M3 6l9 6 9-6|M15 19l2 2 4-4",
+  precision_manufacturing:"M4 20h16|M7 20v-6l6-6|c:13,8,2|M13 8l4-3 3 3|M15 10l2 2", save:"M5 3h11l5 5v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z|M7 3v6h8V3|r:7,13,10,6,1",
+  sports_score:"M5 21V4|M5 4h12l-2 4 2 4H5", undo:"M9 14L4 9l5-5|M4 9h10a6 6 0 0 1 0 12h-3", vibration:"r:8,3,8,18,2|M3 8v8|M21 8v8|M5 10v4|M19 10v4",
+  view_week:"r:3,4,18,16,2|M9 4v16|M15 4v16", weight:"M6 8h12l2 13H4z|c:12,5,2.5",
   trending_down:"M22 17l-8.5-8.5-5 5L2 7|M16 17h6v-6",
   swap_horiz:"M16 3l4 4-4 4|M20 7H4|M8 21l-4-4 4-4|M4 17h16", playlist_add:"M3 6h12|M3 12h12|M3 18h8|M18 14v8|M14 18h8",
   lightbulb:"M9 18h6|M10 22h4|M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z", mode_fan:"c:12,12,2|M12 10c0-4 1-7 4-7s3 5-2 7|M14 12c4 0 7 1 7 4s-5 3-7-2|M12 14c0 4-1 7-4 7s-3-5 2-7|M10 12c-4 0-7-1-7-4s5-3 7 2",

@@ -298,3 +298,15 @@ html[data-theme] .wl-hero-shade, .wl-hero-shade{ background:linear-gradient(180d
 .home-hero:has(.home-hero-ring) .home-hero-body > :is(.hero-eyebrow, .headline){ max-width:calc(100% - 82px); }
 .home-hero .home-hero-body > .headline{ overflow-wrap:anywhere; text-wrap:balance; hyphens:auto; }
 html[data-theme] .home-hero .home-hero-body > .headline{ font-size:clamp(20px, 6.4vw, 26px) !important; line-height:1.1 !important; }
+
+/* ---------- 19/11 — rà tương phản icon/chữ trên mọi theme (đo trên tapeasy.app: 16 theme × 5 màn) ----------
+   Icon/chữ dùng màu nhấn sáng (--mint / accent / cam nhạt) đặt trên nền SÁNG bị chìm → dùng --link (đã đạt ≥ 4,5:1 với nền + thẻ). */
+html.fk-light :is(.coach-intro > .material-symbols-rounded, #fkc-cd h4 .material-symbols-rounded, .ach-cb-ic .material-symbols-rounded){ color:var(--link) !important; }
+html.fk-light .ach-cb-ic{ background:rgba(var(--accent-rgb), .14) !important; }
+html[data-theme="alpine"] .streak-chip .material-symbols-rounded{ color:#B45309 !important; }
+/* ly nước chưa uống: icon .45 → .78 (vẫn nhạt hơn ly đã uống nhưng không chìm) */
+html.fk-themed .nu-cups .cup:not(.on){ color:rgba(var(--mint-rgb), .8); border-color:rgba(var(--mint-rgb), .5); }
+html.fk-light .nu-cups .cup:not(.on){ color:var(--link); border-color:rgba(var(--accent-rgb), .45); }
+/* chữ phụ 12 px trong hàng liên kết (Hồ sơ): .78 → .88 trên theme tối */
+html.fk-dark .link-row .sub{ color:rgba(255,255,255,.88); }
+html.fk-dark:is([data-theme="espresso"], [data-theme="sanctuary"]) .link-row .sub{ color:rgba(245,236,224,.9); }
