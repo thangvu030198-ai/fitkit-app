@@ -5091,5 +5091,145 @@
   "prompt": "Wide photo of an empty premium dark gym interior at night, no people at all, black and charcoal tones, power racks, barbells and neat dumbbell rows, subtle cool rim lighting from strip lights, polished rubber floor reflections, symmetrical composition with the center of interest in the middle. Cinematic architectural photography, high contrast, realistic. No people. Plain unbranded equipment, no logos. No text, no watermark.",
   "extra": true,
   "replaces_pexels": []
+ },
+ {
+  "id": "hero-gym-1",
+  "name": "Ảnh hero lịch tuần Thứ 2 — phòng tập đen trắng, không người",
+  "group": "gym-bw",
+  "used_in": [
+   "app.js renderWorkoutScreen (#workout-hero theo ngày)"
+  ],
+  "size": "1024x1536",
+  "cutout": false,
+  "prompt": "Vertical black-and-white documentary photograph of an EMPTY modern gym interior with absolutely no people, a long row of squat racks with barbells racked, low wide-angle view down the aisle. Monochrome, rich deep blacks and bright highlights, soft natural film grain, dramatic window or overhead light with long shadows, realistic architectural photography, 35mm lens, calm and premium mood, the top 35% of the frame is darker and uncluttered for headline text. No people, no body parts, no reflections of people in mirrors, no text, no logos, no brand names, no signage, no numbers.",
+  "must_have": [
+   "empty gym",
+   "black and white"
+  ],
+  "must_not": [
+   "people",
+   "text",
+   "logos"
+  ]
+ },
+ {
+  "id": "hero-gym-2",
+  "name": "Ảnh hero lịch tuần Thứ 3 — phòng tập đen trắng, không người",
+  "group": "gym-bw",
+  "used_in": [
+   "app.js renderWorkoutScreen (#workout-hero theo ngày)"
+  ],
+  "size": "1024x1536",
+  "cutout": false,
+  "prompt": "Vertical black-and-white documentary photograph of an EMPTY modern gym interior with absolutely no people, rows of hexagonal dumbbells on a rack receding into the distance, close side angle. Monochrome, rich deep blacks and bright highlights, soft natural film grain, dramatic window or overhead light with long shadows, realistic architectural photography, 35mm lens, calm and premium mood, the top 35% of the frame is darker and uncluttered for headline text. No people, no body parts, no reflections of people in mirrors, no text, no logos, no brand names, no signage, no numbers.",
+  "must_have": [
+   "empty gym",
+   "black and white"
+  ],
+  "must_not": [
+   "people",
+   "text",
+   "logos"
+  ]
+ },
+ {
+  "id": "hero-gym-3",
+  "name": "Ảnh hero lịch tuần Thứ 4 — phòng tập đen trắng, không người",
+  "group": "gym-bw",
+  "used_in": [
+   "app.js renderWorkoutScreen (#workout-hero theo ngày)"
+  ],
+  "size": "1024x1536",
+  "cutout": false,
+  "prompt": "Vertical black-and-white documentary photograph of an EMPTY modern gym interior with absolutely no people, a cable crossover machine seen straight on, symmetrical composition, pulleys and cables. Monochrome, rich deep blacks and bright highlights, soft natural film grain, dramatic window or overhead light with long shadows, realistic architectural photography, 35mm lens, calm and premium mood, the top 35% of the frame is darker and uncluttered for headline text. No people, no body parts, no reflections of people in mirrors, no text, no logos, no brand names, no signage, no numbers.",
+  "must_have": [
+   "empty gym",
+   "black and white"
+  ],
+  "must_not": [
+   "people",
+   "text",
+   "logos"
+  ]
+ },
+ {
+  "id": "hero-gym-4",
+  "name": "Ảnh hero lịch tuần Thứ 5 — phòng tập đen trắng, không người",
+  "group": "gym-bw",
+  "used_in": [
+   "app.js renderWorkoutScreen (#workout-hero theo ngày)"
+  ],
+  "size": "1024x1536",
+  "cutout": false,
+  "prompt": "Vertical black-and-white documentary photograph of an EMPTY modern gym interior with absolutely no people, a loaded barbell resting on a rubber floor with chalk dust, ground-level angle. Monochrome, rich deep blacks and bright highlights, soft natural film grain, dramatic window or overhead light with long shadows, realistic architectural photography, 35mm lens, calm and premium mood, the top 35% of the frame is darker and uncluttered for headline text. No people, no body parts, no reflections of people in mirrors, no text, no logos, no brand names, no signage, no numbers.",
+  "must_have": [
+   "empty gym",
+   "black and white"
+  ],
+  "must_not": [
+   "people",
+   "text",
+   "logos"
+  ]
+ },
+ {
+  "id": "hero-gym-5",
+  "name": "Ảnh hero lịch tuần Thứ 6 — phòng tập đen trắng, không người",
+  "group": "gym-bw",
+  "used_in": [
+   "app.js renderWorkoutScreen (#workout-hero theo ngày)"
+  ],
+  "size": "1024x1536",
+  "cutout": false,
+  "prompt": "Vertical black-and-white documentary photograph of an EMPTY modern gym interior with absolutely no people, a flat bench press station seen from directly above, top-down geometric view. Monochrome, rich deep blacks and bright highlights, soft natural film grain, dramatic window or overhead light with long shadows, realistic architectural photography, 35mm lens, calm and premium mood, the top 35% of the frame is darker and uncluttered for headline text. No people, no body parts, no reflections of people in mirrors, no text, no logos, no brand names, no signage, no numbers.",
+  "must_have": [
+   "empty gym",
+   "black and white"
+  ],
+  "must_not": [
+   "people",
+   "text",
+   "logos"
+  ]
+ },
+ {
+  "id": "hero-gym-6",
+  "name": "Ảnh hero lịch tuần Thứ 7 — phòng tập đen trắng, không người",
+  "group": "gym-bw",
+  "used_in": [
+   "app.js renderWorkoutScreen (#workout-hero theo ngày)"
+  ],
+  "size": "1024x1536",
+  "cutout": false,
+  "prompt": "Vertical black-and-white documentary photograph of an EMPTY modern gym interior with absolutely no people, a row of rowing machines and treadmills beside tall industrial windows, side light. Monochrome, rich deep blacks and bright highlights, soft natural film grain, dramatic window or overhead light with long shadows, realistic architectural photography, 35mm lens, calm and premium mood, the top 35% of the frame is darker and uncluttered for headline text. No people, no body parts, no reflections of people in mirrors, no text, no logos, no brand names, no signage, no numbers.",
+  "must_have": [
+   "empty gym",
+   "black and white"
+  ],
+  "must_not": [
+   "people",
+   "text",
+   "logos"
+  ]
+ },
+ {
+  "id": "hero-gym-7",
+  "name": "Ảnh hero lịch tuần Chủ nhật — phòng tập đen trắng, không người",
+  "group": "gym-bw",
+  "used_in": [
+   "app.js renderWorkoutScreen (#workout-hero theo ngày)"
+  ],
+  "size": "1024x1536",
+  "cutout": false,
+  "prompt": "Vertical black-and-white documentary photograph of an EMPTY modern gym interior with absolutely no people, a quiet corner with kettlebells, foam rollers and a yoga mat in soft morning light, rest-day calm. Monochrome, rich deep blacks and bright highlights, soft natural film grain, dramatic window or overhead light with long shadows, realistic architectural photography, 35mm lens, calm and premium mood, the top 35% of the frame is darker and uncluttered for headline text. No people, no body parts, no reflections of people in mirrors, no text, no logos, no brand names, no signage, no numbers.",
+  "must_have": [
+   "empty gym",
+   "black and white"
+  ],
+  "must_not": [
+   "people",
+   "text",
+   "logos"
+  ]
  }
 ]

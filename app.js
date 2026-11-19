@@ -1382,10 +1382,10 @@ function renderWorkoutScreen(){
   if(!DAY_KEYS.includes(state.selectedDay)) state.selectedDay = todayDayKey();
   $("#workout-tagline").textContent = plan.tagline || "";
   const idx = DAY_KEYS.indexOf(state.selectedDay);
-  { // 12/11: ảnh hero theo giới tính (AI: hero-m-* / hero-f-*); lớp dưới = ảnh cũ nếu ảnh mới chưa có
-    const g = (state.profile && state.profile.gender) === "female" ? "f" : "m";
-    const ai = `https://tapeasy.app/media/people-ai/hero-${g}-${(idx % 4) + 1}.webp`;
-    $("#workout-hero").style.backgroundImage = `url('${ai}'), url('${HERO_CYCLE[idx % HERO_CYCLE.length]}')`;
+  { // 19/11: ảnh hero theo NGÀY = phòng tập đen trắng, không có người, mỗi ngày một góc (AI: media/people-ai/hero-gym-1..7);
+    // ảnh chưa tải được → nền gradient tối (không quay lại ảnh có người)
+    const gym = `https://tapeasy.app/media/people-ai/hero-gym-${(idx % 7) + 1}.webp`;
+    $("#workout-hero").style.backgroundImage = `url('${gym}'), linear-gradient(160deg, #2a2a2a, #0d0d0d)`;
   }
 
   // day tabs
