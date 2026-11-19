@@ -2122,5 +2122,89 @@
   "size": "1024x1024",
   "at": "2026-11-12",
   "name": "Ảnh đánh giá PT — hip thrust"
+ },
+ "hero-gym-1": {
+  "file": "hero-gym-1.webp",
+  "sm": "hero-gym-1-sm.webp",
+  "w": 853,
+  "h": 1280,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "9157bf0523e6",
+  "size": "1024x1536",
+  "at": "2026-11-19",
+  "name": "Ảnh hero lịch tuần Thứ 2 — phòng tập đen trắng, không người"
+ },
+ "hero-gym-3": {
+  "file": "hero-gym-3.webp",
+  "sm": "hero-gym-3-sm.webp",
+  "w": 853,
+  "h": 1280,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "f10fcdff67ca",
+  "size": "1024x1536",
+  "at": "2026-11-19",
+  "name": "Ảnh hero lịch tuần Thứ 4 — phòng tập đen trắng, không người"
+ },
+ "hero-gym-2": {
+  "file": "hero-gym-2.webp",
+  "sm": "hero-gym-2-sm.webp",
+  "w": 853,
+  "h": 1280,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "2ecd2e888ba8",
+  "size": "1024x1536",
+  "at": "2026-11-19",
+  "name": "Ảnh hero lịch tuần Thứ 3 — phòng tập đen trắng, không người"
+ },
+ "hero-gym-4": {
+  "file": "hero-gym-4.webp",
+  "sm": "hero-gym-4-sm.webp",
+  "w": 853,
+  "h": 1280,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "e4fb2df47a46",
+  "size": "1024x1536",
+  "at": "2026-11-19",
+  "name": "Ảnh hero lịch tuần Thứ 5 — phòng tập đen trắng, không người"
+ },
+ "hero-gym-6": {
+  "file": "hero-gym-6.webp",
+  "sm": "hero-gym-6-sm.webp",
+  "w": 853,
+  "h": 1280,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "8e3c8e3dca06",
+  "size": "1024x1536",
+  "at": "2026-11-19",
+  "name": "Ảnh hero lịch tuần Thứ 7 — phòng tập đen trắng, không người"
+ },
+ "hero-gym-5": {
+  "file": "hero-gym-5.webp",
+  "sm": "hero-gym-5-sm.webp",
+  "w": 853,
+  "h": 1280,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "e3bddaf33ab1",
+  "size": "1024x1536",
+  "at": "2026-11-19",
+  "name": "Ảnh hero lịch tuần Thứ 6 — phòng tập đen trắng, không người"
+ },
+ "hero-gym-7": {
+  "file": "hero-gym-7.webp",
+  "sm": "hero-gym-7-sm.webp",
+  "w": 853,
+  "h": 1280,
+  "src": "ai",
+  "model": "gpt-image-2.5",
+  "ph": "cc5dd74ecedb",
+  "size": "1024x1536",
+  "at": "2026-11-19",
+  "name": "Ảnh hero lịch tuần Chủ nhật — phòng tập đen trắng, không người"
  }
 }
