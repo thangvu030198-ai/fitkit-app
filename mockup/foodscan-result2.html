@@ -711,7 +711,7 @@ function css(){
 .fk-scan-ring .seg{ fill:none; stroke-width:9; stroke-linecap:round; }
 .anim .fk-scan-ring .seg{ animation:fk-ring-in .9s cubic-bezier(.22,1,.36,1) both; animation-delay:calc(.25s + var(--d, 0s)); }
 @keyframes fk-ring-in{ from{ stroke-dashoffset:var(--len); } to{ stroke-dashoffset:0; } }
-.fk-scan-ring .mid{ position:absolute; inset:18px; border-radius:50%; background:var(--soft); box-shadow:inset 0 0 0 1px var(--line); display:flex; align-items:center; justify-content:center; }
+.fk-scan-ring .mid{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }   /* đĩa giữa vẽ trong SVG (div bo tròn + bóng đè lên SVG có hoạt ảnh làm Chrome treo khi chụp) */
 .fk-scan-ring .mid .material-symbols-rounded{ font-size:28px; color:var(--cta-solid, #FF7A45); }
 .fk-scan-mac{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:10px 0 0; }
 .fk-scan-mac > div{ background:var(--tile); border:1px solid var(--line); border-radius:18px; padding:11px 11px 8px; min-width:0; }
@@ -900,7 +900,7 @@ function showResult(el, sess, res){
   const ringSVG = C=>{
     const R = 38, L = 2 * Math.PI * R, parts = [["p", C.protein * 4], ["f", C.fat * 9], ["c", C.carbs * 4]], tot = parts.reduce((s, x)=> s + x[1], 0) || 1, gap = 7;
     let off = 0;
-    return `<svg viewBox="0 0 92 92" aria-hidden="true"><circle cx="46" cy="46" r="${R}" fill="none" style="stroke:var(--soft2)" stroke-width="9"/>${parts.map(([k, v], i)=>{
+    return `<svg viewBox="0 0 92 92" aria-hidden="true"><circle cx="46" cy="46" r="27" style="fill:var(--soft);stroke:var(--line)" stroke-width="1"/><circle cx="46" cy="46" r="${R}" fill="none" style="stroke:var(--soft2)" stroke-width="9"/>${parts.map(([k, v], i)=>{
       const len = Math.max(0, v / tot * L - gap); const s = `<circle class="seg" cx="46" cy="46" r="${R}" style="stroke:${COL[k]};--len:${len.toFixed(1)};--d:${i * .12}s" stroke-dasharray="${len.toFixed(1)} ${L.toFixed(1)}" stroke-dashoffset="0" transform="rotate(${(off / L * 360).toFixed(1)} 46 46)"/>`;
       off += v / tot * L; return len > 0 ? s : ""; }).join("")}</svg><span class="mid">${ic("local_fire_department")}</span>`;
   };
