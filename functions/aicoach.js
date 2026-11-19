@@ -25,7 +25,7 @@ const REGION = "asia-southeast1";
 const SESSION_SEC = 12 * 3600;
 const CTX_MAX = 14000, MSG_MAX = 2000, HIST_MAX = 12, EXTRA_MAX = 1500;
 /* data.lang = "en" → máy chủ thêm chỉ dẫn trả lời bằng tiếng Anh (giao diện English của app); mặc định "vi". */
-const DEFAULTS = { enabled: false, baseUrl: "", model: "", fallback: "", planModel: "", temperature: 0.5, maxTokens: 900, planMaxTokens: 2600, dailyLimit: 30, extra: "" };
+const DEFAULTS = { enabled: false, baseUrl: "", model: "", fallback: "", planModel: "", temperature: 0.5, maxTokens: 900, planMaxTokens: 2600, dailyLimit: 20, extra: "" };
 const DAY_KEYS = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
 
 const str = (v, n)=> String(v == null ? "" : v).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, " ").trim().slice(0, n);

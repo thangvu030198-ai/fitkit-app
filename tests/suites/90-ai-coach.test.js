@@ -72,7 +72,7 @@ module.exports = {
       const st = fakeStore({ cfg: {}, k: "" }); let calls = 0;
       await assert.rejects(()=> T.aiChatCore({ data: {} }, { store: st.api(T) }), e=> e.code === "unauthenticated");
       const r = await T.aiChatCore({ auth: { uid: "u1" }, data: { ping: true } }, { store: st.api(T), fetch: async ()=>{ calls++; } });
-      assert.deepEqual([r.enabled, r.left, calls], [false, 30, 0]);
+      assert.deepEqual([r.enabled, r.left, calls], [false, 20, 0]);
       await assert.rejects(()=> T.aiChatCore({ auth: { uid: "u1" }, data: { messages: [{ role: "user", content: "hi" }] } }, { store: st.api(T) }), e=> e.code === "failed-precondition");
     });
     t.test("AI-11: aiChat — gửi đúng khoá/URL/model + lời nhắc hệ thống; giới hạn lượt; hết lượt → resource-exhausted", async ()=>{
