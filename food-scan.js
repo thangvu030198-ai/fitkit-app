@@ -1,5 +1,5 @@
 /* =========================================================================
-   TapEasy — CHỤP ẢNH TÍNH CALO (food-scan.js) · 16/11/2026 · docs/FOOD-SCAN.md
+   TapEasy — CHỤP ẢNH TÍNH CALO (food-scan.js) · 16/11/2026 · giao diện làm lại 19/11 · docs/FOOD-SCAN.md
    Luồng: hướng dẫn chụp + chọn vật tham chiếu → chụp (1 ảnh từ trên xuống, tuỳ chọn thêm 1 ảnh nghiêng 45°) → kiểm tối/mờ ngay trên máy
           → AI tách từng thành phần + ước lượng GAM (kèm khoảng thấp–cao) → APP tính calo từ bảng thực phẩm của app
           → thẻ trắng trượt lên, ảnh thu nhỏ vào thẻ → người dùng chỉnh gam / dầu mỡ → lưu vào bữa.
@@ -175,141 +175,279 @@ async function prepare(file){
 }
 
 /* ---------------------------------------------------------------------
-   4. GIAO DIỆN
+   4. GIAO DIỆN (19/11 — làm lại: khung quét toàn màn + tấm hướng dẫn trắng, kết quả dạng thẻ: vòng năng lượng 3 màu,
+      3 thẻ chất có biểu đồ nhỏ, danh sách thành phần chỉnh gam, thanh lưu cố định. Màu theo theme TapEasy: nền --navy, nhấn --accent, nút chính --cta-*, 3 chất = --ring-1/2/3.)
    --------------------------------------------------------------------- */
+const COL = { p:"var(--ring-1, #33D6C9)", f:"var(--ring-2, #FF7A45)", c:"var(--ring-3, #A3F0E8)" };   // màu chỉ số của theme (theme-accent.css)
+/* icon nét mảnh còn thiếu trong icons.js (FK_LINE) cho màn chụp */
+function addIcons(){
+  try{
+    if(typeof FK_LINE === "undefined") return;
+    const add = {
+      egg_alt:"M12 3c-3.5 0-6 5-6 9a6 6 0 0 0 12 0c0-4-2.5-9-6-9z|c:12,14,2.5",
+      grain:"M12 21V9|M12 9c-3-1-4-4-4-6 2 0 5 1 4 6z|M12 9c3-1 4-4 4-6-2 0-5 1-4 6z|M12 14c-3-1-5-3-5-5 2 0 5 1 5 5z|M12 14c3-1 5-3 5-5-2 0-5 1-5 5z",
+      crop_free:"M4 9V5a1 1 0 0 1 1-1h4|M15 4h4a1 1 0 0 1 1 1v4|M20 15v4a1 1 0 0 1-1 1h-4|M9 20H5a1 1 0 0 1-1-1v-4",
+      fullscreen:"M4 9V4h5|M15 4h5v5|M20 15v5h-5|M9 20H4v-5|r:8,8,8,8,2",
+      straighten:"r:2,8,20,8,1.5|M6 8v3|M10 8v4|M14 8v3|M18 8v4",
+      edit_note:"M4 6h10|M4 11h7|M4 16h5|M14 20l1-4 6-6 3 3-6 6z",
+      add_a_photo:"M4 8h3l2-3h5l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z|c:12,13,3.5|M19 2v4|M17 4h4",
+      block:"c:12,12,9|M5.6 5.6l12.8 12.8", credit_card:"r:2,5,20,14,2.5|M2 10h20|M6 15h4", back_hand:"M8 13V5.5a1.5 1.5 0 0 1 3 0V11|M11 10V4.5a1.5 1.5 0 0 1 3 0V11|M14 10.5V6a1.5 1.5 0 0 1 3 0v8a7 7 0 0 1-7 7h-.5a6 6 0 0 1-5-2.7L3 15.5a1.6 1.6 0 0 1 2.6-1.8L8 16",
+    };
+    Object.keys(add).forEach(k=>{ if(!FK_LINE[k]) FK_LINE[k] = add[k]; });
+  }catch(e){}
+}
 function css(){
+  addIcons();
   if(D.getElementById("fk-scan-css")) return;
   const st = D.createElement("style"); st.id = "fk-scan-css";
   st.textContent = `
-.fk-scan-entry{ display:flex; align-items:center; gap:12px; width:100%; min-height:64px; padding:12px 14px; margin:0 0 12px; border-radius:18px; text-align:left; cursor:pointer;
-  border:1px solid rgba(255,255,255,.14); background:linear-gradient(135deg, rgba(51,214,201,.18), rgba(255,122,69,.14)); color:inherit; font:inherit; }
-.fk-scan-entry .ic{ flex:0 0 44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; background:var(--accent, var(--mint, #33D6C9)); color:#062126; }
+.fk-scan-entry{ display:flex; align-items:center; gap:12px; width:100%; min-height:64px; padding:12px 14px; margin:0 0 12px; border-radius:20px; text-align:left; cursor:pointer;
+  border:1px solid rgba(255,255,255,.14); background:linear-gradient(135deg, rgba(var(--accent-rgb, 51,214,201),.18), rgba(var(--cta-rgb, 255,122,69),.12)); color:inherit; font:inherit; }
+.fk-scan-entry .ic{ flex:0 0 44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; background:var(--cta-bg, #FF7A45); color:var(--cta-fg, #061A24); }
 .fk-scan-entry b{ display:block; font-size:15px; } .fk-scan-entry span.s{ display:block; font-size:12.5px; color:var(--text-muted); line-height:1.35; margin-top:2px; }
-.fk-scan-tips{ list-style:none; margin:0 0 12px; padding:0; display:flex; flex-direction:column; gap:10px; }
-.fk-scan-tips li{ display:flex; gap:10px; align-items:flex-start; font-size:13.5px; line-height:1.4; }
-.fk-scan-tips .material-symbols-rounded{ flex:0 0 22px; color:var(--accent, var(--mint, #33D6C9)); }
-.fk-scan-tips small{ display:block; color:var(--text-muted); font-size:12.5px; }
-.fk-scan-chips{ display:flex; gap:8px; flex-wrap:wrap; margin:6px 0 12px; }
-.fk-scan-chip{ min-height:40px; padding:0 12px; border-radius:99px; border:1px solid rgba(128,128,128,.4); background:transparent; color:inherit; font:inherit; font-size:13.5px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
-.fk-scan-chip.on{ border-color:var(--accent, var(--mint, #33D6C9)); background:rgba(51,214,201,.14); font-weight:600; }
-.fk-scan-lbl{ font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-top:4px; }
 
-#fk-scan{ position:fixed; inset:0; z-index:2500; background:#05090c; display:flex; flex-direction:column; opacity:0; transition:opacity .22s ease; color:#fff; }
+#fk-scan{ --ink:#F5F7F3; --mut:var(--text-muted, rgba(245,247,243,.74)); --line:rgba(255,255,255,.10); --soft:rgba(255,255,255,.07); --soft2:rgba(255,255,255,.12); --tile:rgba(255,255,255,.055);
+  --sheet:radial-gradient(90% 40% at 100% 0%, rgba(var(--accent-rgb, 51,214,201),.12), transparent 62%), rgb(var(--navy-rgb, 6,26,36));
+  position:fixed; inset:0; z-index:2500; background:rgb(var(--navy-rgb, 6,26,36)); display:flex; flex-direction:column;
+  opacity:0; transition:opacity .25s ease; color:#fff; font-family:var(--font-ui, 'Inter', system-ui, sans-serif); overflow:hidden; }
 #fk-scan.on{ opacity:1; }
-.fk-scan-top{ position:absolute; top:0; left:0; right:0; z-index:4; display:flex; justify-content:space-between; align-items:center; padding:calc(env(safe-area-inset-top, 0px) + 10px) 14px 10px; }
-.fk-scan-x{ width:44px; height:44px; border-radius:50%; border:0; background:rgba(255,255,255,.14); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; }
-.fk-scan-stage{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-.fk-scan-photo{ position:absolute; object-fit:cover; border-radius:0; will-change:transform, top, left, width, height; }
+.fk-scan-top{ position:absolute; top:0; left:0; right:0; z-index:7; display:flex; justify-content:space-between; align-items:center; gap:10px; padding:calc(env(safe-area-inset-top, 0px) + 10px) 14px 10px; }
+.fk-scan-x{ width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,.22); background:rgba(20,12,8,.32); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.fk-scan-dash{ display:flex; gap:6px; flex:1; justify-content:center; }
+.fk-scan-dash i{ width:22px; height:4px; border-radius:4px; background:rgba(255,255,255,.35); transition:width .4s cubic-bezier(.22,1,.36,1), background .3s; }
+.fk-scan-dash i.on{ width:34px; background:#fff; }
+.fk-scan-pill{ min-height:40px; padding:0 14px; border-radius:20px; border:1px solid rgba(255,255,255,.28); background:rgba(20,12,8,.32); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); color:#fff; font:inherit; font-size:13.5px; font-weight:600; cursor:pointer; }
+#fk-scan.busy .fk-scan-pill, #fk-scan.done .fk-scan-pill{ visibility:hidden; }
+
+.fk-scan-stage{ position:absolute; inset:0; overflow:hidden; }
+.fk-scan-hero{ position:absolute; left:0; right:0; top:0; height:calc(100% - var(--sh, 45%) + 40px); background:radial-gradient(70% 55% at 70% 32%, rgba(var(--accent-rgb, 51,214,201),.55), rgba(var(--cta-rgb, 255,122,69),.18) 55%, transparent 80%), rgb(var(--navy-rgb, 6,26,36)); transition:opacity .4s ease, transform .6s cubic-bezier(.22,1,.36,1); }
+.fk-scan-hero img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:saturate(1.08) contrast(1.02); }
+.fk-scan-hero::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(25,10,4,.42), rgba(25,10,4,0) 26%, rgba(25,10,4,0) 70%, rgba(25,10,4,.5)); }
+#fk-scan.busy .fk-scan-hero, #fk-scan.done .fk-scan-hero{ opacity:0; }
+.fk-scan-photo{ position:absolute; object-fit:cover; border-radius:0; will-change:transform, top, left, width, height; display:none; }
+#fk-scan.busy .fk-scan-photo, #fk-scan.done .fk-scan-photo{ display:block; }
 .fk-scan-photo.fly{ transition:top .56s cubic-bezier(.22,.9,.24,1), left .56s cubic-bezier(.22,.9,.24,1), width .56s cubic-bezier(.22,.9,.24,1), height .56s cubic-bezier(.22,.9,.24,1), border-radius .56s ease; z-index:6; }
-.fk-scan-veil{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(5,9,12,.5), rgba(5,9,12,0) 30%, rgba(5,9,12,0) 60%, rgba(5,9,12,.75)); pointer-events:none; z-index:2; }
-.fk-scan-line{ position:absolute; left:6%; right:6%; height:3px; border-radius:3px; background:linear-gradient(90deg, transparent, #33D6C9, transparent); box-shadow:0 0 18px 4px rgba(51,214,201,.55); z-index:3; top:18%; animation:fk-scan-sweep 1.9s ease-in-out infinite; }
-@keyframes fk-scan-sweep{ 0%{ top:16%; opacity:.2; } 50%{ top:78%; opacity:1; } 100%{ top:16%; opacity:.2; } }
-.fk-scan-status{ position:absolute; left:0; right:0; bottom:calc(env(safe-area-inset-bottom, 0px) + 42px); z-index:3; text-align:center; font-size:15px; font-weight:600; }
-.fk-scan-status small{ display:block; font-weight:400; font-size:12.5px; opacity:.75; margin-top:4px; }
-.fk-scan-card{ position:absolute; left:0; right:0; bottom:0; z-index:5; max-height:86%; display:flex; flex-direction:column; background:#fff; color:#12232b; border-radius:28px 28px 0 0;
-  box-shadow:0 -18px 50px rgba(0,0,0,.4); transform:translateY(104%); transition:transform .56s cubic-bezier(.22,.9,.24,1); }
+.fk-scan-veil{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(10,6,4,.45), rgba(10,6,4,0) 28%, rgba(10,6,4,0) 62%, rgba(10,6,4,.7)); pointer-events:none; opacity:0; transition:opacity .3s; }
+#fk-scan.busy .fk-scan-veil{ opacity:1; }
+/* khung quét: 4 góc bo + lưới chấm */
+.fk-scan-frame{ position:absolute; left:12%; right:12%; top:calc(env(safe-area-inset-top, 0px) + 78px); bottom:calc(var(--sh, 45%) + 74px); pointer-events:none; transition:top .6s cubic-bezier(.22,1,.36,1), bottom .6s cubic-bezier(.22,1,.36,1), opacity .3s; }
+#fk-scan.busy .fk-scan-frame, #fk-scan.done .fk-scan-frame{ top:20%; bottom:26%; }
+#fk-scan.done .fk-scan-frame{ opacity:0; }
+.fk-scan-frame .c{ position:absolute; width:34px; height:34px; border:3px solid #fff; filter:drop-shadow(0 1px 4px rgba(0,0,0,.35)); }
+.fk-scan-frame .tl{ left:0; top:0; border-right:0; border-bottom:0; border-top-left-radius:20px; }
+.fk-scan-frame .tr{ right:0; top:0; border-left:0; border-bottom:0; border-top-right-radius:20px; }
+.fk-scan-frame .bl{ left:0; bottom:0; border-right:0; border-top:0; border-bottom-left-radius:20px; }
+.fk-scan-frame .br{ right:0; bottom:0; border-left:0; border-top:0; border-bottom-right-radius:20px; }
+.fk-scan-frame .dots{ position:absolute; inset:14px; background-image:radial-gradient(rgba(255,255,255,.75) 1.1px, transparent 1.6px); background-size:14px 14px; opacity:.55;
+  -webkit-mask-image:radial-gradient(75% 70% at 60% 45%, #000 30%, transparent 80%); mask-image:radial-gradient(75% 70% at 60% 45%, #000 30%, transparent 80%); }
+#fk-scan:not(.done) .fk-scan-frame .c{ animation:fk-scan-breath 2.4s ease-in-out infinite; }
+@keyframes fk-scan-breath{ 50%{ transform:scale(.92); } }
+.fk-scan-frame .tl{ transform-origin:0 0; } .fk-scan-frame .tr{ transform-origin:100% 0; } .fk-scan-frame .bl{ transform-origin:0 100%; } .fk-scan-frame .br{ transform-origin:100% 100%; }
+.fk-scan-line{ position:absolute; left:14%; right:14%; height:3px; border-radius:3px; background:linear-gradient(90deg, transparent, var(--accent, #33D6C9), transparent); box-shadow:0 0 18px 4px rgba(var(--accent-rgb, 51,214,201),.55); display:none; top:24%; animation:fk-scan-sweep 1.9s ease-in-out infinite; }
+#fk-scan.busy .fk-scan-line{ display:block; }
+@keyframes fk-scan-sweep{ 0%{ top:23%; opacity:.25; } 50%{ top:67%; opacity:1; } 100%{ top:23%; opacity:.25; } }
+.fk-scan-status{ position:absolute; left:50%; bottom:calc(env(safe-area-inset-bottom, 0px) + 40px); transform:translateX(-50%); display:none; text-align:center; font-size:15px; font-weight:600;
+  padding:12px 20px; border-radius:22px; background:rgba(20,12,8,.42); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.18); white-space:nowrap; }
+#fk-scan.busy .fk-scan-status{ display:block; }
+.fk-scan-status small{ display:block; font-weight:400; font-size:12.5px; opacity:.8; margin-top:3px; }
+/* vật tham chiếu: chip kính trên ảnh */
+.fk-scan-refs{ position:absolute; left:0; right:0; bottom:calc(100% + 14px); padding:0 14px; transition:opacity .3s; }
+.fk-scan-refs > small{ display:block; font-size:12px; font-weight:600; letter-spacing:.02em; color:rgba(255,255,255,.9); margin:0 0 8px 4px; text-shadow:0 1px 6px rgba(0,0,0,.4); }
+.fk-scan-refs > div{ display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
+.fk-scan-refs > div::-webkit-scrollbar{ display:none; }
+.fk-scan-chip{ flex:none; min-height:36px; padding:0 12px; border-radius:18px; border:1px solid rgba(255,255,255,.26); background:rgba(20,12,8,.34); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+  color:#fff; font:inherit; font-size:12.5px; font-weight:600; display:inline-flex; align-items:center; gap:6px; cursor:pointer; transition:background .25s, color .25s, transform .2s; }
+.fk-scan-chip .material-symbols-rounded{ font-size:16px; }
+.fk-scan-chip.on{ background:var(--accent, #33D6C9); color:var(--on-accent, #061A24); border-color:var(--accent, #33D6C9); }
+.fk-scan-chip:active{ transform:scale(.95); }
+#fk-scan.busy .fk-scan-refs, #fk-scan.done .fk-scan-refs{ opacity:0; pointer-events:none; }
+/* tấm hướng dẫn trắng */
+.fk-scan-intro{ position:absolute; left:0; right:0; bottom:0; z-index:5; max-height:64%; background:var(--sheet); color:var(--ink); border-top:1px solid var(--line); border-radius:30px 30px 0 0;
+  padding:24px 22px calc(env(safe-area-inset-bottom, 0px) + 18px); box-shadow:0 -20px 50px rgba(0,0,0,.28); transition:transform .55s cubic-bezier(.22,.9,.24,1); }
+#fk-scan.busy .fk-scan-intro, #fk-scan.done .fk-scan-intro{ transform:translateY(105%); }
+.fk-scan-intro h2{ font-family:var(--font-head, inherit); font-size:22px; font-weight:600; letter-spacing:-.02em; margin:0 0 14px; color:var(--ink); }
+.fk-scan-intro .sc{ max-height:calc(64vh - 30px); overflow-y:auto; margin:0 -22px; padding:0 22px; }
+.fk-scan-tip{ display:flex; gap:14px; align-items:center; padding:7px 0; }
+.fk-scan-tip .t{ flex:0 0 44px; height:44px; border-radius:14px; background:var(--soft); display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 0 1px var(--line); }
+.fk-scan-tip .t .material-symbols-rounded{ font-size:22px; }
+.fk-scan-tip b{ display:block; font-size:14.5px; font-weight:600; color:var(--ink); }
+.fk-scan-tip small{ display:block; font-size:13px; color:var(--mut); line-height:1.4; margin-top:1px; }
+.fk-scan-noteln{ display:flex; align-items:center; gap:10px; margin:12px 0 0; min-height:48px; padding:0 14px; border-radius:16px; background:var(--soft); color:var(--mut); }
+.fk-scan-noteln input{ flex:1; min-width:0; border:0; background:transparent; font:inherit; font-size:14.5px; color:var(--ink); outline:none; min-height:44px; }
+.fk-scan-go{ width:100%; min-height:56px; border-radius:28px; border:0; background:var(--cta-bg, #FF7A45); color:var(--cta-fg, #061A24); box-shadow:var(--cta-shadow, none); font:inherit; font-size:16px; font-weight:600; margin-top:16px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px; transition:transform .2s; }
+.fk-scan-go:active{ transform:scale(.98); }
+.fk-scan-go2{ width:100%; min-height:48px; border:0; background:transparent; color:var(--ink); font:inherit; font-size:14.5px; font-weight:600; margin-top:4px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; }
+.fk-scan-priv{ font-size:11.5px; color:var(--mut); line-height:1.45; text-align:center; margin:6px 8px 0; }
+
+/* ---- thẻ kết quả ---- */
+.fk-scan-card{ position:absolute; left:0; right:0; bottom:0; z-index:5; max-height:90%; display:flex; flex-direction:column; background:var(--sheet); color:var(--ink); border-radius:30px 30px 0 0;
+  box-shadow:0 -18px 50px rgba(0,0,0,.4); border-top:1px solid var(--line); transform:translateY(104%); transition:transform .56s cubic-bezier(.22,.9,.24,1); }
 .fk-scan-card.on{ transform:none; }
-.fk-scan-grab{ width:44px; height:5px; border-radius:5px; background:#d5dde1; margin:10px auto 2px; flex:0 0 auto; }
-.fk-scan-body{ overflow-y:auto; -webkit-overflow-scrolling:touch; padding:8px 18px calc(env(safe-area-inset-bottom, 0px) + 16px); }
-.fk-scan-head{ display:flex; gap:14px; align-items:center; }
-.fk-scan-thumb{ flex:0 0 76px; width:76px; height:76px; border-radius:18px; background:#e9eef0 center/cover no-repeat; }
-.fk-scan-kcal{ font-family:var(--font-head, 'Inter Tight', 'Inter', sans-serif); font-size:44px; font-weight:700; line-height:1; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
-.fk-scan-kcal small{ font-size:16px; font-weight:600; color:#5b6e76; margin-left:4px; }
-.fk-scan-range{ font-size:12.5px; color:#5b6e76; margin-top:4px; }
-.fk-scan-dish{ font-size:14px; font-weight:600; margin-top:2px; overflow-wrap:anywhere; }
-.fk-scan-mac{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:14px 0 6px; }
-.fk-scan-mac div{ background:#f3f6f7; border-radius:14px; padding:9px 6px; text-align:center; font-size:12px; color:#5b6e76; }
-.fk-scan-mac b{ display:block; font-size:16px; color:#12232b; font-variant-numeric:tabular-nums; }
-.fk-scan-sec{ font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:#5b6e76; margin:14px 0 6px; font-weight:600; }
-.fk-scan-row{ display:grid; grid-template-columns:minmax(0, 1fr) auto; gap:4px 10px; padding:10px 0; border-bottom:1px solid #edf1f3; opacity:0; transform:translateY(8px); transition:opacity .3s ease, transform .3s ease; }
-.fk-scan-card.on .fk-scan-row{ opacity:1; transform:none; }
-.fk-scan-row .n{ font-size:14.5px; font-weight:600; overflow-wrap:anywhere; }
-.fk-scan-row .m{ font-size:12px; color:#5b6e76; }
-.fk-scan-row .k{ font-size:14.5px; font-weight:700; text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
-.fk-scan-tag{ display:inline-block; font-size:11px; font-weight:600; padding:1px 7px; border-radius:99px; background:#e4f7f4; color:#0b6b62; margin-left:4px; vertical-align:1px; }
-.fk-scan-tag.ai{ background:#fff0e8; color:#a8481b; }
-.fk-scan-step{ grid-column:1 / -1; display:flex; align-items:center; gap:8px; }
-.fk-scan-step button{ width:40px; height:40px; border-radius:12px; border:1px solid #d5dde1; background:#fff; color:#12232b; font-size:20px; font-weight:600; cursor:pointer; }
-.fk-scan-step input{ width:76px; height:40px; border-radius:12px; border:1px solid #d5dde1; background:#f7f9fa; color:#12232b; text-align:center; font:inherit; font-size:16px; font-weight:600; }
-.fk-scan-step .u{ font-size:13px; color:#5b6e76; flex:1 1 auto; }
-.fk-scan-step .del{ border:0; background:transparent; color:#9aa8ae; width:40px; }
-.fk-scan-oil{ display:flex; gap:8px; flex-wrap:wrap; }
-.fk-scan-oil button{ min-height:40px; padding:0 12px; border-radius:99px; border:1px solid #d5dde1; background:#fff; color:#12232b; font:inherit; font-size:13.5px; cursor:pointer; }
-.fk-scan-oil button.on{ background:#12232b; border-color:#12232b; color:#fff; font-weight:600; }
-.fk-scan-warn{ display:flex; gap:8px; align-items:flex-start; background:#fff6e5; color:#7a4b00; border-radius:14px; padding:10px 12px; font-size:13px; line-height:1.45; margin-top:12px; }
-.fk-scan-note{ font-size:12px; color:#5b6e76; line-height:1.5; margin-top:12px; }
-.fk-scan-meals{ display:flex; gap:8px; flex-wrap:wrap; }
-.fk-scan-acts{ display:flex; gap:10px; margin-top:16px; }
-.fk-scan-btn{ flex:1 1 0; min-height:52px; border-radius:16px; border:0; font:inherit; font-size:15.5px; font-weight:700; cursor:pointer; }
-.fk-scan-btn.pri{ background:#FF7A45; color:#fff; flex:2 1 0; } .fk-scan-btn.sec{ background:#eef2f4; color:#12232b; }
-.fk-scan-msg{ position:absolute; left:20px; right:20px; top:50%; transform:translateY(-50%); z-index:5; text-align:center; background:rgba(18,35,43,.88); border-radius:20px; padding:20px; }
-.fk-scan-msg p{ margin:0 0 14px; font-size:15px; line-height:1.5; }
-@media (prefers-reduced-motion: reduce){ .fk-scan-line{ animation:none; top:50%; } .fk-scan-card, .fk-scan-photo.fly, .fk-scan-row{ transition:none; } }`;
+.fk-scan-grab{ width:44px; height:5px; border-radius:5px; background:var(--soft2); margin:10px auto 0; flex:0 0 auto; }
+.fk-scan-body{ overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 16px 0; }
+.fk-scan-head{ display:flex; gap:12px; align-items:center; padding:2px 2px 12px; }
+.fk-scan-thumb{ flex:0 0 56px; width:56px; height:56px; border-radius:18px; background:var(--soft) center/cover no-repeat; box-shadow:0 6px 16px -6px rgba(0,0,0,.3); }
+.fk-scan-head small{ display:block; font-size:12.5px; color:var(--mut); }
+.fk-scan-dish{ font-family:var(--font-head, inherit); font-size:18px; font-weight:600; letter-spacing:-.01em; overflow-wrap:anywhere; line-height:1.25; }
+.fk-scan-w{ background:var(--tile); border:1px solid var(--line); border-radius:22px; }
+.fk-scan-tot{ display:flex; align-items:center; gap:12px; padding:16px 16px 16px 18px; }
+.fk-scan-tot .l{ flex:1; min-width:0; }
+.fk-scan-tot .l > small{ font-size:13px; color:var(--mut); }
+.fk-scan-kcal{ font-family:var(--font-head, inherit); font-size:44px; font-weight:500; line-height:1.05; letter-spacing:-.03em; font-variant-numeric:tabular-nums; margin-top:4px; }
+.fk-scan-kcal small{ font-size:15px; font-weight:500; color:var(--mut); margin-left:5px; letter-spacing:0; }
+.fk-scan-range{ font-size:12px; color:var(--mut); margin-top:4px; }
+.fk-scan-ring{ flex:0 0 92px; width:92px; height:92px; position:relative; }
+.fk-scan-ring svg{ width:100%; height:100%; transform:rotate(-90deg); }
+.fk-scan-ring .seg{ fill:none; stroke-width:9; stroke-linecap:round; }
+.anim .fk-scan-ring .seg{ animation:fk-ring-in .9s cubic-bezier(.22,1,.36,1) both; animation-delay:calc(.25s + var(--d, 0s)); }
+@keyframes fk-ring-in{ from{ stroke-dashoffset:var(--len); } to{ stroke-dashoffset:0; } }
+.fk-scan-ring .mid{ position:absolute; inset:18px; border-radius:50%; background:var(--soft); box-shadow:inset 0 0 0 1px var(--line); display:flex; align-items:center; justify-content:center; }
+.fk-scan-ring .mid .material-symbols-rounded{ font-size:28px; color:var(--cta-solid, #FF7A45); }
+.fk-scan-mac{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:10px 0 0; }
+.fk-scan-mac > div{ background:var(--tile); border:1px solid var(--line); border-radius:18px; padding:11px 11px 8px; min-width:0; }
+.fk-scan-mac .h{ display:flex; align-items:center; gap:5px; font-size:12.5px; font-weight:600; color:var(--ink); }
+.fk-scan-mac .h .material-symbols-rounded{ font-size:15px; }
+.fk-scan-mac .v{ font-family:var(--font-head, inherit); font-size:26px; font-weight:500; letter-spacing:-.02em; margin-top:8px; line-height:1; font-variant-numeric:tabular-nums; }
+.fk-scan-mac .v small{ font-size:12px; color:var(--mut); margin-left:3px; font-weight:500; }
+.fk-scan-mac svg{ display:block; width:100%; height:30px; margin-top:6px; overflow:visible; }
+.fk-scan-mac .pc{ font-size:11px; color:var(--mut); margin-top:2px; }
+.anim .fk-scan-mac > div{ animation:fk-pop .55s cubic-bezier(.22,1,.36,1) both; }
+.anim .fk-scan-mac > div:nth-child(2){ animation-delay:.07s; } .anim .fk-scan-mac > div:nth-child(3){ animation-delay:.14s; }
+@keyframes fk-pop{ from{ opacity:0; transform:translateY(10px) scale(.97); } to{ opacity:1; transform:none; } }
+.fk-scan-sec{ display:flex; justify-content:space-between; align-items:baseline; font-family:var(--font-head, inherit); font-size:17px; font-weight:600; letter-spacing:-.01em; margin:18px 4px 8px; }
+.fk-scan-sec small{ font-family:var(--font-ui, inherit); font-size:12px; font-weight:500; color:var(--mut); letter-spacing:0; }
+.fk-scan-list{ padding:4px 14px; }
+.fk-scan-row{ padding:12px 0; border-bottom:1px solid var(--line); }
+.fk-scan-row:last-child{ border-bottom:0; }
+.anim .fk-scan-row{ animation:fk-pop .45s cubic-bezier(.22,1,.36,1) both; animation-delay:var(--rd, 0s); }
+.fk-scan-row .top{ display:flex; gap:10px; align-items:flex-start; }
+.fk-scan-row .dot{ flex:0 0 10px; height:10px; border-radius:50%; margin-top:5px; }
+.fk-scan-row .n{ flex:1; min-width:0; font-size:14.5px; font-weight:600; overflow-wrap:anywhere; }
+.fk-scan-row .m{ display:block; font-size:12px; color:var(--mut); font-weight:400; margin-top:2px; }
+.fk-scan-row .k{ font-size:14.5px; font-weight:600; text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.fk-scan-tag{ display:inline-block; font-size:10.5px; font-weight:600; padding:2px 7px; border-radius:99px; background:rgba(var(--accent-rgb, 51,214,201),.16); color:var(--link, #A3F0E8); margin-left:6px; vertical-align:1px; }
+.fk-scan-tag.ai{ background:rgba(var(--cta-rgb, 255,122,69),.16); color:var(--ink); }
+.fk-scan-step{ display:flex; align-items:center; gap:6px; margin:10px 0 0 20px; }
+.fk-scan-step .pill{ display:inline-flex; align-items:center; background:var(--soft); border-radius:22px; padding:2px; }
+.fk-scan-step .pill button{ width:40px; height:40px; border-radius:50%; border:0; background:var(--soft2); color:var(--ink); font-size:19px; font-weight:600; cursor:pointer; }
+.fk-scan-step .pill button:active{ transform:scale(.92); }
+.fk-scan-step input{ width:58px; height:40px; border:0; background:transparent; color:var(--ink); text-align:center; font:inherit; font-size:15.5px; font-weight:600; -moz-appearance:textfield; }
+.fk-scan-step input::-webkit-inner-spin-button{ -webkit-appearance:none; }
+.fk-scan-step .u{ font-size:13px; color:var(--mut); flex:1 1 auto; }
+.fk-scan-step .del{ width:40px; height:40px; border-radius:50%; border:0; background:transparent; color:var(--mut); cursor:pointer; }
+.fk-scan-opts{ display:flex; gap:8px; flex-wrap:wrap; }
+.fk-scan-opt{ min-height:40px; padding:0 14px; border-radius:20px; border:1px solid var(--line); background:var(--soft); color:var(--ink); font:inherit; font-size:13.5px; font-weight:500; cursor:pointer; transition:background .2s, color .2s; }
+.fk-scan-opt.on{ background:var(--accent, #33D6C9); border-color:var(--accent, #33D6C9); color:var(--on-accent, #061A24); font-weight:600; }
+.fk-scan-warn{ display:flex; gap:8px; align-items:flex-start; background:rgba(255,196,64,.12); border:1px solid rgba(255,196,64,.28); color:var(--ink); border-radius:16px; padding:11px 13px; font-size:13px; line-height:1.45; margin-top:12px; }
+.fk-scan-warn .material-symbols-rounded{ font-size:18px; }
+.fk-scan-note{ font-size:12px; color:var(--mut); line-height:1.5; margin:12px 4px 0; }
+.fk-scan-bar{ position:sticky; bottom:0; display:flex; gap:10px; align-items:center; margin:16px -16px 0; padding:12px 16px calc(env(safe-area-inset-bottom, 0px) + 12px);
+  background:linear-gradient(180deg, transparent, rgb(var(--navy-rgb, 6,26,36)) 34%); }
+.fk-scan-round{ flex:0 0 56px; height:56px; border-radius:50%; border:1px solid var(--line); background:var(--soft); color:var(--ink); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.fk-scan-save{ flex:1; min-height:56px; border-radius:28px; border:0; background:var(--cta-bg, #FF7A45); color:var(--cta-fg, #061A24); box-shadow:var(--cta-shadow, none); font:inherit; font-size:16px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+.fk-scan-save:disabled{ opacity:.4; }
+.fk-scan-msg{ position:absolute; left:20px; right:20px; top:50%; transform:translateY(-50%); z-index:8; text-align:center; background:var(--sheet); color:var(--ink); border:1px solid var(--line); border-radius:24px; padding:22px 20px 18px; box-shadow:0 20px 60px rgba(0,0,0,.4); }
+.fk-scan-msg p{ margin:0 0 16px; font-size:15px; line-height:1.5; }
+.fk-scan-acts{ display:flex; gap:10px; }
+.fk-scan-btn{ flex:1 1 0; min-height:50px; border-radius:25px; border:0; font:inherit; font-size:15px; font-weight:600; cursor:pointer; }
+.fk-scan-btn.pri{ background:var(--cta-bg, #FF7A45); color:var(--cta-fg, #061A24); } .fk-scan-btn.sec{ background:var(--soft2); color:var(--ink); }
+html.fk-light #fk-scan{ --ink:#14232B; --mut:rgba(20,35,43,.7); --line:rgba(20,35,43,.10); --soft:rgba(20,35,43,.05); --soft2:rgba(20,35,43,.09); --tile:#fff; }
+html.fk-light #fk-scan .fk-scan-chip:not(.on){ color:#fff; }
+@media (prefers-reduced-motion: reduce){
+  .fk-scan-line{ animation:none; top:45%; } #fk-scan .fk-scan-frame .c{ animation:none; }
+  .fk-scan-card, .fk-scan-intro, .fk-scan-photo.fly, .fk-scan-frame{ transition:none; }
+  .anim .fk-scan-ring .seg, .anim .fk-scan-mac > div, .anim .fk-scan-row{ animation:none; } }`;
   D.head.appendChild(st);
 }
 const ic = n=> `<span class="material-symbols-rounded" aria-hidden="true">${n}</span>`;
 let S = null;       // phiên chụp hiện tại
+const INTRO_TIPS = [
+  ["crop_free", "var(--ring-1, #33D6C9)", "Đặt món trong khung", "Chụp thẳng từ trên xuống, cả bữa nằm gọn trong khung quét."],
+  ["fullscreen", "var(--ring-2, #FF7A45)", "Thấy đủ cả đĩa", "Đừng cắt mất mép đĩa, bát — tách món riêng nếu được."],
+  ["straighten", "var(--link, #A3F0E8)", "Thêm vật tham chiếu", "Đũa, muỗng hay thẻ ATM giúp AI đo khẩu phần sát hơn."],
+];
+/** Ảnh nền màn hướng dẫn: ảnh món của app (nếu đã tải chỉ mục ảnh), không có → nền cam ấm */
+function heroSrc(){
+  try{
+    if(typeof FOOD_IMG === "undefined" || !FOOD_IMG) return "";
+    const base = typeof FOOD_IMG_BASE !== "undefined" ? FOOD_IMG_BASE : "";
+    for(const id of ["com-tam-suon", "bun-cha-suat", "pho-bo-to", "com-ga", "banh-mi"]){ const h = FOOD_IMG[id]; if(h && h.file) return (h.base || base) + h.file; }
+  }catch(e){}
+  return "";
+}
+function setStep(el, n){ el.querySelectorAll(".fk-scan-dash i").forEach((d, i)=> d.classList.toggle("on", i === n)); }
 
 function open(mealId){
   css();
-  const st = (typeof state !== "undefined" ? state : {}), seen = !!(st.foodScan && st.foodScan.n);
+  const st = (typeof state !== "undefined" ? state : {});
   S = { meal: (typeof MEAL_TYPES !== "undefined" && MEAL_TYPES.some(m=> m.id === mealId)) ? mealId : mealByClock(), ref: (st.foodScan && st.foodScan.ref) || "none", note:"", shots: [] };
-  const draw = ()=>{
-    openSheet(`<div class="sheet-header"><h3>Chụp ảnh tính calo</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
-      <details ${seen ? "" : "open"} style="margin-bottom:6px;"><summary style="cursor:pointer;font-weight:600;font-size:14px;min-height:36px;">6 mẹo để AI ước lượng sát nhất</summary>
-        <ul class="fk-scan-tips" style="margin-top:10px;">${TIPS.map(t=> `<li>${ic(t[0])}<span><b>${esc(t[1])}</b><small>${esc(t[2])}</small></span></li>`).join("")}</ul></details>
-      <div class="fk-scan-lbl">Vật tham chiếu trong ảnh</div>
-      <div class="fk-scan-chips">${REFS.map(r=> `<button type="button" class="fk-scan-chip ${r.id === S.ref ? "on" : ""}" data-ref="${r.id}" aria-pressed="${r.id === S.ref}">${ic(r.icon)}${esc(r.label)}</button>`).join("")}</div>
-      <div class="field"><label for="fk-scan-note">Ghi chú cho AI (không bắt buộc)</label><input type="text" id="fk-scan-note" maxlength="200" placeholder="VD: cơm tấm sườn, chiên nhiều dầu" value="${esc(S.note)}"></div>
-      <button class="btn btn-primary btn-block" style="margin-top:14px;" id="fk-scan-cam">${ic("photo_camera")}Chụp ảnh món ăn</button>
-      <button class="btn btn-outline btn-block" style="margin-top:8px;" id="fk-scan-lib">${ic("photo_library")}Chọn ảnh có sẵn</button>
-      <p class="small-note" style="margin-top:10px;">Ảnh được gửi tới dịch vụ AI để phân tích và không lưu trên máy chủ TapEasy. Kết quả là ước lượng — bạn xem và chỉnh lại trước khi lưu.</p>
-      <input type="file" accept="image/*" capture="environment" id="fk-scan-f1" hidden><input type="file" accept="image/*" id="fk-scan-f2" hidden>`);
-    D.querySelectorAll("[data-ref]").forEach(b=> b.addEventListener("click", ()=>{ S.note = D.getElementById("fk-scan-note").value; S.ref = b.dataset.ref; haptic("light"); draw(); }));
-    const f1 = D.getElementById("fk-scan-f1"), f2 = D.getElementById("fk-scan-f2");
-    D.getElementById("fk-scan-cam").addEventListener("click", ()=> f1.click());
-    D.getElementById("fk-scan-lib").addEventListener("click", ()=> f2.click());
-    const onFile = e=>{ const f = e.target.files && e.target.files[0]; e.target.value = ""; if(!f) return; S.note = D.getElementById("fk-scan-note").value; try{ closeSheet(); }catch(_){} run(f); };
-    f1.addEventListener("change", onFile); f2.addEventListener("change", onFile);
-  };
-  draw();
+  const el = overlay();
+  const sess = S;
+  const paintRefs = ()=>{ el.querySelector(".fk-scan-refs > div").innerHTML = REFS.map(r=> `<button type="button" class="fk-scan-chip ${r.id === sess.ref ? "on" : ""}" data-ref="${r.id}" aria-pressed="${r.id === sess.ref}">${ic(r.icon)}${esc(r.label)}</button>`).join(""); };
+  paintRefs();
+  el.querySelector(".fk-scan-refs").addEventListener("click", ev=>{ const b = ev.target.closest("[data-ref]"); if(!b) return; sess.ref = b.dataset.ref; haptic("light"); paintRefs(); });
+  const f1 = el.querySelector("#fk-scan-f1"), f2 = el.querySelector("#fk-scan-f2");
+  el.querySelector("#fk-scan-cam").addEventListener("click", ()=> f1.click());
+  el.querySelector("#fk-scan-lib").addEventListener("click", ()=> f2.click());
+  el.querySelector(".fk-scan-pill").addEventListener("click", ()=> f2.click());
+  const onFile = e=>{ const f = e.target.files && e.target.files[0]; e.target.value = ""; if(!f) return; sess.note = el.querySelector("#fk-scan-note").value; run(f); };
+  f1.addEventListener("change", onFile); f2.addEventListener("change", onFile);
 }
 
 function overlay(){
   let el = D.getElementById("fk-scan"); if(el) el.remove();
-  el = D.createElement("div"); el.id = "fk-scan"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Phân tích ảnh món ăn");
-  el.innerHTML = `<div class="fk-scan-stage"><img class="fk-scan-photo" alt=""><div class="fk-scan-veil"></div><div class="fk-scan-line"></div>
+  const hero = heroSrc();
+  el = D.createElement("div"); el.id = "fk-scan"; el.className = "intro"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Chụp ảnh tính calo");
+  el.innerHTML = `<div class="fk-scan-stage">
+      <div class="fk-scan-hero">${hero ? `<img src="${esc(hero)}" alt="" onerror="this.remove()">` : ""}</div>
+      <img class="fk-scan-photo" alt=""><div class="fk-scan-veil"></div>
+      <div class="fk-scan-frame" aria-hidden="true"><i class="dots"></i><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i></div>
+      <div class="fk-scan-line"></div>
       <div class="fk-scan-status" aria-live="polite"><span id="fk-scan-st">Đang chuẩn bị ảnh…</span><small id="fk-scan-st2"></small></div></div>
-    <div class="fk-scan-top"><button type="button" class="fk-scan-x" aria-label="Đóng">${ic("close")}</button><span></span></div>
+    <div class="fk-scan-top"><button type="button" class="fk-scan-x" aria-label="Đóng">${ic("close")}</button>
+      <div class="fk-scan-dash" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+      <button type="button" class="fk-scan-pill">Ảnh có sẵn</button></div>
+    <div class="fk-scan-intro">
+      <div class="fk-scan-refs"><small>Vật đặt cạnh món để đo kích thước</small><div role="group" aria-label="Vật tham chiếu"></div></div>
+      <div class="sc"><h2>Chụp trọn cả bữa</h2>
+      ${INTRO_TIPS.map(t=> `<div class="fk-scan-tip"><span class="t" style="color:${t[1]}">${ic(t[0])}</span><span><b>${esc(t[2])}</b><small>${esc(t[3])}</small></span></div>`).join("")}
+      <label class="fk-scan-noteln">${ic("edit_note")}<input type="text" id="fk-scan-note" maxlength="200" placeholder="Ghi chú cho AI · VD: cơm tấm, chiên nhiều dầu" aria-label="Ghi chú cho AI (không bắt buộc)"></label>
+      <button type="button" class="fk-scan-go" id="fk-scan-cam">${ic("photo_camera")}Chụp ảnh</button>
+      <button type="button" class="fk-scan-go2" id="fk-scan-lib">${ic("photo_library")}Chọn ảnh có sẵn</button>
+      <p class="fk-scan-priv">Ảnh chỉ gửi tới dịch vụ AI để phân tích, không lưu trên máy chủ TapEasy. Kết quả là ước lượng — bạn xem và chỉnh trước khi lưu.</p>
+      <input type="file" accept="image/*" capture="environment" id="fk-scan-f1" hidden><input type="file" accept="image/*" id="fk-scan-f2" hidden></div></div>
     <div class="fk-scan-card" aria-live="polite"><div class="fk-scan-grab"></div><div class="fk-scan-body"></div></div>`;
   D.body.appendChild(el);
   el.querySelector(".fk-scan-x").addEventListener("click", close);
-  requestAnimationFrame(()=> el.classList.add("on"));
+  const sh = ()=>{ const it = el.querySelector(".fk-scan-intro"); if(it && it.offsetHeight) el.style.setProperty("--sh", it.offsetHeight + "px"); };
+  sh(); requestAnimationFrame(()=>{ sh(); el.classList.add("on"); });
+  try{ if(G.ResizeObserver) new ResizeObserver(sh).observe(el.querySelector(".fk-scan-intro")); }catch(e){}
   return el;
 }
-function close(){ const el = D.getElementById("fk-scan"); if(!el) return; el.classList.remove("on"); setTimeout(()=>{ try{ el.remove(); }catch(e){} }, 240); S = S && Object.assign(S, { closed:true }); }
+function close(){ const el = D.getElementById("fk-scan"); if(!el) return; el.classList.remove("on"); setTimeout(()=>{ try{ el.remove(); }catch(e){} }, 260); S = S && Object.assign(S, { closed:true }); }
 function fitPhoto(el, shot){
   const im = el.querySelector(".fk-scan-photo"), W = el.clientWidth, H = el.clientHeight;
-  const s = Math.min(W / shot.w, H / shot.h), w = shot.w * s, h = shot.h * s;
-  Object.assign(im.style, { width: w + "px", height: h + "px", left: (W - w) / 2 + "px", top: (H - h) / 2 + "px", borderRadius: "0px" });
+  const s = Math.max(W / shot.w, H / shot.h), w = shot.w * s, h = shot.h * s;          // phủ kín màn như khung ngắm
+  Object.assign(im.style, { width: w + "px", height: h + "px", left: (W - w) / 2 + "px", top: (H - h) / 2 + "px", borderRadius: "0px", display:"" });
   im.src = shot.dataUrl;
 }
 function message(el, html){
   const old = el.querySelector(".fk-scan-msg"); if(old) old.remove();
-  el.querySelector(".fk-scan-line").style.display = "none"; el.querySelector(".fk-scan-status").style.display = "none";
+  el.classList.remove("busy"); if(!el.classList.contains("intro")) el.classList.add("done");
   const m = D.createElement("div"); m.className = "fk-scan-msg"; m.innerHTML = html; el.appendChild(m); return m;
 }
 const STEPS = ["Đang nhận diện từng món…", "Đang đo kích thước khẩu phần…", "Đang tra bảng dinh dưỡng…"];
 
 async function run(file){
-  const el = overlay(), sess = S;
+  const el = D.getElementById("fk-scan") || overlay(), sess = S;
   const setSt = (a, b)=>{ const x = el.querySelector("#fk-scan-st"), y = el.querySelector("#fk-scan-st2"); if(x) x.textContent = a; if(y) y.textContent = b || ""; };
   let shot;
   try{ shot = await prepare(file); }catch(e){ message(el, `<p>${esc(e.message || "Không đọc được ảnh.")}</p><button class="fk-scan-btn sec" data-a="x">Đóng</button>`).querySelector("[data-a]").addEventListener("click", close); return; }
   if(sess.closed) return;
-  sess.shots.push(shot); fitPhoto(el, shot);
+  sess.shots.push(shot); fitPhoto(el, shot); el.classList.remove("intro"); el.classList.add("done"); setStep(el, 1);
   const go = async ()=>{
-    el.querySelector(".fk-scan-line").style.display = ""; el.querySelector(".fk-scan-status").style.display = "";
+    el.classList.remove("intro", "done"); el.classList.add("busy"); setStep(el, 1);
     let i = 0; setSt(STEPS[0], sess.shots.length > 1 ? "Dùng cả 2 ảnh" : "");
     const tick = setInterval(()=>{ i = Math.min(STEPS.length - 1, i + 1); setSt(STEPS[i], ""); }, 2200);
     try{
@@ -346,31 +484,61 @@ function showResult(el, sess, res){
   if(!q.top_down) warns.push("Ảnh chụp nghiêng nên khoảng sai số rộng hơn. Lần sau chụp thẳng từ trên xuống.");
   if(q.cropped) warns.push("Món ăn bị cắt mất một phần khung hình.");
   if(sess.ref === "none") warns.push("Không có vật tham chiếu — kích thước chỉ là phỏng đoán theo cỡ đĩa thông thường.");
+  const T = (()=>{ let t = null; try{ t = NutriPro.targets((typeof state !== "undefined" && state.profile) || {}); }catch(e){}
+    t = t || {}; return { P: Number(t.P) || 100, C: Number(t.C) || 250, F: Number(t.F) || 60 }; })();
+  const now = new Date(), hhmm = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
+  /* vòng năng lượng: 3 cung theo phần kcal của đạm (đỏ) / béo (cam) / tinh bột (xanh) */
+  const ringSVG = C=>{
+    const R = 38, L = 2 * Math.PI * R, parts = [["p", C.protein * 4], ["f", C.fat * 9], ["c", C.carbs * 4]], tot = parts.reduce((s, x)=> s + x[1], 0) || 1, gap = 7;
+    let off = 0;
+    return `<svg viewBox="0 0 92 92" aria-hidden="true"><circle cx="46" cy="46" r="${R}" fill="none" style="stroke:var(--soft2)" stroke-width="9"/>${parts.map(([k, v], i)=>{
+      const len = Math.max(0, v / tot * L - gap); const s = `<circle class="seg" cx="46" cy="46" r="${R}" style="stroke:${COL[k]};--len:${len.toFixed(1)};--d:${i * .12}s" stroke-dasharray="${len.toFixed(1)} ${L.toFixed(1)}" stroke-dashoffset="0" transform="rotate(${(off / L * 360).toFixed(1)} 46 46)"/>`;
+      off += v / tot * L; return len > 0 ? s : ""; }).join("")}</svg><span class="mid">${ic("local_fire_department")}</span>`;
+  };
+  /* biểu đồ nhỏ của từng chất: cột (đạm) · răng cưa (béo) · sóng (tinh bột); vạch đậm = % mục tiêu ngày */
+  const miniSVG = (k, pct)=>{
+    const c = COL[k], p = Math.max(0, Math.min(1, pct));
+    if(k === "p"){ const n = 12, hi = Math.min(n - 1, Math.round(p * (n - 1)));
+      return `<svg viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true">${Array.from({ length:n }, (_, i)=>{ const h = 8 + ((i * 7) % 11) + (i === hi ? 12 : 0);
+        return `<rect x="${i * 8.5}" y="${30 - Math.min(30, h)}" width="${i === hi ? 3.4 : 2.6}" height="${Math.min(30, h)}" rx="1.3" style="fill:${c}" opacity="${i === hi ? 1 : .22}"/>`; }).join("")}</svg>`; }
+    const pts = k === "f" ? [0,24, 12,8, 22,20, 32,6, 44,22, 56,10, 66,24, 78,12, 90,20, 100,14] : null;
+    if(pts){ const d = pts.reduce((s, v, i)=> s + (i % 2 ? `${v} ` : `${i ? "L" : "M"}${v},`), "");
+      return `<svg viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="fkg-f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${c}" stop-opacity=".28"/><stop offset="1" style="stop-color:${c}" stop-opacity="0"/></linearGradient></defs>
+        <path d="${d}L100,30 L0,30 Z" fill="url(#fkg-f)"/><path d="${d}" fill="none" style="stroke:${c}" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>`; }
+    const w = (ph, a)=> Array.from({ length:41 }, (_, i)=>{ const x = i * 2.5; return `${i ? "L" : "M"}${x.toFixed(1)},${(15 + Math.sin(x / 100 * Math.PI * 3 + ph) * a).toFixed(1)}`; }).join(" ");
+    return `<svg viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true"><path d="${w(0, 9)}" fill="none" style="stroke:${c}" stroke-width="2" vector-effect="non-scaling-stroke"/><path d="${w(1.6, 7)}" fill="none" style="stroke:${c}" stroke-opacity=".35" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`;
+  };
+  const macCard = (k, icon, label, g, tgt)=> `<div><div class="h"><span class="material-symbols-rounded" aria-hidden="true" style="color:${COL[k]}">${icon}</span>${esc(label)}</div>
+    <div class="v" style="color:${COL[k]}">${g}<small>g</small></div>${miniSVG(k, g / tgt)}<div class="pc">${Math.round(g / tgt * 100)}% mục tiêu ngày</div></div>`;
+  const dotOf = r=>{ const p = r.protein * 4, f = r.fat * 9, c = r.carbs * 4; return p >= f && p >= c ? COL.p : f >= c ? COL.f : COL.c; };
   let first = true;
   const paint = ()=>{
-    const C = compute(res, oil);
-    body.innerHTML = `<div class="fk-scan-head"><div class="fk-scan-thumb" id="fk-scan-thumb"></div><div style="min-width:0;flex:1;">
-        <div class="fk-scan-kcal"><span id="fk-scan-k">${first ? 0 : C.kcal}</span><small>kcal</small></div>
-        <div class="fk-scan-range">Khoảng ước lượng ${C.lo}–${C.hi} kcal</div>
-        ${res.dish ? `<div class="fk-scan-dish">${esc(res.dish)}</div>` : ""}</div></div>
-      <div class="fk-scan-mac"><div><b>${C.protein} g</b>Đạm</div><div><b>${C.carbs} g</b>Tinh bột</div><div><b>${C.fat} g</b>Chất béo</div></div>
+    const C = compute(res, oil), mealLabel = ((meals.find(m=> m.id === meal)) || { label:"Bữa ăn" }).label;
+    body.innerHTML = `<div class="${first ? "anim" : ""}">
+      <div class="fk-scan-head"><div class="fk-scan-thumb" id="fk-scan-thumb"></div><div style="min-width:0;flex:1;">
+        <small>${esc(mealLabel)} · ${hhmm}</small><div class="fk-scan-dish">${esc(res.dish || "Bữa ăn của bạn")}</div></div></div>
+      <div class="fk-scan-w fk-scan-tot"><div class="l"><small>Tổng năng lượng</small>
+          <div class="fk-scan-kcal"><span id="fk-scan-k">${first ? 0 : C.kcal}</span><small>kcal</small></div>
+          <div class="fk-scan-range">Khoảng ước lượng ${C.lo}–${C.hi} kcal</div></div>
+        <div class="fk-scan-ring" role="img" aria-label="Đạm ${C.protein} g, chất béo ${C.fat} g, tinh bột ${C.carbs} g">${ringSVG(C)}</div></div>
+      <div class="fk-scan-mac">${macCard("p", "egg_alt", "Đạm", C.protein, T.P)}${macCard("f", "water_drop", "Chất béo", C.fat, T.F)}${macCard("c", "grain", "Tinh bột", C.carbs, T.C)}</div>
       ${res.simulated ? `<div class="fk-scan-warn">${ic("science")}<span>Bản dùng thử: đây là kết quả MẪU, không phải phân tích từ ảnh của bạn.</span></div>` : ""}
-      <div class="fk-scan-sec">Thành phần · chỉnh gam nếu chưa đúng</div>
-      ${C.rows.map((r, i)=> `<div class="fk-scan-row" style="transition-delay:${first ? 180 + i * 70 : 0}ms">
-          <div><div class="n">${esc(r.it.name)}<span class="fk-scan-tag ${r.db ? "" : "ai"}">${r.db ? "bảng TapEasy" : "AI ước lượng"}</span></div>
-            <div class="m">${METHODS[r.it.method] ? esc(METHODS[r.it.method]) + " · " : ""}AI đoán ${r.it.low}–${r.it.high} g</div></div>
-          <div class="k">${r.kcal} kcal</div>
-          <div class="fk-scan-step"><button type="button" data-g="${i}:-10" aria-label="Giảm 10 gam">−</button><input type="number" inputmode="numeric" min="0" max="2000" value="${r.it.grams}" data-gi="${i}" aria-label="Số gam ${esc(r.it.name)}"><button type="button" data-g="${i}:10" aria-label="Tăng 10 gam">+</button><span class="u">gam</span><button type="button" class="del" data-del="${i}" aria-label="Bỏ ${esc(r.it.name)}">${ic("delete")}</button></div></div>`).join("")}
-      <div class="fk-scan-sec">Dầu mỡ khi nấu ${C.oil ? `· ${C.oilKcal} kcal` : ""}</div>
-      <div class="fk-scan-oil">${oilOpts.map(o=> `<button type="button" class="${o[0] === oil ? "on" : ""}" data-oil="${o[0]}" aria-pressed="${o[0] === oil}">${esc(o[1])}</button>`).join("")}</div>
+      <div class="fk-scan-sec">Thành phần<small>chỉnh gam nếu chưa đúng</small></div>
+      <div class="fk-scan-w fk-scan-list">${C.rows.map((r, i)=> `<div class="fk-scan-row" style="--rd:${first ? .3 + i * .07 : 0}s">
+          <div class="top"><span class="dot" style="background:${dotOf(r)}"></span><div class="n">${esc(r.it.name)}<span class="fk-scan-tag ${r.db ? "" : "ai"}">${r.db ? "bảng TapEasy" : "AI ước lượng"}</span>
+            <span class="m">${METHODS[r.it.method] ? esc(METHODS[r.it.method]) + " · " : ""}AI đoán ${r.it.low}–${r.it.high} g</span></div><div class="k">${r.kcal} kcal</div></div>
+          <div class="fk-scan-step"><span class="pill"><button type="button" data-g="${i}:-10" aria-label="Giảm 10 gam">−</button><input type="number" inputmode="numeric" min="0" max="2000" value="${r.it.grams}" data-gi="${i}" aria-label="Số gam ${esc(r.it.name)}"><button type="button" data-g="${i}:10" aria-label="Tăng 10 gam">+</button></span><span class="u">gam</span><button type="button" class="del" data-del="${i}" aria-label="Bỏ ${esc(r.it.name)}">${ic("delete")}</button></div></div>`).join("") || `<div class="fk-scan-row"><span class="m">Đã bỏ hết thành phần.</span></div>`}</div>
+      <div class="fk-scan-sec">Dầu mỡ khi nấu<small>${C.oil ? `${C.oil} g · ${C.oilKcal} kcal` : "AI khó thấy dầu thấm trong món"}</small></div>
+      <div class="fk-scan-opts">${oilOpts.map(o=> `<button type="button" class="fk-scan-opt ${o[0] === oil ? "on" : ""}" data-oil="${o[0]}" aria-pressed="${o[0] === oil}">${esc(o[1])}</button>`).join("")}</div>
       ${res.sauce_note ? `<p class="fk-scan-note">${ic("info")} Nước sốt / nước chấm: ${esc(res.sauce_note)}. Nếu ăn nhiều, hãy thêm riêng bằng ô tìm món.</p>` : ""}
       ${warns.length ? `<div class="fk-scan-warn">${ic("warning")}<span>${warns.map(esc).join(" ")}</span></div>` : ""}
       ${res.tips.length ? `<p class="fk-scan-note">Gợi ý lần sau: ${res.tips.map(esc).join(" ")}</p>` : ""}
       <div class="fk-scan-sec">Lưu vào</div>
-      <div class="fk-scan-meals">${meals.map(m=> `<button type="button" class="fk-scan-chip ${m.id === meal ? "on" : ""}" style="border-color:${m.id === meal ? "#12232b" : "#d5dde1"};background:${m.id === meal ? "#12232b" : "#fff"};color:${m.id === meal ? "#fff" : "#12232b"}" data-meal="${m.id}" aria-pressed="${m.id === meal}">${esc(m.label)}</button>`).join("")}</div>
-      <div class="fk-scan-acts">${sess.shots.length < 2 && !res.simulated ? `<button type="button" class="fk-scan-btn sec" data-a="more">+ Ảnh nghiêng 45°</button>` : `<button type="button" class="fk-scan-btn sec" data-a="redo">Chụp lại</button>`}<button type="button" class="fk-scan-btn pri" data-a="save" ${C.rows.length ? "" : "disabled"}>Lưu ${C.kcal} kcal</button></div>
+      <div class="fk-scan-opts">${meals.map(m=> `<button type="button" class="fk-scan-opt ${m.id === meal ? "on" : ""}" data-meal="${m.id}" aria-pressed="${m.id === meal}">${esc(m.label)}</button>`).join("")}</div>
       <p class="fk-scan-note">Con số là ước lượng: AI thường sai khối lượng khoảng 30–40 % và hay đoán thiếu khi phần ăn lớn. Món có nhãn “bảng TapEasy” được tính calo từ bảng thực phẩm của app theo số gam bạn xác nhận.</p>
-      <input type="file" accept="image/*" capture="environment" id="fk-scan-f3" hidden>`;
+      <div class="fk-scan-bar">${sess.shots.length < 2 && !res.simulated ? `<button type="button" class="fk-scan-round" data-a="more" aria-label="Thêm ảnh nghiêng 45° để đo chính xác hơn" title="Thêm ảnh nghiêng 45°">${ic("add_a_photo")}</button>` : `<button type="button" class="fk-scan-round" data-a="redo" aria-label="Chụp lại" title="Chụp lại">${ic("restart_alt")}</button>`}
+        <button type="button" class="fk-scan-save" data-a="save" ${C.rows.length ? "" : "disabled"}>${ic("check")}Lưu ${C.kcal} kcal</button></div>
+      <input type="file" accept="image/*" capture="environment" id="fk-scan-f3" hidden></div>`;
     const th = body.querySelector("#fk-scan-thumb"); if(!first) th.style.backgroundImage = `url("${sess.shots[0].dataUrl}")`;
   };
   paint();
@@ -383,8 +551,8 @@ function showResult(el, sess, res){
     else if(t.dataset.a === "redo"){ close(); setTimeout(()=> open(meal), 260); }
     else if(t.dataset.a === "more"){ const f = body.querySelector("#fk-scan-f3"); f.onchange = async e=>{ const file = e.target.files && e.target.files[0]; if(!file) return;
         try{ const s2 = await prepare(file); sess.shots.push(s2); }catch(_){ say("Không đọc được ảnh thứ hai"); return; }
-        card.classList.remove("on"); const im = el.querySelector(".fk-scan-photo"); im.classList.remove("fly"); im.style.display = ""; fitPhoto(el, sess.shots[0]);
-        el.querySelector(".fk-scan-line").style.display = ""; el.querySelector(".fk-scan-status").style.display = "";
+        card.classList.remove("on"); const im = el.querySelector(".fk-scan-photo"); im.classList.remove("fly"); fitPhoto(el, sess.shots[0]);
+        el.classList.remove("done"); el.classList.add("busy"); setStep(el, 1);
         el.querySelector("#fk-scan-st").textContent = "Đang phân tích lại với 2 ảnh…";
         try{ const r2 = await analyze(sess.shots.map(s=> s.dataUrl), sess.ref, sess.note); if(sess.closed) return; if(r2.is_food){ showResult(el, sess, r2); return; } }catch(_){ }
         if(!sess.closed){ say("Chưa phân tích lại được — giữ kết quả cũ"); sess.shots.pop(); reveal(false); } };
@@ -395,7 +563,7 @@ function showResult(el, sess, res){
 
   /* Hiệu ứng: thẻ trắng trượt lên · ảnh bay thu nhỏ vào ô ảnh của thẻ · số calo đếm lên */
   function reveal(animate){
-    el.querySelector(".fk-scan-line").style.display = "none"; el.querySelector(".fk-scan-status").style.display = "none";
+    el.classList.remove("busy"); el.classList.add("done"); setStep(el, 2);
     const im = el.querySelector(".fk-scan-photo"), th = body.querySelector("#fk-scan-thumb"), kEl = body.querySelector("#fk-scan-k");
     const total = compute(res, oil).kcal;
     const done = ()=>{ first = false; if(th) th.style.backgroundImage = `url("${sess.shots[0].dataUrl}")`; im.style.display = "none"; if(kEl) kEl.textContent = total; };
