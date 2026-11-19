@@ -50,12 +50,54 @@ const EX_YT = {
   bicepcurl:["MKWBV29S6c0", "6DeLZ6cbgWQ"], tricepdip:["l1itVZTVDDo", "6cRAes2lNNQ"], tricepsdown:["_w-HpW70nSQ", "IBGvZUzoQiQ"], running:["hMH1QYE8F7Q", "j2UmKxUANAE"]
 };
 const YT_ID = /^[A-Za-z0-9_-]{11}$/;
-function idsFor(exId){ const a = EX_YT[exId]; return Array.isArray(a) ? a.filter(x=> YT_ID.test(x)) : []; }
+/* Bài Thư viện 800+ (free-exercise-db) cùng động tác + cùng dụng cụ với bài của app → dùng chung video đã kiểm */
+const EXDB_ALIAS = {
+  Barbell_Full_Squat:"squat", Barbell_Squat:"squat", Olympic_Squat:"squat", Barbell_Deadlift:"deadlift", Romanian_Deadlift:"rdl",
+  Barbell_Glute_Bridge:"glutebridge", Butt_Lift_Bridge:"glutebridge", Barbell_Hip_Thrust:"hipthrust", Smith_Machine_Hip_Raise:"hipthrust",
+  Barbell_Lunge:"lunges", Barbell_Walking_Lunge:"lunges", Bodyweight_Walking_Lunge:"lunges", Dumbbell_Lunges:"lunges", Dumbbell_Rear_Lunge:"lunges",
+  Barbell_Shoulder_Press:"overheadpress", Standing_Military_Press:"overheadpress", Seated_Barbell_Military_Press:"overheadpress",
+  Bent_Over_Barbell_Row:"bentoverrow", Bodyweight_Squat:"bwsquat", Cable_Crossover:"cablefly", Low_Cable_Crossover:"cablefly", Flat_Bench_Cable_Flyes:"cablefly",
+  Cable_Rope_Overhead_Triceps_Extension:"ohtriext", Triceps_Overhead_Extension_with_Rope:"ohtriext", Cable_Seated_Lateral_Raise:"cablelateral",
+  Dumbbell_Bench_Press:"dbbench", Dumbbell_Incline_Row:"csrow", Dumbbell_Shoulder_Press:"dbpress", Seated_Dumbbell_Press:"dbpress", Face_Pull:"facepull",
+  Front_Barbell_Squat:"frontsquat", Glute_Kickback:"kickback", Goblet_Squat:"gobletsquat", Hack_Squat:"hacksquat", Narrow_Stance_Hack_Squats:"hacksquat",
+  Hammer_Curls:"hammercurl", Incline_Dumbbell_Press:"inclinedb", Leg_Press:"legpress", Narrow_Stance_Leg_Press:"legpress",
+  Leverage_Chest_Press:"machinepress", Machine_Bench_Press:"machinepress", Lying_Leg_Curls:"legcurl", Machine_Preacher_Curls:"preacher", Preacher_Curl:"preacher",
+  Seated_Cable_Rows:"cablerow", Side_Lateral_Raise:"lateralraise", Seated_Side_Lateral_Raise:"lateralraise", Smith_Machine_Squat:"smithsquat",
+  Split_Squat_with_Dumbbells:"bulgarian", Standing_Calf_Raises:"calfraise", Standing_Barbell_Calf_Raise:"calfraise", Standing_Dumbbell_Calf_Raise:"calfraise",
+  Smith_Machine_Calf_Raise:"calfraise", Thigh_Abductor:"abduction", Triceps_Pushdown:"tricepsdown", Ab_Crunch_Machine:"crunch", Crunches:"crunch",
+  Dumbbell_Bicep_Curl:"bicepcurl", Smith_Machine_Bench_Press:"benchpress", "Barbell_Bench_Press_-_Medium_Grip":"benchpress", Pullups:"pullup",
+  Plank:"plank", Pushups:"pushup", Russian_Twist:"russiantwist", Hanging_Leg_Raise:"hangingleg", Dead_Bug:"deadbug", Mountain_Climbers:"mountainclimber",
+  Farmers_Walk:"farmercarry", Kettlebell_Sumo_High_Pull:"", "Wide-Grip_Lat_Pulldown":"latpulldown", "Dips_-_Triceps_Version":"tricepdip",
+  Inverted_Row:"invertedrow", "Bent_Over_Two-Dumbbell_Row":"dbrow", "One-Arm_Dumbbell_Row":"dbrow", Skull_Crusher:"skullcrusher", "EZ-Bar_Skullcrusher":"skullcrusher",
+  Bench_Dips:"tricepdip", Leg_Extensions:"legext", Dumbbell_Step_Ups:"stepup", Butterfly:"pecdeck", "Straight-Arm_Dumbbell_Pullover":"pullover",
+};
+/* Video tìm tự động cho Thư viện 800+ (workflow media-yt-guides.yml → media/yt/index.json), nạp nền khi mở app */
+let YT_EXDB = {};
+try{ const c = G.localStorage && localStorage.getItem("fk_yt_exdb"); if(c){ const j = JSON.parse(c); if(j && typeof j === "object") YT_EXDB = j; } }catch(e){}
+function loadExdbIndex(){
+  try{
+    if(typeof fetch !== "function") return;
+    const base = (G.location && /^https?:/.test(G.location.protocol) && !/tapeasy\.app$/.test(G.location.hostname)) ? "https://tapeasy.app/" : "";
+    fetch(base + "media/yt/index.json", { cache: "no-cache" }).then(r=> r.ok ? r.json() : null).then(j=>{
+      if(!j || !j.items || typeof j.items !== "object") return;
+      const out = {}; Object.keys(j.items).forEach(k=>{ const a = j.items[k]; if(/^[A-Za-z0-9_().,'-]{2,90}$/.test(k) && Array.isArray(a)) out[k] = a.filter(x=> YT_ID.test(x)).slice(0, 3); });
+      YT_EXDB = out; try{ localStorage.setItem("fk_yt_exdb", JSON.stringify(out)); }catch(e){}
+    }).catch(()=>{});
+  }catch(e){}
+}
+loadExdbIndex();
+function idsFor(exId){
+  exId = String(exId || "");
+  if(exId.indexOf("x:") === 0){ const a = YT_EXDB[exId.slice(2)]; return Array.isArray(a) ? a.filter(x=> YT_ID.test(x)) : []; }
+  const a = EX_YT[exId]; return Array.isArray(a) ? a.filter(x=> YT_ID.test(x)) : [];
+}
 /** khoá bài của item (bài app / bài thư viện qua bảng FV_CORE_EXDB / theo tên tiếng Anh trong ngoặc) */
 function exKeyOf(item, name){
   try{
     if(item && item.exerciseId && EX_YT[item.exerciseId]) return item.exerciseId;
     const xid = item && item.custom && item.custom.exDbId;
+    if(xid && Array.isArray(YT_EXDB[xid]) && YT_EXDB[xid].length) return "x:" + xid;          // video tìm riêng cho đúng bài thư viện
+    if(xid && EXDB_ALIAS[xid] && EX_YT[EXDB_ALIAS[xid]]) return EXDB_ALIAS[xid];             // cùng động tác + dụng cụ với bài của app
     if(xid && typeof FV_CORE_EXDB !== "undefined"){ const k = Object.keys(FV_CORE_EXDB).find(k=> FV_CORE_EXDB[k] === xid); if(k && EX_YT[k]) return k; }
     const n = String(name || (item && item.custom && item.custom.name) || "").toLowerCase().trim();
     if(n && typeof EXERCISES !== "undefined"){
@@ -136,7 +178,7 @@ function install(){
   if(typeof renderSessionStep === "function" && !renderSessionStep.__yt){ const f = renderSessionStep; renderSessionStep = function(){ const o = f.apply(this, arguments); try{ addToSession(); }catch(e){} return o; }; renderSessionStep.__yt = true; }
   if(typeof openExerciseDetail === "function" && !openExerciseDetail.__yt){ const f = openExerciseDetail; openExerciseDetail = function(uid){ const o = f.apply(this, arguments); try{ addToDetail(uid); }catch(e){} return o; }; openExerciseDetail.__yt = true; }
 }
-G.FKYT = { query, url, button, open, install, idsFor, exKeyOf, stripHTML, playIn, EX_YT };
+G.FKYT = { query, url, button, open, install, idsFor, exKeyOf, stripHTML, playIn, EX_YT, EXDB_ALIAS, loadExdbIndex, get exdbCount(){ return Object.keys(YT_EXDB).length; } };
 install();
 if(D) D.addEventListener("DOMContentLoaded", install, { once: true });
 })(typeof window !== "undefined" ? window : globalThis);

@@ -1966,3 +1966,10 @@ html.fk-light .ytg-h small{ color:rgba(20,35,43,.7); }
 .exm-tab{ min-height:30px; padding:0 13px; border-radius:99px; border:0; background:transparent; color:rgba(255,255,255,.82); font:700 12px/1 Inter,system-ui,sans-serif; cursor:pointer; transition:background .2s, color .2s; }
 .exm-tab.on{ background:#fff; color:#0b0d10; }
 .exm.exg-3d{ background:#0b0d10; }
+.sess-back{ display:inline-flex; align-items:center; gap:6px; min-height:40px; padding:0 14px 0 10px; margin:0 0 10px; border-radius:20px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:inherit; font:inherit; font-size:14px; font-weight:600; cursor:pointer; }
+.sess-back .material-symbols-rounded{ font-size:20px; }
+html.fk-light .sess-back{ border-color:rgba(0,0,0,.14); background:rgba(0,0,0,.04); }
+/* 19/11 — "Chưa tập gần đây" (bản đồ phục hồi): chấm rỗng viền + thanh sọc, thấy rõ trên mọi theme sáng/tối */
+.rcv-legend i.rcv-none, .rcv-row > i.rcv-none{ background:transparent !important; box-shadow:inset 0 0 0 2px currentColor; opacity:.6; }
+.rcv-bar .rcv-none-bar{ width:100%; background:repeating-linear-gradient(135deg, currentColor 0 4px, transparent 4px 8px); opacity:.28; }
+html.fk-light .rcv-bar{ background:rgba(0,0,0,.08); }

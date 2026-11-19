@@ -154,6 +154,14 @@ async function mount3D(){
   if(vid){ try{ const p = vid.play(); if(p && p.catch) p.catch(()=>{}); }catch(e){}
     vid.addEventListener("error", ()=>{ const sl = vid.closest(".exm-slide"); if(slides.length > 1){ const t = box.querySelector('[data-exm-go="0"]'); if(t) t.remove(); sl.remove(); } else if(old) box.replaceWith(old); else box.remove(); }, { once: true }); }
 }
+/* nút "Quay lại" về tab đang mở trước khi vào buổi tập (buổi được tạm dừng, bấm Bắt đầu để tiếp tục) */
+function addBack(){
+  const sc = D && D.getElementById("sheet-content"); if(!sc || sc.querySelector(".sess-back") || !D.getElementById("btn-session-done")) return;
+  const b = D.createElement("button"); b.type = "button"; b.className = "sess-back"; b.setAttribute("aria-label", "Quay lại màn trước (tạm dừng buổi tập)");
+  b.innerHTML = `<span class="material-symbols-rounded">arrow_back</span>Quay lại`;
+  b.addEventListener("click", ()=>{ try{ if(typeof closeSheet === "function") closeSheet(); }catch(e){} });
+  const h = sc.querySelector(".sheet-handle"); if(h) h.after(b); else sc.prepend(b);
+}
 /* (b) màn tập: khối "Hướng dẫn kỹ thuật" → 3 phần */
 function upgradeSessionGuide(){
   const sc = D && D.getElementById("sheet-content"); if(!sc || typeof session === "undefined" || !session) return;
@@ -205,7 +213,7 @@ function upgradeLibraryHTML(out, x){
 function install(){
   if(typeof renderSessionStep === "function" && !renderSessionStep.__exg){
     const f = renderSessionStep;
-    renderSessionStep = function(){ const o = f.apply(this, arguments); try{ upgradeSessionGuide(); }catch(e){} try{ mount3D(); }catch(e){} return o; };
+    renderSessionStep = function(){ const o = f.apply(this, arguments); try{ upgradeSessionGuide(); }catch(e){} try{ addBack(); }catch(e){} try{ mount3D(); }catch(e){} return o; };
     renderSessionStep.__exg = true;
   }
   if(typeof openExerciseDetail === "function" && !openExerciseDetail.__exg){

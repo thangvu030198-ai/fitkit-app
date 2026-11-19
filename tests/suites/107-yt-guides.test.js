@@ -26,6 +26,10 @@ module.exports = {
       assert.equal(app.ev(`FKYT.exKeyOf({ exerciseId:"plank" })`), "plank");
       assert.equal(app.ev(`FKYT.exKeyOf(null, EXERCISES.hipthrust.name)`), "hipthrust");
       assert.equal(app.ev(`FKYT.exKeyOf({ custom:{ name:"Xyz" } })`), "");
+      // bài Thư viện 800+: cùng động tác + dụng cụ → dùng chung video; mọi alias trỏ tới bài có video
+      assert.equal(app.ev(`FKYT.exKeyOf({ custom:{ name:"Đẩy ngực trên máy", exDbId:"Leverage_Chest_Press" } })`), "machinepress");
+      assert.equal(app.ev(`Object.entries(FKYT.EXDB_ALIAS).filter(([k,v])=> v && !FKYT.idsFor(v).length).length`), 0);
+      assert.match(read("scripts/yt_guides.py"), /videoEmbeddable="true"/); assert.match(read("scripts/yt_guides.py"), /YT_API_KEY/);
     });
   }
 };

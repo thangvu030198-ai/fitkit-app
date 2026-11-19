@@ -146,7 +146,7 @@ function upgrade(root, res){
   if(!boxes.length) return;
   Promise.resolve(loadIndex()).then(()=>{ boxes.forEach(b=>{ paintAnat(b, res).catch(()=>{}); }); });
 }
-function legend(){ return `<div class="rcv-legend"><span><i style="background:${COL.ready}"></i>Sẵn sàng</span><span><i style="background:${COL.mid}"></i>Đang hồi</span><span><i style="background:${COL.tired}"></i>Còn mỏi</span><span><i style="background:${COL.none}"></i>Chưa tập gần đây</span></div>`; }
+function legend(){ return `<div class="rcv-legend"><span><i style="background:${COL.ready}"></i>Sẵn sàng</span><span><i style="background:${COL.mid}"></i>Đang hồi</span><span><i style="background:${COL.tired}"></i>Còn mỏi</span><span><i class="rcv-none"></i>Chưa tập gần đây</span></div>`; }
 
 /* ---- nhóm cơ của buổi đang chọn ở màn Tập ---- */
 function dayGroups(){
@@ -182,8 +182,8 @@ function open(){
   openSheet(`<div class="sheet-header"><h3>Phục hồi cơ</h3><button class="icon-btn" onclick="closeSheet()" aria-label="Đóng"><span class="material-symbols-rounded">close</span></button></div>
     <div class="rcv-big">${mapBox(res, false)}</div>${legend()}
     <div class="rcv-list">${list.map(([g, o])=>{ const st = statusOf(o.f), has = o.sets > 0 || o.f > 0;
-      return `<div class="rcv-row"><i style="background:${has ? COL[st.k] : COL.none}"></i><span>${esc(g)}</span>
-        <div class="rcv-bar"><b style="width:${has ? Math.round((1 - o.f) * 100) : 100}%;background:${has ? COL[st.k] : COL.none}"></b></div>
+      return `<div class="rcv-row"><i ${has ? `style="background:${COL[st.k]}"` : `class="rcv-none"`}></i><span>${esc(g)}</span>
+        <div class="rcv-bar">${has ? `<b style="width:${Math.round((1 - o.f) * 100)}%;background:${COL[st.k]}"></b>` : `<b class="rcv-none-bar"></b>`}</div>
         <small>${has ? `${Math.round((1 - o.f) * 100)}%${o.f >= 0.25 && o.readyAt ? " · " + esc(whenTxt(o.readyAt, res.now)) : ""}` : "—"}</small></div>`; }).join("")}</div>
     <p class="small-note" style="margin-top:10px;">Ước tính từ số hiệp hiệu quả 5 ngày qua: cơ lớn (ngực, lưng, đùi, mông) cần khoảng 48–72 giờ, cơ nhỏ khoảng 24–48 giờ tuỳ khối lượng. Giấc ngủ, ăn uống và cảm giác đau mỏi thật của bạn quan trọng hơn con số này.</p>`);
   upgrade(D.getElementById("sheet-content"), res);
