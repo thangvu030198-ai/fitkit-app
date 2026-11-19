@@ -61,20 +61,21 @@ def main():
     if isinstance(data, dict): data = data.get("data") or data.get("exercises") or []
     print(f"Nguồn: {len(data)} bài · kho riêng: {len(local)} clip · exdb: {len(keys)} id")
     added, skipped, failed = 0, {"đã có (kho riêng)": 0, "không có video": 0}, []
-    new_hv = {}
+    new_hv = {}; seen_names = set()
     for ex in data:
         vids = ex.get("videos") or {}
         url = vids.get("male") or vids.get("female")
         if not url: skipped["không có video"] += 1; continue
         slug = re.sub(r"[^a-z0-9-]+", "-", Path(urllib.parse.urlparse(url).path).stem.lower()).strip("-")
-        names = [ex.get("name", "")] + list(ex.get("aliases") or [])
         n0 = norm(ex.get("name", slug))
-        ids = sorted({k for nm in names for k in by_norm.get(norm(nm), [])})
+        # chỉ khớp id theo TÊN CHÍNH (bí danh của nguồn quá rộng — vd "Seated Dumbbell Shoulder Press" có bí danh "Dumbbell Bench Press")
+        ids = sorted(by_norm.get(n0, []))
         if slug in covered_slug or n0 in covered_name or (ids and set(ids) <= covered_ids):
             skipped["đã có (kho riêng)"] += 1; continue
-        if slug in new_hv: continue
+        if slug in new_hv or n0 in seen_names: continue          # lọc trùng trong chính nguồn GitHub (vd ...-1)
+        seen_names.add(n0)
         if slug in have_hv and not FORCE and (OUT / f"{slug}.mp4").exists():
-            new_hv[slug] = have_hv[slug]; continue
+            new_hv[slug] = dict(have_hv[slug], ids=ids); continue      # không tải lại, chỉ cập nhật id
         if added >= LIMIT: break
         thumb_url = ((ex.get("thumbnails") or {}).get("male") or (ex.get("thumbnails") or {}).get("female") or "")
         try:
