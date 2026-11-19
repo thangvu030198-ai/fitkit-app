@@ -12,7 +12,7 @@ module.exports = {
       const g = app.evj(`libGuideParts(${X})`);
       assert.equal(g.prep, "Nằm ghế phẳng, khép bả vai.");
       assert.ok(/Hạ tạ chạm ngực/.test(g.doIt));
-      assert.ok(/Thở ra ở pha gắng sức/.test(g.breath));
+      assert.ok(/[Tt]hở ra/.test(g.breath));   // 19/11: ex-guide.js — lời khuyên thở theo kiểu động tác
       const p = app.evj(`libGuideParts({ guide:"Giữ thân thẳng.", reps:"45 giây" })`);
       assert.ok(/không nín thở/.test(p.breath)); assert.equal(p.prep, ""); assert.equal(p.doIt, "Giữ thân thẳng.");
     });
