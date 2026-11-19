@@ -9,7 +9,8 @@ module.exports = {
     const X = `{ src:"fitkit", id:"benchpress", name:"Bench", muscleVi:"Ngực", equip:"barbell", level:"beginner", sub:"Ngực · Thanh đòn", sets:4, reps:"6-8", restSec:120,
       guide:"Nằm ghế phẳng, khép bả vai. Hạ tạ chạm ngực dưới, đẩy lên thẳng tay." }`;
     t.test("TAB-01: hướng dẫn chia 3 phần; bài giữ giờ có lời khuyên thở riêng", ()=>{
-      const g = app.evj(`libGuideParts(${X})`);
+      const g = app.evj(`libGuideParts(Object.assign(${X}, { id:"" }))`);   // bài không có hướng dẫn viết sẵn → tự tách câu
+      assert.ok(/mắt ngay dưới thanh đòn/.test(app.evj(`libGuideParts(${X})`).prep), "bài của app dùng hướng dẫn viết sẵn (ex-guide-data.js)");
       assert.equal(g.prep, "Nằm ghế phẳng, khép bả vai.");
       assert.ok(/Hạ tạ chạm ngực/.test(g.doIt));
       assert.ok(/[Tt]hở ra/.test(g.breath));   // 19/11: ex-guide.js — lời khuyên thở theo kiểu động tác

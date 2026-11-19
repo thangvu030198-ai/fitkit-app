@@ -1925,3 +1925,5 @@ input.ibx-miss{ box-shadow:0 0 0 2px rgba(255,159,107,.85) !important; }
 .exg-tag{ position:absolute; right:10px; top:10px; padding:3px 8px; border-radius:8px; background:rgba(10,14,18,.6); color:#fff; font:700 10.5px/1.4 Inter,system-ui,sans-serif; }
 .set-guide .exg-mg, .set-guide .ld-guide{ margin-top:10px; }
 .exg-en{ margin-top:10px; font-size:13px; opacity:.85; } .exg-en summary{ cursor:pointer; }
+.ld-guide .exg-tip{ border-color:rgba(255,138,91,.35); background:rgba(255,138,91,.07); } .ld-guide .exg-tip h5{ color:#FF8A5B; }
+.ld-guide h5 small{ text-transform:none; letter-spacing:0; opacity:.6; font-weight:500; }

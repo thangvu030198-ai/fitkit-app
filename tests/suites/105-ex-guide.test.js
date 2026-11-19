@@ -19,7 +19,7 @@ module.exports = {
       const P = app.evj(`FKGuide.parts(EXERCISES.benchpress, "6-8")`);
       assert.ok(/^Nằm trên ghế/.test(P.prep), P.prep);
       assert.ok(P.doIt.length > 10 && !P.doIt.startsWith("Nằm"));
-      assert.ok(/đẩy lên/.test(P.breath), P.breath);
+      assert.ok(/đẩy/.test(P.breath), P.breath);
     });
     t.test("EXG-03: hít thở theo kiểu động tác (squat / kéo / plank / cardio)", ()=>{
       assert.ok(/gồng bụng TRƯỚC khi hạ/.test(app.ev(`FKGuide.breath(EXERCISES.squat, "8")`)));
@@ -31,6 +31,15 @@ module.exports = {
       const h = app.ev(`FKGuide.html({ name:"x", guide:"<img src=x onerror=alert(1)>. Ngồi thẳng." }, "10")`);
       assert.ok(!/<img/.test(h) && /&lt;img/.test(h));
       assert.ok(/Khi thực hiện/.test(h) && /Hít thở/.test(h));
+    });
+    t.test("EXG-06: đủ hướng dẫn viết sẵn cho MỌI bài của app; bài thư viện tiếng Việt đều tách được 'chuẩn bị'", ()=>{
+      assert.equal(app.ev(`Object.keys(EXERCISES).filter(k=> !EX_GUIDE_VI[k] || !EX_GUIDE_VI[k].p || !EX_GUIDE_VI[k].d || !EX_GUIDE_VI[k].b).length`), 0);
+      const P = app.evj(`FKGuide.parts(EXERCISES.squat, "8")`);
+      assert.ok(P.prep && P.doIt && P.breath && P.tip, JSON.stringify(P));
+      const E = app.evj(`FKGuide.parts({ name:"Barbell Squat", guide:"Đặt tạ trên lưng trên, chân rộng bằng vai. Ngồi xuống đến khi đùi song song sàn rồi đứng lên. Tập trong khung có chốt an toàn." }, "8")`);
+      assert.ok(/^Đặt tạ/.test(E.prep) && /^Ngồi xuống/.test(E.doIt) && /^Tập trong khung/.test(E.tip) && /gồng bụng/.test(E.breath));
+      assert.ok(read("index.html").indexOf("ex-guide-data.js") < read("index.html").indexOf("ex-guide.js\""));
+      assert.ok(read("sw.js").includes("./ex-guide-data.js") && read("scripts/prepare-www.sh").includes("ex-guide-data.js"));
     });
     t.test("EXG-05: màn tập — clip 3D chỉ khi video là ex3d, giữ clip riêng của người dùng, lỗi tải → trả ảnh cũ", ()=>{
       const s = read("ex-guide.js");

@@ -14,27 +14,57 @@ const esc = s=> (typeof escapeHtml === "function" ? escapeHtml(String(s == null 
 const timedOf = reps=> typeof isTimedReps === "function" ? isTimedReps(reps) : /giây|phút|s$/i.test(String(reps || ""));
 
 /* Hít thở theo kiểu chuyển động (tên + hướng dẫn) */
+const BR = [
+  [/chạy bộ|chạy nhẹ|running|jogging|treadmill|đạp xe|xe đạp|bicycl|cycling|\bbike\b|elliptical|máy chèo|\browing\b|stationary|nhảy dây|rope jump|jumping|burpee|cardio|stair|step mill|đi bộ|walking|zone 2|sprint/i,
+    "Thở theo nhịp bước/đạp: hít 2 nhịp, thở 2 nhịp. Thở hổn hển không nói được câu ngắn → giảm tốc."],
+  [/plank|giữ tư thế|wall sit|hollow|isometric|\bhold\b|bridge hold|dead hang|treo người giữ/i,
+    "Thở đều, sâu bằng mũi — không nín thở trong lúc giữ tư thế; gồng bụng nhẹ suốt thời gian giữ."],
+  [/squat|gánh|deadlift|nâng tạ từ sàn|\brdl\b|romanian|lunge|chùng|leg press|đẩy chân|hack|good morning|clean|snatch|thruster|step-?up|split/i,
+    "Hít sâu và gồng bụng TRƯỚC khi hạ xuống, giữ hơi ở đáy; thở ra khi đứng lên/đẩy lên qua điểm khó. Tạ nặng: không thở hết hơi giữa chừng."],
+  [/\brow\b|rows|pull|chin|lat |pulldown|kéo|face pull|shrug/i,
+    "Thở ra khi kéo tạ về phía người (siết bả vai), hít vào khi duỗi tay trả tạ về chậm có kiểm soát."],
+  [/press|push|đẩy|chống đẩy|\bdips?\b|xà kép/i,
+    "Hít vào khi hạ tạ/hạ người xuống chậm, thở ra khi đẩy lên. Không khoá cứng khớp ở đỉnh."],
+  [/curl|cuốn|raise|nâng|fly|flye|ép|extension|duỗi|kickback|crunch|gập bụng|sit-?up|twist|xoay/i,
+    "Thở ra khi co cơ (nâng/cuốn/ép), hít vào khi trả về chậm. Không lấy đà bằng hơi thở."],
+];
+/* Hít thở theo kiểu chuyển động: xét TÊN bài trước (chính xác hơn), không khớp mới xét câu hướng dẫn */
 function breath(meta, reps){
-  const t = (String(meta && meta.name || "") + " " + String(meta && meta.guide || "")).toLowerCase();
-  if(/chạy|running|treadmill|đạp|bike|cycl|elliptical|rowing|chèo|nhảy dây|jump|burpee|cardio|stair/.test(t)) return "Thở theo nhịp bước/đạp: hít 2 nhịp, thở 2 nhịp. Thở hổn hển không nói được câu ngắn → giảm tốc.";
-  if(timedOf(reps) || /plank|giữ tư thế|wall sit|hollow|isometric/.test(t)) return "Thở đều, sâu bằng mũi — không nín thở trong lúc giữ tư thế; gồng bụng nhẹ suốt thời gian giữ.";
-  if(/squat|gánh|deadlift|nâng tạ từ sàn|rdl|romanian|lunge|chùng|leg press|đẩy chân|hack|good morning/.test(t))
-    return "Hít sâu và gồng bụng TRƯỚC khi hạ xuống, giữ hơi ở đáy; thở ra khi đứng lên/đẩy lên qua điểm khó. Tạ nặng: không thở hết hơi giữa chừng.";
-  if(/kéo|pull|row|chin|lat|xô|face pull/.test(t)) return "Thở ra khi kéo tạ về phía người (siết bả vai), hít vào khi duỗi tay trả tạ về chậm có kiểm soát.";
-  if(/đẩy|press|push|chống đẩy|dip|xà kép/.test(t)) return "Hít vào khi hạ tạ/hạ người xuống chậm, thở ra khi đẩy lên. Không khoá cứng khớp ở đỉnh.";
-  if(/curl|cuốn|raise|nâng|fly|ép|extension|duỗi|kickback|crunch|gập/.test(t)) return "Thở ra khi co cơ (nâng/cuốn/ép), hít vào khi trả về chậm. Không lấy đà bằng hơi thở.";
+  const name = String(meta && meta.name || ""), guide = String(meta && meta.guide || "");
+  for(const src of [name, guide]){
+    if(src === guide && timedOf(reps)) return BR[1][1];
+    for(const [re, txt] of BR) if(re.test(src)) return txt;
+  }
+  if(timedOf(reps)) return BR[1][1];
   return "Thở ra ở pha gắng sức (đẩy, kéo hoặc nâng), hít vào ở pha hạ về có kiểm soát. Không nín thở kéo dài.";
 }
-/* Hướng dẫn → 3 phần: các câu mô tả tư thế/đặt người đầu đoạn = chuẩn bị; phần còn lại = thực hiện */
-const PREP_RE = /^(nằm|ngồi|đứng|đặt|chỉnh|cầm|nắm|giữ|tựa|bám|treo|quỳ|chống|kẹp|điều chỉnh|tư thế|hai chân|bàn chân|chân rộng|lưng|vai|tay cầm|móc|gác|bước lên|lên máy|gắn)/i;
+/* Hướng dẫn → các phần. Ưu tiên dữ liệu viết sẵn (ex-guide-data.js · 68 bài của app); không có thì tự tách câu:
+   câu đầu = tư thế chuẩn bị, câu cuối bắt đầu bằng "Không/Tránh/Luôn…" = lưu ý, còn lại = khi thực hiện.
+   Chỉ có 1 câu → tách theo mệnh đề: các mệnh đề đầu mô tả tư thế (Nằm/Ngồi/Đặt/Giữ…) = chuẩn bị. */
+const PREP_RE = /^(nằm (sấp|ngửa|trên|dưới|nghiêng|ghế)|ngồi (trên|vào|thẳng|máy|ghế|xuống sàn)|đứng (thẳng|giữa|trên|cạnh|trước|chân|tấn)|đặt|chỉnh|cầm|nắm|giữ thanh|giữ thân|tựa|bám|treo|quỳ|chống|kẹp|điều chỉnh|tư thế|từ tư thế|hai chân|bàn chân|chân rộng|mu bàn chân|tay cầm|móc|gác|bước lên máy|lên máy|gắn|đeo|ôm|xách|quay lưng|tạ đặt|thanh tạ|lưng áp|cánh tay tì|một tay|khởi động|chọn|trải)/i;
+const TIP_RE = /^(không |tránh|luôn|tập trong|dừng|nên |bắt đầu|đừng|lưu ý|mới tập|chưa |nếu )/i;
+function idOf(meta){
+  if(meta && meta._id) return meta._id;
+  try{ if(meta && meta.name && typeof EXERCISES !== "undefined") for(const k in EXERCISES){ if(EXERCISES[k] && EXERCISES[k].name === meta.name) return k; } }catch(e){}
+  return "";
+}
 function parts(meta, reps){
+  const id = idOf(meta), V = id && G.EX_GUIDE_VI && G.EX_GUIDE_VI[id];
+  if(V) return { prep: V.p || "", doIt: V.d || "", breath: V.b || breath(meta, reps), tip: V.l || "" };
   const raw = String(meta && meta.guide || "").replace(/\s+/g, " ").trim();
-  const ss = raw.split(/(?<=[.!?;])\s+/).map(t=> t.trim()).filter(Boolean);
-  let k = 0;
-  while(k < ss.length - 1 && k < 2 && PREP_RE.test(ss[k])) k++;
-  if(k === 0 && ss.length > 1) k = 1;
-  const prep = ss.slice(0, k).join(" "), doIt = ss.slice(k).join(" ") || (k ? "" : raw);
-  return { prep, doIt: doIt || "Chưa có hướng dẫn chi tiết — xem video phía trên và giữ chuyển động chậm, có kiểm soát.", breath: breath(meta, reps) };
+  let ss = raw.split(/(?<=[.!?])\s+/).map(t=> t.trim()).filter(Boolean);
+  let prep = "", tip = "";
+  if(ss.length > 2 && TIP_RE.test(ss[ss.length - 1])) tip = ss.pop();
+  if(ss.length > 1){ prep = ss.shift(); }
+  else if(ss.length === 1){
+    // 1 câu dài: lấy các mệnh đề đầu mô tả tư thế
+    const cl = ss[0].replace(/[.!?]$/, "").split(/,\s*|;\s*/);
+    let k = 0; while(k < cl.length - 1 && PREP_RE.test(cl[k])) k++;
+    if(k > 0){ prep = cl.slice(0, k).join(", ") + "."; const rest = cl.slice(k).join(", "); ss = [rest.charAt(0).toUpperCase() + rest.slice(1) + "."]; }
+  }
+  let doIt = ss.join(" ");
+  if(!doIt && prep){ doIt = prep; prep = ""; }
+  return { prep, doIt: doIt || "Chưa có hướng dẫn chi tiết — xem video phía trên và giữ chuyển động chậm, có kiểm soát.", breath: breath(meta, reps), tip };
 }
 function musclesOf(meta){
   let w = {};
@@ -52,13 +82,17 @@ function html(meta, reps, opts){
     ${P.prep ? `<div><h5>Tư thế chuẩn bị</h5><p>${esc(P.prep)}</p></div>` : ""}
     <div><h5>Khi thực hiện</h5><p>${esc(P.doIt)}</p></div>
     <div><h5>Hít thở</h5><p>${esc(P.breath)}</p></div>
+    ${P.tip ? `<div class="exg-tip"><h5>Lưu ý</h5><p>${esc(P.tip)}</p></div>` : ""}
   </div>`;
 }
 
 /* ---- meta của bài đang tập (kèm id để tra video 3D + nhóm cơ) ---- */
 function itemMeta(item){
   if(!item) return null;
-  if(item.custom) return { name: item.custom.name, equipment: item.custom.equipment, guide: item.custom.guide, muscle: item.custom.muscle, exDbId: item.custom.exDbId || null };
+  if(item.custom){
+    const vi = item.custom.exDbId && G.EXDB_VI && EXDB_VI[item.custom.exDbId];   // bài thư viện: ưu tiên bản tiếng Việt
+    return { name: item.custom.name, equipment: item.custom.equipment, guide: (vi && vi.g) || item.custom.guide, muscle: item.custom.muscle, exDbId: item.custom.exDbId || null };
+  }
   const ex = typeof EXERCISES !== "undefined" ? EXERCISES[item.exerciseId] : null;
   return ex ? Object.assign({ _id: item.exerciseId }, ex) : null;
 }
@@ -109,12 +143,28 @@ function upgradeDetail(itemUid){
 }
 /* Thư viện: bài free-exercise-db → hướng dẫn tiếng Việt 3 phần (bản tiếng Anh thu gọn bên dưới) */
 function upgradeLibraryHTML(out, x){
-  if(!x || x.src !== "exdb" || !x.ex) return out;
-  const vi = G.EXDB_VI && EXDB_VI[x.ex.id]; if(!vi || !vi.g) return out;
+  if(x && x.src !== "exdb"){   // bài của app: thêm ô "Lưu ý" sau "Hít thở"
+    const P = parts({ _id: x.src === "fitkit" ? x.id : "", name: x.name, guide: x.guide }, x.reps);
+    if(P.tip && !/exg-tip/.test(out)) out = out.replace(/(<div><h5>Hít thở<\/h5><p>[\s\S]*?<\/p><\/div>)/, `$1<div class="exg-tip"><h5>Lưu ý</h5><p>${esc(P.tip)}</p></div>`);
+    return out;
+  }
+  if(!x || !x.ex) return out;
   const re = /<div class="card-title"[^>]*>Hướng dẫn \(tiếng Anh\)<\/div>(<ol class="ld-steps">[\s\S]*?<\/ol>)/;
   const m = re.exec(out); if(!m) return out;
-  const meta = { name: x.name, guide: vi.g, muscle: x.muscleVi };
-  return out.replace(re, html(meta, x.reps, { noChips: true }) + `<details class="exg-en"><summary>Hướng dẫn gốc (tiếng Anh)</summary>${m[1]}</details>`);
+  const vi = G.EXDB_VI && EXDB_VI[x.ex.id];
+  if(vi && vi.g){
+    const meta = { name: x.name, guide: vi.g, muscle: x.muscleVi };
+    return out.replace(re, html(meta, x.reps, { noChips: true }) + `<details class="exg-en"><summary>Hướng dẫn gốc (tiếng Anh)</summary>${m[1]}</details>`);
+  }
+  // chưa có bản dịch: vẫn chia mục (bước 1 = chuẩn bị, các bước sau = thực hiện), hít thở viết tiếng Việt theo kiểu động tác
+  const steps = (x.ex.instructions || []).map(t=> String(t || "").trim()).filter(Boolean);
+  if(!steps.length) return out;
+  const prep = steps.length > 1 ? steps[0] : "", doIt = (steps.length > 1 ? steps.slice(1) : steps).join(" ");
+  return out.replace(re, `<div class="ld-guide exg">
+    ${prep ? `<div><h5>Tư thế chuẩn bị <small>(tiếng Anh)</small></h5><p>${esc(prep)}</p></div>` : ""}
+    <div><h5>Khi thực hiện <small>(tiếng Anh)</small></h5><p>${esc(doIt)}</p></div>
+    <div><h5>Hít thở</h5><p>${esc(breath({ name: x.name, guide: doIt }, x.reps))}</p></div>
+  </div>`);
 }
 
 function install(){
@@ -134,7 +184,7 @@ function install(){
     libDetailTabsHTML.__exg = true;
   }
   if(typeof libGuideParts === "function" && !libGuideParts.__exg){
-    libGuideParts = function(x){ const P = parts({ name: x && x.name, guide: x && x.guide }, x && x.reps); return P; };
+    libGuideParts = function(x){ return parts({ _id: x && x.src === "fitkit" ? x.id : "", name: x && x.name, guide: x && x.guide }, x && x.reps); };
     libGuideParts.__exg = true;
   }
 }
