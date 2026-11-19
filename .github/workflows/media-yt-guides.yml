@@ -6,7 +6,7 @@ name: Media — video hướng dẫn YouTube cho Thư viện bài tập
 on:
   workflow_dispatch:
     inputs:
-      limit: { description: "Số bài tối đa lần này (hạn mức ~95/ngày)", default: "90", required: false }
+      limit: { description: "Số bài tối đa lần này (hạn mức ~95/ngày)", default: "97", required: false }
       retry_empty: { description: "Tìm lại bài lần trước không ra video (1 = có)", default: "0", required: false }
   schedule:
     - cron: "17 20 * * *"
@@ -29,7 +29,7 @@ jobs:
       - name: Tìm video
         env:
           YT_API_KEY: ${{ secrets.YT_API_KEY }}
-          YT_LIMIT: ${{ inputs.limit || '90' }}
+          YT_LIMIT: ${{ inputs.limit || '97' }}
           YT_RETRY_EMPTY: ${{ inputs.retry_empty || '0' }}
         run: python scripts/yt_guides.py
       - name: Lưu vào repo
