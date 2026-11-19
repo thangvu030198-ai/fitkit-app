@@ -25,6 +25,7 @@ on:
       - "Media — giọng đọc mẫu (nghe & chọn)"
       - "Media — clip nền màn chào (đen trắng, nét cao)"
       - "Media — tải & nén video bài tập wger (CC BY-SA)"
+      - "Media — video 3D bài tập (kho riêng + free-exercise-db-with-videos)"
       - "Vendor — morphicons (icon biến hình, MIT)"
     types: [ completed ]
 
