@@ -2016,3 +2016,18 @@ html.fk-light .rcv-bar{ background:rgba(0,0,0,.08); }
 .sf-hist{ background:rgba(var(--fk-ov-rgb, 255,255,255), .05); }
 html.fk-light .sf-bar{ box-shadow:0 -8px 22px rgba(13,34,48,.10); }
 html.fk-light .sf-undo{ color:#9A4A06; border-color:rgba(180,83,9,.55); background:rgba(245,158,11,.12); }
+/* 20/11 vòng rà 2 — đầu màn tập: chip bài đang tập trước bị luật theme sáng đè (không nổi bật) và dùng --primary + chữ navy
+   (cam/đỏ ở Alpine, Sanctuary, Violet → tương phản 1,8–3,4:1). Giờ theo accent của theme; số thứ tự / nhãn phụ rõ hơn. */
+#sheet-content .sp-chip.cur{ background:var(--accent, #5EE6C7) !important; color:var(--on-accent, #061A24) !important; border-color:transparent !important; }
+#sheet-content .sp-chip i{ opacity:.8; }
+#sheet-content .sp-chip.cur i{ opacity:1; }
+.ld-mg-chip small{ opacity:.85; }
+.sf-val small i{ color:var(--text, #fff) !important; background:rgba(var(--accent-rgb, 94,230,199), .24) !important; }
+.sf-done small{ opacity:1; font-weight:600; }
+/* Màn tập toàn màn hình → nền ĐẶC (trước 86–92% trong suốt: chữ màn phía sau lộ mờ dưới hàng chip bài) + bỏ blur nền (nhẹ máy hơn) */
+#sheet-backdrop .sheet:has(#btn-session-done, .sf-bar, #tp-ss-done){
+  background:linear-gradient(180deg, rgb(var(--fk-sheet-1-rgb, 34,52,62)), rgb(var(--fk-sheet-2-rgb, 14,28,36))) !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+}
+/* Nút "Buổi hôm nay" / "Phòng tập" ở đầu màn tập: nền/viền trắng cố định → mất hẳn trên theme sáng. Theo token lớp phủ của theme. */
+.rv-today-btn{ background:rgba(var(--fk-ov-rgb, 255,255,255), .06) !important; border-color:rgba(var(--fk-ov-rgb, 255,255,255), .18) !important; }

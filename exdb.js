@@ -37,7 +37,9 @@ function exdbLoad(){
   if(_exdbCache) return Promise.resolve(_exdbCache);
   if(_exdbLoading) return _exdbLoading;
   _exdbLoading = (async ()=>{
-    for(const url of ["vendor/exercises.json", EXDB_REMOTE]){
+    /* 20/11: bản web (tapeasy.app) không có vendor/ → bỏ qua để khỏi 404 + 1 vòng mạng thừa; bản app (Capacitor) vẫn đọc file đóng gói sẵn */
+    const web = (()=>{ try{ return /(^|\.)tapeasy\.app$/.test(location.hostname); }catch(e){ return false; } })();
+    for(const url of (web ? [EXDB_REMOTE] : ["vendor/exercises.json", EXDB_REMOTE])){
       try{
         const r = await fetch(url);
         if(!r.ok) continue;
