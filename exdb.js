@@ -118,37 +118,58 @@ function openExDbPicker(onPick, opts={}){
     ${opts.multi ? `<button class="btn btn-primary btn-block" id="exdb-done" style="margin-top:12px;">Thêm ${picked.length} bài đã chọn</button>` : ""}
     <p class="small-note" style="margin-top:8px;text-align:center;">Dữ liệu: free-exercise-db (Public Domain)</p>
   `);
-  const renderList = (all)=>{
-    const ql = q.trim().toLowerCase();
-    const rows = all.filter(ex=> exdbMatches(ex, filter) && (!ql || ex.name.toLowerCase().includes(ql))).slice(0, 80);
-    $("#exdb-list").innerHTML = rows.map(ex=>{
+  /* 20/11 (góp ý người dùng "không hiện hết bài"): trước cắt cứng 80 bài → giờ hiện theo lượt 60 bài, cuộn tới cuối tự nạp thêm
+     + dòng "Đang hiện x / tổng"; tìm kiếm chờ 150 ms; chọn nhiều chỉ đổi ô vừa bấm (không vẽ lại cả danh sách → hết giật). */
+  const STEP = 60; let shown = STEP, rowsAll = [];
+  const rowHTML = ex=>{
       const sel = picked.some(p=>p.exDbId===ex.id);
-      // dữ liệu exdb tải từ mạng → escape mọi trường (kể cả id/URL); ảnh lazy + async (QU-10)
       return `<div class="list-item" data-exdb="${escapeHtml(ex.id)}" style="cursor:pointer;${sel?'border-color:var(--primary);':''}">
         <img class="thumb" src="${escapeHtml(exdbImg(ex))}" loading="lazy" decoding="async" width="56" height="56" alt="" style="object-fit:cover;background:#fff;" onerror="this.style.visibility='hidden'">
         <div class="info"><div class="name">${escapeHtml(ex.name)}</div><div class="meta">${escapeHtml(exdbMuscleVi(ex))} · ${escapeHtml(EXDB_EQUIP_VI[ex.equipment]||ex.equipment||"—")} · ${escapeHtml(EXDB_LEVEL_VI[ex.level]||"")}</div></div>
         <span class="material-symbols-rounded" data-exdb-info="${escapeHtml(ex.id)}" role="button" aria-label="Xem hướng dẫn ${escapeHtml(ex.name)}" style="color:var(--text-dim);padding:6px;">info</span>
-        <span class="material-symbols-rounded" style="color:${sel?'var(--primary)':'var(--text-dim)'};">${sel?'check_circle':'add_circle'}</span>
+        <span class="material-symbols-rounded exdb-tick" style="color:${sel?'var(--primary)':'var(--text-dim)'};">${sel?'check_circle':'add_circle'}</span>
       </div>`;
-    }).join("") || `<p class="empty-hint">Không tìm thấy bài phù hợp.</p>`;
-    $$("[data-exdb-info]").forEach(el=> el.addEventListener("click", (e)=>{
-      e.stopPropagation();
-      const ex = all.find(x=>x.id===el.dataset.exdbInfo);
-      openExDbDetail(ex, ()=> openExDbPicker(onPick, Object.assign({}, opts, { _picked: picked, _filter: filter, _q: q })));
-    }));
-    $$("[data-exdb]").forEach(el=> el.addEventListener("click", ()=>{
-      const ex = all.find(x=>x.id===el.dataset.exdb);
+  };
+  const moreHTML = ()=> shown < rowsAll.length
+    ? `<button type="button" class="btn btn-ghost btn-block btn-sm" id="exdb-more">Xem thêm · đang hiện ${shown}/${rowsAll.length} bài</button>`
+    : (rowsAll.length > STEP ? `<p class="small-note" style="text-align:center;">Đã hiện đủ ${rowsAll.length} bài</p>` : "");
+  const appendMore = ()=>{
+    const box = $("#exdb-list"); if(!box) return;
+    const from = shown; shown = Math.min(rowsAll.length, shown + STEP);
+    const old = box.querySelector("#exdb-more, .small-note"); if(old) old.remove();
+    box.insertAdjacentHTML("beforeend", rowsAll.slice(from, shown).map(rowHTML).join("") + moreHTML());
+  };
+  let wired = false;
+  const renderList = (all)=>{
+    const ql = q.trim().toLowerCase();
+    rowsAll = all.filter(ex=> exdbMatches(ex, filter) && (!ql || ex.name.toLowerCase().includes(ql))); shown = STEP;
+    const box = $("#exdb-list"); if(!box) return;
+    box.scrollTop = 0;
+    box.innerHTML = (rowsAll.slice(0, shown).map(rowHTML).join("") + moreHTML()) || `<p class="empty-hint">Không tìm thấy bài phù hợp.</p>`;
+    if(wired) return; wired = true;
+    /* uỷ quyền 1 lần cho cả danh sách (trước gắn 160 listener mỗi lần vẽ) */
+    box.addEventListener("scroll", ()=>{ if(shown < rowsAll.length && box.scrollTop + box.clientHeight > box.scrollHeight - 300) appendMore(); }, { passive:true });
+    box.addEventListener("click", e=>{
+      const t = e.target;
+      if(t.closest("#exdb-more")){ appendMore(); return; }
+      const inf = t.closest("[data-exdb-info]");
+      if(inf){ e.stopPropagation(); const ex = all.find(x=>x.id===inf.dataset.exdbInfo); openExDbDetail(ex, ()=> openExDbPicker(onPick, Object.assign({}, opts, { _picked: picked, _filter: filter, _q: q }))); return; }
+      const el = t.closest("[data-exdb]"); if(!el) return;
+      const ex = all.find(x=>x.id===el.dataset.exdb); if(!ex) return;
       const item = exdbToItem(ex);
       if(!opts.multi){ closeSheet(); onPick(item); return; }
       const i = picked.findIndex(p=>p.exDbId===ex.id);
       if(i>=0) picked.splice(i,1); else picked.push(item);
+      const sel = i < 0, tick = el.querySelector(".exdb-tick");
+      el.style.borderColor = sel ? "var(--primary)" : "";
+      if(tick){ tick.textContent = sel ? "check_circle" : "add_circle"; tick.style.color = sel ? "var(--primary)" : "var(--text-dim)"; }
       $("#exdb-done").textContent = `Thêm ${picked.length} bài đã chọn`;
-      renderList(all);
-    }));
+    });
   };
   exdbLoad().then(all=>{
     renderList(all);
-    $("#exdb-q").addEventListener("input", e=>{ q = e.target.value; renderList(all); });
+    let tq = 0;
+    $("#exdb-q").addEventListener("input", e=>{ q = e.target.value; clearTimeout(tq); tq = setTimeout(()=> renderList(all), 150); });
     $$("[data-exf]").forEach(b=> b.addEventListener("click", ()=>{
       filter = b.dataset.exf; $$("[data-exf]").forEach(x=>x.classList.toggle("active", x===b)); renderList(all);
     }));

@@ -366,7 +366,8 @@
       D.querySelectorAll(".bottom-nav .nav-item").forEach(b=>{
         if(b.dataset.goto === name) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
       });
-      if(typeof window.fkSyncScrolled === "function") window.fkSyncScrolled();   // đổi màn: vị trí cuộn mới
+      /* 20/11 hiệu năng: đọc scrollTop ngay sau khi vẽ màn ép tính bố cục đồng bộ (đo: 400–940 ms/lần đổi tab ở CPU chậm 4×) → để sang khung hình kế */
+      if(typeof window.fkSyncScrolled === "function"){ const f = window.fkSyncScrolled; (typeof requestAnimationFrame === "function" ? requestAnimationFrame : setTimeout)(()=> f()); }
     }catch(e){}
   }
 
@@ -506,8 +507,8 @@
   /* ---- 6h. QU-05: đang cuộn → tạm bỏ blur ở thẻ trong danh sách (html.fk-scrolling; trừ khi người dùng chọn "Bật" kính mờ) ---- */
   let scrT = 0;
   D.addEventListener("scroll", e=>{
-    if(!ROOT.classList.contains("fk-scrolling")) ROOT.classList.add("fk-scrolling");
-    clearTimeout(scrT); scrT = setTimeout(()=> ROOT.classList.remove("fk-scrolling"), 160);
+    /* 20/11 hiệu năng: BỎ bật/tắt html.fk-scrolling mỗi lần cuộn — mỗi lần đổi class trên <html> tính lại style cả trang
+       (đo 135 ms ở CPU chậm 4×) ngay đầu cú vuốt → khựng. Máy yếu đã có html.lowfx bỏ blur sẵn. */
     if(e && e.target && e.target.id === "app-scroll") syncScrolled(e.target);
   }, { capture:true, passive:true });
   /* vòng 2 (ux · FIX-nutrition #4): đã cuộn khỏi đầu màn → html.fk-scrolled → thanh trên dính (.topbar) có nền

@@ -464,7 +464,7 @@ module.exports = {
       assert.ok(rule, "thiếu luật nền thanh trên khi đã cuộn");
       assert.match(rule[1], /background:rgba\(var\(--fk-veil-rgb, 6,26,36\), \.9\d?\) !important/, "nền phải theo token theme, gần đặc");
       assert.ok(!/backdrop-filter/.test(rule[1]), "phần tử dính không được blur (QU-05)");
-      assert.match(uk, /syncScreen[\s\S]*fkSyncScrolled\(\)/, "đổi màn phải tính lại trạng thái cuộn");
+      assert.match(uk, /syncScreen[\s\S]*fkSyncScrolled[\s\S]*requestAnimationFrame[\s\S]*f\(\)/, "đổi màn phải tính lại trạng thái cuộn (hoãn 1 khung hình — 20/11 hiệu năng)");
     });
 
     t.test("PT-3 (FIX-pt QP-20/QP-23): style.css gốc — .pp-glass/.pp-chips span/.pp-cta không blur; .stat-box .cap ≥ 12 px; .seg button ≥ 44 px", ()=>{

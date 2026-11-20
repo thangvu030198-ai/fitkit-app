@@ -309,13 +309,14 @@ function openAddSheet(s, st, cur){
   const sc = document.getElementById("sheet-content"), list = sc.querySelector("#sp-add-list");
   const toPlan = () => !!(sc.querySelector("#sp-add-plan") || {}).checked;
   const back = msg => { if(msg) say(msg, "add_circle"); renderSessionStep(); };
+  let tq = 0;
   const paint = q => {
     const nq = norm(q);
-    const hit = all.filter(x => !nq || norm(x.ex.name).indexOf(nq) >= 0 || norm(x.ex.muscle).indexOf(nq) >= 0).slice(0, 60);
+    const hit = all.filter(x => !nq || norm(x.ex.name).indexOf(nq) >= 0 || norm(x.ex.muscle).indexOf(nq) >= 0);   // 20/11: hiện ĐỦ mọi bài (trước cắt 60 → thiếu bài)
     list.innerHTML = hit.map(x => `<div class="food-result" role="button" tabindex="0" data-sp-pick="${esc(x.id)}" style="cursor:pointer;"><div><div class="name">${esc(x.ex.name)}${inSession.has(x.id) ? ` <small style="opacity:.6">· đã có trong buổi</small>` : ""}</div><div class="kcal">${esc(x.ex.muscle || "")}${!x.same && !nq ? " · cùng nhóm cơ đang tập" : ""}</div></div><span class="material-symbols-rounded" style="color:var(--text-dim);">add_circle</span></div>`).join("") || `<p class="empty-hint">Không thấy bài phù hợp — thử thư viện 800+ bài.</p>`;
   };
   paint("");
-  sc.querySelector("#sp-add-q").addEventListener("input", e => paint(e.target.value));
+  sc.querySelector("#sp-add-q").addEventListener("input", e => { clearTimeout(tq); const v = e.target.value; tq = setTimeout(() => paint(v), 120); });
   sc.querySelector("#sp-add-back").addEventListener("click", () => back());
   const pick = el => { const id = el.dataset.spPick, ex = lib[id]; if(!ex) return; addToSession(s, [{ exerciseId: id, sets: ex.sets, reps: ex.reps, restSec: ex.restSec }], toPlan()); back("Đã thêm: " + ex.name); };
   list.addEventListener("click", e => { const el = e.target.closest ? e.target.closest("[data-sp-pick]") : null; if(el) pick(el); });

@@ -232,36 +232,60 @@ var EXDB_VI = window.EXDB_VI = window.EXDB_VI || {};
       ${opts.multi ? `<button class="btn btn-primary btn-block" id="exdb-done" style="margin-top:12px;">Thêm ${picked.length} bài đã chọn</button>` : ""}
       <p class="small-note" style="margin-top:8px;text-align:center;">Dữ liệu: free-exercise-db (Public Domain) · Việt hoá: TapEasy</p>
     `);
-    const renderList = (all) => {
-      const box = $("#exdb-list"); if(!box) return;
-      const base = all.filter(ex => exdbMatches(ex, filter));
-      const rows = (q.trim() ? viRank(base, q, searchKeyOf) : base).slice(0, 80);
-      box.innerHTML = rows.map(ex => {
-        const sel = picked.some(p => p.exDbId === ex.id);
-        const vn = viName(ex), showEn = vn !== ex.name;
-        return `<div class="list-item" data-exdb="${escapeHtml(ex.id)}" style="cursor:pointer;${sel ? "border-color:var(--primary);" : ""}">
-          <img class="thumb" src="${exdbImg(ex)}" loading="lazy" alt="" style="object-fit:cover;background:#fff;" onerror="this.style.visibility='hidden'">
+    /* 20/11 (góp ý người dùng "đổi bài không hiện hết số bài"): trước cắt cứng 80 bài → giờ hiện từng lượt 60, cuộn gần cuối tự nạp thêm
+       + nút "Xem thêm · x/tổng"; chọn nhiều chỉ đổi ô vừa bấm, 1 trình nghe uỷ quyền (trước vẽ lại 80 ô + gắn 160 listener mỗi lần chạm → giật). */
+    const STEP = 60; let shown = STEP, rowsAll = [], wired = false, allRef = [];
+    const rowHTML = ex => {
+      const sel = picked.some(p => p.exDbId === ex.id);
+      const vn = viName(ex), showEn = vn !== ex.name;
+      return `<div class="list-item" data-exdb="${escapeHtml(ex.id)}" style="cursor:pointer;${sel ? "border-color:var(--primary);" : ""}">
+          <img class="thumb" src="${exdbImg(ex)}" loading="lazy" decoding="async" width="56" height="56" alt="" style="object-fit:cover;background:#fff;" onerror="this.style.visibility='hidden'">
           <div class="info"><div class="name">${escapeHtml(vn)}</div>
             <div class="meta">${escapeHtml(exdbMuscleVi(ex))} · ${escapeHtml(EXDB_EQUIP_VI[ex.equipment] || ex.equipment || "—")} · ${EXDB_LEVEL_VI[ex.level] || ""}</div>
             ${showEn ? `<div class="meta" style="opacity:.7;font-size:12px;">${escapeHtml(ex.name)}</div>` : ""}</div>
           <span class="material-symbols-rounded" data-exdb-info="${escapeHtml(ex.id)}" role="button" aria-label="Xem hướng dẫn" style="color:var(--text-dim);padding:10px;">info</span>
-          <span class="material-symbols-rounded" style="color:${sel ? "var(--primary)" : "var(--text-dim)"};">${sel ? "check_circle" : "add_circle"}</span>
+          <span class="material-symbols-rounded exdb-tick" style="color:${sel ? "var(--primary)" : "var(--text-dim)"};">${sel ? "check_circle" : "add_circle"}</span>
         </div>`;
-      }).join("") || `<p class="empty-hint">Không tìm thấy bài phù hợp. Thử từ khác, VD: "nguc", "squat", "keo".</p>`;
-      $$("[data-exdb-info]", box).forEach(el => el.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const ex = all.find(x => x.id === el.dataset.exdbInfo);
-        openExDbDetail(ex, () => openExDbPicker(onPick, Object.assign({}, opts, { _picked: picked, _filter: filter, _q: q })));
-      }));
-      $$("[data-exdb]", box).forEach(el => el.addEventListener("click", () => {
-        const ex = all.find(x => x.id === el.dataset.exdb);
+    };
+    const moreHTML = () => shown < rowsAll.length
+      ? `<button type="button" class="btn btn-ghost btn-block btn-sm" id="exdb-more">Xem thêm · đang hiện ${shown}/${rowsAll.length} bài</button>`
+      : (rowsAll.length > STEP ? `<p class="small-note exdb-end" style="text-align:center;">Đã hiện đủ ${rowsAll.length} bài</p>` : "");
+    const appendMore = () => {
+      const box = $("#exdb-list"); if(!box || shown >= rowsAll.length) return;
+      const from = shown; shown = Math.min(rowsAll.length, shown + STEP);
+      const old = box.querySelector("#exdb-more, .exdb-end"); if(old) old.remove();
+      box.insertAdjacentHTML("beforeend", rowsAll.slice(from, shown).map(rowHTML).join("") + moreHTML());
+    };
+    const renderList = (all) => {
+      const box = $("#exdb-list"); if(!box) return;
+      allRef = all;
+      const base = all.filter(ex => exdbMatches(ex, filter));
+      rowsAll = q.trim() ? viRank(base, q, searchKeyOf) : base; shown = STEP;
+      box.scrollTop = 0;
+      box.innerHTML = (rowsAll.slice(0, shown).map(rowHTML).join("") + moreHTML()) || `<p class="empty-hint">Không tìm thấy bài phù hợp. Thử từ khác, VD: "nguc", "squat", "keo".</p>`;
+      if(wired) return; wired = true;
+      box.addEventListener("scroll", () => { if(shown < rowsAll.length && box.scrollTop + box.clientHeight > box.scrollHeight - 300) appendMore(); }, { passive: true });
+      box.addEventListener("click", e => {
+        const t = e.target; if(!t || !t.closest) return;
+        if(t.closest("#exdb-more")){ appendMore(); return; }
+        const inf = t.closest("[data-exdb-info]");
+        if(inf){
+          e.stopPropagation();
+          const ex = allRef.find(x => x.id === inf.dataset.exdbInfo);
+          openExDbDetail(ex, () => openExDbPicker(onPick, Object.assign({}, opts, { _picked: picked, _filter: filter, _q: q })));
+          return;
+        }
+        const el = t.closest("[data-exdb]"); if(!el) return;
+        const ex = allRef.find(x => x.id === el.dataset.exdb); if(!ex) return;
         const item = exdbToItem(ex);
         if(!opts.multi){ closeSheet(); onPick(item); return; }
         const i = picked.findIndex(p => p.exDbId === ex.id);
         if(i >= 0) picked.splice(i, 1); else picked.push(item);
+        const sel = i < 0, tick = el.querySelector(".exdb-tick");
+        el.style.borderColor = sel ? "var(--primary)" : "";
+        if(tick){ tick.textContent = sel ? "check_circle" : "add_circle"; tick.style.color = sel ? "var(--primary)" : "var(--text-dim)"; }
         const done = $("#exdb-done"); if(done) done.textContent = `Thêm ${picked.length} bài đã chọn`;
-        renderList(all);
-      }));
+      });
     };
     /* fkLazy: chờ cả 800+ bài lẫn bản Việt hoá; bản Việt lỗi → vẫn chọn được (tên gốc) + nút "Thử lại" */
     let viFail = false;
