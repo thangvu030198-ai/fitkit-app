@@ -40,7 +40,7 @@ cp ui-kit.js exdb-vi-1.js exdb-vi-2.js exdb-vi-3.js exdb-vi.js nutrition-pro.js 
    cloud-events.js events-media.js events.js shop-data.js shop.js \
    kb-data-1.js kb-data-2.js kb-data-3.js kb-data-4.js kb-data-5.js kb-data-6.js kb.js \
    cloud-admin.js admin.js \
-   feedback.js pulse.js admin-analytics.js plan-tools.js food-scan.js session-plus.js session-focus.js sport-picker.js session-live.js session-review.js recovery.js coach-tips.js gyms.js guide-links.js stretch.js ex-guide-data.js ex-guide.js inbody-scan.js ai-coach.js admin-ai.js \
+   feedback.js pulse.js admin-analytics.js plan-tools.js food-scan.js session-plus.js session-focus.js sport-picker.js intro.js session-live.js session-review.js recovery.js coach-tips.js gyms.js guide-links.js stretch.js ex-guide-data.js ex-guide.js inbody-scan.js ai-coach.js admin-ai.js \
    press-feel.js \
    morph-icons.js \
    health-safety.js \

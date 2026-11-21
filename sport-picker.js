@@ -187,6 +187,7 @@ function close(){
 function ready(){
   try{
     if(typeof state === "undefined" || !state || !state.onboarded) return false;
+    if(D.getElementById("fk-intro")) return false;                       // chờ hiệu ứng mở app (intro.js) xong
     const a = D.getElementById("auth"); if(a && a.classList.contains("open")) return false;
     const ob = D.getElementById("onboarding"); if(ob && ob.offsetParent !== null && getComputedStyle(ob).display !== "none") return false;
     return true;
