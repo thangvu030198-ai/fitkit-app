@@ -1302,6 +1302,7 @@ i.cnt{ background:var(--coral); color:var(--on-coral, #061A24); }
 .vthumb.on{ border-color:var(--coral); }
 .vb-msg{ display:flex; align-items:center; gap:8px; padding:12px; border-radius:14px; background:rgba(255,255,255,.08); font-size:12.5px; color:var(--text-muted); }
 .vb-msg .material-symbols-rounded{ color:var(--mint); }
+.vb-msg.vb-yt{ flex-wrap:wrap; } .vb-msg.vb-yt .yt-btn{ flex:1 0 100%; margin-top:4px; }
 .ld-media{ position:relative; margin-top:4px; }
 .ld-media span{ position:absolute; left:8px; bottom:8px; font-size:12px; font-weight:700; padding:2px 7px; border-radius:6px; background:rgba(6,26,36,.75); color:#fff; }
 .ld-media .ld-img{ max-height:22vh; }
@@ -1435,6 +1436,20 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible, input:focu
 .set-row input{ flex:1; min-width:0; height:44px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:rgba(6,26,36,.5); color:#fff; text-align:center; font-family:inherit; font-weight:600; font-size:16px; line-height:1; }
 .set-check{ flex:0 0 48px; height:44px; border-radius:12px; border:1px solid rgba(255,255,255,.2); background:transparent; color:#fff; display:flex; align-items:center; justify-content:center; }
 .set-row.done{ background:rgba(94,230,199,.16); border-color:rgba(94,230,199,.4); }
+/* 21/11 — bài một bên: ghi riêng TRÁI (T) / PHẢI (P) trong cùng 1 hiệp */
+.set-side-bar{ display:flex; align-items:center; flex-wrap:wrap; gap:6px 10px; margin:2px 0 8px; }
+.set-side-tg{ display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.16); background:transparent; color:inherit; font:600 12.5px/1 inherit; }
+.set-side-tg[aria-pressed="true"]{ border-color:var(--mint,#5EE6C7); color:var(--mint,#5EE6C7); }
+.set-side-tg .material-symbols-rounded{ font-size:20px; }
+.set-side-bar small{ font-size:11.5px; color:var(--text-muted); }
+.set-row.uni{ flex-wrap:wrap; row-gap:6px; }
+.set-row.uni .side-br{ flex-basis:100%; height:0; }
+.set-row.uni .side-pad{ flex:0 0 34px; }
+.set-row.uni .side-chk-pad{ flex:0 0 48px; }
+.set-row.uni .side-rpe-pad{ flex:0 0 58px; }
+.set-row .side-tag, .set-head .side-h{ flex:0 0 18px; text-align:center; font-weight:800; font-size:12px; opacity:.85; }
+.set-row .side-tag.r{ color:var(--mint,#5EE6C7); }
+
 .set-row.done .set-check{ background:var(--mint,#5EE6C7); color:var(--navy,#061A24); border-color:transparent; }
 .set-rest{ display:flex; align-items:center; gap:10px; margin-top:10px; padding:10px 14px; border-radius:16px; background:rgba(255,122,69,.16); border:1px solid rgba(255,122,69,.4); }
 .set-rest[hidden]{ display:none; }

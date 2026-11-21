@@ -279,6 +279,12 @@ async function mountVideoBlock(id, query, opts={}){
     }
   }catch(e){ if(!list.length){ host.innerHTML = `<div class="vb-msg"><span class="material-symbols-rounded">videocam</span>${escapeHtml(e.message==="NO_KEY" ? "Chưa kết nối nguồn video." : e.message)}</div>`; return; } }
   if(!document.getElementById(id)) return;
+  /* 21/11: chưa có clip ĐÚNG động tác → không hiện clip gần đúng; mời xem video hướng dẫn YouTube đúng tên bài (guide-links.js) */
+  if(!list.length && typeof FKYT === "object" && FKYT && FKYT.button){
+    const nm = opts.name || (opts.meta && opts.meta.name) || (Array.isArray(query) ? query[0] : query) || "";
+    const yb = FKYT.button(nm, "in-vblock");
+    if(yb){ host.innerHTML = `<div class="vb-msg vb-yt"><span class="material-symbols-rounded">videocam</span>Chưa có clip mẫu đúng động tác này trong app.${yb}</div>`; return; }
+  }
   if(!list.length){ host.innerHTML = hasVideoSource() ? `<div class="vb-msg"><span class="material-symbols-rounded">videocam</span>Chưa tìm thấy video cho bài này.</div>` : `<div class="vb-msg"><span class="material-symbols-rounded">videocam</span>Chưa kết nối nguồn video.</div>`; return; }
   let cur = 0;
   const draw = ()=>{

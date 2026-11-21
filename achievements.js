@@ -102,7 +102,7 @@ function buildCtx(st, now){
     let best = 0;
     for(const x of list){
       let v = Number(x.vol);
-      if(!(v>=0) || !isFinite(v)) v = Array.isArray(x.sets) ? x.sets.reduce((a,s)=> a + (Number(s&&s.kg)||0)*(Number(s&&s.reps)||0), 0) : 0;
+      if(!(v>=0) || !isFinite(v)) v = Array.isArray(x.sets) ? x.sets.reduce((a,s)=> a + (typeof fkSetVol === "function" ? fkSetVol(s) : (Number(s&&s.kg)||0)*(Number(s&&s.reps)||0)), 0) : 0;
       vol[x.date] = (vol[x.date]||0) + v;
       const e = Number(x.e1rm)||0;
       if(e>0 && best>0 && e > best + 0.4) (prs[x.date] = prs[x.date]||[]).push({ key, name: h.name||key, e1rm: e, prev: best });

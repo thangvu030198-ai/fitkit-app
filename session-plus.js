@@ -42,7 +42,10 @@ function prevFor(last, rows, i){
   else src = (Array.isArray(last.all) ? last.all : []).filter(x => x && x.t === c);
   const p = src[k]; if(!p) return null;
   const kg = num(p.kg), reps = num(p.reps);
-  return (kg > 0 || reps > 0) ? { kg, reps } : null;
+  if(!(kg > 0 || reps > 0)) return null;
+  const o = { kg, reps };
+  if(p.L && p.R && typeof p.L === "object" && typeof p.R === "object") o.side = { L: { kg: num(p.L.kg), reps: num(p.L.reps) }, R: { kg: num(p.R.kg), reps: num(p.R.reps) } };   // 21/11: lần trước theo từng bên
+  return o;
 }
 /* Buổi trước có khởi động / drop → dựng lại đúng cấu trúc cho buổi này. */
 function rebuild(rows, last){
@@ -71,13 +74,15 @@ function moveItem(items, from, to){
 function stats(s){
   let sets = 0, vol = 0;
   const all = (s && s.sets) || {};
-  Object.keys(all).forEach(k => (all[k] || []).forEach(r => { if(r && r.done && tOf(r) !== "w"){ sets++; vol += num(r.kg) * num(r.reps); } }));
+  Object.keys(all).forEach(k => (all[k] || []).forEach(r => { if(r && r.done && tOf(r) !== "w"){ sets++; vol += num(r.kg) * num(r.reps) + (r.R && typeof r.R === "object" ? (num(r.R.kg) || num(r.kg)) * num(r.R.reps) : 0); } }));   // 21/11: bài 2 bên cộng cả bên phải
   return { sets, vol: Math.round(vol) };
 }
 function addRow(rows){
   if(!Array.isArray(rows) || rows.length >= MAX) return false;
   const src = rows.slice().reverse().find(r => tOf(r) !== "w") || rows[rows.length - 1] || {};
-  rows.push({ kg: src.kg == null ? "" : src.kg, reps: src.reps == null ? "" : src.reps, rpe: "", done: false, _edited: true });
+  const nr = { kg: src.kg == null ? "" : src.kg, reps: src.reps == null ? "" : src.reps, rpe: "", done: false, _edited: true };
+  if(src.R && typeof src.R === "object") nr.R = { kg: src.R.kg == null ? "" : src.R.kg, reps: src.R.reps == null ? "" : src.R.reps };   // 21/11: hiệp thêm của bài 2 bên
+  rows.push(nr);
   return true;
 }
 function delta(prev, kg, reps){
@@ -209,7 +214,8 @@ function rowsUI(o){
       const p = prevFor(last, rows, i);
       const d = p ? delta(p, r.kg, r.reps) : "";
       const cls = d.charAt(0) === "+" ? "up" : d.charAt(0) === "−" ? "dn" : "";
-      line.innerHTML = (p ? `<button type="button" data-sp-copy="${i}" aria-label="Chép kết quả lần trước vào hiệp ${i + 1}"><span class="material-symbols-rounded">history</span>Lần trước ${p.kg > 0 ? kgTxt(p.kg) + " kg × " : ""}${p.reps}</button>` : "")
+      const pTxt = p ? (p.side && r.R ? `T ${p.side.L.kg > 0 ? kgTxt(p.side.L.kg) + "×" : ""}${p.side.L.reps} · P ${p.side.R.kg > 0 ? kgTxt(p.side.R.kg) + "×" : ""}${p.side.R.reps}` : `${p.kg > 0 ? kgTxt(p.kg) + " kg × " : ""}${p.reps}`) : "";
+      line.innerHTML = (p ? `<button type="button" data-sp-copy="${i}" aria-label="Chép kết quả lần trước vào hiệp ${i + 1}"><span class="material-symbols-rounded">history</span>Lần trước ${pTxt}</button>` : "")
         + (d && r.done && t !== "w" ? `<em class="${cls}">${d === "=" ? "bằng lần trước" : d}</em>` : "")
         + (r._pr ? `<em class="pr">🏆 Kỷ lục</em>` : "");
       line.hidden = !line.innerHTML;
@@ -246,7 +252,12 @@ function rowsUI(o){
       const i = Number(cp.dataset.spCopy), r = rows[i], p = prevFor(last, rows, i); if(!r || !p) return;
       if(r.done){ say("Hiệp đã ✓ — bỏ ✓ nếu muốn sửa", "info"); return; }
       const el = o.rowEl(i), k = el.querySelector(o.kgSel), rp = el.querySelector(o.repsSel);
-      if(p.kg > 0){ r.kg = p.kg; if(k) k.value = p.kg; } r.reps = p.reps; if(rp) rp.value = p.reps; r._edited = true; r._repsEdited = true;
+      const pl = p.side && r.R ? p.side.L : p;
+      if(pl.kg > 0){ r.kg = pl.kg; if(k) k.value = pl.kg; } r.reps = pl.reps; if(rp) rp.value = pl.reps; r._edited = true; r._repsEdited = true;
+      if(r.R && typeof r.R === "object"){   // 21/11: chép cả bên phải
+        const pr = p.side ? p.side.R : p, kr = el.querySelector("[data-kg-r]"), rr = el.querySelector("[data-reps-r]");
+        if(pr.kg > 0){ r.R.kg = pr.kg; if(kr) kr.value = pr.kg; } r.R.reps = pr.reps; if(rr) rr.value = pr.reps; r.R._e = true; r.R._er = true;
+      }
       paint();
     }
   });
@@ -260,7 +271,8 @@ function rowsUI(o){
       if(o.allowDel && nx && tOf(nx) === "d"){ try{ stopSetRest(); }catch(e){} say("Drop set — hạ tạ, làm tiếp ngay!", "bolt"); }
       if(!timed && tOf(r) !== "w" && s.isToday){
         s._livePr = s._livePr || {};
-        const e = prCheck((st.setHist || {})[key], r.kg, r.reps, s._livePr[key]);
+        const rb = r.R && typeof r.R === "object" && epley(r.R.kg || r.kg, r.R.reps) > epley(r.kg, r.reps) ? { kg: r.R.kg || r.kg, reps: r.R.reps } : r;   // 21/11: bài 2 bên → bên tốt hơn
+        const e = prCheck((st.setHist || {})[key], rb.kg, rb.reps, s._livePr[key]);
         if(e){
           s._livePr[key] = e; rows.forEach(x => { delete x._pr; }); r._pr = 1;
           const el = o.rowEl(i); if(el){ el.classList.remove("sp-pr"); void el.offsetWidth; el.classList.add("sp-pr"); }

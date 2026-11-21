@@ -894,7 +894,7 @@ function buildSummary(s){
   s.items.forEach(it=>{
     const rows = (s.sets||{})[it.uid]; if(!rows) return;
     const done = rows.filter(r=> r.done && r.type !== "w"); if(!done.length) return;   // 16/11: hiệp khởi động không tính vào tổng kết
-    let v = 0; done.forEach(r=> v += num(r.kg) * num(r.reps));
+    let v = 0; done.forEach(r=> v += num(r.kg) * num(r.reps) + (r.R && typeof r.R === "object" ? (num(r.R.kg) || num(r.kg)) * num(r.R.reps) : 0));   // 21/11: bài 2 bên cộng cả bên phải
     vol += v;
     if(!s.completed.includes(it.uid)) return;
     sets += done.length;

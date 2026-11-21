@@ -97,7 +97,7 @@ function openToday(){
   const items = s.items.map((it, j)=>{
     const rows = (s.sets || {})[it.uid] || [], timed = (()=>{ try{ return isTimedReps(it.reps); }catch(e){ return false; } })();
     const done = rows.filter(r=> r && r.done && r.type !== "w");
-    done.forEach(r=>{ vol += num(r.kg) * num(r.reps); nSets++; });
+    done.forEach(r=>{ vol += num(r.kg) * num(r.reps) + (r.R && typeof r.R === "object" ? (num(r.R.kg) || num(r.kg)) * num(r.R.reps) : 0); nSets++; });   // 21/11: bài 2 bên
     const st = j < cur ? (s.completed.indexOf(it.uid) >= 0 ? "ok" : "skip") : j === cur ? "cur" : "next";
     const lbl = { ok:"Xong", skip:"Bỏ qua", cur:"Đang tập", next:"Chưa tập" }[st];
     const txt = rowsTxt(rows, timed);

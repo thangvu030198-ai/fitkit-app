@@ -1669,6 +1669,95 @@ function startSession(dayKey){
 }
 /* ---- Buổi tập: ghi kg × lần từng hiệp, nghỉ giữa hiệp (rung + âm báo), điền sẵn buổi trước ---- */
 function exKey(item){ return item.exerciseId || ("c:" + (getExerciseMeta(item).name||"")); }
+/* ===== 21/11/2026 — BÀI MỘT BÊN (từng tay / từng chân): ghi riêng TRÁI / PHẢI =====
+   Hàng hiệp trong buổi: r.kg / r.reps = bên TRÁI (giữ nguyên chỗ cho mọi module đang đọc), r.R = { kg, reps } = bên PHẢI.
+   Khi lưu (setLog / setHist): 1 bản ghi / hiệp { kg: max 2 bên, reps: min 2 bên, L:{kg,reps}, R:{kg,reps} } → tự tăng tạ / lần trước / số hiệp
+   chạy như cũ (phải đạt đủ lần CẢ HAI bên), khối lượng tính CẢ HAI bên (fkSetVol), kỷ lục lấy bên tốt hơn (fkSetE1rm). Dữ liệu cũ không có L/R vẫn đọc bình thường. */
+const FK_UNI_RE = /\b(one|single)[\s-]?(arm|leg|hand)|\bone armed\b|\bunilateral\b|một tay|một chân|(^|\s)1 (tay|chân)(\s|$)|bulgarian|split squat|tách chân|\blunges?\b|chùng chân|step[\s-]?ups?\b|bước bục|pistol|concentration curl|cuốn tạ tập trung|suitcase|\balternat(e|ing)\b|luân phiên|từng tay|từng chân|mỗi tay|mỗi chân|glute kickback|đá mông|đá chân sau|cossack/i;
+function fkIsUnilateral(meta, reps){
+  const nm = String(meta && meta.name || "") + " " + String(meta && meta.nameEn || "") + " " + String(meta && meta.exDbId || "").replace(/_/g, " ");
+  if(/side plank|plank nghiêng|russian twist|woodchop|chặt gỗ/i.test(nm)) return false;   // xoay/giữ 2 bên trong cùng hiệp — không ghi kg riêng
+  return FK_UNI_RE.test(nm) || /mỗi (tay|chân)/i.test(String(reps || ""));
+}
+function fkSideKind(meta){
+  const s = String(meta && meta.name || "") + " " + String(meta && meta.muscle || "");
+  return /chân|mông|đùi|\bleg\b|lunge|squat|step|glute|calf|pistol|bulgarian|chùng|bục/i.test(s) && !/tay|arm\b|curl|press|row|raise|kéo|đẩy vai|đẩy ngực/i.test(String(meta && meta.name || "")) ? "leg" : "arm";
+}
+function fkSideLabels(meta){ return fkSideKind(meta) === "leg" ? ["Chân trái", "Chân phải"] : ["Tay trái", "Tay phải"]; }
+/** Buổi này có ghi riêng trái/phải cho bài không: mặc định BẬT cho bài một bên; người dùng tắt/bật theo từng bài (state.sideMode[key] = 0/1) */
+function fkSideMode(item, meta, timed){
+  if(timed) return false;
+  try{ const p = state.sideMode && state.sideMode[exKey(item)]; if(p === 0) return false; if(p === 1) return true; }catch(e){}
+  return fkIsUnilateral(meta, item && item.reps);
+}
+const fkN0 = v=> { const n = Number(v); return Number.isFinite(n) && n > 0 ? n : 0; };
+/** Khối lượng 1 hiệp (kg × lần), bài ghi 2 bên → cộng CẢ HAI bên. Nhận cả hàng trong buổi (kg/reps = trái, R = phải) lẫn bản ghi đã lưu (L/R) */
+function fkSetVol(s, kgOverride){
+  if(!s || typeof s !== "object") return 0;
+  if(s.R && typeof s.R === "object"){
+    const L = s.L && typeof s.L === "object" ? s.L : s;
+    const kl = kgOverride != null && !(s.L && typeof s.L === "object") ? fkN0(kgOverride) : fkN0(L.kg);
+    return kl * fkN0(L.reps) + (fkN0(s.R.kg) || kl) * fkN0(s.R.reps);
+  }
+  return fkN0(kgOverride != null ? kgOverride : s.kg) * fkN0(s.reps);
+}
+/** 1RM ước tính tốt nhất của 1 hiệp (bài 2 bên: bên tốt hơn) */
+function fkSetE1rm(s){
+  if(!s || typeof s !== "object") return 0;
+  if(s.L && s.R && typeof s.L === "object" && typeof s.R === "object") return Math.max(e1rm(s.L.kg, s.L.reps), e1rm(s.R.kg, s.R.reps));
+  return e1rm(s.kg, s.reps);
+}
+/** Hàng hiệp trong buổi → bản ghi lưu (gộp 2 bên). Không có R → như cũ. */
+function fkRowRecord(r, timed){
+  const o = { kg: Number(r.kg)||0, reps: timed ? 0 : Number(r.reps)||0, rpe: r.rpe ? Number(r.rpe) : (r.type === "f" ? 10 : undefined), type: r.type || undefined };
+  if(!timed && r.R && typeof r.R === "object"){
+    const kl = Number(r.kg)||0, kr = Number(r.R.kg)||kl, rl = Number(r.reps)||0, rr = r.R.reps === "" || r.R.reps == null ? rl : (Number(r.R.reps)||0);
+    o.L = { kg: kl, reps: rl }; o.R = { kg: kr, reps: rr };
+    o.kg = Math.max(kl, kr); o.reps = rl && rr ? Math.min(rl, rr) : (rl || rr);
+  }
+  return o;
+}
+/** Thêm bên PHẢI cho các hàng (giữ nguyên nếu đã có). Lần trước có L/R đúng hiệp → điền từng bên theo lần trước. */
+function fkSideInit(rows, last){
+  const ls = last && Array.isArray(last.sets) ? last.sets : [];
+  rows.forEach((r, i)=>{
+    if(!r || typeof r !== "object" || r.type === "w" || (r.R && typeof r.R === "object")) return;
+    const p = ls[i] && ls[i].L && ls[i].R ? ls[i] : null;
+    if(p && !r._edited && !r.done){
+      if(String(r.kg) === String(p.kg) && fkN0(p.L.kg)) r.kg = p.L.kg;
+      if(String(r.reps) === String(p.reps) && fkN0(p.L.reps)) r.reps = p.L.reps;
+      r.R = { kg: String(r.kg) === String(p.L.kg) && fkN0(p.R.kg) ? p.R.kg : r.kg, reps: fkN0(p.R.reps) && String(r.reps) === String(p.L.reps) ? p.R.reps : r.reps };
+    } else r.R = { kg: r.kg == null ? "" : r.kg, reps: r.reps == null ? "" : r.reps };
+  });
+  return rows;
+}
+/** Bên phải mặc định THEO bên trái (tới khi người dùng sửa tay bên phải). from = hiệp vừa sửa; onlyRow = chỉ hiệp đó (sửa số lần). */
+function fkSideSync(rows, from, onlyRow){
+  for(let j = from; j < (onlyRow ? from + 1 : rows.length); j++){
+    const r = rows[j]; if(!r || !r.R || typeof r.R !== "object" || r.done) continue;
+    if(!r.R._e) r.R.kg = r.kg == null ? "" : r.kg;
+    if(!r.R._er) r.R.reps = r.reps == null ? "" : r.reps;
+  }
+  return rows;
+}
+/** Sửa tay bên phải (kg | reps) của hiệp i; kg > 0 → tự điền xuống các hiệp sau chưa xong / chưa sửa tay */
+function fkSideSetR(rows, i, field, raw){
+  const r = rows[i]; if(!r || !r.R || typeof r.R !== "object") return rows;
+  const s = String(raw == null ? "" : raw).trim();
+  if(field === "reps"){ r.R.reps = s === "" ? "" : Math.round(Math.min(200, Math.max(0, Number(s) || 0))); r.R._er = true; return rows; }
+  const old = r.R.kg;
+  const v = s === "" ? "" : Math.round(Math.min(500, Math.max(0, fkNum(s))) * 100) / 100;
+  r.R.kg = v; r.R._e = true;
+  if(v > 0) for(let j = i + 1; j < rows.length; j++){ const x = rows[j]; if(!x || !x.R || x.done || x.R._e) continue;
+    if(x.R.kg === "" || !(Number(x.R.kg) > 0) || String(x.R.kg) === String(old) || String(x.R.kg) === String(x.kg)){ x.R.kg = v; x.R._e = true; } }
+  return rows;
+}
+/** "T 10kg×12 · P 10kg×11" cho 1 bản ghi đã lưu có L/R */
+function fkSideTxt(s, timed){
+  if(!s || !s.L || !s.R) return "";
+  const f = x=> timed ? "✓" : `${fkN0(x.kg) ? fmtKg(Number(x.kg)) + "kg×" : ""}${Number(x.reps)||0}`;
+  return `T ${f(s.L)} / P ${f(s.R)}`;
+}
 function repTop(reps){ const m = String(reps||"").match(/(\d+)\s*[-–]\s*(\d+)/); if(m) return Number(m[2]); const n = String(reps||"").match(/^\s*(\d+)/); return n ? Number(n[1]) : 0; }
 function isMaxReps(reps){ return /tối đa|max|amrap/i.test(String(reps||"")); }
 function isTimedReps(reps){ const r = String(reps||""); if(isMaxReps(r)) return false; return /giây|phút|(^|\s)\d*\s*m(\s|$|\/)|km|vòng|\d+\s*s(\s|$|\/)/i.test(r) || !repTop(r); }
@@ -1700,11 +1789,16 @@ function renderSessionStep(){
   if(!session.sets[item.uid]) session.sets[item.uid] = fkPrefillRows(item, { meta, last, timed, nSets, top, prog });
   if(session.sets[item.uid].length > FK_MAX_SETS) session.sets[item.uid].length = FK_MAX_SETS;   // R3-CORE-05 (kể cả hàng do training-pro điền sẵn)
   const rows = session.sets[item.uid];
+  /* 21/11: bài một bên → ghi riêng TRÁI / PHẢI (r.kg/r.reps = trái, r.R = phải) */
+  const uniOk = !timed && fkIsUnilateral(meta, item.reps);
+  const side = fkSideMode(item, meta, timed);
+  const [sideL, sideR] = fkSideLabels(meta);
+  if(side) fkSideInit(rows, last);
   const eqc = fkEquipClass(meta);
   const simple = fkSimpleMode();                                   // QU-22: người mới — ẩn cột RPE, có hướng dẫn ghi hiệp
   const lastSets = last && Array.isArray(last.sets) ? fkFillBlankKg(last.sets, 0) : [];
   const lastTxt = lastSets.length && typeof last.date === "string" && last.date.length >= 10
-    ? `Lần trước (${last.date.slice(8,10)}/${last.date.slice(5,7)}): ${lastSets.map(x=> timed ? "✓" : `${fmtKg(Number(x.kg)||0)}kg×${Number(x.reps)||0}`).join(" · ")}` : "";
+    ? `Lần trước (${last.date.slice(8,10)}/${last.date.slice(5,7)}): ${lastSets.map((x, i)=> timed ? "✓" : (fkSideTxt(last.sets[i], timed) || `${fmtKg(Number(x.kg)||0)}kg×${Number(x.reps)||0}`)).join(" · ")}` : "";
   const hasKg = rows.some(r=> Number(r.kg) > 0);
   const kgHint = !timed && !hasKg && !lastSets.length && eqc !== "bw"
     ? `Chưa biết mức tạ? Chọn mức <b>nhẹ</b> làm được khoảng ${(top || 10) + 3} lần mà vẫn đúng kỹ thuật, gõ kg ở hiệp 1 — các hiệp sau tự điền theo.` : "";
@@ -1725,16 +1819,22 @@ function renderSessionStep(){
     ${simple && !timed && (state.finishedDates||[]).length < 6 ? `<details class="set-guide" ${session.idx === 0 ? "open" : ""}><summary>Cách ghi hiệp</summary><p>1. Gõ <b>kg</b> và <b>số lần</b> bạn làm được (kg tự điền xuống các hiệp sau).<br>2. Xong mỗi hiệp bấm <b>✓</b> — đồng hồ nghỉ tự chạy.<br>3. Làm đủ đỉnh số lần ở mọi hiệp → buổi sau app tự tăng tạ.</p></details>` : ""}
     ${kgHint ? `<p class="small-note set-hint">${richText(kgHint)}</p>` : ""}
     ${!timed ? `<div class="set-tools"><button data-tool="warm"><span class="material-symbols-rounded">local_fire_department</span>Khởi động</button>${eqc === "barbell" ? `<button data-tool="plate"><span class="material-symbols-rounded">fitness_center</span>Đĩa tạ</button>` : ""}<button data-tool="hist"><span class="material-symbols-rounded">show_chart</span>Lịch sử</button></div><div class="set-toolbox" id="set-toolbox" hidden></div>` : ""}
-    <div class="set-table${simple ? " simple" : ""}">
-      <div class="set-head"><span>Hiệp</span>${timed ? `<span style="flex:2">Mục tiêu</span>` : `<span>${kgLabel}</span><span>Lần</span>${simple ? "" : `<span class="rpe-h">RPE</span>`}`}<span></span></div>
+    ${uniOk ? `<div class="set-side-bar"><button type="button" class="set-side-tg" id="set-side-tg" aria-pressed="${side}"><span class="material-symbols-rounded">${side ? "toggle_on" : "toggle_off"}</span>Ghi riêng trái / phải</button>${side ? `<small>T = ${escapeHtml(sideL.toLowerCase())} · P = ${escapeHtml(sideR.toLowerCase())} · ✓ khi xong cả 2 bên</small>` : ""}</div>` : ""}
+    <div class="set-table${simple ? " simple" : ""}${side ? " sided" : ""}">
+      <div class="set-head"><span>Hiệp</span>${side ? `<span class="side-h"></span>` : ""}${timed ? `<span style="flex:2">Mục tiêu</span>` : `<span>${kgLabel}</span><span>Lần</span>${simple ? "" : `<span class="rpe-h">RPE</span>`}`}<span></span></div>
       ${rows.map((r,i)=>`
-      <div class="set-row ${r.done?'done':''}" data-set="${i}">
+      <div class="set-row ${r.done?'done':''}${side && r.R ? " uni" : ""}" data-set="${i}">
         <b>${i+1}</b>
+        ${side && r.R ? `<span class="side-tag" title="${escapeHtml(sideL)}">T</span>` : ""}
         ${timed ? `<span style="flex:2" class="small-note">${escapeHtml(String(item.reps))}</span>`
-          : `<input type="text" inputmode="decimal" autocomplete="off" value="${escapeHtml(String(r.kg))}" data-kg="${i}" placeholder="kg" aria-label="${kgLabel} hiệp ${i+1}">
-             <input type="number" inputmode="numeric" min="0" max="200" value="${escapeHtml(String(r.reps))}" data-reps="${i}" placeholder="lần" aria-label="Số lần hiệp ${i+1}">
+          : `<input type="text" inputmode="decimal" autocomplete="off" value="${escapeHtml(String(r.kg))}" data-kg="${i}" placeholder="kg" aria-label="${kgLabel} hiệp ${i+1}${side && r.R ? " — " + sideL : ""}">
+             <input type="number" inputmode="numeric" min="0" max="200" value="${escapeHtml(String(r.reps))}" data-reps="${i}" placeholder="lần" aria-label="Số lần hiệp ${i+1}${side && r.R ? " — " + sideL : ""}">
              ${simple ? "" : `<select class="rpe" data-rpe="${i}" aria-label="RPE hiệp ${i+1}">${rpeOpts(r)}</select>`}`}
-        <button class="set-check" data-done="${i}" aria-label="Xong hiệp ${i+1}"><span class="material-symbols-rounded">check</span></button>
+        <button class="set-check" data-done="${i}" aria-label="Xong hiệp ${i+1}${side && r.R ? " (cả hai bên)" : ""}"><span class="material-symbols-rounded">check</span></button>
+        ${side && r.R ? `<i class="side-br"></i><span class="side-pad"></span><span class="side-tag r" title="${escapeHtml(sideR)}">P</span>
+             <input type="text" inputmode="decimal" autocomplete="off" value="${escapeHtml(String(r.R.kg == null ? "" : r.R.kg))}" data-kg-r="${i}" placeholder="kg" aria-label="${kgLabel} hiệp ${i+1} — ${escapeHtml(sideR)}">
+             <input type="number" inputmode="numeric" min="0" max="200" value="${escapeHtml(String(r.R.reps == null ? "" : r.R.reps))}" data-reps-r="${i}" placeholder="lần" aria-label="Số lần hiệp ${i+1} — ${escapeHtml(sideR)}">
+             ${simple ? "" : `<span class="side-rpe-pad"></span>`}<span class="side-chk-pad"></span>` : ""}
       </div>`).join("")}
     </div>
     ${!timed ? (simple ? `<button type="button" class="btn btn-ghost btn-sm" id="set-show-rpe" style="margin-top:4px;">Hiện cột RPE (độ nặng cảm nhận)</button>`
@@ -1766,6 +1866,24 @@ function renderSessionStep(){
   });
   $$("#sheet-content [data-reps]").forEach(inp=> inp.addEventListener("change", ()=>{ const v = Math.round(clamp(inp.value,0,200)); inp.value = v; rows[inp.dataset.reps].reps = v; rows[inp.dataset.reps]._repsEdited = true; }));
   $$("#sheet-content [data-rpe]").forEach(sel=> sel.addEventListener("change", ()=>{ rows[sel.dataset.rpe].rpe = sel.value; }));
+  /* 21/11 — bên PHẢI: mặc định theo bên trái (tới khi sửa tay), gõ kg bên phải tự điền xuống các hiệp sau */
+  if(side){
+    const inpR = (k, j)=> $(`#sheet-content [data-${k}-r="${j}"]`);
+    const paintR = ()=> rows.forEach((r, j)=>{ if(!r || !r.R) return; const a = inpR("kg", j), b = inpR("reps", j);
+      if(a && String(a.value) !== String(r.R.kg == null ? "" : r.R.kg)) a.value = r.R.kg == null ? "" : r.R.kg;
+      if(b && String(b.value) !== String(r.R.reps == null ? "" : r.R.reps)) b.value = r.R.reps == null ? "" : r.R.reps; });
+    $$("#sheet-content [data-kg]").forEach(inp=> inp.addEventListener("change", ()=>{ fkSideSync(rows, Number(inp.dataset.kg)); paintR(); }));
+    $$("#sheet-content [data-reps]").forEach(inp=> inp.addEventListener("change", ()=>{ fkSideSync(rows, Number(inp.dataset.reps), true); paintR(); }));
+    $$("#sheet-content [data-kg-r]").forEach(inp=> inp.addEventListener("change", ()=>{ fkSideSetR(rows, Number(inp.dataset.kgR), "kg", inp.value); paintR(); }));
+    $$("#sheet-content [data-reps-r]").forEach(inp=> inp.addEventListener("change", ()=>{ fkSideSetR(rows, Number(inp.dataset.repsR), "reps", inp.value); paintR(); }));
+  }
+  const sideTg = $("#set-side-tg");
+  if(sideTg && sideTg.addEventListener) sideTg.addEventListener("click", ()=>{
+    state.sideMode = (state.sideMode && typeof state.sideMode === "object") ? state.sideMode : {};
+    state.sideMode[key] = side ? 0 : 1;
+    if(side) rows.forEach(r=>{ if(r && r.R) delete r.R; });
+    saveState(); renderSessionStep();
+  });
   const rpeBtn = $("#set-show-rpe");
   if(rpeBtn && rpeBtn.addEventListener) rpeBtn.addEventListener("click", ()=>{ state.profile.showRpe = true; saveState(); renderSessionStep(); });
   $$("#sheet-content [data-tool]").forEach(b=> b.addEventListener("click", ()=>{
@@ -1784,6 +1902,10 @@ function renderSessionStep(){
       const prevKg = Number((rows.slice(0, i).reverse().find(x=> Number(x.kg) > 0) || {}).kg) || lastTopKg || Number((rows.find(x=> Number(x.kg) > 0) || {}).kg) || 0;
       if(prevKg > 0){ r.kg = prevKg; const n = kgInp(i); if(n && n.value !== undefined) n.value = prevKg; }
     }
+    if(r.done && side && r.R){   // ✓ = xong CẢ HAI bên: bên phải trống → lấy theo bên trái
+      if(!(Number(r.R.kg) > 0) && Number(r.kg) > 0){ r.R.kg = r.kg; const n = $(`#sheet-content [data-kg-r="${i}"]`); if(n) n.value = r.kg; }
+      if(r.R.reps === "" || r.R.reps == null){ r.R.reps = r.reps; const n = $(`#sheet-content [data-reps-r="${i}"]`); if(n) n.value = r.reps; }
+    }
     b.closest(".set-row").classList.toggle("done", r.done);
     if(r.done && i < rows.length-1 && Number(item.restSec) > 0) startSetRest(item.restSec);
   }));
@@ -1799,9 +1921,9 @@ function renderSessionStep(){
     }
     if(isW){   // QT-01: hiệp trống kg kế thừa kg hiệp trước (hoặc buổi trước) — không bao giờ lưu 0 kg cho bài có tạ khi đã biết mức tạ
       const filled = fkFillBlankKg(rows, lastTopKg);
-      rows.forEach((r, i)=>{ if(Number(filled[i].kg) > 0) r.kg = filled[i].kg; });
+      rows.forEach((r, i)=>{ if(Number(filled[i].kg) > 0) r.kg = filled[i].kg; if(r.R && !(Number(r.R.kg) > 0) && Number(r.kg) > 0) r.R.kg = r.kg; });
     }
-    const keep = doneRows.map(r=>({ kg: Number(r.kg)||0, reps: timed ? 0 : Number(r.reps)||0, rpe: r.rpe ? Number(r.rpe) : (r.type === "f" ? 10 : undefined), type: r.type || undefined }));
+    const keep = doneRows.map(r=> fkRowRecord(side ? r : Object.assign({}, r, { R: undefined }), timed));   // 21/11: bài ghi 2 bên → bản ghi có L/R
     if(session.isToday) recordExerciseResult(key, meta.name, item.reps, keep, timed);
     try{ if(typeof fkTrack === "function") fkTrack("set_logged", { sets: keep.length, timed: !!timed, weighted: !!isW, exercise_index: session.idx, saved: !!session.isToday }); }catch(e){}
     session.completed.push(item.uid);
@@ -1879,7 +2001,7 @@ function finishSession(){
   keepAwake(false); clearInterval(window._restTimer); window._restEnd = 0; cancelRestNotif();
   // QT-01: khối lượng tính theo kg đã kế thừa (ô trống không còn = 0 kg)
   if(session.sets){ let vol=0; Object.values(session.sets).forEach(rs=>{ if(!Array.isArray(rs)) return; const anyKg = rs.some(r=> Number(r.kg) > 0); const f = anyKg ? fkFillBlankKg(rs, 0) : rs;
-    rs.forEach((r, i)=>{ if(r.done) vol += (Number(f[i].kg)||0)*(Number(r.reps)||0); }); }); session.volume = Math.round(vol); }
+    rs.forEach((r, i)=>{ if(r.done) vol += fkSetVol(r, Number(f[i].kg)||0); }); }); session.volume = Math.round(vol); }   // 21/11: bài 2 bên → cộng cả 2 bên
   if(session.isToday){
     const dateKey = session.date || todayStr();          // QT-07: ngày chốt lúc bắt đầu buổi
     const prev = state.workoutLog[dateKey];
@@ -4569,7 +4691,13 @@ function recordExerciseResult(key, name, reps, sets, timed){
   /* R3-CORE: chuẩn hoá hiệp trước khi ghi — kg 0–500, lần 0–200 (module khác / dữ liệu PT gửi số âm, NaN, chuỗi không làm hỏng lịch sử) */
   sets = (Array.isArray(sets) ? sets : []).filter(x=> x && typeof x === "object").slice(0, FK_MAX_SETS * 2);
   sets.forEach(x=>{ const k = Number(x.kg), r = Number(x.reps); x.kg = Number.isFinite(k) && k > 0 ? Math.min(500, Math.round(k * 100) / 100) : 0; x.reps = Number.isFinite(r) && r > 0 ? Math.min(200, Math.round(r)) : 0;
-    if(x.type !== "w" && x.type !== "d" && x.type !== "f") delete x.type; });
+    if(x.type !== "w" && x.type !== "d" && x.type !== "f") delete x.type;
+    /* 21/11: hiệp ghi 2 bên — chuẩn hoá L/R như kg/lần; thiếu 1 bên / hỏng → bỏ L/R (thành hiệp thường) */
+    if(x.L || x.R){
+      const ok = o=> o && typeof o === "object";
+      if(ok(x.L) && ok(x.R)){ [x.L, x.R].forEach(o=>{ const k2 = Number(o.kg), r2 = Number(o.reps); o.kg = Number.isFinite(k2) && k2 > 0 ? Math.min(500, Math.round(k2 * 100) / 100) : 0; o.reps = Number.isFinite(r2) && r2 > 0 ? Math.min(200, Math.round(r2)) : 0; Object.keys(o).forEach(z=>{ if(z !== "kg" && z !== "reps") delete o[z]; }); }); }
+      else { delete x.L; delete x.R; }
+    } });
   /* 16/11 (session-plus.js) — LOẠI HIỆP: "w" khởi động · "d" drop set · "f" tới hạn.
      · Hiệp khởi động KHÔNG vào lịch sử / kỷ lục / khối lượng / tự tăng tạ (chỉ nhớ để lần sau điền sẵn).
      · Drop set tính vào khối lượng + lịch sử nhưng KHÔNG dùng để xét "đạt / trượt" và tự tăng tạ (tạ đã hạ có chủ ý).
@@ -4585,7 +4713,7 @@ function recordExerciseResult(key, name, reps, sets, timed){
     const prevTop = prev && Array.isArray(prev.sets) ? Math.max(0, ...fkFillBlankKg(prev.sets, 0).map(x=> Number(x.kg)||0)) : 0;
     if(sets.some(x=> Number(x && x.kg) > 0) || prevTop > 0){
       const f = fkFillBlankKg(sets, prevTop);
-      sets.forEach((x, i)=>{ if(x && typeof x === "object") x.kg = f[i].kg; });
+      sets.forEach((x, i)=>{ if(x && typeof x === "object"){ x.kg = f[i].kg; if(x.L && !(x.L.kg > 0)) x.L.kg = x.kg; if(x.R && !(x.R.kg > 0)) x.R.kg = x.kg; } });
     }
   }
   const bottom = repBottom(reps);
@@ -4608,10 +4736,11 @@ function recordExerciseResult(key, name, reps, sets, timed){
   const sid = (typeof session !== "undefined" && session && session.sid) || "_";
   const old = h.list.find(x=> x.date === day);
   const parts = old ? (old.parts && typeof old.parts === "object" ? Object.assign({}, old.parts) : { [old.sid || "_"]: Array.isArray(old.sets) ? old.sets : [] }) : {};
-  parts[sid] = work.map(x=> { const o = { kg: Number(x.kg)||0, reps: Number(x.reps)||0 }; if(x.rpe != null && x.rpe !== "") o.rpe = x.rpe; if(x.type) o.t = x.type; return o; });
+  parts[sid] = work.map(x=> { const o = { kg: Number(x.kg)||0, reps: Number(x.reps)||0 }; if(x.rpe != null && x.rpe !== "") o.rpe = x.rpe; if(x.type) o.t = x.type;
+    if(x.L && x.R){ o.L = { kg: x.L.kg, reps: x.L.reps }; o.R = { kg: x.R.kg, reps: x.R.reps }; } return o; });   // 21/11: giữ từng bên
   const pk = Object.keys(parts), all = pk.flatMap(k=> parts[k]);
-  const best = Math.max(0, ...all.map(x=> e1rm(x.kg, x.reps)));
-  const vol = all.reduce((a,x)=> a + (x.kg||0)*(x.reps||0), 0);
+  const best = Math.max(0, ...all.map(x=> fkSetE1rm(x)));
+  const vol = all.reduce((a,x)=> a + fkSetVol(x), 0);   // bài 2 bên → cộng cả 2 bên
   h.list = h.list.filter(x=> x.date !== day);
   const entry = { date: day, e1rm: Math.round(best*10)/10, top: Math.max(0,...all.map(x=>x.kg||0)), vol: Math.round(vol), sets: all };
   if(pk.length > 1) entry.parts = parts; else if(sid !== "_") entry.sid = sid;

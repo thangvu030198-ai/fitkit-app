@@ -55,6 +55,9 @@ function fvIdxFail(k){ const f = FV_IDX_FAIL[k]; f.n = Math.min(f.n + 1, 8); f.a
 function fvIdxOk(k){ const f = FV_IDX_FAIL[k]; f.n = 0; f.at = 0; }
 try{ if(typeof window !== "undefined" && typeof window.addEventListener === "function") window.addEventListener("online", ()=>{ fvIdxOk("extra"); fvIdxOk("wger"); if(FV_IDX_FAIL.ex3d) fvIdxOk("ex3d"); }); }catch(e){}
 
+/* 21/11: clip bổ sung không ghi dụng cụ → gán tay để không gắn clip tay không cho bài dùng máy (vd "Hip Abduction" Pexels = nằm nâng chân, ≠ máy mở hông) */
+const FV_EXTRA_EQUIP = { abduction:"bodyweight", bwsquat:"bodyweight", pushup:"bodyweight", inclinepushup:"bodyweight", plank:"bodyweight", sideplank:"bodyweight",
+  glutebridge:"bodyweight", mountainclimber:"bodyweight", crunch:"bodyweight", burpee:"bodyweight", hangingleg:"bodyweight", "ai-deadbug-1":"bodyweight", "ai-deadbug-2":"bodyweight" };
 /* 3. Video bổ sung chọn tay (Pexels License / Wikimedia Commons CC BY, CC BY-SA, Public domain) */
 let _extraIdx = null, _extraLoading = null;
 /* Lỗi mạng: KHÔNG ghi đè cache bằng mảng rỗng (BUG-15) → lần tìm sau tự tải lại index */
@@ -67,7 +70,7 @@ async function loadExtraIndex(){
       const r = await fetch(FV_REPO_CDN + "media/extra/index.json");
       if(!r.ok) throw new Error("HTTP " + r.status);
       _extraIdx = (await r.json()).map(x=>({
-        provider:x.provider, name:x.name, alias:(x.alias||[]).map(a=>String(a).toLowerCase()), url:FV_REPO_CDN+"media/extra/"+x.file, thumb:FV_REPO_CDN+"media/extra/"+x.thumb,
+        provider:x.provider, name:x.name, alias:(x.alias||[]).map(a=>String(a).toLowerCase()), equip: x.equip || FV_EXTRA_EQUIP[x.key] || "", url:FV_REPO_CDN+"media/extra/"+x.file, thumb:FV_REPO_CDN+"media/extra/"+x.thumb,
         author:x.author, authorUrl:x.licenseUrl, pageUrl:x.source, license:x.license, duration:x.duration, tags:"",
       }));
       fvIdxOk("extra");
@@ -119,6 +122,7 @@ async function loadEx3dIndex(){
   return _ex3dLoading;
 }
 function fvSameName(target, v){
+  if(!fvAttrOk(target, v.name)) return false;   // 21/11: một tay ↔ hai tay, quỳ ↔ ngồi… phải khớp
   const t = fvTokens(target), c = fvTokens(v.name);
   const k = x=> x.core.concat(x.equip).sort().join(" ");
   if(v.equip && !c.equip.includes(v.equip) && v.equip !== "machine") c.equip.push(v.equip);
@@ -126,7 +130,7 @@ function fvSameName(target, v){
 }
 /* Bài cốt lõi của app ↔ id free-exercise-db tương ứng (để video 3D gắn theo id exdb cũng hiện cho bài cốt lõi) */
 const FV_CORE_EXDB = { benchpress:"Barbell_Bench_Press_-_Medium_Grip", inclinedb:"Incline_Dumbbell_Press", pushup:"Pushups", cablefly:"Cable_Crossover",
-  pullup:"Pullups", bentoverrow:"Bent_Over_Barbell_Row", latpulldown:"Wide-Grip_Lat_Pulldown", deadlift:"Barbell_Deadlift", overheadpress:"Barbell_Shoulder_Press",
+  pullup:"Pullups", bentoverrow:"Bent_Over_Barbell_Row", latpulldown:"Wide-Grip_Lat_Pulldown", deadlift:"Barbell_Deadlift", overheadpress:"Standing_Military_Press",
   lateralraise:"Side_Lateral_Raise", facepull:"Face_Pull", squat:"Barbell_Squat", legpress:"Leg_Press", lunges:"Dumbbell_Lunges", legcurl:"Lying_Leg_Curls",
   calfraise:"Standing_Calf_Raises", bicepcurl:"Dumbbell_Bicep_Curl", hammercurl:"Hammer_Curls", tricepdip:"Dips_-_Triceps_Version", tricepsdown:"Triceps_Pushdown",
   plank:"Plank", hangingleg:"Hanging_Leg_Raise", russiantwist:"Russian_Twist", crunch:"Crunches", running:"Running_Treadmill", jumprope:"Rope_Jumping", rowing:"Rowing_Stationary" };
@@ -163,6 +167,7 @@ const FV_SYN = [
   /* Kéo người dưới xà thấp: cùng mẫu chuyển động với Australian pull-up / body row / TRX (suspension) row.
      Gom về 1 token "invertedrow" → chỉ khớp video ĐÚNG động tác này (không ăn theo "row"/"rowing"/"pull-up"). */
   [/inverted ?rows?|australian ?pull[- ]?ups?|australian ?chin[- ]?ups?|body ?weight ?rows?|bodyweight ?rows?|body ?rows?|trx ?rows?|suspension ?(trainer )?rows?|ring ?rows?|kéo người dưới xà( thấp)?/g,"invertedrow"],
+  [/jump ?ropes?|rope ?jumping|skipping ?rope/g,"jumprope"], [/weighted ?squats?|belt ?squats?/g,"beltsquat"], [/kettlebells/g,"kettlebell"], [/farmer'?s? ?(walks?|carry)/g,"farmerwalk"],   // 21/11: Jump Squat ≠ Jump Rope · Belt Squat ≠ Back Squat
   [/rowing seated|seated rowing/g,"row"], [/incline (db|dumbbells?) press/g,"incline dumbbell benchpress"],
   [/bench ?press|benchpress/g,"benchpress"], [/pull[- ]?ups?|chin[- ]?ups?/g,"pullup"], [/push[- ]?ups?/g,"pushup"],
   [/lat ?pull ?downs?|pulldowns?/g,"pulldown"], [/sit[- ]?ups?/g,"situp"], [/face ?pulls?|facepull/g,"facepull"],
@@ -177,7 +182,10 @@ const FV_SYN = [
 ];
 const FV_EQUIP = ["barbell","dumbbell","cable","machine","kettlebell","multipress","smith"];
 const FV_STOP = new Set(["the","with","on","and","a","of","exercise","standing","sitting","seated","laying","lying","one","arm","single","two","close","wide","grip","narrow","medium","legs","apart","mid","high","to","low","v","bar","sz","rope","back"]);
-const FV_MOD = new Set(["side","frontsquat","gobletsquat","rdl","bodyweight","inverted","incline","decline","bulgarian","split","hack","sumo","overhead","preacher","hipthrust","pushpress","supported","bent"]);
+const FV_MOD = new Set(["side","frontsquat","gobletsquat","rdl","bodyweight","inverted","incline","decline","bulgarian","split","hack","sumo","overhead","preacher","hipthrust","pushpress","supported","bent",
+  /* 21/11: biến thể làm đổi hẳn động tác → clip phải có đúng từ này (Upright Row ≠ Row, Front Raise and Pullover ≠ Pullover, Box Squat ≠ Squat…) */
+  "upright","sled","suspended","renegade","shotgun","long","landmine","zercher","pistol","sissy","jump","box","floor","guillotine","reverse","rear","front",
+  "pin","deficit","snatch","clean","hang","inner","kneeling","t","jefferson","cuban","drag","spider","zottman","concentration","cross","body","around","svend","tate","judo","iron","beltsquat","plyo","depth","clap","explosive","archer","diamond"]);
 /* Hiệu năng (QU-02): tách từ là chuỗi ~40 regex — nhớ kết quả theo tên (mỗi lần mở bài/giáo án gọi lại cho ~100 video) */
 const _fvTokCache = new Map();
 function fvTokens(name){
@@ -194,15 +202,77 @@ function fvTokensRaw(name){
   const words = s.split(/\s+/).filter(w=> w && !FV_STOP.has(w));
   return { core: words.filter(w=> !FV_EQUIP.includes(w)), equip: words.filter(w=> FV_EQUIP.includes(w)) };
 }
-function fvScore(target, cand){
-  if(cand.alias && cand.alias.length){ const low = String(target||"").toLowerCase(); if(cand.alias.some(a=> a && low.includes(a))) return 60; }
+/* 21/11/2026 — KHỚP CHẶT THEO THUỘC TÍNH (lỗi anh Thắng báo: "Kéo cáp cao một tay tư thế quỳ (Kneeling Single-Arm High Pulley Row)"
+   hiện clip Your Move "Seated Cable Row" — ngồi, 2 tay, kéo ngang). Trước đây "one/single/arm/high/low/seated" là từ bỏ qua và chỉ cần
+   "row" trùng là nhận. Giờ các thuộc tính sau phải KHỚP giữa tên bài và tên clip, không thì KHÔNG dùng clip (app hiện nút YouTube đúng tên bài):
+   · một bên (one-arm / single-leg / một tay / một chân) ↔ hai bên · tư thế quỳ / ngồi / nằm / đứng (khi cả hai có ghi; "quỳ" luôn phải khớp)
+   · ròng rọc cao / thấp · ghế dốc lên / dốc xuống · dây kháng lực · biến thể đặc thù (upright, T-bar, sled, renegade…) */
+function fvAttrs(text){
+  const s = " " + String(text || "").toLowerCase().replace(/[_\-,/()]+/g, " ").replace(/\s+/g, " ") + " ";
+  const a = {};
+  if(/\b(one|single) (arm|leg|hand)|\bone armed\b|\bunilateral\b|một tay|một chân| 1 tay | 1 chân |\bsingle\b/.test(s)) a.side = "uni";
+  if(/\bkneeling\b| quỳ /.test(s)) a.post = "kneel";
+  else if(/\b(seated|sitting)\b| ngồi /.test(s)) a.post = "seat";
+  else if(/\b(lying|laying|prone|supine)\b/.test(s)) a.post = "lie";
+  else if(/ nằm /.test(s)) a.post = "lie-vi";   // "Đẩy ngực nằm (Bench Press)": chỉ dùng để loại clip ngồi/đứng, không bắt clip phải ghi "lying"
+  else if(/\bstanding\b| đứng /.test(s)) a.post = "stand";
+  if(/high pulley|high cable|cáp cao|ròng rọc cao/.test(s)) a.pull = "high";
+  else if(/low pulley|low cable|cáp thấp|ròng rọc thấp/.test(s)) a.pull = "low";
+  if(/\bincline\b/.test(s)) a.ang = "inc"; else if(/\bdecline\b/.test(s)) a.ang = "dec";
+  if(/\bbands?\b|dây kháng lực/.test(s)) a.band = 1;
+  return a;
+}
+function fvAttrOk(target, candName){
+  const t = fvAttrs(target), c = fvAttrs(candName);
+  if((t.side === "uni") !== (c.side === "uni")) return false;
+  if(t.post === "kneel" || c.post === "kneel" || t.post === "lie"){ if(t.post !== c.post) return false; }   // quỳ / bài nằm: clip phải đúng tư thế
+  else if(t.post && c.post && t.post.slice(0, 3) !== c.post.slice(0, 3)) return false;
+  if(t.pull !== c.pull && (t.pull || c.pull)) return false;
+  if(t.ang !== c.ang && (t.ang || c.ang)) return false;
+  if(!!t.band !== !!c.band) return false;
+  return true;
+}
+/* alias tiếng Việt của clip: chỉ nhận khi là TRỌN tên bài (phần trước ngoặc) — không ăn theo chuỗi con ("Kéo tạ gập người" ≠ "Kéo tạ gập người một tay") */
+function fvAliasHit(target, aliases){
+  const low = String(target || "").toLowerCase().replace(/\s+/g, " ").trim();
+  const base = low.replace(/\s*\(.*$/, "").trim();
+  return aliases.some(a=> a && (a === low || a === base || (a.includes("(") && !a.endsWith(")") && low.startsWith(a))));
+}
+/* Phần tên tiếng Anh của bài ("Đẩy ngực nằm (Bench Press)" → "Bench Press"; tên toàn tiếng Anh → cả tên; tên chỉ tiếng Việt → "") */
+function fvEnPart(target){
+  const s = String(target || "").trim();
+  const ascii = x=> /^[\x20-\x7E]+$/.test(x) && /[A-Za-z]/.test(x);
+  const m = /\(([^()]*)\)/.exec(s);
+  if(m && ascii(m[1].trim())) return m[1].trim();
+  const base = s.replace(/\([^()]*\)/g, " ").replace(/\s+/g, " ").trim();
+  return ascii(base) ? base : "";
+}
+/* Từ "vô hại" được phép có thêm trong tên bài mà clip không ghi (kiểu tay nắm, phiên bản…). Từ khác thừa ra trong tên TIẾNG ANH
+   của bài = biến thể khác động tác (Car Deadlift, Ball Leg Curl, Bench Dips…) → không dùng clip. */
+const FV_HARMLESS = new Set(["medium","close","wide","narrow","grip","palms","palm","in","neutral","alternate","alternating","attachment","handle","weighted",
+  "version","chest","tricep","bicep","full","range","motion","regular","basic","traditional","flat","stance","heavy","light","free","dumbbell","barbell","cable","machine",
+  "kettlebell","smith","multipress","lever","leverage","plate","loaded","hammer","pronated","supinated","hands","hand","position","positions","bilateral","both",
+  "sitting","seated","standing","lying","laying","pulley","exercise","workout","movement","proper","form","on","parallel","olympic","straight"]);
+function fvExtraOk(target, c){
+  const en = fvEnPart(target); if(!en) return true;
+  const te = fvTokens(en).core, cAll = c.core.concat(c.equip);
+  return !te.some(w=> !FV_HARMLESS.has(w) && !cAll.some(x=> x === w || (w.length > 3 && x.includes(w)) || (x.length > 3 && w.includes(x))));
+}
+function fvScore(target, cand, opts){
+  if(!(opts && opts.noAlias) && cand.alias && cand.alias.length && fvAliasHit(target, cand.alias)) return 60;   // alias = chủ app gán tay cho TRỌN tên bài (chỉ bài của app)
+  if(!fvAttrOk(target, cand.name)) return 0;
   const t = fvTokens(target), c = fvTokens(cand.name);
   if(cand.equip && cand.equip !== "bodyweight" && !c.equip.includes(cand.equip)) c.equip.push(cand.equip);
   if(!c.core.length) return 0;
   const hits = c.core.filter(w=> t.core.includes(w)), hit = hits.length;
   if(hit < c.core.length) return 0;                 // mọi từ chính của video phải có trong tên bài
   const cAll = c.core.concat(c.equip);
-  if(t.core.some(w=> FV_MOD.has(w) && !cAll.includes(w))) return 0;   // bài có biến thể đặc thù (Front, Goblet, RDL…) → video phải đúng biến thể
+  if(t.core.some(w=> FV_MOD.has(w) && !cAll.some(x=> x === w || (w.length > 3 && x.includes(w))))) return 0;   // bài có biến thể đặc thù (Front, Goblet, RDL…) → video phải đúng biến thể
+  if(!fvExtraOk(target, c)) return 0;                                                  // 21/11: tên tiếng Anh của bài có từ chính mà clip không có → khác động tác
+  if(cand.equip === "bodyweight" && t.equip.some(e=> FV_WEIGHTED.includes(e))) return 0;   // clip tay không ↔ bài dùng máy/tạ (Mở hông MÁY ≠ nằm nâng chân)
+  const cEq = c.equip.concat(cand.equip ? [cand.equip] : []);
+  if(t.equip.some(e=> e === "smith" || e === "multipress") && !cEq.some(e=> e === "smith" || e === "multipress")) return 0;   // máy Smith ≠ máy/tạ khác
+  if(t.equip.includes("cable") && !t.equip.includes("machine") && !cEq.includes("cable")) return 0;                         // bài cáp → clip phải là cáp
   let s = 10 + hits.reduce((a,w)=> a + Math.min(w.length,12)/2, 0) - (t.core.length - hit)*0.5;   // từ ghép dài (gobletsquat) khớp → điểm cao hơn
   if(c.equip.length && t.equip.length){ if(!c.equip.some(e=> t.equip.includes(e))) return 0; s += 4; }   // khác dụng cụ → không dùng video
   return s;
@@ -232,7 +302,7 @@ function fvMatchName(meta){
 function fvBodyweightOnly(m){
   const eq = String(m && m.equipment || "");
   if(!eq) return false;
-  return /trọng lượng cơ thể|xà|thảm|ghế|bàn|^không$|body only/i.test(eq) && !FV_EQUIP_VI.some(([re])=> re.test(eq));
+  return /trọng lượng cơ thể|xà|thảm|ghế|bàn|^không$|không dụng cụ|body only/i.test(eq) && !FV_EQUIP_VI.some(([re])=> re.test(eq));
 }
 /* Tư thế (đứng / ngồi / nằm) — tên video wger ghi "Sitting/Standing/Laying"; bài của app ghi trong hướng dẫn */
 function fvPosture(text){
@@ -264,7 +334,7 @@ async function findFreeExerciseVideos(meta){
       if((exId && v.ids.includes(exId)) || (coreId && v.core.includes(coreId))) return { v, s: 1000 };
       return { v, s: fvSameName(target, v) ? 500 : 0 };
     }
-    let s = fvScore(target, v);
+    let s = fvScore(target, v, { noAlias: !coreId });
     if(s > 0 && bwOnly && s < 60){
       const ce = fvTokens(v.name).equip.concat(v.equip && v.equip !== "bodyweight" ? [v.equip] : []);
       if(ce.some(e=> FV_WEIGHTED.includes(e))) s = 0;

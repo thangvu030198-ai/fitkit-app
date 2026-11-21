@@ -51,24 +51,25 @@ const EX_YT = {
 };
 const YT_ID = /^[A-Za-z0-9_-]{11}$/;
 /* Bài Thư viện 800+ (free-exercise-db) cùng động tác + cùng dụng cụ với bài của app → dùng chung video đã kiểm */
+/* 21/11: bỏ alias khác tư thế / một-hai tay / dụng cụ (Seated Military ≠ Overhead Press đứng, Two-Dumbbell Row ≠ Single Arm Row, Split Squat ≠ Bulgarian…) → dùng video riêng của bài */
 const EXDB_ALIAS = {
   Barbell_Full_Squat:"squat", Barbell_Squat:"squat", Olympic_Squat:"squat", Barbell_Deadlift:"deadlift", Romanian_Deadlift:"rdl",
-  Barbell_Glute_Bridge:"glutebridge", Butt_Lift_Bridge:"glutebridge", Barbell_Hip_Thrust:"hipthrust", Smith_Machine_Hip_Raise:"hipthrust",
-  Barbell_Lunge:"lunges", Barbell_Walking_Lunge:"lunges", Bodyweight_Walking_Lunge:"lunges", Dumbbell_Lunges:"lunges", Dumbbell_Rear_Lunge:"lunges",
-  Barbell_Shoulder_Press:"overheadpress", Standing_Military_Press:"overheadpress", Seated_Barbell_Military_Press:"overheadpress",
-  Bent_Over_Barbell_Row:"bentoverrow", Bodyweight_Squat:"bwsquat", Cable_Crossover:"cablefly", Low_Cable_Crossover:"cablefly", Flat_Bench_Cable_Flyes:"cablefly",
-  Cable_Rope_Overhead_Triceps_Extension:"ohtriext", Triceps_Overhead_Extension_with_Rope:"ohtriext", Cable_Seated_Lateral_Raise:"cablelateral",
+  Butt_Lift_Bridge:"glutebridge", Barbell_Hip_Thrust:"hipthrust", Smith_Machine_Hip_Raise:"hipthrust",
+  Barbell_Lunge:"lunges", Barbell_Walking_Lunge:"lunges", Bodyweight_Walking_Lunge:"lunges", Dumbbell_Lunges:"lunges", 
+  Standing_Military_Press:"overheadpress", 
+  Bent_Over_Barbell_Row:"bentoverrow", Bodyweight_Squat:"bwsquat", Cable_Crossover:"cablefly", 
+  Cable_Rope_Overhead_Triceps_Extension:"ohtriext", Triceps_Overhead_Extension_with_Rope:"ohtriext", 
   Dumbbell_Bench_Press:"dbbench", Dumbbell_Incline_Row:"csrow", Dumbbell_Shoulder_Press:"dbpress", Seated_Dumbbell_Press:"dbpress", Face_Pull:"facepull",
   Front_Barbell_Squat:"frontsquat", Glute_Kickback:"kickback", Goblet_Squat:"gobletsquat", Hack_Squat:"hacksquat", Narrow_Stance_Hack_Squats:"hacksquat",
   Hammer_Curls:"hammercurl", Incline_Dumbbell_Press:"inclinedb", Leg_Press:"legpress", Narrow_Stance_Leg_Press:"legpress",
   Leverage_Chest_Press:"machinepress", Machine_Bench_Press:"machinepress", Lying_Leg_Curls:"legcurl", Machine_Preacher_Curls:"preacher", Preacher_Curl:"preacher",
-  Seated_Cable_Rows:"cablerow", Side_Lateral_Raise:"lateralraise", Seated_Side_Lateral_Raise:"lateralraise", Smith_Machine_Squat:"smithsquat",
-  Split_Squat_with_Dumbbells:"bulgarian", Standing_Calf_Raises:"calfraise", Standing_Barbell_Calf_Raise:"calfraise", Standing_Dumbbell_Calf_Raise:"calfraise",
+  Seated_Cable_Rows:"cablerow", Side_Lateral_Raise:"lateralraise", Smith_Machine_Squat:"smithsquat",
+  Standing_Calf_Raises:"calfraise", Standing_Barbell_Calf_Raise:"calfraise", Standing_Dumbbell_Calf_Raise:"calfraise",
   Smith_Machine_Calf_Raise:"calfraise", Thigh_Abductor:"abduction", Triceps_Pushdown:"tricepsdown", Ab_Crunch_Machine:"crunch", Crunches:"crunch",
-  Dumbbell_Bicep_Curl:"bicepcurl", Smith_Machine_Bench_Press:"benchpress", "Barbell_Bench_Press_-_Medium_Grip":"benchpress", Pullups:"pullup",
+  Dumbbell_Bicep_Curl:"bicepcurl", "Barbell_Bench_Press_-_Medium_Grip":"benchpress", Pullups:"pullup",
   Plank:"plank", Pushups:"pushup", Russian_Twist:"russiantwist", Hanging_Leg_Raise:"hangingleg", Dead_Bug:"deadbug", Mountain_Climbers:"mountainclimber",
   Farmers_Walk:"farmercarry", Kettlebell_Sumo_High_Pull:"", "Wide-Grip_Lat_Pulldown":"latpulldown", "Dips_-_Triceps_Version":"tricepdip",
-  Inverted_Row:"invertedrow", "Bent_Over_Two-Dumbbell_Row":"dbrow", "One-Arm_Dumbbell_Row":"dbrow", Skull_Crusher:"skullcrusher", "EZ-Bar_Skullcrusher":"skullcrusher",
+  Inverted_Row:"invertedrow", "One-Arm_Dumbbell_Row":"dbrow", Skull_Crusher:"skullcrusher", "EZ-Bar_Skullcrusher":"skullcrusher",
   Bench_Dips:"tricepdip", Leg_Extensions:"legext", Dumbbell_Step_Ups:"stepup", Butterfly:"pecdeck", "Straight-Arm_Dumbbell_Pullover":"pullover",
 };
 /* Video tìm tự động cho Thư viện 800+ (workflow media-yt-guides.yml → media/yt/index.json), nạp nền khi mở app */

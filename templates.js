@@ -450,12 +450,29 @@ async function refreshPlanVideos(force){
   try{
     if(!state || !state.plans || typeof findFreeExerciseVideos!=="function") return;
     const today = todayStr();
-    if(!force && state.videoRefreshAt === today) return;
+    if(!force && state.videoRefreshAt === today && state.videoMatchV === 2) return;
     /* integrator (FIX-core vòng 2 #5): mất mạng / index video chưa tải được → KHÔNG làm mới (không xoá video cũ, không đánh dấu "đã làm hôm nay")
        và không gọi lại index cho từng bài — lần sau (có mạng) chạy lại */
     if(typeof navigator !== "undefined" && navigator && navigator.onLine === false) return;
     if(typeof fvIndexesReady === "function" && !(await fvIndexesReady())) return;
     const cache = {};
+    /* 21/11/2026 — luật khớp video chặt hơn (một tay/hai tay, quỳ/ngồi, cao/thấp…): video hướng dẫn ĐÃ GẮN từ trước mà nay không còn
+       khớp bài (vd clip "Seated Cable Row" gắn cho "Kneeling Single-Arm High Pulley Row") → gỡ 1 lần, kể cả bài thư viện 800+. */
+    if(state.videoMatchV !== 2){
+      const GUIDE = ["YMove","wger","Pexels","Wikimedia Commons","FIT KIT","TapEasy","TapEasy 3D"], ok = {};   // "FIT KIT" = khoá provider cũ trong dữ liệu video
+      for(const plan of Object.values(state.plans)) for(const k of DAY_KEYS){
+        const d = plan.days && plan.days[k]; if(!d) continue;
+        for(const it of d.items||[]){
+          if(it.clipId || !it.stock || !GUIDE.includes(it.stock.provider)) continue;
+          const meta = it.exerciseId ? EXERCISES[it.exerciseId] : (it.custom ? { name: it.custom.name, equipment: it.custom.equipment, exDbId: it.custom.exDbId || null } : null);
+          if(!meta) continue;
+          const ck = it.exerciseId || ("c:" + meta.name + "|" + (meta.exDbId || ""));
+          if(!(ck in ok)) ok[ck] = (await findFreeExerciseVideos(meta)).map(v=> v.url);
+          if(!ok[ck].includes(it.stock.url)) delete it.stock;
+        }
+      }
+      state.videoMatchV = 2;
+    }
     for(const plan of Object.values(state.plans)){
       for(const k of DAY_KEYS){
         const d = plan.days && plan.days[k]; if(!d) continue;

@@ -131,9 +131,11 @@ module.exports = {
       }
       expectNone(bad, "mountVideoBlock(…, { name }) mất bộ lọc dụng cụ");
     }, { bug:"BUG-07", severity:"Trung bình" });
-    t.test("Số bài trong giáo án chưa có video hướng dẫn không tăng (hiện tại: invertedrow)", ()=>{
+    /* 21/11: luật khớp chặt — pecdeck (máy ép ngực ≠ clip cáp crossover), abduction (máy mở hông ≠ clip nằm nâng chân) KHÔNG còn gán clip sai;
+       2 bài này dùng video YouTube đã kiểm (guide-links.js EX_YT) */
+    t.test("Số bài trong giáo án chưa có clip hướng dẫn không tăng (hiện tại: invertedrow, pecdeck, abduction — có YouTube)", ()=>{
       const missing = ids.filter(id=> !results[id].length);
-      assert.ok(missing.length <= 1, "Thiếu video: " + missing.join(", "));
+      assert.ok(missing.every(id=> ["invertedrow","pecdeck","abduction"].includes(id)), "Thiếu video: " + missing.join(", "));
     });
     t.test("Mất mạng khi tải index: vẫn trả video YMove, không ném lỗi", async ()=>{
       const off = await t.app({ fixtures:{ "media/wger/index.json":"__offline__", "media/extra/index.json":"__404__" } });
@@ -153,9 +155,10 @@ module.exports = {
     }, { bug:"BUG-15", severity:"Thấp" });
     t.test("tplAttachVideos: gắn video cho mọi bài có video, stock đủ provider/url/license/duration", async ()=>{
       const res = JSON.parse(JSON.stringify(await app.ev(`(async()=>{ const p = tplToPlan(PROGRAM_TEMPLATES.find(x=>x.id==="tpl-m-ul")); const r = await tplAttachVideos(p); globalThis.__p = p; return r; })()`)));
-      assert.equal(res.total, 25); assert.equal(res.withVid, 25);
       const items = app.evj("Object.values(__p.days).flatMap(d=>d.items)");
-      const bad = items.filter(it=> !it.stock || !it.stock.url || !it.stock.provider || it.stock.license === undefined || !(it.stock.duration > 0)).map(it=> it.exerciseId);
+      const noClip = items.filter(it=> ["pecdeck","abduction"].includes(it.exerciseId)).length;   // 21/11: không còn clip sai cho 2 bài này
+      assert.equal(res.total, 25); assert.equal(res.withVid, 25 - noClip);
+      const bad = items.filter(it=> !["pecdeck","abduction"].includes(it.exerciseId)).filter(it=> !it.stock || !it.stock.url || !it.stock.provider || it.stock.license === undefined || !(it.stock.duration > 0)).map(it=> it.exerciseId);
       expectNone(bad, "Bài thiếu stock");
     });
     t.test("refreshPlanVideos: bỏ video Pixabay cũ không đúng bài, thay bằng video hướng dẫn; giữ video người dùng tự quay", async ()=>{

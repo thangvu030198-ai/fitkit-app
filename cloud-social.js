@@ -250,7 +250,7 @@ function writeExerciseResult(st, key, name, reps, sets, timed, date){
   const same = h.list.find(x=> x.date === date);
   const all = (same ? (same.sets||[]) : []).concat(sets);
   const best = Math.max(0, ...all.map(x=> _e1rm(x.kg, x.reps)));
-  const vol = all.reduce((a,x)=> a + (Number(x.kg)||0)*(Number(x.reps)||0), 0);
+  const vol = all.reduce((a,x)=> a + (typeof fkSetVol === "function" ? fkSetVol(x) : (Number(x.kg)||0)*(Number(x.reps)||0)), 0);
   h.list = h.list.filter(x=> x.date !== date);
   h.list.push({ date, e1rm: r1(best), top: Math.max(0, ...all.map(x=> Number(x.kg)||0)), vol: Math.round(vol), sets: all });
   h.list.sort((a,b)=> a.date < b.date ? -1 : 1);
@@ -283,7 +283,7 @@ function revertProxyLog(st, snap, sid){
         x.sets.forEach(([kg, reps])=>{ const i = rest.findIndex(s=> Number(s.kg) === kg && Number(s.reps) === reps); if(i >= 0){ rest.splice(i, 1); n++; } });
         if(!rest.length) h.list = h.list.filter(e=> e !== ent);
         else Object.assign(ent, { sets: rest, e1rm: r1(Math.max(0, ...rest.map(s=> _e1rm(s.kg, s.reps)))), top: Math.max(0, ...rest.map(s=> Number(s.kg)||0)),
-          vol: Math.round(rest.reduce((a,s)=> a + (Number(s.kg)||0)*(Number(s.reps)||0), 0)) });
+          vol: Math.round(rest.reduce((a,s)=> a + (typeof fkSetVol === "function" ? fkSetVol(s) : (Number(s.kg)||0)*(Number(s.reps)||0)), 0)) });
       }
     }
     const sl = st.setLog && st.setLog[x.key];
@@ -305,7 +305,7 @@ function applyProxyLog(st, sess, opts){
   log.exercises.forEach(e=>{
     const sets = proxySets(e);
     if(!sets.length) return;
-    done++; nsets += sets.length; vol += sets.reduce((a,s)=> a + s.kg*s.reps, 0);
+    done++; nsets += sets.length; vol += sets.reduce((a,s)=> a + (typeof fkSetVol === "function" ? fkSetVol(s) : (Number(s.kg)||0)*(Number(s.reps)||0)), 0);
     const key = proxyKey(e);
     const pr = writeExerciseResult(st, key, e.name || key, e.reps || "", sets, !!e.timed, date);
     if(pr) prs.push(pr);
@@ -323,7 +323,7 @@ function applyProxyLog(st, sess, opts){
       planId: null, planName: "Buổi với PT", title: tag.title, startedAt: log.startedAt || log.at || now(), endedAt: log.at || now(),
       dur: Math.round((Number(log.durationMin)||0)*60), volume: Math.round(vol), sets: nsets, completed: done, total: log.exercises.length,
       exercises: log.exercises.map(e=> ({ key: e.key || e.exerciseId || ("c:"+(e.name||"")), name: e.name, muscle: e.muscle || "", sets: (e.sets||[]).length, hard: (e.sets||[]).length, timed: !!e.timed,
-        vol: Math.round((e.sets||[]).reduce((a,s)=> a + (Number(s.kg)||0)*(Number(s.reps)||0), 0)), best: Math.round(Math.max(0, ...(e.sets||[]).map(s=> _e1rm(s.kg, s.reps)))) })),
+        vol: Math.round((e.sets||[]).reduce((a,s)=> a + (typeof fkSetVol === "function" ? fkSetVol(s) : (Number(s.kg)||0)*(Number(s.reps)||0)), 0)), best: Math.round(Math.max(0, ...(e.sets||[]).map(s=> _e1rm(s.kg, s.reps)))) })),
       prs: prs.map(p=> p.name), note: log.note ? `PT ${log.byName||""}: ${log.note}` : `Do PT ${log.byName||""} ghi thay` });
     st.trainingPro.log.sort((a,b)=> String(a.date).localeCompare(String(b.date)));
     if(st.trainingPro.log.length > 300) st.trainingPro.log = st.trainingPro.log.slice(-300);
@@ -855,7 +855,7 @@ const api = {
       sets: (e.sets||[]).filter(s=> s && (s.done || s.done === undefined)).map(s=>{ const o = { kg: Number(s.kg)||0, reps: Number(s.reps)||0 }; if(s.rpe) o.rpe = Number(s.rpe); return o; }) }))
       .filter(e=> e.sets.length);
     if(!exs.length) throw err("Chưa có hiệp nào được ghi.", "social/empty");
-    const vol = exs.reduce((a,e)=> a + e.sets.reduce((b,s)=> b + s.kg*s.reps, 0), 0);
+    const vol = exs.reduce((a,e)=> a + e.sets.reduce((b,s)=> b + (typeof fkSetVol === "function" ? fkSetVol(s) : (Number(s.kg)||0)*(Number(s.reps)||0)), 0), 0);
     const date = isDate(log.date) ? log.date : todayS();
     const proxyLog = clean({ v:1, by: u.uid, byName: u.name || "PT", at: now(), startedAt: log.startedAt || null, date, title: String(log.title || "Tập cùng PT").slice(0,80),
       exercises: exs, volume: Math.round(vol), sets: exs.reduce((a,e)=> a + e.sets.length, 0), durationMin: Math.max(0, Math.round(Number(log.durationMin)||0)), note: String(log.note||"").slice(0,500) });
