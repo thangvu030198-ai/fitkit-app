@@ -514,6 +514,10 @@
           <div class="left"><span class="material-symbols-rounded">view_agenda</span><div><div class="name">Chế độ gọn</div><div class="sub">Trang chủ chỉ giữ việc chính hôm nay · các mục khác vẫn ở Khám phá &amp; menu</div></div></div>
           <div class="toggle" id="fk-compact-toggle"></div>
         </div>
+        <div class="link-row" onclick="window.FKSport && FKSport.open()" style="cursor:pointer;">
+          <div class="left"><span class="material-symbols-rounded">sports</span><div><div class="name">Bộ môn</div><div class="sub">Fitness · Hyrox, Running, Cycling sắp ra mắt</div></div></div>
+          <span class="material-symbols-rounded">chevron_right</span>
+        </div>
       </div>
 
       <div class="card" id="profile-account-card"></div>
@@ -602,7 +606,8 @@
 <script src="plan-tools.js"></script>      <!-- 16/11: giữ & kéo đổi thứ tự bài tập + chọn dụng cụ (thanh đòn / tạ đơn / Smith / máy / cáp) -->
 <script src="food-scan.js"></script>       <!-- 16/11: chụp ảnh món ăn → AI ước lượng khẩu phần → app tính calo -->
 <script src="session-plus.js"></script>    <!-- 16/11: ghi buổi tập nâng cao — loại hiệp, "lần trước" từng hiệp, thêm/xoá hiệp, kỷ lục tức thì, đổi thứ tự bài -->
-<script src="session-focus.js"></script>   <!-- 18/11: thanh hiệp hiện tại ở đáy màn tập (−/+ kg, lần, XONG HIỆP) -->
+<script src="session-focus.js"></script>
+<script src="sport-picker.js"></script>   <!-- 21/11: chọn bộ môn khi vào app (Fitness · Coming soon: Hyrox, Running, Cycling) -->   <!-- 18/11: thanh hiệp hiện tại ở đáy màn tập (−/+ kg, lần, XONG HIỆP) -->
 <script src="session-live.js"></script>   <!-- 19/11: thẻ "Đang tập" im lặng ở màn hình khoá (Android) -->
 <script src="session-review.js"></script>   <!-- 19/11: sửa bài đã xong, Buổi hôm nay, sửa nhật ký đã lưu -->
 <script src="recovery.js"></script>   <!-- 19/11: bản đồ phục hồi cơ (màn Tập) -->
