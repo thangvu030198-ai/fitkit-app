@@ -154,7 +154,7 @@ function open(){
   tr.addEventListener("scroll", ()=>{ if(!raf) raf = requestAnimationFrame(paint); }, { passive:true });
   el.addEventListener("click", e=>{
     const t = e.target; if(!t || !t.closest) return;
-    if(t.closest("[data-fs-skip]")){ close(); return; }
+    if(t.closest("[data-fs-skip]")){ if(!store.get(KEY_SEL)) store.set(KEY_SEL, "fitness"); close(); return; }
     const it = t.closest("[data-fs-i]");
     if(it){ const i = Number(it.dataset.fsI); if(i !== idx) select(i, true); else if(SPORTS[i].ready) go(); return; }
     if(t.closest("[data-fs-go]")) go();
@@ -195,6 +195,7 @@ function ready(){
 }
 function auto(){
   if(store.sget(KEY_SEEN)) return;
+  if(store.get(KEY_SEL)) return;   // 21/11: đã chọn bộ môn trước đó → vào thẳng bộ môn đó (đổi ở menu ☰ → "Chọn bộ môn khác" hoặc Hồ sơ → Bộ môn)
   let tries = 0;
   const tick = ()=>{ if(store.sget(KEY_SEEN) || el) return; if(ready()) open(); else if(++tries < 600) setTimeout(tick, 500); };   // chờ tối đa ~5 phút (đang đăng nhập / onboarding)
   setTimeout(tick, 700);
