@@ -114,7 +114,7 @@ const cleanModel = m=>{ const s = str(m, 100); return /^[A-Za-z0-9][A-Za-z0-9._:
 const cleanKey = k=>{ const s = String(k == null ? "" : k).trim(); return s.length >= 8 && s.length <= 400 && /^[\x21-\x7e]+$/.test(s) ? s : ""; };
 const hostOf = b=>{ try{ return new URL(b).host; }catch(e){ return "?"; } };
 const uniq = arr=> arr.filter((m, i)=> m && arr.indexOf(m) === i);
-const CALL_MS = 45000, TOTAL_MS = 60000;   // client httpsCallable mặc định chờ 70 giây → tổng các lần thử ≤ 60 giây
+const CALL_MS = 75000, TOTAL_MS = 110000;   // 21/11: gemini-3.8-flash (model suy luận) đọc phiếu có thể >45 s → client chờ 130 s (cloud.js), hàm 150 s
 async function fetchT(f, url, opt, ms){
   const ctl = typeof AbortController === "function" ? new AbortController() : null;
   const t = ctl ? setTimeout(()=> ctl.abort(), ms) : null;
@@ -125,9 +125,16 @@ async function errText(res){ try{ return String(await res.text()).replace(/\s+/g
 async function callModel(images, prompt, o){
   const f = o.fetch || globalThis.fetch;
   const content = [{ type: "text", text: prompt }].concat(images.map(u=> ({ type: "image_url", image_url: { url: u } })));
-  const body = { model: o.model, temperature: 0, max_tokens: 2048, messages: [{ role: "user", content }] };
+  const body = { model: o.model, temperature: 0, max_tokens: 4096, messages: [{ role: "user", content }] };
+  /* 21/11: Gemini 3.x mặc định "suy nghĩ" lâu → quá thời gian chờ. Giảm suy luận khi gọi thẳng Google (lỗi 400 → bỏ tham số, thử lại) */
+  if(!o.noReason && /generativelanguage\.googleapis\.com/.test(o.base)) body.reasoning_effort = "low";
   const post = b=> fetchT(f, o.base + "/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + o.key }, body: JSON.stringify(b) }, o.timeoutMs || CALL_MS);
   let res = await post(o.noJsonFormat ? body : Object.assign({ response_format: { type: "json_object" } }, body));
+  if(body.reasoning_effort && res && res.status === 400){
+    logger.warn(`vision ${hostOf(o.base)} ${o.model}: 400 khi có reasoning_effort — ${await errText(res)} → thử lại không có`);
+    delete body.reasoning_effort; o.noReason = true;
+    res = await post(o.noJsonFormat ? body : Object.assign({ response_format: { type: "json_object" } }, body));
+  }
   if(!o.noJsonFormat && res && (res.status === 400 || res.status === 422)){
     logger.warn(`vision ${hostOf(o.base)} ${o.model}: ${res.status} khi có response_format — ${await errText(res)} → thử lại không response_format`);
     o.noJsonFormat = true;
@@ -202,7 +209,8 @@ function legacyProvider(){
   const key = String(value(VISION_API_KEY, "") || "").trim();
   /* 21/11: Google báo gemini-2.5-flash "no longer available to new users" (404) → luôn thử thêm model Gemini mới khi gọi thẳng Google */
   const base = cleanBase(value(VISION_API_BASE, "")), isGoogle = /generativelanguage\.googleapis\.com/.test(base);
-  const models = uniq([cleanModel(value(VISION_MODEL, ""))].concat(isGoogle ? GEMINI_FALLBACK : []));
+  const cfgM = cleanModel(value(VISION_MODEL, "")), oldM = /^gemini-(1\.|2\.0|2\.5-flash$)/.test(cfgM);
+  const models = uniq(isGoogle ? (oldM ? GEMINI_FALLBACK.concat([cfgM]) : [cfgM].concat(GEMINI_FALLBACK)) : [cfgM]);
   return key && key !== "unset" && base && models.length ? { key, base, models, label: "VISION_API" } : null;
 }
 async function sharedAi(db){
@@ -352,6 +360,6 @@ async function analyzeInbodyReportCore(request, deps){
   return { ok: true, result: cleanInbody(raw, nowMs), left };
 }
 
-exports.analyzeFoodPhoto = onCall({ region: REGION, secrets: [VISION_API_KEY], maxInstances: 5, timeoutSeconds: 90, memory: "256MiB", invoker: "public" }, request=> analyzeFoodPhotoCore(request));
-exports.analyzeInbodyReport = onCall({ region: REGION, secrets: [VISION_API_KEY], maxInstances: 5, timeoutSeconds: 90, memory: "256MiB", invoker: "public" }, request=> analyzeInbodyReportCore(request));
+exports.analyzeFoodPhoto = onCall({ region: REGION, secrets: [VISION_API_KEY], maxInstances: 5, timeoutSeconds: 150, memory: "256MiB", invoker: "public" }, request=> analyzeFoodPhotoCore(request));
+exports.analyzeInbodyReport = onCall({ region: REGION, secrets: [VISION_API_KEY], maxInstances: 5, timeoutSeconds: 150, memory: "256MiB", invoker: "public" }, request=> analyzeInbodyReportCore(request));
 exports._visionTest = { sharedAi, sharedRate, refundRate, runVision, callModel, cleanBase, cleanModel, legacyProvider, analyzeInbodyReportCore, buildInbodyPrompt, cleanInbody, analyzeFoodPhotoCore, buildPrompt, foodAccept, inbodyAccept, cleanResult, cleanCatalog, parseJson, REFS, DAILY_MAX, IMG_MAX_CHARS };

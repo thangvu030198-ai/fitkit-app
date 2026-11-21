@@ -309,7 +309,7 @@ const cloud = (() => {
   /* Cloud Functions (callable, asia-southeast1) — dùng chung: cloud.fn(name, data) */
   async function callFn(name, data){
     if(!firebase.functions) await loadScript(`https://www.gstatic.com/firebasejs/${FB_VERSION}/firebase-functions-compat.js`);
-    const res = await firebase.app().functions("asia-southeast1").httpsCallable(name)(data || {});
+    const res = await firebase.app().functions("asia-southeast1").httpsCallable(name, /^analyze(Food|Inbody)/.test(name) ? { timeout: 130000 } : undefined)(data || {});
     return res ? res.data : null;
   }
   /* Function chưa triển khai (chủ app chưa deploy) → mã not-found / unimplemented / internal (CORS) */
