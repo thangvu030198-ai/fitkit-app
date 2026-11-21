@@ -1913,7 +1913,87 @@ function finishSession(){
     </div>
   `);
   session = null;
+  fkSessClear();
 }
+/* ===== 21/11 (lỗi user báo: "tập xong, chuyển sang app khác, vào lại thì mất") =====
+   Buổi tập đang dở trước đây CHỈ nằm trong bộ nhớ (biến session) → iOS/Android đóng app chạy nền là mất toàn bộ hiệp đã ghi.
+   Giờ: lưu bản chụp buổi đang tập vào localStorage sau MỖI thao tác (gõ kg/lần, ✓ hiệp, chuyển bài), mỗi 3 giây, và ngay khi app
+   xuống nền (visibilitychange/pagehide/freeze). Mở lại app → khôi phục buổi + hỏi "Tiếp tục buổi tập". Xoá bản chụp khi kết thúc buổi. */
+const FK_SESS_KEY = "fk_active_session_v1", FK_SESS_TTL = 20 * 3600000;
+function fkSessSnapshot(){
+  try{
+    if(!session || session.finished) return false;
+    const copy = {}; Object.keys(session).forEach(k=>{ if(k !== "_awake") copy[k] = session[k]; });
+    localStorage.setItem(FK_SESS_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), s: copy }));
+    return true;
+  }catch(e){ return false; }
+}
+function fkSessClear(){ try{ localStorage.removeItem(FK_SESS_KEY); }catch(e){} }
+let _fkSessT = 0;
+function fkSessSoon(){ if(!session) return; clearTimeout(_fkSessT); _fkSessT = setTimeout(fkSessSnapshot, 250); }
+function fkSessRead(){
+  try{
+    const o = JSON.parse(localStorage.getItem(FK_SESS_KEY) || "null");
+    if(!o || o.v !== 1 || !o.s || typeof o.s !== "object" || !Array.isArray(o.s.items) || !o.s.items.length) return null;
+    if(!(Date.now() - Number(o.savedAt) < FK_SESS_TTL) || o.s.finished) return null;
+    o.s.idx = Math.max(0, Math.min(o.s.items.length - 1, Math.round(Number(o.s.idx)) || 0));
+    if(!Array.isArray(o.s.completed)) o.s.completed = [];
+    if(!o.s.sets || typeof o.s.sets !== "object" || Array.isArray(o.s.sets)) o.s.sets = {};
+    return o;
+  }catch(e){ return null; }
+}
+function fkSessCountDone(s){ let n = 0; try{ Object.values(s.sets || {}).forEach(rs=>{ if(Array.isArray(rs)) rs.forEach(r=>{ if(r && r.done) n++; }); }); }catch(e){} return n; }
+function fkSessRestore(){
+  try{
+    if(session || !state || !state.onboarded) return false;
+    const o = fkSessRead(); if(!o){ fkSessClear(); return false; }
+    session = o.s; session.paused = true; session._awake = false;
+    const name = (()=>{ try{ return getExerciseMeta(session.items[session.idx]).name; }catch(e){ return ""; } })();
+    const mins = Math.max(1, Math.round((Date.now() - Number(o.savedAt)) / 60000));
+    openSheet(`
+      <div style="text-align:center;padding:10px 0;">
+        <span class="material-symbols-rounded" style="font-size:46px;color:var(--primary);">restore</span>
+        <h3 style="margin-top:8px;">Buổi tập đang dở đã được giữ lại</h3>
+        <p class="small-note" style="margin-top:6px;">Bài ${session.idx + 1}/${session.items.length}${name ? " · " + escapeHtml(name) : ""} · ${fkSessCountDone(session)} hiệp đã ghi · lưu ${mins} phút trước</p>
+        <button class="btn btn-primary btn-block" style="margin-top:16px;" id="rs-go"><span class="material-symbols-rounded">play_arrow</span>Tiếp tục buổi tập</button>
+        <button class="btn btn-outline btn-block" style="margin-top:8px;" id="rs-end"><span class="material-symbols-rounded">flag</span>Kết thúc &amp; lưu vào nhật ký</button>
+        <button class="btn btn-ghost btn-block" style="margin-top:8px;color:var(--warn);" id="rs-drop">Bỏ buổi này</button>
+      </div>`);
+    $("#rs-go").addEventListener("click", ()=>{ if(!session) return; session.paused = false; renderSessionStep(); });
+    $("#rs-end").addEventListener("click", ()=>{
+      if(!session) return; session.paused = false;
+      /* bài đang dở có hiệp đã ✓ → lưu bài đó như bấm "Xong bài" rồi mới kết thúc buổi */
+      try{ const it = session.items[session.idx], rs0 = session.sets && it && session.sets[it.uid];
+        if(Array.isArray(rs0) && rs0.some(r=> r && r.done)){ renderSessionStep(); const b = $("#btn-session-done"); if(b && session) b.click(); } }catch(e){}
+      if(!session) return;
+      session.idx = session.items.length; renderSessionStep(); try{ fkRenderActive(); }catch(e){}
+    });
+    $("#rs-drop").addEventListener("click", ()=>{
+      confirmDialog("Bỏ buổi tập đang dở?", "Các hiệp chưa lưu của buổi này sẽ bị xoá.", ()=>{ session = null; fkSessClear(); try{ fkRenderActive(); }catch(e){} toast("Đã bỏ buổi tập", "delete"); }, "Bỏ buổi", "delete_forever");
+    });
+    return true;
+  }catch(e){ try{ console.warn("[session-restore]", e); }catch(_){} return false; }
+}
+try{
+  ["input", "change", "click"].forEach(ev=> document.addEventListener(ev, ()=>{ if(session) fkSessSoon(); }, true));
+  document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState === "hidden") fkSessSnapshot(); });
+  window.addEventListener("pagehide", fkSessSnapshot);
+  document.addEventListener("freeze", fkSessSnapshot);
+  setInterval(()=>{ if(session && !session.finished) fkSessSnapshot(); }, 3000);
+  window.fkSessRestore = fkSessRestore; window.fkSessSnapshot = fkSessSnapshot;
+}catch(e){}
+/* gọi sau khi app khởi động xong (pt.js finishBoot / init) — chờ các tấm khác (chọn bộ môn, đồng ý…) đóng rồi mới hỏi */
+let _fkSessRsOn = false;
+function fkSessRestoreSoon(){
+  if(_fkSessRsOn) return; _fkSessRsOn = true;
+  let tries = 0;
+  const rs = ()=>{ if(session){ _fkSessRsOn = false; return; } const bd = $("#sheet-backdrop"), au = $("#auth"), ob = $("#onboarding");
+    if(((bd && bd.classList.contains("open")) || (au && au.classList.contains("open")) || (ob && ob.classList.contains("open")) || document.querySelector("#fk-sport.on")) && tries++ < 60) return setTimeout(rs, 700);
+    _fkSessRsOn = false; fkSessRestore(); };
+  setTimeout(rs, 900);
+}
+try{
+}catch(e){}
 /* "Buổi < 3 phút" (QA-training §2.6, FIX-training §4.5): buổi chỉ được ghi vào nhật ký (workoutLog), finishedDates / chuỗi ngày tập
    (và vì thế XP, huy hiệu, nhật ký training-pro) khi kéo dài ≥ 3 phút HOẶC có ≥ 1 hiệp người tập tự ghi số lần
    (✓ từng hiệp hoặc nhập số lần). Bấm "Xong bài" liên tục rồi "Ghi nhận tất cả" (r._bulk) trong < 3 phút → không tính.
@@ -4312,6 +4392,8 @@ function init(){
   } else {
     recomputeProfile(); saveState();
     renderAll();
+    /* 21/11: khôi phục buổi tập đang dở (app bị hệ điều hành đóng khi chạy nền) — chờ các tấm khác (chọn bộ môn, thông báo) đóng */
+    fkSessRestoreSoon();
   }
 }
 // init() được gọi từ pt.js (appBoot) sau khi kiểm tra đăng nhập

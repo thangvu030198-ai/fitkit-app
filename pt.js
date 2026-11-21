@@ -458,6 +458,7 @@ function finishBoot(target){
   // QU-02: không renderAll() trước — goto() vẽ đúng màn đích 1 lần; các màn khác vẽ lười khi vào
   goto(target || "home");
   if(state._pendingJoin){ delete state._pendingJoin; saveState(); setTimeout(openJoinSheet, 300); }
+  try{ if(typeof fkSessRestoreSoon === "function") fkSessRestoreSoon(); }catch(e){}   /* 21/11: khôi phục buổi tập đang dở */
 }
 /* Gọi từ app.js khi onboarding lần đầu xong */
 function afterFirstOnboarding(){
