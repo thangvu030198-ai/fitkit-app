@@ -60,5 +60,41 @@ module.exports = {
       assert.equal(r.left, 5); assert.equal(r.result.smm, 33.1); assert.equal(r.result.bmr, null); assert.equal(r.result.date, "2026-11-10"); assert.equal(r.result.device, "InBody 570");
       assert.match(read("functions/vision.js"), /exports\.analyzeInbodyReport = onCall/);
     });
+
+    t.test("IB-05: chọn ảnh có sẵn (không capture) tách khỏi chụp camera (capture=environment); HEIC báo cách xử lý", ()=>{
+      const cam = app.ev(`(()=>{ const i = FKInbody.pick({ camera:true }); return i ? (i.getAttribute ? i.getAttribute("capture") : i.attributes.capture) : "none"; })()`);
+      assert.equal(cam, "environment");
+      const lib = app.ev(`(()=>{ const i = FKInbody.pick({ camera:false }); return i ? String(i.attributes.capture || "") + "|" + i.accept : "none"; })()`);
+      assert.equal(lib, "|image/*");
+      assert.equal(app.ev(`(()=>{ const i = FKInbody.pick({ type:"click" }); return String(i.attributes.capture || ""); })()`), "", "Event → thư viện");
+      assert.equal(app.ev(`FKInbody.isHeic({ type:"image/heic", name:"a.heic" })`), true);
+      assert.equal(app.ev(`FKInbody.isHeic({ type:"", name:"IMG_1.HEIF" })`), true);
+      assert.equal(app.ev(`FKInbody.isHeic({ type:"image/jpeg", name:"a.jpg" })`), false);
+      assert.ok(/Chụp phiếu/.test(app.ev(`FKInbody.HEIC_MSG`)) && /JPG/.test(app.ev(`FKInbody.HEIC_MSG`)));
+      const s = read("inbody-scan.js");
+      assert.ok(/btn-pick-inbody/.test(s) && /Chọn ảnh phiếu có sẵn/.test(s));
+    });
+    t.test("IB-06: thẻ Trang chủ — chưa có số liệu: lời mời + Chụp/Chọn ảnh; có số liệu: 3 chỉ số, mũi tên, sparkline, Xem chi tiết", ()=>{
+      const empty = app.ev(`FKInbody.homeHTML([])`);
+      assert.ok(/Theo dõi thành phần cơ thể/.test(empty) && /data-ibh="camera"/.test(empty) && /data-ibh="gallery"/.test(empty) && !/data-ibh="detail"/.test(empty));
+      const logs = `[{ ts:Date.UTC(2026,9,1), weight:74, bodyFatPct:20, muscleMassKg:32 }, { ts:Date.UTC(2026,10,1), weight:73, bodyFatPct:18, muscleMassKg:33 }]`;
+      const h = app.ev(`FKInbody.homeHTML(${logs})`);
+      assert.ok(/Cân nặng/.test(h) && /Cơ xương/.test(h) && /% mỡ/.test(h));
+      assert.ok(/ibh-d good[^>]*>.*arrow_upward/.test(h), "cơ tăng = tốt, mũi tên lên");
+      assert.ok(/arrow_downward/.test(h) && /<svg/.test(h) && /data-ibh="detail"/.test(h));
+    });
+    t.test("IB-07: chèn vào #home-content đúng 1 lần, vùng personal; vẽ lại khi dữ liệu đổi; Xem chi tiết mở tab InBody", ()=>{
+      app.ev(`state.inbodyLogs = []; renderHomeScreen()`);
+      const c1 = app.ev(`FKInbody.homeInject()`);
+      assert.ok(c1, "đã chèn");
+      assert.equal(app.ev(`FKInbody.homeInject() === FKInbody.homeInject()`), true, "không chèn trùng");
+      assert.equal(app.ev(`FKInbody.homeInject().getAttribute ? FKInbody.homeInject().attributes["data-home-zone"] : ""`), "personal");
+      assert.equal(app.ev(`[...document.getElementById("home-content").children].filter(n=> n.classList.contains("ibh-card")).length`), 1);
+      app.ev(`state.inbodyLogs = [{ id:"a", ts:Date.UTC(2026,9,1), weight:74, bodyFatPct:20, muscleMassKg:32 }, { id:"b", ts:Date.UTC(2026,10,1), weight:73, bodyFatPct:18, muscleMassKg:33 }]; FKInbody.homeRefresh()`);
+      assert.ok(/data-ibh="detail"/.test(app.ev(`FKInbody.homeInject().innerHTML`)));
+      app.ev(`FKInbody.openDetail()`);
+      assert.equal(app.ev(`progressUI.tab`), "inbody");
+      assert.ok(app.ev(`document.getElementById("screen-progress").classList.contains("active")`));
+    });
   }
 };

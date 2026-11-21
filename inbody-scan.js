@@ -7,7 +7,10 @@
    2. Form thêm số liệu có thêm 3 ô tuỳ chọn: Mỡ (kg), BMR (kcal), Điểm InBody.
    3. Thẻ "Thành phần cơ thể": so với lần đo trước (cơ ↑ tốt, mỡ ↓ tốt) + nhận xét ngắn + biểu đồ từng chỉ số.
    Ảnh phiếu không lưu trên máy chủ, không lưu trong app.
-   API: window.FKInbody = { clean, compare, verdict, metricSeries, chartSVG, scan, EXTRA }
+   4. (21/11) Chọn ảnh phiếu có sẵn trong thư viện: pick({ camera:false }) — không capture; pick({ camera:true }) mở camera.
+      Ảnh HEIC (iPhone) không đọc được → báo cách xử lý (chụp trực tiếp / lưu JPG).
+   5. (21/11) Thẻ "Thành phần cơ thể" trên Trang chủ (#home-content, data-home-zone="personal").
+   API: window.FKInbody = { clean, compare, verdict, metricSeries, chartSVG, scan, pick, homeHTML, homeInject, openDetail, EXTRA }
    ========================================================================= */
 (function(G){
 "use strict";
@@ -131,9 +134,12 @@ async function analyze(dataUrl){
   }
 }
 /* ảnh phiếu: chữ nhỏ → giữ 1600 px, nén tới khi ≤ 1,35 triệu ký tự */
+const isHeic = f=> !!f && (/image\/hei[cf]/i.test(String(f.type || "")) || /\.(heic|heif)$/i.test(String(f.name || "")));
+const HEIC_MSG = "Máy này chưa đọc được ảnh HEIC của iPhone. Cách xử lý: bấm \"Chụp phiếu\" để chụp trực tiếp trong app, hoặc lưu ảnh dạng JPG (iPhone: Cài đặt › Camera › Định dạng › \"Tương thích nhất\"; hoặc chụp màn hình ảnh phiếu) rồi chọn lại.";
+function heicErr(){ const e = new Error(HEIC_MSG); e.code = "heic"; return e; }
 function prepare(file){
   return new Promise((ok, no)=>{
-    if(!file || !/^image\//.test(file.type || "image/")) return no(new Error("Hãy chọn một tấm ảnh."));
+    if(!file || !(/^image\//.test(file.type || "image/") || isHeic(file))) return no(new Error("Hãy chọn một tấm ảnh (JPG, PNG…)."));
     const url = URL.createObjectURL(file), im = new Image();
     im.onload = ()=>{
       try{
@@ -145,7 +151,7 @@ function prepare(file){
         ok(u);
       }catch(e){ no(e); } finally { URL.revokeObjectURL(url); }
     };
-    im.onerror = ()=>{ URL.revokeObjectURL(url); no(new Error("Không đọc được ảnh này.")); };
+    im.onerror = ()=>{ URL.revokeObjectURL(url); no(isHeic(file) ? heicErr() : new Error("Không đọc được ảnh này. Thử chụp trực tiếp hoặc chọn ảnh JPG/PNG.")); };
     im.src = url;
   });
 }
@@ -203,10 +209,20 @@ function fill(res){
 /* ---------------------------------------------------------------------
    4. LUỒNG CHỤP
    --------------------------------------------------------------------- */
-function pick(){
-  const inp = D.createElement("input"); inp.type = "file"; inp.accept = "image/*"; inp.style.display = "none";
-  inp.addEventListener("change", ()=>{ const f = inp.files && inp.files[0]; inp.remove(); if(f) scan(f); });
-  D.body.appendChild(inp); inp.click();
+/* pick({ camera:true }) → mở camera sau (capture="environment"); pick({ camera:false }) / pick() → chọn ảnh có sẵn trong thư viện (KHÔNG capture).
+   Gắn thẳng làm trình nghe sự kiện cũng được (đối số Event bị bỏ qua → thư viện). */
+let lastCamera = false;
+function pick(opts){
+  const camera = !!(opts && typeof opts === "object" && opts.camera === true);
+  lastCamera = camera;
+  if(!D || !D.body) return null;
+  try{ if(D.querySelectorAll) D.querySelectorAll("input.ibx-file").forEach(n=>{ try{ n.remove(); }catch(_){} }); }catch(_){}
+  const inp = D.createElement("input"); inp.type = "file"; inp.accept = "image/*"; inp.className = "ibx-file"; inp.style.display = "none";
+  if(camera) inp.setAttribute("capture", "environment");
+  inp.addEventListener("change", ()=>{ const f = inp.files && inp.files[0]; try{ inp.remove(); }catch(_){} if(f) scan(f); });
+  D.body.appendChild(inp);
+  try{ inp.click(); }catch(_){}
+  return inp;
 }
 async function scan(file){
   if(typeof openSheet !== "function") return;
@@ -218,19 +234,23 @@ async function scan(file){
       openSheet(`<div class="sheet-header"><h3>Chưa đọc được phiếu</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
         <p class="small-note">Ảnh này không giống phiếu kết quả máy đo thành phần cơ thể, hoặc chữ quá mờ.</p>
         <ul class="ibx-tips"><li>Đặt phiếu phẳng, chụp thẳng, đủ sáng, không loá.</li><li>Chụp trọn phần bảng số (cân nặng, cơ, mỡ).</li></ul>
-        <div class="chip-row" style="margin-top:12px;"><button class="btn btn-primary btn-sm" data-ibx="again">Chụp lại</button><button class="btn btn-outline btn-sm" data-ibx="manual">Nhập tay</button></div>`);
+        <div class="chip-row" style="margin-top:12px;"><button class="btn btn-primary btn-sm" data-ibx="camera">Chụp lại</button><button class="btn btn-outline btn-sm" data-ibx="gallery">Chọn ảnh khác</button><button class="btn btn-outline btn-sm" data-ibx="manual">Nhập tay</button></div>`);
       bindRetry(); return;
     }
     openAddInbodyLog(); fill(res);
   }catch(e){
-    openSheet(`<div class="sheet-header"><h3>Không đọc được phiếu</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
+    const heic = !!(e && e.code === "heic");
+    openSheet(`<div class="sheet-header"><h3>${heic ? "Chưa mở được ảnh HEIC" : "Không đọc được phiếu"}</h3><button class="icon-btn" onclick="closeSheet()"><span class="material-symbols-rounded">close</span></button></div>
       <p class="small-note">${esc((e && e.message) || "Có lỗi khi gửi ảnh. Thử lại sau ít phút.")}</p>
-      <div class="chip-row" style="margin-top:12px;"><button class="btn btn-primary btn-sm" data-ibx="again">Thử lại</button><button class="btn btn-outline btn-sm" data-ibx="manual">Nhập tay</button></div>`);
+      <div class="chip-row" style="margin-top:12px;">${heic
+        ? `<button class="btn btn-primary btn-sm" data-ibx="camera">Chụp trực tiếp</button><button class="btn btn-outline btn-sm" data-ibx="gallery">Chọn ảnh khác</button>`
+        : `<button class="btn btn-primary btn-sm" data-ibx="again">Thử lại</button>`}<button class="btn btn-outline btn-sm" data-ibx="manual">Nhập tay</button></div>`);
     bindRetry();
   }
 }
 function bindRetry(){
-  D.querySelectorAll("#sheet-content [data-ibx]").forEach(b=> b.addEventListener("click", ()=>{ if(b.dataset.ibx === "again") pick(); else openAddInbodyLog(); }));
+  D.querySelectorAll("#sheet-content [data-ibx]").forEach(b=> b.addEventListener("click", ()=>{ const k = b.dataset.ibx;
+    if(k === "again") pick({ camera: lastCamera }); else if(k === "camera") pick({ camera:true }); else if(k === "gallery") pick({ camera:false }); else openAddInbodyLog(); }));
 }
 
 /* ---------------------------------------------------------------------
@@ -256,11 +276,20 @@ function compHTML(logs){
 function decorate(){
   const box = D.getElementById("progress-content"); const add = D.getElementById("btn-add-inbody"); const st = ST();
   if(!box || !add || !st) return;
-  if(!D.getElementById("btn-scan-inbody")){
+  injectCSS();
+  const host = add.parentNode;
+  const there = id=>{ const n = D.getElementById(id); return !!(n && n.parentNode); };
+  if(host && !there("btn-scan-inbody")){
     const b = D.createElement("button"); b.type = "button"; b.id = "btn-scan-inbody"; b.className = "btn btn-primary btn-block";
     b.style.margin = "10px 0 0"; b.innerHTML = `<span class="material-symbols-rounded">photo_camera</span>&nbsp;Chụp phiếu InBody — AI điền số`;
-    add.parentNode.insertBefore(b, add); add.style.marginTop = "8px";
-    b.addEventListener("click", pick);
+    host.insertBefore(b, add); add.style.marginTop = "8px";
+    b.addEventListener("click", ()=> pick({ camera:true }));
+  }
+  if(host && !there("btn-pick-inbody")){
+    const g = D.createElement("button"); g.type = "button"; g.id = "btn-pick-inbody"; g.className = "btn btn-outline btn-block ibx-pick";
+    g.style.margin = "8px 0 0"; g.innerHTML = `<span class="material-symbols-rounded">photo_library</span>&nbsp;Chọn ảnh phiếu có sẵn`;
+    host.insertBefore(g, add);
+    g.addEventListener("click", ()=> pick({ camera:false }));
   }
   const old = box.querySelector(".ibx-card"); if(old) old.remove();
   const html = compHTML(st.inbodyLogs); if(!html) return;
@@ -269,11 +298,121 @@ function decorate(){
   if(chartCard) chartCard.parentNode.insertBefore(card, chartCard); else add.parentNode.insertBefore(card, add.nextSibling);
   card.addEventListener("click", e=>{ const t = e.target.closest && e.target.closest("[data-ibm]"); if(!t) return; metric = t.dataset.ibm; decorate(); });
 }
+
+/* ---------------------------------------------------------------------
+   6. TRANG CHỦ: thẻ "Thành phần cơ thể" (data-home-zone="personal" → pt.js teHomeLayout xếp dưới thẻ chỉ số;
+      Chế độ gọn ẩn vùng này — chấp nhận). Bọc renderHomeScreen; vẽ lại khi lưu/xoá số đo.
+   --------------------------------------------------------------------- */
+const CSS = `
+.ibh-card{ color:var(--text); }
+.ibh-card .card-title{ display:flex; align-items:center; gap:6px; }
+.ibh-card .ibh-when{ margin-left:auto; font-size:12px; font-weight:600; color:var(--text-muted); }
+.ibh-row{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; margin-top:8px; }
+.ibh-cell{ min-width:0; padding:10px; border-radius:12px; background:var(--surface, rgba(255,255,255,.05)); border:1px solid var(--border, rgba(255,255,255,.08)); }
+.ibh-cell small{ display:block; font-size:12px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ibh-cell b{ display:block; font-size:18px; font-weight:800; color:var(--text); margin-top:2px; }
+.ibh-cell b i{ font-style:normal; font-size:12px; font-weight:600; color:var(--text-muted); margin-left:2px; }
+.ibh-d{ display:flex; align-items:center; gap:1px; font-style:normal; font-size:12px; font-weight:700; margin-top:2px; color:var(--text-muted); }
+.ibh-d .material-symbols-rounded{ font-size:16px; }
+.ibh-d.good{ color:var(--ibh-good, #5EE6C7); } .ibh-d.bad{ color:var(--ibh-bad, #FFB08A); }
+.ibh-spark{ display:flex; align-items:center; gap:10px; margin-top:10px; }
+.ibh-spark svg{ flex:1 1 auto; width:100%; height:36px; display:block; }
+.ibh-spark small{ flex:0 0 auto; font-size:12px; color:var(--text-muted); }
+.ibh-lead{ margin:4px 0 0; font-size:13.5px; line-height:1.45; color:var(--text-muted); }
+.ibh-acts{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.ibh-acts .btn{ flex:1 1 0; min-width:96px; min-height:44px; display:inline-flex; align-items:center; justify-content:center; gap:4px; white-space:nowrap; }
+.ibh-acts .material-symbols-rounded{ font-size:20px; }
+.btn.ibx-pick{ min-height:44px; }
+:root{ --ibh-good:#5EE6C7; --ibh-bad:#FFB08A; }
+html.fk-light{ --ibh-good:#0A7360; --ibh-bad:#A9390B; }
+`;
+function injectCSS(){
+  try{
+    if(!D || !D.head || (D.getElementById("ibx-css") && D.getElementById("ibx-css").parentNode)) return;
+    const st = D.createElement("style"); st.id = "ibx-css"; st.textContent = CSS; D.head.appendChild(st);
+  }catch(_){}
+}
+const dd2 = ts=>{ const d = new Date(ts); return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`; };
+/** sparkline nhỏ (không nhãn) — màu theo token accent của theme */
+function sparkSVG(series){
+  if(!series || series.length < 2) return "";
+  const W = 200, H = 36, P = 4, vs = series.map(p=> p.v), lo = Math.min(...vs), hi = Math.max(...vs), rg = (hi - lo) || 1;
+  const x = i=> P + i * (W - 2 * P) / (series.length - 1), y = v=> H - P - (v - lo) / rg * (H - 2 * P);
+  const pts = series.map((p, i)=> `${x(i).toFixed(1)},${y(p.v).toFixed(1)}`).join(" "), L = series.length - 1;
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true" focusable="false"><polyline points="${pts}" fill="none" style="stroke:var(--accent, var(--mint, #5EE6C7))" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="${x(L).toFixed(1)}" cy="${y(series[L].v).toFixed(1)}" r="3" style="fill:var(--accent, var(--mint, #5EE6C7))"/></svg>`;
+}
+const ACTS = `<button type="button" class="btn btn-primary btn-sm" data-ibh="camera"><span class="material-symbols-rounded">photo_camera</span>Chụp phiếu</button>
+  <button type="button" class="btn btn-outline btn-sm" data-ibh="gallery"><span class="material-symbols-rounded">photo_library</span>Chọn ảnh</button>`;
+/** HTML bên trong thẻ trang chủ (rỗng/đã có số liệu) */
+function homeHTML(logs){
+  const cmp = compare(logs);
+  const title = `<div class="card-title"><span class="material-symbols-rounded">monitor_weight</span>Thành phần cơ thể`;
+  if(!cmp || !cmp.rows.length){
+    return `${title}</div>
+      <p class="ibh-lead">Theo dõi thành phần cơ thể — chụp phiếu InBody, AI tự điền số.</p>
+      <div class="ibh-acts">${ACTS}</div>`;
+  }
+  const pick3 = ["weight", "muscle", "pbf"].map(k=> cmp.rows.find(r=> r.k === k) || { k, label: (METRICS.find(m=> m.k === k) || {}).label, v:null, d:null, tone:"flat", unit: k === "pbf" ? "%" : "kg" });
+  const LAB = { weight:"Cân nặng", muscle:"Cơ xương", pbf:"% mỡ" };
+  const delta = r=>{
+    if(r.d == null) return `<em class="ibh-d flat">—</em>`;
+    const ic = r.d > 0 ? "arrow_upward" : r.d < 0 ? "arrow_downward" : "remove";
+    const word = r.tone === "good" ? "tốt" : r.tone === "bad" ? "chưa tốt" : "";
+    return `<em class="ibh-d ${r.tone}" aria-label="${r.d > 0 ? "tăng" : r.d < 0 ? "giảm" : "không đổi"} ${esc(vn(Math.abs(r.d)))} ${esc(r.unit)}${word ? ", " + word : ""}"><span class="material-symbols-rounded" aria-hidden="true">${ic}</span>${r.d > 0 ? "+" : ""}${esc(vn(r.d))}</em>`;
+  };
+  const sk = metricSeries(logs, "muscle").length >= 2 ? "muscle" : "weight";
+  const ser = metricSeries(logs, sk).slice(-8);
+  const sp = sparkSVG(ser);
+  return `${title}<span class="ibh-when">Đo ${esc(dd2(cmp.last.ts))} · ${cmp.n} lần</span></div>
+    <div class="ibh-row">${pick3.map(r=> `<div class="ibh-cell"><small>${esc(LAB[r.k])}</small><b>${r.v == null ? "--" : esc(vn(r.v))}<i>${esc(r.unit)}</i></b>${r.v == null ? "" : delta(r)}</div>`).join("")}</div>
+    ${sp ? `<div class="ibh-spark">${sp}<small>${esc(LAB[sk])} · ${ser.length} lần gần nhất</small></div>` : `<p class="ibh-lead">Đo thêm lần nữa (cách 3–4 tuần) để thấy thay đổi.</p>`}
+    <div class="ibh-acts">${ACTS}<button type="button" class="btn btn-soft btn-sm" data-ibh="detail"><span class="material-symbols-rounded">insights</span>Xem chi tiết</button></div>`;
+}
+/** mở màn Tiến độ ở tab "Chỉ số InBody" */
+function openDetail(){
+  try{ if(typeof progressUI !== "undefined" && progressUI) progressUI.tab = "inbody"; }catch(_){}
+  try{ if(typeof goto === "function") goto("progress"); }catch(e){ try{ console.warn("[inbody] goto", e); }catch(_){} }
+  try{ if(typeof progressUI !== "undefined" && progressUI && progressUI.tab !== "inbody"){ progressUI.tab = "inbody"; if(typeof renderProgressScreen === "function") renderProgressScreen(); } }catch(_){}
+}
+let homeCard = null;
+const inHome = el=>{ try{ return !!(homeCard && el && homeCard.parentNode === el && Array.prototype.indexOf.call(el.children || [], homeCard) >= 0); }catch(_){ return false; } };
+function onHomeClick(e){
+  const t = e && e.target && e.target.closest ? e.target.closest("[data-ibh]") : null;
+  const k = t && (t.getAttribute ? t.getAttribute("data-ibh") : (t.dataset || {}).ibh);
+  if(!k) return;
+  if(k === "camera") pick({ camera:true }); else if(k === "gallery") pick({ camera:false }); else if(k === "detail") openDetail();
+}
+/** chèn / vẽ lại thẻ trên #home-content (không chèn trùng) */
+function homeInject(){
+  if(!D) return null;
+  const el = D.getElementById("home-content"), st = ST();
+  if(!el || !st) return null;
+  if(st.onboarded === false) return null;
+  injectCSS();
+  try{ if(el.querySelectorAll) el.querySelectorAll(".ibh-card").forEach(n=>{ if(n !== homeCard) try{ n.remove(); }catch(_){} }); }catch(_){}
+  const html = homeHTML(st.inbodyLogs);
+  if(inHome(el)){
+    if(homeCard.__ibh !== html){ homeCard.innerHTML = html; homeCard.__ibh = html; }
+    return homeCard;
+  }
+  const card = D.createElement("section");
+  card.className = "card ibh-card";
+  card.setAttribute("data-home-zone", "personal");
+  card.setAttribute("aria-label", "Thành phần cơ thể");
+  card.innerHTML = html; card.__ibh = html;
+  card.addEventListener("click", onHomeClick);
+  el.appendChild(card);
+  homeCard = card;
+  try{ if(typeof teHomeLayout === "function") teHomeLayout(); }catch(_){}
+  return card;
+}
+/** vẽ lại thẻ trang chủ nếu đang có (dữ liệu đổi) */
+function homeRefresh(){ try{ if(D && inHome(D.getElementById("home-content"))) homeInject(); }catch(e){ try{ console.warn("[inbody] home", e); }catch(_){} } }
 function install(){
   let ok = false;
   if(typeof renderProgressInbodyTab === "function" && !renderProgressInbodyTab.__ibx){
     const _r = renderProgressInbodyTab;
-    renderProgressInbodyTab = function(){ const out = _r.apply(this, arguments); try{ decorate(); }catch(e){ try{ console.warn("[inbody]", e); }catch(_){} } return out; };
+    renderProgressInbodyTab = function(){ const out = _r.apply(this, arguments); try{ decorate(); }catch(e){ try{ console.warn("[inbody]", e); }catch(_){} } homeRefresh(); return out; };
     renderProgressInbodyTab.__ibx = true; ok = true;
   }
   if(typeof openAddInbodyLog === "function" && !openAddInbodyLog.__ibx){
@@ -281,8 +420,15 @@ function install(){
     openAddInbodyLog = function(){ pendingDevice = ""; const out = _o.apply(this, arguments); try{ injectExtra(); }catch(e){} return out; };
     openAddInbodyLog.__ibx = true;
   }
+  if(typeof renderHomeScreen === "function" && !renderHomeScreen.__ibx){
+    const _h = renderHomeScreen;
+    renderHomeScreen = function(){ const out = _h.apply(this, arguments); try{ homeInject(); }catch(e){ try{ console.warn("[inbody] home", e); }catch(_){} } return out; };
+    renderHomeScreen.__ibx = true;
+    try{ if(D && D.getElementById("home-content") && D.getElementById("home-content").children && D.getElementById("home-content").children.length) homeInject(); }catch(_){}
+  }
   return ok;
 }
-G.FKInbody = { clean, compare, verdict, metricSeries, chartSVG, fatKg, scan, pick, decorate, EXTRA, PROMPT, demoResult, install };
+G.FKInbody = { clean, compare, verdict, metricSeries, chartSVG, fatKg, scan, pick, decorate, EXTRA, PROMPT, demoResult, install,
+  homeHTML, homeInject, homeRefresh, openDetail, sparkSVG, isHeic, HEIC_MSG };
 if(!install() && D) D.addEventListener("DOMContentLoaded", install, { once: true });
 })(typeof window !== "undefined" ? window : globalThis);

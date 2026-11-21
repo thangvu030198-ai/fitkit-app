@@ -61,7 +61,11 @@ function clean(raw){
       method: Object.prototype.hasOwnProperty.call(METHODS, it.method) ? it.method : "khac", conf: num(it.conf, 0, 1, .5) };
   }).filter(it=> it.grams > 0);
   const oil = Math.round(num(o.oil_g, 0, 120, 0)), q = o.quality && typeof o.quality === "object" ? o.quality : {};
-  return { is_food: o.is_food !== false && items.length > 0, dish: str(o.dish, 60), items, oil_g: oil,
+  const dish = str(o.dish, 60), rawN = Array.isArray(o.items) ? o.items.length : 0;
+  /* 21/11: tách 2 trường hợp "không dùng được": not_food = AI nói KHÔNG phải đồ ăn · no_items = AI thấy món (có tên món / có dòng thành phần)
+     nhưng không tách được thành phần nào có gam > 0 → báo khác ("chụp gần hơn / thêm ghi chú tên món") */
+  const noItems = o.is_food !== false && items.length === 0 && (!!dish || rawN > 0);
+  return { is_food: o.is_food !== false && items.length > 0, no_items: noItems, dish, items, oil_g: oil,
     oil_low: Math.round(num(o.oil_low, 0, 120, oil * .5)), oil_high: Math.round(num(o.oil_high, 0, 160, Math.max(oil * 1.6, oil + 5))),
     sauce_note: str(o.sauce_note, 120), ref_used: str(o.ref_used, 60),
     quality: { top_down: q.top_down !== false, blur: q.blur === true, dark: q.dark === true, cropped: q.cropped === true },
@@ -203,7 +207,8 @@ function addIcons(){
       straighten:"r:2,8,20,8,1.5|M6 8v3|M10 8v4|M14 8v3|M18 8v4",
       edit_note:"M4 6h10|M4 11h7|M4 16h5|M14 20l1-4 6-6 3 3-6 6z",
       add_a_photo:"M4 8h3l2-3h5l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z|c:12,13,3.5|M19 2v4|M17 4h4",
-      block:"c:12,12,9|M5.6 5.6l12.8 12.8", credit_card:"r:2,5,20,14,2.5|M2 10h20|M6 15h4", back_hand:"M8 13V5.5a1.5 1.5 0 0 1 3 0V11|M11 10V4.5a1.5 1.5 0 0 1 3 0V11|M14 10.5V6a1.5 1.5 0 0 1 3 0v8a7 7 0 0 1-7 7h-.5a6 6 0 0 1-5-2.7L3 15.5a1.6 1.6 0 0 1 2.6-1.8L8 16",
+      no_photography:"M4 8h3l2-3h5l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z|c:12,13,3.5|M3 3l18 18",
+      block:"c:12,12,9|M5.6 5.6l12.8 12.8",credit_card:"r:2,5,20,14,2.5|M2 10h20|M6 15h4", back_hand:"M8 13V5.5a1.5 1.5 0 0 1 3 0V11|M11 10V4.5a1.5 1.5 0 0 1 3 0V11|M14 10.5V6a1.5 1.5 0 0 1 3 0v8a7 7 0 0 1-7 7h-.5a6 6 0 0 1-5-2.7L3 15.5a1.6 1.6 0 0 1 2.6-1.8L8 16",
     };
     Object.keys(add).forEach(k=>{ if(!FK_LINE[k]) FK_LINE[k] = add[k]; });
   }catch(e){}
@@ -239,8 +244,22 @@ function css(){
 
 .fk-scan-stage{ position:absolute; inset:0; overflow:hidden; }
 .fk-scan-hero{ position:absolute; left:0; right:0; top:0; height:calc(100% - var(--sh, 45%) + 40px); background:radial-gradient(70% 55% at 70% 32%, rgba(var(--accent-rgb, 51,214,201),.55), rgba(var(--cta-rgb, 255,122,69),.18) 55%, transparent 80%), rgb(var(--navy-rgb, 6,26,36)); transition:opacity .4s ease, transform .6s cubic-bezier(.22,1,.36,1); }
-.fk-scan-hero img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:saturate(1.08) contrast(1.02); }
-.fk-scan-hero::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(25,10,4,.42), rgba(25,10,4,0) 26%, rgba(25,10,4,0) 52%, rgba(25,10,4,.66)); }
+/* 21/11: hero = CAMERA TRỰC TIẾP (video phủ kín, nằm dưới khung quét/chip). Chưa có camera → nền gradient tối + dòng gợi ý (không dùng ảnh mẫu món
+   để người dùng không tưởng ảnh mẫu là camera). Video giữ kích thước thật trong DOM (iOS cần >0) — chỉ ẩn bằng opacity. */
+.fk-scan-hero video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; background:#000; opacity:0; transition:opacity .35s ease; }
+#fk-scan.cam-on .fk-scan-hero{ background:#000; }
+#fk-scan.cam-on .fk-scan-hero video{ opacity:1; }
+.fk-scan-hero::after{ content:""; position:absolute; inset:0; z-index:1; pointer-events:none; background:linear-gradient(180deg, rgba(25,10,4,.42), rgba(25,10,4,0) 26%, rgba(25,10,4,0) 52%, rgba(25,10,4,.66)); }
+.fk-scan-nocam{ position:absolute; z-index:2; left:14%; right:14%; top:calc(env(safe-area-inset-top, 0px) + 78px); bottom:158px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; color:#fff; pointer-events:none; }
+#fk-scan.cam-on .fk-scan-nocam{ display:none; }
+.fk-scan-nocam .i{ width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18); }
+.fk-scan-nocam .i .material-symbols-rounded{ font-size:24px; }
+.fk-scan-nocam b{ font-size:13px; font-weight:500; line-height:1.4; color:rgba(255,255,255,.86); max-width:260px; text-shadow:0 1px 6px rgba(0,0,0,.5); }
+#fk-scan.cam-wait .fk-scan-nocam .i{ animation:fk-scan-breath 1.6s ease-in-out infinite; }
+.fk-scan-camon{ pointer-events:auto; min-height:40px; padding:0 16px; border-radius:20px; border:1px solid rgba(255,255,255,.3); background:rgba(20,12,8,.46); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); color:#fff; font:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+.fk-scan-flash{ position:absolute; inset:0; z-index:9; background:#fff; opacity:0; pointer-events:none; }
+.fk-scan-flash.go{ animation:fk-scan-flash .38s ease-out; }
+@keyframes fk-scan-flash{ 0%{ opacity:.8; } 100%{ opacity:0; } }
 #fk-scan.busy .fk-scan-hero, #fk-scan.done .fk-scan-hero{ opacity:0; }
 .fk-scan-photo{ position:absolute; object-fit:cover; border-radius:0; will-change:transform, top, left, width, height; display:none; }
 #fk-scan.busy .fk-scan-photo, #fk-scan.done .fk-scan-photo{ display:block; }
@@ -390,7 +409,8 @@ html.fk-light #fk-scan .fk-scan-warn{ background:#FFF4D6; border-color:rgba(176,
 html.fk-light #fk-scan .fk-scan-intro, html.fk-light #fk-scan .fk-scan-card{ box-shadow:0 -14px 40px rgba(6,26,36,.22); }
 html.fk-light .fk-scan-entry{ border-color:rgba(20,35,43,.12); }
 @media (prefers-reduced-motion: reduce){
-  .fk-scan-line{ animation:none; top:45%; } #fk-scan .fk-scan-frame .c{ animation:none; }
+  .fk-scan-line{ animation:none; top:45%; } #fk-scan .fk-scan-frame .c{ animation:none; } #fk-scan.cam-wait .fk-scan-nocam .i{ animation:none; }
+  @keyframes fk-scan-flash{ 0%{ opacity:.35; } 100%{ opacity:0; } }
   .fk-scan-card, .fk-scan-intro, .fk-scan-photo.fly, .fk-scan-frame{ transition:none; }
   .anim .fk-scan-ring .seg, .anim .fk-scan-mac > div, .anim .fk-scan-row{ animation:none; } }`;
   D.head.appendChild(st);
@@ -402,14 +422,100 @@ const INTRO_TIPS = [
   ["fullscreen", "var(--fs-f, #FF7A45)", "Thấy đủ cả đĩa", "Đừng cắt mất mép đĩa, bát — tách món riêng nếu được."],
   ["straighten", "var(--fs-c, #A3F0E8)", "Thêm vật tham chiếu", "Đũa, muỗng hay thẻ ATM giúp AI đo khẩu phần sát hơn."],
 ];
-/** Ảnh nền màn hướng dẫn: ảnh món của app (nếu đã tải chỉ mục ảnh), không có → nền cam ấm */
-function heroSrc(){
-  try{
-    if(typeof FOOD_IMG === "undefined" || !FOOD_IMG) return "";
-    const base = typeof FOOD_IMG_BASE !== "undefined" ? FOOD_IMG_BASE : "";
-    for(const id of ["com-tam-suon", "bun-cha-suat", "pho-bo-to", "com-ga", "banh-mi"]){ const h = FOOD_IMG[id]; if(h && h.file) return (h.base || base) + h.file; }
-  }catch(e){}
-  return "";
+/* ---------------------------------------------------------------------
+   CAMERA TRỰC TIẾP (21/11): màn hướng dẫn hiện camera sau đang quay thay cho ảnh mẫu món ăn.
+   - Chỉ xin quyền khi người dùng MỞ overlay. Không có camera (từ chối quyền / không hỗ trợ / không phải https / máy không có camera)
+     → nền gradient tối + dòng gợi ý; nút "Chụp ảnh" quay về cách cũ: mở input file capture (#fk-scan-f1).
+   - Dừng stream khi: đóng overlay, chụp xong, trang bị ẩn, mở "Ảnh có sẵn". Bật lại khi quay về màn hướng dẫn ("Chụp lại").
+   --------------------------------------------------------------------- */
+const CAM = { stream:null, seq:0, pending:false, denied:false, reason:"" };
+const NAV = ()=>{ try{ return G.navigator || (typeof navigator !== "undefined" ? navigator : null); }catch(e){ return null; } };
+function camSupported(){
+  const n = NAV();
+  if(!n || !n.mediaDevices || typeof n.mediaDevices.getUserMedia !== "function") return false;
+  try{ if(G.isSecureContext === false) return false; }catch(e){}
+  return true;
+}
+/** Camera có khả năng dùng được (để "Chụp lại" bật camera trong app thay vì mở camera hệ thống) */
+function camUsable(){ return camSupported() && !CAM.denied && CAM.reason !== "none"; }
+function camLive(){ const s = CAM.stream; return !!(s && s.getVideoTracks && s.getVideoTracks().some(t=> t.readyState === "live")); }
+function camHint(el, state, text, btn){
+  el.classList.remove("cam-wait", "cam-on", "cam-off"); el.classList.add("cam-" + state);
+  const h = el.querySelector(".fk-scan-nocam"); if(!h) return;
+  h.innerHTML = state === "on" ? "" : `<span class="i">${ic(state === "wait" ? "photo_camera" : "no_photography")}</span><b>${esc(text)}</b>${btn ? `<button type="button" class="fk-scan-camon" data-cam="on">${esc(btn)}</button>` : ""}`;
+}
+function camStop(){
+  CAM.seq++; CAM.pending = false;
+  const s = CAM.stream; CAM.stream = null;
+  try{ if(s && s.getTracks) s.getTracks().forEach(t=>{ try{ t.stop(); }catch(e){} }); }catch(e){}
+  const el = D && D.getElementById("fk-scan"), v = el && el.querySelector(".fk-scan-hero video");
+  if(v){ try{ v.pause(); }catch(e){} try{ v.srcObject = null; }catch(e){} }
+  if(el && !el.classList.contains("cam-off")) camHint(el, "off", "Camera đang tạm dừng", "Bật camera");      // giữ nguyên lời nhắc lỗi (từ chối quyền / không có camera)
+}
+/** force = người dùng bấm "Bật camera" (cho phép hỏi lại quyền dù trước đó bị từ chối) */
+async function camStart(el, force){
+  if(!el || !D) return false;
+  const sess = S;
+  if(!sess || sess.closed || sess.busy || !el.classList.contains("intro")) return false;
+  if(camLive()){ camHint(el, "on"); return true; }
+  if(!camSupported()){
+    CAM.reason = "unsupported";
+    camHint(el, "off", "Trình duyệt này chưa cho xem camera trực tiếp — bấm “Chụp ảnh” để mở camera của máy");
+    return false;
+  }
+  if(CAM.denied && !force){ camHint(el, "off", "Cho phép camera để xem trực tiếp", "Bật camera"); return false; }
+  const my = ++CAM.seq; CAM.pending = true;
+  camHint(el, "wait", "Đang mở camera…");
+  const md = NAV().mediaDevices;
+  const full = { video:{ facingMode:{ ideal:"environment" }, width:{ ideal:1920 }, height:{ ideal:1080 } }, audio:false };
+  let stream = null, err = null;
+  try{ stream = await md.getUserMedia(full); }
+  catch(e){
+    err = e; const n = String(e && e.name || "");
+    if(!/NotAllowedError|SecurityError|PermissionDenied/.test(n)){            // Overconstrained / NotReadable / Abort / NotFound (một số máy báo nhầm) → thử lại constraints đơn giản
+      try{ stream = await md.getUserMedia({ video:true, audio:false }); err = null; }catch(e2){ err = e2; }
+    }
+  }
+  const alive = my === CAM.seq && S === sess && !sess.closed && !sess.busy && el.isConnected && el.classList.contains("intro") && !(D.hidden);
+  if(!alive){ try{ stream && stream.getTracks().forEach(t=> t.stop()); }catch(e){} if(my === CAM.seq) CAM.pending = false; return false; }
+  CAM.pending = false;
+  if(!stream){
+    const n = String(err && err.name || "");
+    if(/NotAllowedError|SecurityError|PermissionDenied/.test(n)){ CAM.denied = true; CAM.reason = "denied"; camHint(el, "off", "Cho phép camera để xem trực tiếp", "Bật camera"); }
+    else if(/NotFoundError|DevicesNotFound|OverconstrainedError/.test(n)){ CAM.reason = "none"; camHint(el, "off", "Không tìm thấy camera — bấm “Chụp ảnh” hoặc chọn ảnh có sẵn"); }
+    else { CAM.reason = "error"; camHint(el, "off", "Chưa mở được camera (có thể app khác đang dùng)", "Thử lại"); }
+    return false;
+  }
+  CAM.denied = false; CAM.reason = ""; CAM.stream = stream;
+  const v = el.querySelector(".fk-scan-hero video");
+  if(!v){ camStop(); return false; }
+  v.muted = true; v.setAttribute("muted", ""); v.setAttribute("playsinline", ""); v.setAttribute("webkit-playsinline", ""); v.autoplay = true;
+  try{ v.srcObject = stream; }catch(e){ camStop(); camHint(el, "off", "Trình duyệt này chưa cho xem camera trực tiếp — bấm “Chụp ảnh” để mở camera của máy"); CAM.reason = "unsupported"; return false; }
+  const on = ()=>{ if(CAM.stream === stream && v.videoWidth) camHint(el, "on"); };
+  v.onloadedmetadata = on; v.onplaying = on;
+  try{ const p = v.play(); if(p && p.catch) p.catch(()=>{}); }catch(e){}                   // iOS: play() SAU khi gán srcObject; video phải muted + playsinline
+  stream.getVideoTracks().forEach(t=>{ t.onended = ()=>{ if(CAM.stream === stream){ CAM.stream = null; if(el.isConnected && el.classList.contains("intro")) camHint(el, "off", "Camera đã ngắt", "Bật camera"); } }; });
+  return true;
+}
+/** Chụp khung hình hiện tại của video (kích thước thật) → File JPEG. null nếu không chụp được */
+function camGrab(){
+  return new Promise(ok=>{
+    try{
+      const el = D.getElementById("fk-scan"), v = el && el.querySelector(".fk-scan-hero video");
+      if(!v || !camLive() || !v.videoWidth || !v.videoHeight) return ok(null);
+      const cv = D.createElement("canvas"); cv.width = v.videoWidth; cv.height = v.videoHeight;
+      cv.getContext("2d").drawImage(v, 0, 0, cv.width, cv.height);
+      try{ v.pause(); }catch(e){}                                              // đứng hình ngay khung vừa chụp
+      const wrap = b=>{ if(!b || !b.size) return ok(null); const name = "tapeasy-" + Date.now() + ".jpg";
+        try{ ok(new File([b], name, { type:"image/jpeg", lastModified: Date.now() })); }catch(e){ try{ b.name = name; }catch(e2){} ok(b); } };
+      if(cv.toBlob) cv.toBlob(wrap, "image/jpeg", .92);
+      else { const u = cv.toDataURL("image/jpeg", .92), bin = atob(u.split(",")[1]), a = new Uint8Array(bin.length); for(let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); wrap(new Blob([a], { type:"image/jpeg" })); }
+    }catch(e){ ok(null); }
+  });
+}
+function flash(el){
+  const f = el.querySelector(".fk-scan-flash"); if(!f) return;
+  f.classList.remove("go"); void f.offsetWidth; f.classList.add("go");
 }
 function setStep(el, n){ el.querySelectorAll(".fk-scan-dash i").forEach((d, i)=> d.classList.toggle("on", i === n)); }
 
@@ -424,12 +530,28 @@ function open(mealId){
   el.querySelector(".fk-scan-refs").addEventListener("click", ev=>{ const b = ev.target.closest("[data-ref]"); if(!b) return; sess.ref = b.dataset.ref; haptic("light"); paintRefs(); });
   const f1 = el.querySelector("#fk-scan-f1"), f2 = el.querySelector("#fk-scan-f2");
   const pick = f=>{ if(sess.busy || sess.closed) return; try{ D.activeElement && D.activeElement.blur && D.activeElement.blur(); }catch(e){} f.value = ""; f.click(); };   // reset trước → chọn lại CÙNG một ảnh vẫn chạy
-  el.querySelector("#fk-scan-cam").addEventListener("click", ()=> pick(f1));
-  el.querySelector("#fk-scan-lib").addEventListener("click", ()=> pick(f2));
-  el.querySelector(".fk-scan-pill").addEventListener("click", ()=> pick(f2));
+  /* "Chụp ảnh": camera trực tiếp đang chạy → chụp ngay khung hình hiện tại; chưa có camera → mở camera hệ thống như cũ (input capture) */
+  const shoot = async ()=>{
+    if(sess.busy || sess.closed || sess.snapping) return;
+    if(!camLive()){ camStop(); pick(f1); return; }                             // đang mở dở / không có camera → camera hệ thống (vẫn trong cú chạm)
+    sess.snapping = true; flash(el); haptic("medium");
+    const file = await camGrab();
+    sess.snapping = false;
+    if(sess.closed) return;
+    if(!file){ camStop(); pick(f1); return; }
+    camStop(); sess.note = el.querySelector("#fk-scan-note").value; run(file);
+  };
+  const lib = ()=>{ if(sess.busy || sess.closed) return; camStop(); pick(f2); };
+  el.querySelector("#fk-scan-cam").addEventListener("click", shoot);
+  el.querySelector("#fk-scan-lib").addEventListener("click", lib);
+  el.querySelector(".fk-scan-pill").addEventListener("click", lib);
   el.querySelector("#fk-scan-note").addEventListener("keydown", ev=>{ if(ev.key === "Enter"){ ev.preventDefault(); ev.target.blur(); } });
-  const onFile = e=>{ const f = e.target.files && e.target.files[0]; e.target.value = ""; if(!f || sess.busy || sess.closed) return; sess.note = el.querySelector("#fk-scan-note").value; run(f); };
+  const onFile = e=>{ const f = e.target.files && e.target.files[0]; e.target.value = ""; if(!f || sess.busy || sess.closed){ if(!f) resume(); return; } camStop(); sess.note = el.querySelector("#fk-scan-note").value; run(f); };
+  const resume = ()=>{ if(!sess.busy && !sess.closed && el.classList.contains("intro") && camUsable()) camStart(el); };   // huỷ chọn ảnh → bật lại camera
   f1.addEventListener("change", onFile); f2.addEventListener("change", onFile);
+  f1.addEventListener("cancel", resume); f2.addEventListener("cancel", resume);
+  CAM.denied = false; CAM.reason = "";                                      // mỗi lần mở overlay thử lại 1 lần (người dùng có thể đã bật quyền trong Cài đặt)
+  camStart(el);                                                             // chỉ xin quyền camera khi người dùng đã mở overlay
 }
 /** Quay về màn hướng dẫn trong CÙNG overlay (giữ vật tham chiếu + ghi chú) — dùng cho "Chụp lại" / "Chọn ảnh khác" */
 function backToIntro(el, sess, then){
@@ -438,7 +560,15 @@ function backToIntro(el, sess, then){
   el.classList.remove("busy", "done"); el.classList.add("intro"); setStep(el, 0);
   const im = el.querySelector(".fk-scan-photo"); if(im){ im.classList.remove("fly"); im.removeAttribute("src"); im.style.display = "none"; }
   const card = el.querySelector(".fk-scan-card"); if(card) card.classList.remove("on");
-  if(then === "cam"){ const f = el.querySelector("#fk-scan-f1"); if(f){ f.value = ""; f.click(); } }          // vẫn trong cú chạm của người dùng → trình duyệt cho mở camera
+  /* "Chụp lại": có camera trực tiếp → bật lại khung ngắm; không có → mở camera hệ thống (vẫn trong cú chạm của người dùng → trình duyệt cho mở) */
+  if(then === "cam" && !camUsable()){ const f = el.querySelector("#fk-scan-f1"); if(f){ f.value = ""; f.click(); } }
+  else camStart(el);
+}
+/** Kết quả AI không dùng được: phân biệt "không phải đồ ăn" với "thấy món nhưng chưa tách được thành phần" */
+function noFoodText(res){
+  return res && res.no_items
+    ? `AI chưa tách được thành phần${res.dish ? ` của “${res.dish}”` : ""}, thử chụp gần hơn hoặc thêm ghi chú tên món.`
+    : "AI không thấy món ăn trong ảnh này. Hãy chụp gần hơn, đủ sáng và để món ăn nằm giữa khung hình.";
 }
 /** Lỗi → câu tiếng Việt nói rõ cần làm gì */
 function errText(e){
@@ -455,11 +585,11 @@ function errText(e){
 }
 
 function overlay(){
-  let el = D.getElementById("fk-scan"); if(el){ try{ el._fkOff && el._fkOff(); }catch(e){} el.remove(); }
-  const hero = heroSrc();
-  el = D.createElement("div"); el.id = "fk-scan"; el.className = "intro"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Chụp ảnh tính calo");
+  let el = D.getElementById("fk-scan"); if(el){ camStop(); try{ el._fkOff && el._fkOff(); }catch(e){} el.remove(); }
+  el = D.createElement("div"); el.id = "fk-scan"; el.className = "intro cam-wait"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Chụp ảnh tính calo");
   el.innerHTML = `<div class="fk-scan-stage">
-      <div class="fk-scan-hero">${hero ? `<img src="${esc(hero)}" alt="" onerror="this.remove()">` : ""}</div>
+      <div class="fk-scan-hero"><video autoplay muted playsinline webkit-playsinline disablepictureinpicture aria-label="Camera trực tiếp"></video><div class="fk-scan-nocam" aria-live="polite"></div></div>
+      <div class="fk-scan-flash" aria-hidden="true"></div>
       <img class="fk-scan-photo" alt=""><div class="fk-scan-veil"></div>
       <div class="fk-scan-frame" aria-hidden="true"><i class="dots"></i><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i></div>
       <div class="fk-scan-line"></div>
@@ -480,7 +610,12 @@ function overlay(){
   D.body.appendChild(el);
   el.querySelector(".fk-scan-x").addEventListener("click", close);
   const onKey = ev=>{ if(ev.key === "Escape" && D.getElementById("fk-scan") === el){ ev.preventDefault(); close(); } };
-  D.addEventListener("keydown", onKey); el._fkOff = ()=> D.removeEventListener("keydown", onKey);
+  /* trang bị ẩn (về màn hình chính, khoá máy, đổi tab) → tắt camera; quay lại mà vẫn ở màn hướng dẫn → bật lại */
+  const onVis = ()=>{ if(D.getElementById("fk-scan") !== el) return; if(D.hidden) camStop(); else if(el.classList.contains("intro") && !CAM.denied && CAM.reason !== "none" && CAM.reason !== "unsupported") camStart(el); };
+  const onHide = ()=>{ if(D.getElementById("fk-scan") === el) camStop(); };
+  D.addEventListener("keydown", onKey); D.addEventListener("visibilitychange", onVis); G.addEventListener && G.addEventListener("pagehide", onHide);
+  el._fkOff = ()=>{ D.removeEventListener("keydown", onKey); D.removeEventListener("visibilitychange", onVis); try{ G.removeEventListener && G.removeEventListener("pagehide", onHide); }catch(e){} };
+  el.querySelector(".fk-scan-nocam").addEventListener("click", ev=>{ if(ev.target.closest("[data-cam]")){ haptic("light"); camStart(el, true); } });
   el._fkFocus = D.activeElement;                                            // trả focus về nút đã mở khi đóng
   setTimeout(()=>{ try{ el.querySelector(".fk-scan-x").focus({ preventScroll:true }); }catch(e){} }, 60);
   const sh = ()=>{ const it = el.querySelector(".fk-scan-intro"); if(it && it.offsetHeight) el.style.setProperty("--sh", it.offsetHeight + "px"); };
@@ -489,7 +624,7 @@ function overlay(){
   return el;
 }
 function close(){
-  const el = D.getElementById("fk-scan"); S = S && Object.assign(S, { closed:true }); if(!el) return;
+  const el = D && D.getElementById("fk-scan"); S = S && Object.assign(S, { closed:true }); camStop(); if(!el) return;
   try{ el._fkOff && el._fkOff(); }catch(e){}
   el.classList.remove("on"); setTimeout(()=>{ try{ el.remove(); }catch(e){} }, 260);
   try{ const f = el._fkFocus; if(f && f.isConnected && f.focus) f.focus({ preventScroll:true }); }catch(e){}
@@ -549,7 +684,7 @@ async function run(file){
     }
     clearInterval(tick); sess.busy = false; if(sess.closed) return;
     if(!res.is_food){
-      ask(`<p>AI không thấy món ăn trong ảnh này. Hãy chụp gần hơn, đủ sáng và để món ăn nằm giữa khung hình.</p><div class="fk-scan-acts"><button type="button" class="fk-scan-btn sec" data-a="pick">Chọn ảnh khác</button><button type="button" class="fk-scan-btn pri" data-a="r">Chụp lại</button></div>`);
+      ask(`<p>${esc(noFoodText(res))}</p><div class="fk-scan-acts"><button type="button" class="fk-scan-btn sec" data-a="pick">Chọn ảnh khác</button><button type="button" class="fk-scan-btn pri" data-a="r">Chụp lại</button></div>`);
       return;
     }
     try{ showResult(el, sess, res); }
@@ -648,7 +783,8 @@ function showResult(el, sess, res){
         el.classList.remove("done"); el.classList.add("busy"); setStep(el, 1);
         el.querySelector("#fk-scan-st").textContent = "Đang phân tích lại với 2 ảnh…"; el.querySelector("#fk-scan-st2").textContent = "";
         let why = "AI không nhận ra món ăn trong ảnh thứ hai";
-        try{ const r2 = await analyze(sess.shots.map(s=> s.dataUrl), sess.ref, sess.note); sess.busy = false; if(sess.closed) return; if(r2.is_food){ showResult(el, sess, r2); return; } }
+        try{ const r2 = await analyze(sess.shots.map(s=> s.dataUrl), sess.ref, sess.note); sess.busy = false; if(sess.closed) return; if(r2.is_food){ showResult(el, sess, r2); return; }
+          if(r2.no_items) why = "AI chưa tách được thành phần với 2 ảnh"; }
         catch(err){ why = errText(err).t.replace(/\s*Bấm .*$/, ""); }
         sess.busy = false;
         if(!sess.closed){ say("Chưa phân tích lại được — giữ kết quả cũ. " + why, "info"); sess.shots.pop(); reveal(false); } };

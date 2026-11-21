@@ -101,6 +101,28 @@ module.exports = {
       assert.equal(S.clean({ is_food:true, items:[] }).is_food, false); assert.equal(S.clean(null).is_food, false);
       assert.equal(S.clean({ items:[{ name:"x", grams:99999, kcal100:5000 }] }).items[0].grams, 2000);
     });
+    t.test("SCAN-04: tách 'không phải đồ ăn' và 'có món nhưng chưa tách được thành phần'", ()=>{
+      const S = loadScan();
+      const notFood = S.clean({ is_food:false, dish:"", items:[] }); assert.equal(notFood.is_food, false); assert.equal(notFood.no_items, false);
+      const noItems = S.clean({ is_food:true, dish:"Bún bò", items:[] }); assert.equal(noItems.is_food, false); assert.equal(noItems.no_items, true);
+      assert.equal(S.clean({ is_food:true, dish:"", items:[{ name:"x", grams:0 }] }).no_items, true, "có dòng thành phần nhưng gam = 0 → chưa tách được");
+      assert.equal(S.clean({ is_food:false, dish:"Bàn phím", items:[] }).no_items, false);
+      assert.equal(S.clean(null).no_items, false);
+      const src = read("food-scan.js");
+      assert.match(src, /AI chưa tách được thành phần/); assert.match(src, /AI không thấy món ăn trong ảnh này/);
+    });
+    t.test("SCAN-05: camera trực tiếp ở màn hướng dẫn — getUserMedia có dự phòng, chụp khung hình, dừng stream, an toàn khi thiếu API", ()=>{
+      const src = read("food-scan.js");
+      assert.match(src, /getUserMedia\(\{ video:true, audio:false \}\)/, "thử lại constraints đơn giản");
+      assert.match(src, /facingMode:\{ ideal:"environment" \}/);
+      assert.match(src, /<video autoplay muted playsinline/);
+      assert.match(src, /toBlob\(wrap, "image\/jpeg", \.92\)/);
+      assert.match(src, /visibilitychange/); assert.match(src, /t\.stop\(\)/);
+      assert.ok(!/heroSrc\(|FOOD_IMG\[/.test(src), "không còn dùng ảnh mẫu món làm nền khung quét");
+      assert.match(src, /capture="environment" id="fk-scan-f1"/, "không có camera → vẫn mở input capture như cũ");
+      // nạp module khi KHÔNG có navigator/mediaDevices/document → không lỗi
+      const S = loadScan(); assert.equal(typeof S.open, "function"); assert.doesNotThrow(()=> S.close());
+    });
     t.test("SCAN-02: kiểm ảnh tối / mờ ngay trên máy; chọn bữa theo giờ; lời nhắc có thước đo + danh mục", ()=>{
       const S = loadScan(), w = 40, h = 40, mk = fn=>{ const px = new Uint8ClampedArray(w * h * 4); for(let i = 0; i < w * h; i++){ const v = fn(i % w, (i / w) | 0); px[i*4] = px[i*4+1] = px[i*4+2] = v; px[i*4+3] = 255; } return px; };
       assert.equal(S.quality(mk(()=> 20), w, h).dark, true);

@@ -49,13 +49,14 @@ function buildPrompt(ref, note, catalog, nImg){
 THƯỚC ĐO: ${REFS[ref] || REFS.none}
 
 CÁCH LÀM (bắt buộc theo thứ tự):
+0. Ảnh có BẤT KỲ thức ăn hoặc đồ uống nào (kể cả món nước, bát canh, nước dùng, ly sinh tố, món ăn dở, ảnh hơi mờ) → is_food = true và PHẢI liệt kê ít nhất 1 thành phần trong items. Ví dụ bát phở bò → bánh phở, thịt bò, nước dùng, hành/rau thơm; bát bún chả → bún, chả/thịt nướng, nước chấm, rau sống.
 1. Xác định từng THÀNH PHẦN riêng (cơm, thịt, cá, trứng, rau, bún/phở, nước dùng…). Món trộn/món nước phải tách thành nguyên liệu chính.
 2. Với mỗi thành phần: ước lượng diện tích và độ dày theo thước đo → thể tích → khối lượng ăn được (gam, đã nấu chín, bỏ xương/vỏ).
 3. Cho khoảng tin cậy low–high (gam). Ảnh mờ, bị che, chụp nghiêng hoặc không có thước đo thì khoảng phải RỘNG hơn.
 4. Lưu ý sai lệch đã biết: mô hình thường đoán THIẾU khi phần ăn lớn hoặc chất đống — hãy kiểm tra lại độ cao của phần cơm/mì.
 5. Dầu mỡ, nước sốt thấm vào món KHÔNG nhìn thấy rõ: ước lượng riêng ở oil_g (gam dầu/mỡ thêm khi chiên, xào, rán, kho) dựa trên độ bóng, cách nấu và lượng món. Món luộc/hấp: oil_g = 0.
 6. Chọn "id" trong DANH MỤC bên dưới nếu thành phần khớp (cùng loại thực phẩm, cùng trạng thái chín). Không khớp chắc chắn → id = null và tự điền kcal100/p100/c100/f100 (trên 100 g ăn được).
-7. Không phải ảnh đồ ăn/đồ uống → is_food = false và items rỗng.
+7. CHỈ khi ảnh hoàn toàn KHÔNG có đồ ăn/đồ uống (phong cảnh, người, đồ vật…) → is_food = false và items rỗng. Phân vân → coi là món ăn.
 
 DANH MỤC (id = tên):
 ${cat || "(trống)"}
@@ -93,7 +94,10 @@ function parseJson(text){
    Sao chép (không require ./aicoach để tránh kéo ./admin vào hàm đọc ảnh): cleanBase/cleanModel/fetchT y như aicoach.
    - baseUrl có thể đã gồm "/chat/completions" hoặc "/models" → bỏ đi rồi mới ghép "/chat/completions".
    - Thử response_format json_object; nhà cung cấp trả 400/422 → gọi lại KHÔNG kèm (parseJson tự tách JSON trong chữ).
-   - Thứ tự thử: visionModel → model → fallback (cấu hình chung) → VISION_API_BASE/VISION_MODEL cũ (nếu còn secret VISION_API_KEY).
+   - Thứ tự thử (21/11 sửa lỗi "AI không thấy món ăn" với bát phở): visionModel (Admin đặt) → VISION_API_BASE/VISION_MODEL cũ (Gemini, nếu còn
+     secret VISION_API_KEY) → model → fallback (cấu hình chung). Model chat không đọc được ảnh vẫn trả 200 + JSON {"is_food":false} →
+     kết quả ÂM TÍNH (món: is_food=false/items rỗng sau clean; InBody: is_report=false/không có số) được coi là "chưa đạt" → thử model kế tiếp;
+     chỉ khi mọi model đều âm tính mới trả kết quả âm tính (ưu tiên kết quả của Gemini/VISION_API).
    - Log: tên host + model + mã lỗi + ≤ 200 ký tự nội dung lỗi. KHÔNG BAO GIỜ log khoá. */
 function cleanBase(u){
   let s = str(u, 200).replace(/\/+$/, "").replace(/\/chat\/completions$/i, "").replace(/\/models$/i, "").replace(/\/+$/, "");
@@ -136,27 +140,42 @@ async function callModel(images, prompt, o){
   if(!text.trim()){ const fr = j && j.choices && j.choices[0] && j.choices[0].finish_reason; throw new Error("model trả rỗng" + (fr ? " (finish_reason " + fr + ")" : "")); }
   return parseJson(text);
 }
-/** Thử lần lượt các nhà cung cấp/model. providers = [{ key, base, models:[…], label }]. Trả { raw, model, host }. */
-async function runVision(images, prompt, providers, deps, tag){
+/** Thử lần lượt các nhà cung cấp/model. providers = [{ key, base, models:[…], label }].
+    accept(raw) → false = kết quả âm tính (model không thấy món/phiếu) → thử model kế tiếp; hết model → trả kết quả âm tính
+    (ưu tiên của VISION_API/Gemini, không có thì của model cuối). Trả { raw, model, host, negative }. */
+async function runVision(images, prompt, providers, deps, tag, accept){
   const t0 = Date.now(), now = ()=> Date.now() - t0, tried = [];
-  for(const p of providers){
-    const o = { key: p.key, base: p.base, fetch: deps.fetch };
+  const deadKeys = new Set(), noRf = new Set();   // khoá+gốc bị 401/403 · gốc không nhận response_format (dùng chung giữa các mục cùng nhà cung cấp)
+  let neg = null;
+  outer: for(const p of providers){
+    const pk = p.base + "\n" + p.key;
+    if(deadKeys.has(pk)) continue;
     for(const m of p.models){
       const left = TOTAL_MS - now();
-      if(left < 8000){ tried.push("hết thời gian"); break; }
+      if(left < 8000){ tried.push("hết thời gian"); break outer; }
+      const o = { key: p.key, base: p.base, fetch: deps.fetch, model: m, timeoutMs: Math.min(CALL_MS, left), noJsonFormat: noRf.has(pk) };
       try{
-        const raw = await callModel(images, prompt, Object.assign(o, { model: m, timeoutMs: Math.min(CALL_MS, left) }));
-        if(tried.length) logger.info(`${tag}: thành công với ${p.label} ${hostOf(p.base)} ${m} sau ${tried.length} lần lỗi`);
-        return { raw, model: m, host: hostOf(p.base) };
+        const raw = await callModel(images, prompt, o);
+        if(o.noJsonFormat) noRf.add(pk);
+        if(accept && !accept(raw)){
+          const info = typeof accept.info === "function" ? accept.info(raw) : "";
+          logger.warn(`${tag} ${p.label} ${hostOf(p.base)} ${m}: kết quả âm tính${info ? " (" + info + ")" : ""} → thử model kế tiếp`);
+          tried.push(`${p.label} ${hostOf(p.base)} ${m}: âm tính`);
+          if(!neg || neg.label !== "VISION_API" || p.label === "VISION_API") neg = { raw, model: m, host: hostOf(p.base), label: p.label };
+          continue;
+        }
+        if(tried.length) logger.info(`${tag}: thành công với ${p.label} ${hostOf(p.base)} ${m} sau ${tried.length} lần chưa đạt`);
+        return { raw, model: m, host: hostOf(p.base), negative: false };
       }catch(e){
+        if(o.noJsonFormat) noRf.add(pk);
         const msg = e && e.name === "AbortError" ? "quá thời gian chờ" : String(e && e.message || e).slice(0, 260);
         tried.push(`${p.label} ${hostOf(p.base)} ${m}: ${msg}`);
         logger.warn(`${tag} ${p.label} ${hostOf(p.base)} ${m}: ${msg}`);
-        if(e && (e.status === 401 || e.status === 403)) break;   // khoá sai / không có quyền → bỏ qua các model còn lại của nhà cung cấp này
+        if(e && (e.status === 401 || e.status === 403)){ deadKeys.add(pk); break; }   // khoá sai / không có quyền → bỏ qua các model còn lại của khoá này
       }
     }
-    if(TOTAL_MS - now() < 8000) break;
   }
+  if(neg){ logger.warn(`${tag}: mọi model đều âm tính/lỗi → trả kết quả âm tính của ${neg.label} ${neg.host} ${neg.model}`); return { raw: neg.raw, model: neg.model, host: neg.host, negative: true }; }
   const err = new Error(tried.join(" | ").slice(0, 900) || "không có model nào để thử");
   throw err;
 }
@@ -176,7 +195,7 @@ async function rateGate(uid, nowMs, db, max){
 }
 /* 21/11 (anh Thắng): MỌI chức năng AI dùng CHUNG khoá + gốc API của Trợ lý AI (Admin → Trợ lý AI: ai_config/main + ai_secret/main)
    và CHUNG hạn mức mỗi người/ngày (ai_rate/{uid}_{ngày}, giới hạn = dailyLimit, mặc định 20) — chụp món, đọc InBody, hỏi AI, soạn giáo án:
-   mỗi lần dùng = 1 lượt. Model đọc ảnh thử lần lượt: visionModel → model → fallback; cấu hình chung lỗi / thiếu → VISION_API_KEY cũ.
+   mỗi lần dùng = 1 lượt. Model đọc ảnh thử lần lượt: visionModel → VISION_API cũ (Gemini) → model → fallback (model chat có thể không đọc ảnh).
    Lượt chỉ bị trừ khi AI trả lời được: lỗi máy chủ / nhà cung cấp → hoàn lượt (refundRate). */
 function legacyProvider(){
   const key = String(value(VISION_API_KEY, "") || "").trim();
@@ -189,12 +208,15 @@ async function sharedAi(db){
     cfg = c.exists ? (c.data() || {}) : {}; key = k.exists ? cleanKey((k.data() || {}).key) : ""; }catch(e){ logger.warn("sharedAi: " + String(e && e.message || e).slice(0, 200)); }
   const lim = Math.round(Number(cfg.dailyLimit)); const limit = Number.isFinite(lim) && lim >= 1 ? Math.min(500, lim) : DAILY_MAX;
   const providers = [];
-  const base = cleanBase(cfg.baseUrl), models = uniq([cleanModel(cfg.visionModel), cleanModel(cfg.model), cleanModel(cfg.fallback)]);
-  if(key && base && models.length) providers.push({ key, base, models, label: "ai_config" });
-  else if(key) logger.warn(`sharedAi: cấu hình Trợ lý AI chưa đủ (baseUrl ${base ? "ok" : "thiếu/không hợp lệ"}, model ${models.length ? "ok" : "thiếu"}) → dùng VISION_API cũ nếu có`);
+  const base = cleanBase(cfg.baseUrl), vm = cleanModel(cfg.visionModel), models = uniq([vm, cleanModel(cfg.model), cleanModel(cfg.fallback)]);
+  const ok = key && base && models.length;
+  if(!ok && key) logger.warn(`sharedAi: cấu hình Trợ lý AI chưa đủ (baseUrl ${base ? "ok" : "thiếu/không hợp lệ"}, model ${models.length ? "ok" : "thiếu"}) → dùng VISION_API cũ nếu có`);
+  if(ok && vm) providers.push({ key, base, models: [vm], label: "ai_config" });
   const old = legacyProvider();
-  if(old && !providers.some(p=> p.base === old.base && p.key === old.key && old.models.every(m=> p.models.includes(m)))) providers.push(old);
-  return { providers, limit, shared: providers.length > 0 && providers[0].label === "ai_config" };
+  if(old && !(ok && vm && old.base === base && old.key === key && old.models.every(m=> m === vm))) providers.push(old);
+  const rest = ok ? models.filter(m=> m !== vm && !(old && old.base === base && old.key === key && old.models.includes(m))) : [];
+  if(rest.length) providers.push({ key, base, models: rest, label: "ai_config" });
+  return { providers, limit, shared: providers.some(p=> p.label === "ai_config") };
 }
 async function sharedRate(uid, nowMs, db, limit){
   const day = new Date(nowMs + 7 * 3600000).toISOString().slice(0, 10);
@@ -231,13 +253,24 @@ async function prep(uid, nowMs, deps){
   return Object.assign(ai, { key: ai.providers[0].key, left, refund: deps.rate ? null : ()=> refundRate(uid, nowMs, db) });
 }
 /** Gọi AI; lỗi → log rõ, hoàn lượt, ném HttpsError unavailable. */
-async function visionOrFail(images, prompt, ai, deps, tag, userMsg){
-  try{ return (await runVision(images, prompt, ai.providers, deps, tag)).raw; }
+async function visionOrFail(images, prompt, ai, deps, tag, userMsg, accept){
+  try{ return (await runVision(images, prompt, ai.providers, deps, tag, accept)).raw; }
   catch(e){
     logger.error(`${tag} thất bại: ` + String(e && e.message || e).slice(0, 900));
     if(ai.refund){ try{ await ai.refund(); }catch(r){ logger.warn(`${tag}: hoàn lượt lỗi — ` + String(r && r.message || r).slice(0, 200)); } }
     throw new HttpsError("unavailable", userMsg);
   }
+}
+/** Kết quả âm tính → thử model kế tiếp (21/11). */
+function foodAccept(catalogIds){
+  const f = raw=> cleanResult(raw, catalogIds).is_food;
+  f.info = raw=>{ const o = raw && typeof raw === "object" ? raw : {}; return `is_food ${o.is_food === false ? "false" : String(o.is_food)}, ${Array.isArray(o.items) ? o.items.length : 0} món`; };
+  return f;
+}
+function inbodyAccept(nowMs){
+  const f = raw=> cleanInbody(raw, nowMs).is_report;
+  f.info = raw=>{ const r = cleanInbody(raw, nowMs); return `is_report ${raw && raw.is_report === false ? "false" : "true"}, ${["weight", "smm", "bfm", "pbf"].filter(k=> r[k] != null).length} số`; };
+  return f;
 }
 const outOf = n=> `Bạn đã dùng hết ${n} lượt AI hôm nay (chụp món, đọc InBody, hỏi AI… mỗi lần tính 1 lượt). Mai quay lại nhé.`;
 async function analyzeFoodPhotoCore(request, deps){
@@ -255,8 +288,9 @@ async function analyzeFoodPhotoCore(request, deps){
   if(left < 0) throw new HttpsError("resource-exhausted", outOf(ai.limit));
   const catalog = cleanCatalog(d.catalog), ref = Object.prototype.hasOwnProperty.call(REFS, d.ref) ? d.ref : "none";
   const prompt = buildPrompt(ref, str(d.note, 200), catalog, images.length);
-  const raw = await visionOrFail(images, prompt, ai, deps, "analyzeFoodPhoto", "AI chưa đọc được ảnh này. Thử chụp lại hoặc thử sau ít phút.");
-  return { ok: true, result: cleanResult(raw, new Set(catalog.map(c=> c[0]))), left };
+  const ids = new Set(catalog.map(c=> c[0]));
+  const raw = await visionOrFail(images, prompt, ai, deps, "analyzeFoodPhoto", "AI chưa đọc được ảnh này. Thử chụp lại hoặc thử sau ít phút.", foodAccept(ids));
+  return { ok: true, result: cleanResult(raw, ids), left };
 }
 
 /* ---------------------------------------------------------------------
@@ -311,10 +345,10 @@ async function analyzeInbodyReportCore(request, deps){
   if(!ai.providers.length){ if(ai.refund){ try{ await ai.refund(); }catch(e){} } throw new HttpsError("failed-precondition", "Máy chủ chưa cấu hình AI đọc ảnh."); }
   const left = ai.left;
   if(left < 0) throw new HttpsError("resource-exhausted", outOf(ai.limit));
-  const raw = await visionOrFail([img], buildInbodyPrompt(), ai, deps, "analyzeInbodyReport", "AI chưa đọc được phiếu này. Chụp lại rõ hơn hoặc thử sau ít phút.");
+  const raw = await visionOrFail([img], buildInbodyPrompt(), ai, deps, "analyzeInbodyReport", "AI chưa đọc được phiếu này. Chụp lại rõ hơn hoặc thử sau ít phút.", inbodyAccept(nowMs));
   return { ok: true, result: cleanInbody(raw, nowMs), left };
 }
 
 exports.analyzeFoodPhoto = onCall({ region: REGION, secrets: [VISION_API_KEY], maxInstances: 5, timeoutSeconds: 90, memory: "256MiB", invoker: "public" }, request=> analyzeFoodPhotoCore(request));
 exports.analyzeInbodyReport = onCall({ region: REGION, secrets: [VISION_API_KEY], maxInstances: 5, timeoutSeconds: 90, memory: "256MiB", invoker: "public" }, request=> analyzeInbodyReportCore(request));
-exports._visionTest = { sharedAi, sharedRate, refundRate, runVision, callModel, cleanBase, cleanModel, legacyProvider, analyzeInbodyReportCore, buildInbodyPrompt, cleanInbody, analyzeFoodPhotoCore, buildPrompt, cleanResult, cleanCatalog, parseJson, REFS, DAILY_MAX, IMG_MAX_CHARS };
+exports._visionTest = { sharedAi, sharedRate, refundRate, runVision, callModel, cleanBase, cleanModel, legacyProvider, analyzeInbodyReportCore, buildInbodyPrompt, cleanInbody, analyzeFoodPhotoCore, buildPrompt, foodAccept, inbodyAccept, cleanResult, cleanCatalog, parseJson, REFS, DAILY_MAX, IMG_MAX_CHARS };
