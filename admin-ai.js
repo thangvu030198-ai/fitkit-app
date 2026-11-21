@@ -113,6 +113,7 @@ async function render(el){
       ${card(`${ic("adm_book")}Model`, `
         <div class="adm-row wrap"><div class="adm-f"><label for="adm-ai-m1">Model chính (trò chuyện)</label><input id="adm-ai-m1" maxlength="100" spellcheck="false" autocomplete="off" value="${esc(cfg.model || "")}" ${ro} placeholder="VD: deepseek-chat"></div>
           <div class="adm-f"><label for="adm-ai-m3">Model lập kế hoạch (để trống = dùng model chính)</label><input id="adm-ai-m3" maxlength="100" spellcheck="false" autocomplete="off" value="${esc(cfg.planModel || "")}" ${ro}></div>
+          <div class="adm-f"><label for="adm-ai-m4">Model đọc ảnh — chụp món ăn, phiếu InBody (để trống = model chính; model phải đọc được ảnh)</label><input id="adm-ai-m4" maxlength="100" spellcheck="false" autocomplete="off" value="${esc(cfg.visionModel || "")}" ${ro}></div>
           <div class="adm-f"><label for="adm-ai-m2">Model dự phòng (khi model chính lỗi)</label><input id="adm-ai-m2" maxlength="100" spellcheck="false" autocomplete="off" value="${esc(cfg.fallback || "")}" ${ro}></div></div>
         <p class="adm-dim" style="margin:8px 0;">Gợi ý tối ưu chi phí: trò chuyện dùng model <b>nhanh & rẻ</b>; lập kế hoạch có thể dùng model mạnh hơn (hoặc để trống); dự phòng chọn model của <b>hãng khác</b> để không sập cùng lúc. Bấm <b>Thử</b> để xem tốc độ và giọng trả lời trước khi chọn.</p>
         <div class="adm-row wrap" style="margin-bottom:8px;"><div class="adm-f"><label for="adm-ai-flt">Lọc danh sách đã quét${M.models ? ` (${M.models.length} model)` : ""}</label><input id="adm-ai-flt" maxlength="40" spellcheck="false" placeholder="VD: deepseek, gpt, flash…" value="${esc(M.filter)}"></div>
@@ -123,16 +124,16 @@ async function render(el){
           <div class="adm-f"><label for="adm-ai-t">Độ sáng tạo (0 = chắc chắn · 1 = bay bổng)</label><input id="adm-ai-t" type="number" min="0" max="1.5" step="0.1" value="${esc(cfg.temperature)}" ${ro}></div>
           <div class="adm-f"><label for="adm-ai-mt">Độ dài tối đa mỗi câu trả lời (token)</label><input id="adm-ai-mt" type="number" min="200" max="4000" step="50" value="${esc(cfg.maxTokens)}" ${ro}></div>
           <div class="adm-f"><label for="adm-ai-pt">Độ dài tối đa khi lập kế hoạch (token)</label><input id="adm-ai-pt" type="number" min="800" max="8000" step="100" value="${esc(cfg.planMaxTokens)}" ${ro}></div>
-          <div class="adm-f"><label for="adm-ai-lim">Lượt hỏi tối đa / người / ngày</label><input id="adm-ai-lim" type="number" min="1" max="500" value="${esc(cfg.dailyLimit)}" ${ro}></div></div>
+          <div class="adm-f"><label for="adm-ai-lim">Lượt AI tối đa / người / ngày (chung mọi tính năng AI: hỏi AI, soạn giáo án, chụp món, đọc InBody — mỗi lần = 1 lượt)</label><input id="adm-ai-lim" type="number" min="1" max="500" value="${esc(cfg.dailyLimit)}" ${ro}></div></div>
         <div class="adm-f" style="margin-top:10px;"><label for="adm-ai-x">Ghi chú thêm cho AI (tuỳ chọn, ≤ 1.500 ký tự) — VD giọng điệu, chương trình khuyến mãi, điều cần nhấn mạnh. Quy tắc an toàn y tế luôn được giữ nguyên.</label><textarea id="adm-ai-x" class="adm-ai-x" maxlength="1500" ${ro}>${esc(cfg.extra || "")}</textarea></div>
         <label class="adm-sw" style="margin-top:12px;"><input type="checkbox" id="adm-ai-on" ${cfg.enabled ? "checked" : ""} ${ed ? "" : "disabled"}><span><b>Bật Trợ lý AI cho người dùng đã đăng nhập</b><small>Tắt → app vẫn tư vấn bằng bộ luật và kho kiến thức trên máy (không tốn phí).</small></span></label>
         ${ed ? `<button class="adm-btn pri" data-ai="save" style="margin-top:12px;">Lưu cấu hình</button>` : ""}
         ${cfg.updatedAt ? `<p class="adm-dim">Cập nhật lần cuối ${esc(new Date(cfg.updatedAt).toLocaleString("vi-VN"))}</p>` : ""}`)}`;
   };
   const val = id=>{ const x = document.getElementById(id); return x ? String(x.value || "").trim() : ""; };
-  const collect = ()=> ({ baseUrl: val("adm-ai-url"), model: val("adm-ai-m1"), fallback: val("adm-ai-m2"), planModel: val("adm-ai-m3"), temperature: Number(val("adm-ai-t")), maxTokens: Number(val("adm-ai-mt")),
+  const collect = ()=> ({ baseUrl: val("adm-ai-url"), model: val("adm-ai-m1"), fallback: val("adm-ai-m2"), planModel: val("adm-ai-m3"), visionModel: val("adm-ai-m4"), temperature: Number(val("adm-ai-t")), maxTokens: Number(val("adm-ai-mt")),
     planMaxTokens: Number(val("adm-ai-pt")), dailyLimit: Number(val("adm-ai-lim")), extra: val("adm-ai-x"), enabled: !!(document.getElementById("adm-ai-on") || {}).checked });
-  const keep = ()=>{ const c = collect(); ["baseUrl", "model", "fallback", "planModel", "extra", "enabled"].forEach(k=> cfg[k] = c[k]); ["temperature", "maxTokens", "planMaxTokens", "dailyLimit"].forEach(k=>{ if(Number.isFinite(c[k])) cfg[k] = c[k]; }); };
+  const keep = ()=>{ const c = collect(); ["baseUrl", "model", "fallback", "planModel", "visionModel", "extra", "enabled"].forEach(k=> cfg[k] = c[k]); ["temperature", "maxTokens", "planMaxTokens", "dailyLimit"].forEach(k=>{ if(Number.isFinite(c[k])) cfg[k] = c[k]; }); };
   const saveCfg = async (btn, opts)=>{
     opts = opts || {};
     const apiKey = val("adm-ai-key"); const body = { config: opts.connOnly ? { baseUrl: val("adm-ai-url") } : collect() };

@@ -25,7 +25,7 @@ const REGION = "asia-southeast1";
 const SESSION_SEC = 12 * 3600;
 const CTX_MAX = 14000, MSG_MAX = 2000, HIST_MAX = 12, EXTRA_MAX = 1500;
 /* data.lang = "en" → máy chủ thêm chỉ dẫn trả lời bằng tiếng Anh (giao diện English của app); mặc định "vi". */
-const DEFAULTS = { enabled: false, baseUrl: "", model: "", fallback: "", planModel: "", temperature: 0.5, maxTokens: 900, planMaxTokens: 2600, dailyLimit: 20, extra: "" };
+const DEFAULTS = { enabled: false, baseUrl: "", model: "", fallback: "", planModel: "", visionModel: "", temperature: 0.5, maxTokens: 900, planMaxTokens: 2600, dailyLimit: 20, extra: "" };
 const DAY_KEYS = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
 
 const str = (v, n)=> String(v == null ? "" : v).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, " ").trim().slice(0, n);
@@ -52,7 +52,7 @@ function cleanConfig(raw, prev){
   return {
     enabled: pick("enabled", v=> v === true),
     baseUrl: pick("baseUrl", cleanBase),
-    model: pick("model", cleanModel), fallback: pick("fallback", cleanModel), planModel: pick("planModel", cleanModel),
+    model: pick("model", cleanModel), fallback: pick("fallback", cleanModel), planModel: pick("planModel", cleanModel), visionModel: pick("visionModel", cleanModel),
     temperature: pick("temperature", v=> Math.round(num(v, 0, 1.5, DEFAULTS.temperature) * 100) / 100),
     maxTokens: pick("maxTokens", v=> Math.round(num(v, 200, 4000, DEFAULTS.maxTokens))),
     planMaxTokens: pick("planMaxTokens", v=> Math.round(num(v, 800, 8000, DEFAULTS.planMaxTokens))),
@@ -238,7 +238,7 @@ async function aiChatCore(request, deps){
   if(!messages.length) throw new HttpsError("invalid-argument", "Thiếu câu hỏi.");
   if(!deps.store && await S.rate("_all", nowMs, GLOBAL_DAILY) < 0) throw new HttpsError("resource-exhausted", "Trợ lý AI đang quá tải hôm nay. Thử lại vào ngày mai — app vẫn gợi ý được từ dữ liệu có sẵn.");
   const left = await S.rate(a.uid, nowMs, cfg.dailyLimit);
-  if(left < 0) throw new HttpsError("resource-exhausted", `Bạn đã dùng hết ${cfg.dailyLimit} lượt hỏi AI hôm nay. Mai quay lại nhé — hôm nay app vẫn gợi ý được từ dữ liệu có sẵn.`);   // (client English tự hiện câu tiếng Anh tương ứng)
+  if(left < 0) throw new HttpsError("resource-exhausted", `Bạn đã dùng hết ${cfg.dailyLimit} lượt AI hôm nay (hỏi AI, soạn giáo án, chụp món, đọc InBody… mỗi lần tính 1 lượt). Mai quay lại nhé — hôm nay app vẫn gợi ý được từ dữ liệu có sẵn.`);   // (client English tự hiện câu tiếng Anh tương ứng)
   const sys = buildSystem(cfg, mode, str(d.context, CTX_MAX), d.lang === "en" ? "en" : "vi");
   const base = { base: cfg.baseUrl, key, fetch: deps.fetch, temperature: mode === "plan" ? Math.min(cfg.temperature, 0.4) : cfg.temperature,
     maxTokens: mode === "plan" ? cfg.planMaxTokens : cfg.maxTokens, json: mode === "plan", timeoutMs: mode === "plan" ? 60000 : 40000,

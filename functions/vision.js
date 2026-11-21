@@ -19,7 +19,7 @@ const REGION = "asia-southeast1";
 const VISION_API_KEY = defineSecret("VISION_API_KEY");
 const VISION_API_BASE = defineString("VISION_API_BASE", { default: "https://generativelanguage.googleapis.com/v1beta/openai", description: "Gốc API tương thích OpenAI (không có /chat/completions)" });
 const VISION_MODEL = defineString("VISION_MODEL", { default: "gemini-2.5-flash", description: "Tên model đọc được ảnh" });
-const DAILY_MAX = 40, IMG_MAX_CHARS = 1400000, CATALOG_MAX = 320;
+const DAILY_MAX = 20, IMG_MAX_CHARS = 1400000, CATALOG_MAX = 320;
 const REFS = {
   none: "Không có vật tham chiếu. Giả định đĩa ăn phổ thông đường kính 24–26 cm, bát cơm miệng 11–12 cm, đũa 23–25 cm nếu thấy trong ảnh.",
   chopsticks: "Có ĐŨA trong ảnh: một chiếc đũa dài khoảng 23–25 cm. Dùng nó làm thước đo.",
@@ -114,6 +114,39 @@ async function rateGate(uid, nowMs, db, max){
     return max - n - 1;
   });
 }
+/* 21/11 (anh Thắng): MỌI chức năng AI dùng CHUNG khoá + gốc API của Trợ lý AI (Admin → Trợ lý AI: ai_config/main + ai_secret/main)
+   và CHUNG hạn mức mỗi người/ngày (ai_rate/{uid}_{ngày}, giới hạn = dailyLimit, mặc định 20) — chụp món, đọc InBody, hỏi AI, soạn giáo án:
+   mỗi lần dùng = 1 lượt. Model đọc ảnh: visionModel (nếu Admin đặt) → model chính. Chưa có khoá ở Admin → dùng VISION_API_KEY cũ. */
+async function sharedAi(db){
+  let cfg = {}, key = "";
+  try{ const [c, k] = await Promise.all([db.collection("ai_config").doc("main").get(), db.collection("ai_secret").doc("main").get()]);
+    cfg = c.exists ? (c.data() || {}) : {}; key = k.exists ? String((k.data() || {}).key || "").trim() : ""; }catch(e){ logger.warn("sharedAi: " + String(e && e.message || e).slice(0, 200)); }
+  const lim = Math.round(Number(cfg.dailyLimit)); const limit = Number.isFinite(lim) && lim >= 1 ? Math.min(500, lim) : DAILY_MAX;
+  if(key) return { key, base: String(cfg.baseUrl || "").trim(), model: String(cfg.visionModel || cfg.model || "").trim(), limit, shared: true };
+  return { key: value(VISION_API_KEY, ""), base: value(VISION_API_BASE, ""), model: value(VISION_MODEL, ""), limit, shared: false };
+}
+async function sharedRate(uid, nowMs, db, limit){
+  const day = new Date(nowMs + 7 * 3600000).toISOString().slice(0, 10);
+  const ref = db.collection("ai_rate").doc(`${uid}_${day}`);   // CHUNG với aiChat (functions/aicoach.js)
+  return db.runTransaction(async tx=>{
+    const s = await tx.get(ref), n = (s.exists && Number(s.data().n)) || 0;
+    if(n >= limit) return -1;
+    tx.set(ref, { n: n + 1, day, at: nowMs }, { merge: true });
+    return limit - n - 1;
+  });
+}
+async function prep(uid, nowMs, deps){
+  if(deps.key !== undefined){   // kiểm thử: khoá/rate tiêm vào
+    const left = deps.rate ? await deps.rate(uid) : DAILY_MAX - 1;
+    return { key: deps.key, base: deps.base || value(VISION_API_BASE, ""), model: deps.model || value(VISION_MODEL, ""), limit: DAILY_MAX, left };
+  }
+  const db = admin.firestore(), ai = await sharedAi(db);
+  if(!ai.key || ai.key === "unset" || !ai.base || !ai.model) throw new HttpsError("failed-precondition", "Máy chủ chưa cấu hình AI (Admin → Trợ lý AI).");
+  if(await rateGate("_all", nowMs, db, GLOBAL_MAX) < 0) throw new HttpsError("resource-exhausted", "AI đang quá tải hôm nay. Thử lại vào ngày mai.");
+  const left = deps.rate ? await deps.rate(uid) : await sharedRate(uid, nowMs, db, ai.limit);
+  return Object.assign(ai, { left });
+}
+const outOf = n=> `Bạn đã dùng hết ${n} lượt AI hôm nay (chụp món, đọc InBody, hỏi AI… mỗi lần tính 1 lượt). Mai quay lại nhé.`;
 async function analyzeFoodPhotoCore(request, deps){
   deps = deps || {};
   const a = request.auth;
@@ -122,15 +155,15 @@ async function analyzeFoodPhotoCore(request, deps){
   const d = request.data || {};
   const images = (Array.isArray(d.images) ? d.images : []).slice(0, 2).filter(u=> typeof u === "string" && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(u) && u.length <= IMG_MAX_CHARS);
   if(!images.length) throw new HttpsError("invalid-argument", "Ảnh không hợp lệ hoặc quá lớn.");
-  const key = deps.key !== undefined ? deps.key : value(VISION_API_KEY, "");
-  if(!key || key === "unset") throw new HttpsError("failed-precondition", "Máy chủ chưa cấu hình AI đọc ảnh.");
   const nowMs = deps.now ? deps.now() : Date.now();
-  const left = await (deps.rate || (async uid=>{ const db = admin.firestore(); if(await rateGate("_all", nowMs, db, GLOBAL_MAX) < 0) throw new HttpsError("resource-exhausted", "AI đọc ảnh đang quá tải hôm nay. Thử lại vào ngày mai."); return rateGate(uid, nowMs, db); }))(a.uid);
-  if(left < 0) throw new HttpsError("resource-exhausted", `Bạn đã dùng hết ${DAILY_MAX} lượt chụp hôm nay. Thử lại vào ngày mai.`);
+  const ai = await prep(a.uid, nowMs, deps);
+  if(!ai.key || ai.key === "unset") throw new HttpsError("failed-precondition", "Máy chủ chưa cấu hình AI đọc ảnh.");
+  const key = ai.key, left = ai.left;
+  if(left < 0) throw new HttpsError("resource-exhausted", outOf(ai.limit));
   const catalog = cleanCatalog(d.catalog), ref = Object.prototype.hasOwnProperty.call(REFS, d.ref) ? d.ref : "none";
   const prompt = buildPrompt(ref, str(d.note, 200), catalog, images.length);
   let raw;
-  try{ raw = await callModel(images, prompt, { key, base: deps.base || value(VISION_API_BASE, ""), model: deps.model || value(VISION_MODEL, ""), fetch: deps.fetch }); }
+  try{ raw = await callModel(images, prompt, { key, base: ai.base, model: ai.model, fetch: deps.fetch }); }
   catch(e){ logger.error("analyzeFoodPhoto: " + String(e && e.message || e).slice(0, 400)); throw new HttpsError("unavailable", "AI chưa đọc được ảnh này. Thử chụp lại hoặc thử sau ít phút."); }
   return { ok: true, result: cleanResult(raw, new Set(catalog.map(c=> c[0]))), left };
 }
@@ -182,17 +215,17 @@ async function analyzeInbodyReportCore(request, deps){
   const d = request.data || {};
   const img = typeof d.image === "string" && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(d.image) && d.image.length <= IMG_MAX_CHARS ? d.image : "";
   if(!img) throw new HttpsError("invalid-argument", "Ảnh không hợp lệ hoặc quá lớn.");
-  const key = deps.key !== undefined ? deps.key : value(VISION_API_KEY, "");
-  if(!key || key === "unset") throw new HttpsError("failed-precondition", "Máy chủ chưa cấu hình AI đọc ảnh.");
   const nowMs = deps.now ? deps.now() : Date.now();
-  const left = await (deps.rate || (async uid=>{ const db = admin.firestore(); if(await rateGate("_all", nowMs, db, GLOBAL_MAX) < 0) throw new HttpsError("resource-exhausted", "AI đọc ảnh đang quá tải hôm nay. Thử lại vào ngày mai."); return rateGate(uid, nowMs, db); }))(a.uid);
-  if(left < 0) throw new HttpsError("resource-exhausted", `Bạn đã dùng hết ${DAILY_MAX} lượt đọc ảnh hôm nay. Thử lại vào ngày mai.`);
+  const ai = await prep(a.uid, nowMs, deps);
+  if(!ai.key || ai.key === "unset") throw new HttpsError("failed-precondition", "Máy chủ chưa cấu hình AI đọc ảnh.");
+  const key = ai.key, left = ai.left;
+  if(left < 0) throw new HttpsError("resource-exhausted", outOf(ai.limit));
   let raw;
-  try{ raw = await callModel([img], buildInbodyPrompt(), { key, base: deps.base || value(VISION_API_BASE, ""), model: deps.model || value(VISION_MODEL, ""), fetch: deps.fetch }); }
+  try{ raw = await callModel([img], buildInbodyPrompt(), { key, base: ai.base, model: ai.model, fetch: deps.fetch }); }
   catch(e){ logger.error("analyzeInbodyReport: " + String(e && e.message || e).slice(0, 400)); throw new HttpsError("unavailable", "AI chưa đọc được phiếu này. Chụp lại rõ hơn hoặc thử sau ít phút."); }
   return { ok: true, result: cleanInbody(raw, nowMs), left };
 }
 
 exports.analyzeFoodPhoto = onCall({ region: REGION, secrets: [VISION_API_KEY], maxInstances: 5, timeoutSeconds: 60, memory: "256MiB", invoker: "public" }, request=> analyzeFoodPhotoCore(request));
 exports.analyzeInbodyReport = onCall({ region: REGION, secrets: [VISION_API_KEY], maxInstances: 5, timeoutSeconds: 60, memory: "256MiB", invoker: "public" }, request=> analyzeInbodyReportCore(request));
-exports._visionTest = { analyzeInbodyReportCore, buildInbodyPrompt, cleanInbody, analyzeFoodPhotoCore, buildPrompt, cleanResult, cleanCatalog, parseJson, REFS, DAILY_MAX, IMG_MAX_CHARS };
+exports._visionTest = { sharedAi, sharedRate, analyzeInbodyReportCore, buildInbodyPrompt, cleanInbody, analyzeFoodPhotoCore, buildPrompt, cleanResult, cleanCatalog, parseJson, REFS, DAILY_MAX, IMG_MAX_CHARS };

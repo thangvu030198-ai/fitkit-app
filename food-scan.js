@@ -459,7 +459,7 @@ async function run(file){
     }catch(e){
       clearInterval(tick); if(sess.closed) return;
       const code = e && e.code, login = code === "need-login", nc = code === "not-configured";
-      message(el, `<p>${esc(login ? "Đăng nhập để dùng chụp ảnh tính calo. Mỗi tài khoản có 40 lượt mỗi ngày." : nc ? "Tính năng AI đọc ảnh chưa được bật trên máy chủ. Bạn có thể nhập khoá AI riêng trong Hồ sơ → Cài đặt AI, hoặc thêm món bằng cách tìm kiếm." : (e && e.message) || "Chưa phân tích được ảnh. Kiểm tra mạng rồi thử lại.")}</p>
+      message(el, `<p>${esc(login ? "Đăng nhập để dùng chụp ảnh tính calo. Mỗi tài khoản có 20 lượt AI mỗi ngày (dùng chung mọi tính năng AI)." : nc ? "Tính năng AI đọc ảnh chưa được bật trên máy chủ. Bạn có thể nhập khoá AI riêng trong Hồ sơ → Cài đặt AI, hoặc thêm món bằng cách tìm kiếm." : (e && e.message) || "Chưa phân tích được ảnh. Kiểm tra mạng rồi thử lại.")}</p>
         <div class="fk-scan-acts"><button class="fk-scan-btn sec" data-a="x">Đóng</button>${login || nc ? "" : `<button class="fk-scan-btn pri" data-a="t">Thử lại</button>`}</div>`)
         .addEventListener("click", ev=>{ const a = ev.target.closest("[data-a]"); if(!a) return; if(a.dataset.a === "t"){ el.querySelector(".fk-scan-msg").remove(); go(); } else close(); });
     }

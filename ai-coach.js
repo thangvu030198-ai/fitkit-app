@@ -696,7 +696,7 @@ async function send(text){
     }
   }catch(e){
     const msg = String(e && e.message || "");
-    if(/hết .* lượt|resource-exhausted/i.test(msg + (e && e.code || ""))) say(T(msg || "Đã hết lượt hỏi AI hôm nay", "You have used all of today's AI questions — try again tomorrow"), "info");
+    if(/hết .* lượt|resource-exhausted/i.test(msg + (e && e.code || ""))) say(T(msg || "Đã hết lượt AI hôm nay", "You have used all of today's AI questions — try again tomorrow"), "info");
     if(/failed-precondition|chưa được bật/i.test(msg + (e && e.code || ""))) _status = { at: Date.now(), enabled: false, why: "off" };
   }
   if(!reply) reply = { role: "assistant", content: localAnswer(text), src: "local", at: Date.now() };
