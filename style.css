@@ -2056,3 +2056,23 @@ html.fk-light .sf-undo{ color:#9A4A06; border-color:rgba(180,83,9,.55); backgrou
 .fk-sport-switch b{ font-size:15.5px; font-weight:800; }
 .fk-sport-switch em{ font-style:normal; display:inline-flex; align-items:center; gap:4px; font-size:13px; font-weight:700; color:var(--link, #2FD6C8); white-space:nowrap; }
 .fk-sport-switch em .material-symbols-rounded{ font-size:18px; }
+
+/* ===== 21/11/2026 (2) — thanh hiệp: bài ghi riêng TRÁI / PHẢI (session-focus.js) + RPE bên phải trong bảng ===== */
+.set-row.uni select.rpe-r{ flex:0 0 58px; }
+.sf-side{ display:flex; gap:6px; margin:0 0 8px; padding:4px; border-radius:14px; background:rgba(var(--fk-ov-rgb, 255,255,255),.06); border:1px solid rgba(var(--fk-ov-rgb, 255,255,255),.16); }
+.sf-side > button{ flex:1; min-width:0; display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:11px; border:1px solid transparent; background:transparent; color:inherit; font:inherit; text-align:left; cursor:pointer; touch-action:manipulation; }
+.sf-side > button i{ flex:0 0 26px; height:26px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; font-style:normal; font-weight:800; font-size:13px; background:rgba(var(--fk-ov-rgb, 255,255,255),.11); color:var(--text, #fff); }
+.sf-side > button span{ min-width:0; display:flex; flex-direction:column; line-height:1.15; }
+.sf-side > button b{ color:var(--text, #fff); font-size:12.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sf-side > button small{ font-size:12px; color:var(--text-muted, rgba(255,255,255,.8)); font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sf-side > button.on{ background:rgba(var(--accent-rgb, 94,230,199),.16); border-color:var(--accent, #5EE6C7); }
+.sf-side > button.on i{ background:var(--accent, #5EE6C7); color:var(--on-accent, #061A24); }
+.sf-done-row{ display:flex; gap:8px; }
+.sf-done-row .sf-done{ flex:1; min-width:0; }
+.sf-done.sided .sf-done-t{ display:flex; flex-direction:column; align-items:flex-start; line-height:1.15; min-width:0; }
+.sf-done.sided .sf-done-t small{ margin-left:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+.sf-next{ flex:0 0 auto; max-width:44%; min-height:56px; display:inline-flex; align-items:center; justify-content:center; gap:4px; padding:0 12px; border-radius:16px; border:1px solid var(--accent, #5EE6C7); background:rgba(var(--accent-rgb, 94,230,199),.12); color:var(--text, #fff); font:inherit; font-size:13.5px; font-weight:800; cursor:pointer; touch-action:manipulation; }
+.sf-next .material-symbols-rounded{ font-size:18px; }
+.sf-next:active{ transform:scale(.97); }
+.sf-done-row.two .sf-done{ font-size:15px; }
+.sf-bar.min .sf-next{ min-height:46px; }

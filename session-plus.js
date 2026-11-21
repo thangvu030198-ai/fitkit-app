@@ -44,7 +44,8 @@ function prevFor(last, rows, i){
   const kg = num(p.kg), reps = num(p.reps);
   if(!(kg > 0 || reps > 0)) return null;
   const o = { kg, reps };
-  if(p.L && p.R && typeof p.L === "object" && typeof p.R === "object") o.side = { L: { kg: num(p.L.kg), reps: num(p.L.reps) }, R: { kg: num(p.R.kg), reps: num(p.R.reps) } };   // 21/11: lần trước theo từng bên
+  if(p.L && p.R && typeof p.L === "object" && typeof p.R === "object") { o.side = { L: { kg: num(p.L.kg), reps: num(p.L.reps) }, R: { kg: num(p.R.kg), reps: num(p.R.reps) } };   // 21/11: lần trước theo từng bên
+    if(num(p.L.rpe) > 0) o.side.L.rpe = num(p.L.rpe); if(num(p.R.rpe) > 0) o.side.R.rpe = num(p.R.rpe); }
   return o;
 }
 /* Buổi trước có khởi động / drop → dựng lại đúng cấu trúc cho buổi này. */
@@ -239,6 +240,7 @@ function rowsUI(o){
       const t = b.dataset.spType;
       if(t) rows[i].type = t; else delete rows[i].type;
       if(t === "f" && !rows[i].rpe){ rows[i].rpe = "10"; const sel = el.querySelector("select.rpe"); if(sel) sel.value = "10"; }
+      if(t === "f" && rows[i].R && typeof rows[i].R === "object" && !rows[i].R.rpe){ rows[i].R.rpe = "10"; const sr = el.querySelector("select[data-rpe-r]"); if(sr) sr.value = "10"; }   // 21/11: tới hạn cả bên phải
       if(!st.spHintDone){ st.spHintDone = 1; const h = sc.querySelector(".sp-hint"); if(h) h.remove(); }
       closeMenu(); paint(); if(o.onChange) o.onChange();
     });

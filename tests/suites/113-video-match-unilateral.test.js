@@ -80,7 +80,7 @@ module.exports = {
       assert.equal(app.ev(`fkSetVol({ kg:20, reps:10 })`), 200);
       assert.equal(app.ev(`fkSetVol({ kg:"", reps:10, R:{ kg:"", reps:9 } }, 15)`), 285);
       const rec = app.evj(`fkRowRecord({ kg:20, reps:10, R:{ kg:22, reps:8 }, rpe:"8" }, false)`);
-      assert.deepEqual([rec.kg, rec.reps, rec.L, rec.R, rec.rpe], [22, 8, { kg:20, reps:10 }, { kg:22, reps:8 }, 8]);
+      assert.deepEqual([rec.kg, rec.reps, rec.L, rec.R, rec.rpe], [22, 8, { kg:20, reps:10, rpe:8 }, { kg:22, reps:8 }, 8]);   // 21/11 (2): RPE trái lưu vào L.rpe (phải chưa ghi → không có)
       assert.ok(app.ev(`fkSetE1rm({ kg:22, reps:8, L:{ kg:20, reps:12 }, R:{ kg:22, reps:8 } })`) > app.ev(`e1rm(22, 8)`) - 0.01);
       assert.equal(app.ev(`fkSetE1rm({ kg:60, reps:5 })`), app.ev(`e1rm(60, 5)`));
     });

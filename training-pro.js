@@ -344,7 +344,7 @@ function muscleWeights(key, fallbackMuscle){
   return parseMuscle(m);
 }
 /* Hiệp hiệu quả: hiệp chính đã xong; hiệp ghi RPE ≤ 6 (còn ≥ 4 lần) tính nửa hiệp */
-function hardSets(sets){ return (sets||[]).reduce((a,x)=> a + (x && x.rpe && num(x.rpe) <= 6 ? .5 : 1), 0); }
+function hardSets(sets){ return (sets||[]).reduce((a,x)=>{ const rp = x && typeof fkRowRpe === "function" ? fkRowRpe(x) : num(x && x.rpe); return a + (x && rp && rp <= 6 ? .5 : 1); }, 0); }   // 21/11: bài 2 bên → RPE bên nặng hơn
 function weekRange(offset, now){
   const mon = parseD(mondayStr(now || new Date())); mon.setDate(mon.getDate() + 7*(offset||0));
   const sun = new Date(mon); sun.setDate(sun.getDate()+6);
@@ -1976,7 +1976,7 @@ function install(){
           const r = _pf.call(this, item, meta, Object.assign({}, last, { sets:[topSet] }), timed, 1) || { delta:0 };
           const m = String(item.reps||"").match(/RPE\s*(\d+(?:[.,]\d)?)/i);
           const rpeT = m ? Number(m[1].replace(",", ".")) : 0;
-          if(r.delta > 0 && rpeT && num(topSet.rpe) > rpeT + 0.5) return { delta:0 };
+          if(r.delta > 0 && rpeT && (typeof fkRowRpe === "function" ? fkRowRpe(topSet) : num(topSet.rpe)) > rpeT + 0.5) return { delta:0 };
           if(r.delta > 0) r.msg = `Hiệp nặng lần trước đạt ${repTop(item.reps)} lần${rpeT ? ` (RPE ≤ ${rpeT})` : ""} → app <b>tăng hiệp nặng lên ${r.kg} kg</b>, các hiệp sau ~${backoffKg(r.kg, weightStep(meta))} kg.`;
           return r;
         }

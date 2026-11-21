@@ -85,10 +85,12 @@ function install(){
 /* ---------------------------------------------------------------------
    2. BẢNG "BUỔI HÔM NAY"
    --------------------------------------------------------------------- */
+/* 21/11: bài ghi 2 bên → RPE bên nặng hơn (trái = r.rpe, phải = r.R.rpe) */
+function rpeOf(r){ try{ if(typeof fkRowRpe === "function") return fkRowRpe(r) || ""; }catch(e){} return r && r.rpe || ""; }
 function rowsTxt(rows, timed){
   const done = (rows || []).filter(r=> r && r.done);
   if(!done.length) return "";
-  return done.map(r=> timed ? (r.reps ? `${esc(r.reps)}` : "✓") : `${num(r.kg) > 0 ? kgT(r.kg) + "×" : ""}${esc(r.reps || "–")}${r.rpe ? `<i>@${esc(r.rpe)}</i>` : ""}`).join(" · ");
+  return done.map(r=> timed ? (r.reps ? `${esc(r.reps)}` : "✓") : `${num(r.kg) > 0 ? kgT(r.kg) + "×" : ""}${esc(r.reps || "–")}${rpeOf(r) ? `<i>@${esc(rpeOf(r))}</i>` : ""}`).join(" · ");
 }
 function openToday(){
   const s = S(); if(!s || typeof openSheet !== "function") return;
