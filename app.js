@@ -129,6 +129,49 @@ function fkSanitizeProfile(p){
   if(p.avatarData != null && !(typeof p.avatarData === "string" && /^data:image\/(png|jpe?g|gif|webp);base64,/i.test(p.avatarData))) p.avatarData = null;
   return p;
 }
+/* 21/11/2026 (anh Thắng: "lưu ít thông tin quá"): làm sạch các trường MỞ RỘNG của 1 lần đo InBody — dùng chung cho
+   normalizeState (nạp lại / khôi phục / đồng bộ) và inbody-scan.js (lúc lưu). Số ngoài khoảng → bỏ trường; chuỗi → bỏ thẻ,
+   ký tự điều khiển, dấu < > và cắt ngắn (hiển thị vẫn luôn qua escape). Trường không có → không thêm. */
+function fkIbNum(v, lo, hi, dp){
+  if(v == null || v === "" || typeof v === "boolean" || typeof v === "object") return null;
+  const n = Number(v); if(!Number.isFinite(n) || n < lo || n > hi) return null;
+  const k = Math.pow(10, dp == null ? 1 : dp); return Math.round(n * k) / k;
+}
+function fkIbText(v, max){
+  if(typeof v !== "string") return "";
+  return v.replace(/<[^>]*>?/g, " ").replace(/[\u0000-\u001f\u007f<>]/g, " ").replace(/\s+/g, " ").trim().slice(0, max || 200);
+}
+function fkInbodyCleanSeg(s, kgHi, pctHi){
+  if(!s || typeof s !== "object" || Array.isArray(s)) return null;
+  const o = {}; let any = false;
+  ["ra","la","tr","rl","ll"].forEach(p=>{ const x = s[p] && typeof s[p] === "object" ? s[p] : {}; const kg = fkIbNum(x.kg, 0, kgHi, 1), pct = fkIbNum(x.pct, 1, pctHi, 1); o[p] = { kg, pct }; if(kg != null || pct != null) any = true; });
+  return any ? o : null;
+}
+function fkInbodyCleanEval(e){
+  if(!e || typeof e !== "object" || Array.isArray(e)) return null;
+  const ST = ["low","normal","high"], st = e.status && typeof e.status === "object" ? e.status : {};
+  const list = a=> (Array.isArray(a) ? a : []).map(x=> fkIbText(x, 220)).filter(Boolean).slice(0, 6);
+  const nd = fkIbNum(e.nextCheckDays != null ? e.nextCheckDays : e.next_check_days, 7, 180, 0);
+  const o = { summary: fkIbText(e.summary, 320),
+    status: { weight: ST.includes(st.weight) ? st.weight : null, muscle: ST.includes(st.muscle) ? st.muscle : null, fat: ST.includes(st.fat) ? st.fat : null, visceral: ST.includes(st.visceral) ? st.visceral : null },
+    good: list(e.good), improve: list(e.improve), advice: list(e.advice), compare: fkIbText(e.compare, 320) || null, nextCheckDays: nd, src: "ai" };
+  if(!o.summary && !o.good.length && !o.improve.length && !o.advice.length) return null;
+  return o;
+}
+function fkInbodyCleanExtra(l){
+  if(!l || typeof l !== "object") return l;
+  /* khai báo trong hàm: normalizeState chạy lúc nạp app.js, trước khi các const cấp tệp phía dưới được khởi tạo */
+  const NUM = { ffmKg:[10,250,1], slmKg:[10,200,1], proteinKg:[2,40,1], mineralsKg:[0.5,15,2], tbwL:[10,120,1], ecwRatio:[0.3,0.45,3],
+    smi:[3,20,1], whr:[0.5,1.5,2], obesityDegree:[50,300,0], targetWeight:[20,350,1], weightControl:[-150,150,1], fatControl:[-150,150,1],
+    muscleControl:[-50,50,1], bmi:[10,80,1] };
+  Object.keys(NUM).forEach(k=>{ if(!(k in l)) return; const [lo, hi, dp] = NUM[k]; const v = fkIbNum(l[k], lo, hi, dp); if(v == null) delete l[k]; else l[k] = v; });
+  if("segLean" in l){ const s = fkInbodyCleanSeg(l.segLean, 80, 400); if(s) l.segLean = s; else delete l.segLean; }
+  if("segFat" in l){ const s = fkInbodyCleanSeg(l.segFat, 80, 1000); if(s) l.segFat = s; else delete l.segFat; }
+  if("gender" in l && l.gender !== "male" && l.gender !== "female") delete l.gender;
+  if("eval" in l){ const e = fkInbodyCleanEval(l.eval); if(e) l.eval = e; else delete l.eval; }
+  if("scan" in l){ if(l.scan === true) l.scan = true; else delete l.scan; }
+  return l;
+}
 /* QT-11: dữ liệu cũ / thiếu trường / sai kiểu (bản cũ, khôi phục sao lưu, đồng bộ) không được làm vỡ app.
    Chỉ VÁ chỗ hỏng (mảng/đối tượng mặc định) — không xoá dữ liệu hợp lệ, không đổi key. Gọi lại nhiều lần không đổi kết quả. */
 function normalizeState(s){
@@ -168,6 +211,8 @@ function normalizeState(s){
     if(l.fatMassKg == null) delete l.fatMassKg; if(l.bmr == null) delete l.bmr; if(l.score == null) delete l.score;
     if(typeof l.device === "string") l.device = l.device.replace(/[\u0000-\u001f]/g, " ").slice(0, 40); else delete l.device;
     l.note = typeof l.note === "string" ? l.note.slice(0, 300) : "";
+    /* 21/11/2026 (InBody đầy đủ): nước/protein/khoáng/FFM…, từng phần, đánh giá AI, giới tính lúc đo — bản ghi cũ không có thì bỏ qua */
+    fkInbodyCleanExtra(l);
     return l;
   });
   s.progressPhotos = s.progressPhotos.filter(p=> isObj(p) && Number.isFinite(Number(p.id))).map(p=>{
@@ -3133,7 +3178,10 @@ function inbodyRowHTML(l){
         <div class="stat-box"><div class="num">${fkNumTxt(l.muscleMassKg)}</div><div class="cap">Cơ (kg)</div></div>
       </div>
       ${l.note ? `<p class="small-note" style="margin-top:8px;">${escapeHtml(l.note)}</p>` : ""}
-      <button class="btn btn-ghost btn-sm" data-idel="${escapeHtml(String(l.id))}" style="margin-top:8px;color:var(--warn);">Xoá</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+        <button class="btn btn-soft btn-sm" data-iview="${escapeHtml(String(l.id))}"><span class="material-symbols-rounded">insights</span>&nbsp;Xem chi tiết &amp; đánh giá</button>
+        <button class="btn btn-ghost btn-sm" data-idel="${escapeHtml(String(l.id))}" style="color:var(--warn);">Xoá</button>
+      </div>
     </div>`;
 }
 /* R3-CORE-07: số từ state chèn vào HTML luôn đi qua đây (số hữu hạn → kiểu Việt, còn lại "--") */
@@ -3198,6 +3246,10 @@ function renderProgressInbodyTab(){
   `;
   if(logs.length) renderInbodyChart("#inbody-chart", state.inbodyLogs);
   $("#btn-add-inbody").addEventListener("click", ()=> openAddInbodyLog());
+  /* 21/11/2026: phiếu chi tiết lần đo (thành phần, cơ–mỡ, béo phì, hình giải phẫu, lịch sử & đánh giá) — inbody-scan.js */
+  $$("#progress-content [data-iview]").forEach(btn=> btn.addEventListener("click", ()=>{
+    try{ if(window.FKInbody && typeof FKInbody.openReport === "function") FKInbody.openReport(btn.dataset.iview); }catch(e){ console.warn("[inbody] report", e); }
+  }));
   $$("#progress-content [data-idel]").forEach(btn=> btn.addEventListener("click", ()=>{
     const id = btn.dataset.idel;
     /* R3-CORE-11: xoá số đo cần xác nhận (trước đây chạm nhầm là mất ngay, không hoàn tác được) */
