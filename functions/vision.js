@@ -18,7 +18,7 @@ const admin = require("firebase-admin");
 const REGION = "asia-southeast1";
 const VISION_API_KEY = defineSecret("VISION_API_KEY");
 const VISION_API_BASE = defineString("VISION_API_BASE", { default: "https://generativelanguage.googleapis.com/v1beta/openai", description: "Gốc API tương thích OpenAI (không có /chat/completions)" });
-const VISION_MODEL = defineString("VISION_MODEL", { default: "gemini-2.5-flash", description: "Tên model đọc được ảnh" });
+const VISION_MODEL = defineString("VISION_MODEL", { default: "gemini-3.8-flash", description: "Tên model đọc được ảnh" });
 const DAILY_MAX = 20, IMG_MAX_CHARS = 1400000, CATALOG_MAX = 320;
 const REFS = {
   none: "Không có vật tham chiếu. Giả định đĩa ăn phổ thông đường kính 24–26 cm, bát cơm miệng 11–12 cm, đũa 23–25 cm nếu thấy trong ảnh.",
@@ -197,9 +197,12 @@ async function rateGate(uid, nowMs, db, max){
    và CHUNG hạn mức mỗi người/ngày (ai_rate/{uid}_{ngày}, giới hạn = dailyLimit, mặc định 20) — chụp món, đọc InBody, hỏi AI, soạn giáo án:
    mỗi lần dùng = 1 lượt. Model đọc ảnh thử lần lượt: visionModel → VISION_API cũ (Gemini) → model → fallback (model chat có thể không đọc ảnh).
    Lượt chỉ bị trừ khi AI trả lời được: lỗi máy chủ / nhà cung cấp → hoàn lượt (refundRate). */
+const GEMINI_FALLBACK = ["gemini-3.8-flash", "gemini-flash-latest", "gemini-2.5-flash-lite"];
 function legacyProvider(){
   const key = String(value(VISION_API_KEY, "") || "").trim();
-  const base = cleanBase(value(VISION_API_BASE, "")), models = uniq([cleanModel(value(VISION_MODEL, ""))]);
+  /* 21/11: Google báo gemini-2.5-flash "no longer available to new users" (404) → luôn thử thêm model Gemini mới khi gọi thẳng Google */
+  const base = cleanBase(value(VISION_API_BASE, "")), isGoogle = /generativelanguage\.googleapis\.com/.test(base);
+  const models = uniq([cleanModel(value(VISION_MODEL, ""))].concat(isGoogle ? GEMINI_FALLBACK : []));
   return key && key !== "unset" && base && models.length ? { key, base, models, label: "VISION_API" } : null;
 }
 async function sharedAi(db){

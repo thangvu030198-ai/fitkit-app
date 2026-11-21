@@ -366,7 +366,7 @@ function homeHTML(logs){
   return `${title}<span class="ibh-when">Đo ${esc(dd2(cmp.last.ts))} · ${cmp.n} lần</span></div>
     <div class="ibh-row">${pick3.map(r=> `<div class="ibh-cell"><small>${esc(LAB[r.k])}</small><b>${r.v == null ? "--" : esc(vn(r.v))}<i>${esc(r.unit)}</i></b>${r.v == null ? "" : delta(r)}</div>`).join("")}</div>
     ${sp ? `<div class="ibh-spark">${sp}<small>${esc(LAB[sk])} · ${ser.length} lần gần nhất</small></div>` : `<p class="ibh-lead">Đo thêm lần nữa (cách 3–4 tuần) để thấy thay đổi.</p>`}
-    <div class="ibh-acts">${ACTS}<button type="button" class="btn btn-soft btn-sm" data-ibh="detail"><span class="material-symbols-rounded">insights</span>Xem chi tiết</button></div>`;
+    <div class="ibh-acts">${ACTS}<button type="button" class="btn btn-soft btn-sm" data-ibh="detail"><span class="material-symbols-rounded">insights</span>Xem chi tiết</button><button type="button" class="btn btn-ghost btn-sm" data-ibh="manage"><span class="material-symbols-rounded">delete</span>Xoá kết quả</button></div>`;
 }
 /** mở màn Tiến độ ở tab "Chỉ số InBody" */
 function openDetail(){
@@ -380,7 +380,37 @@ function onHomeClick(e){
   const t = e && e.target && e.target.closest ? e.target.closest("[data-ibh]") : null;
   const k = t && (t.getAttribute ? t.getAttribute("data-ibh") : (t.dataset || {}).ibh);
   if(!k) return;
-  if(k === "camera") pick({ camera:true }); else if(k === "gallery") pick({ camera:false }); else if(k === "detail") openDetail();
+  if(k === "camera") pick({ camera:true }); else if(k === "gallery") pick({ camera:false }); else if(k === "detail") openDetail(); else if(k === "manage") openManage();
+}
+/* 21/11 (anh Thắng): xoá kết quả InBody ngay từ trang chủ (bỏ các lần chụp thử bằng phiếu mẫu) — từng lần hoặc tất cả, có xác nhận */
+function openManage(){
+  const st = ST(); if(!st || typeof openSheet !== "function") return;
+  const logs = (Array.isArray(st.inbodyLogs) ? st.inbodyLogs : []).slice().sort((a, b)=> (b.ts || 0) - (a.ts || 0));
+  const fmtD = ts=>{ const d = new Date(ts); return isNaN(d) ? "--" : `${dd2(ts)}/${d.getFullYear()}`; };
+  const val = (v, u)=> v == null || v === "" || !Number.isFinite(Number(v)) ? "" : `${vn(Number(v))}${u}`;
+  const row = l=>{
+    const bits = [val(l.weight, " kg"), l.muscleMassKg != null ? "cơ " + val(l.muscleMassKg, " kg") : "", l.bodyFatPct != null ? "mỡ " + val(l.bodyFatPct, "%") : ""].filter(Boolean).join(" · ");
+    return `<div class="ibm-row" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(var(--fk-ov-rgb,255,255,255),.1)">
+      <div style="flex:1;min-width:0"><b style="display:block">${esc(fmtD(l.ts))}${l.source === "ai" ? ' <small class="pill" style="font-size:11px">AI</small>' : ""}</b><small class="small-note">${esc(bits || "Không có số")}${l.note ? " · " + esc(String(l.note).slice(0, 40)) : ""}</small></div>
+      <button type="button" class="btn btn-ghost btn-sm" data-ibm-del="${esc(String(l.id))}" aria-label="Xoá lần đo ${esc(fmtD(l.ts))}" style="color:var(--warn)"><span class="material-symbols-rounded">delete</span>Xoá</button></div>`;
+  };
+  openSheet(`<div class="sheet-header"><h3>Kết quả InBody</h3></div>
+    ${logs.length ? `<p class="small-note">Xoá các lần đo chụp thử / sai số. Đã xoá thì không khôi phục được.</p><div>${logs.map(row).join("")}</div>
+    <button type="button" class="btn btn-outline btn-block" data-ibm-all style="margin-top:14px;color:var(--warn)"><span class="material-symbols-rounded">delete_sweep</span>Xoá tất cả (${logs.length})</button>` : `<p class="empty-hint">Chưa có kết quả nào.</p>`}`);
+  const sc = D.getElementById("sheet-content"); if(!sc) return;
+  const done = msg=>{ try{ if(typeof saveState === "function") saveState(); }catch(_){} homeRefresh();
+    try{ if(typeof progressUI !== "undefined" && progressUI && progressUI.tab === "inbody" && D.getElementById("progress-content") && typeof renderProgressInbodyTab === "function") renderProgressInbodyTab(); }catch(_){}
+    try{ if(typeof toast === "function") toast(msg, "delete"); }catch(_){}
+    setTimeout(()=>{ const s2 = ST(); if(s2 && s2.inbodyLogs && s2.inbodyLogs.length) openManage(); else if(typeof closeSheet === "function") closeSheet(); }, 60); };
+  const ask = (t, m, fn)=> typeof confirmDialog === "function" ? confirmDialog(t, m, fn, "Xoá", "delete_forever") : fn();
+  sc.querySelectorAll("[data-ibm-del]").forEach(b=> b.addEventListener("click", ()=>{
+    const id = b.getAttribute("data-ibm-del");
+    ask("Xoá lần đo này?", "Lần đo sẽ bị xoá khỏi biểu đồ và không thể khôi phục.", ()=>{
+      const s2 = ST(); s2.inbodyLogs = (s2.inbodyLogs || []).filter(l=> String(l.id) !== String(id)); done("Đã xoá lần đo");
+    });
+  }));
+  const all = sc.querySelector("[data-ibm-all]");
+  if(all) all.addEventListener("click", ()=> ask("Xoá tất cả kết quả InBody?", "Toàn bộ lần đo sẽ bị xoá và không thể khôi phục.", ()=>{ const s2 = ST(); s2.inbodyLogs = []; done("Đã xoá tất cả kết quả"); }));
 }
 /** chèn / vẽ lại thẻ trên #home-content (không chèn trùng) */
 function homeInject(){
@@ -428,7 +458,7 @@ function install(){
   }
   return ok;
 }
-G.FKInbody = { clean, compare, verdict, metricSeries, chartSVG, fatKg, scan, pick, decorate, EXTRA, PROMPT, demoResult, install,
+G.FKInbody = { openManage, clean, compare, verdict, metricSeries, chartSVG, fatKg, scan, pick, decorate, EXTRA, PROMPT, demoResult, install,
   homeHTML, homeInject, homeRefresh, openDetail, sparkSVG, isHeic, HEIC_MSG };
 if(!install() && D) D.addEventListener("DOMContentLoaded", install, { once: true });
 })(typeof window !== "undefined" ? window : globalThis);
