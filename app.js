@@ -1400,6 +1400,7 @@ function renderWorkoutScreen(){
     // ảnh chưa tải được → nền gradient tối (không quay lại ảnh có người)
     const gym = `https://tapeasy.app/media/people-ai/hero-gym-${(idx % 7) + 1}.webp`;
     $("#workout-hero").style.backgroundImage = `url('${gym}'), linear-gradient(160deg, #2a2a2a, #0d0d0d)`;
+    $("#workout-hero").style.backgroundPosition = "center 78%";   // 21/11: hạ khung ảnh xuống — giữ thấy tạ/dụng cụ ở phần dưới ảnh
   }
 
   // day tabs
