@@ -146,7 +146,8 @@ async function analyze(images, ref, note){
     return clean(r && r.result);
   }catch(e){
     const code = String(e && e.code || "");
-    if(/failed-precondition|not-found|unimplemented/.test(code) && ownKey()) return viaOwn();
+    if(/failed-precondition|not-found|unimplemented|resource-exhausted/.test(code) && ownKey()) return viaOwn();   // máy chủ chưa bật / hết 20 lượt chung → dùng khoá riêng nếu có
+    if(/unauthenticated/.test(code)){ const x = new Error("Phiên đăng nhập đã hết hạn."); x.code = "need-login"; throw x; }
     if(/failed-precondition|not-found|unimplemented/.test(code)){ const x = new Error("Tính năng AI đọc ảnh chưa được bật trên máy chủ."); x.code = "not-configured"; throw x; }
     throw e;
   }
@@ -155,11 +156,22 @@ async function analyze(images, ref, note){
 /* ---------------------------------------------------------------------
    3. ẢNH: đọc file → thu nhỏ → dataURL + kiểm tối/mờ
    --------------------------------------------------------------------- */
+const isHeic = f=> /image\/hei[cf]/i.test(f.type || "") || /\.(heic|heif)$/i.test(f.name || "");
+const MSG_HEIC = "Ảnh định dạng HEIC của iPhone chưa mở được trên trình duyệt này. Hãy bấm \u201cChụp ảnh\u201d để chụp trực tiếp, hoặc mở ảnh trong app Ảnh → Chia sẻ → Lưu dưới dạng JPG rồi chọn lại. (Hoặc đổi Cài đặt → Camera → Định dạng → \u201cTương thích nhất\u201d.)";
+const MSG_BADIMG = "Không mở được ảnh này (tệp hỏng hoặc định dạng lạ). Hãy chọn một ảnh JPG / PNG khác hoặc chụp lại.";
 function loadImage(file){
-  return new Promise((ok, no)=>{ const url = URL.createObjectURL(file), im = new Image(); im.onload = ()=> ok({ im, url }); im.onerror = ()=>{ URL.revokeObjectURL(url); no(new Error("Không đọc được ảnh này.")); }; im.src = url; });
+  return new Promise((ok, no)=>{
+    const url = URL.createObjectURL(file), im = new Image(); let done = false;
+    const fail = ()=>{ if(done) return; done = true; clearTimeout(t); URL.revokeObjectURL(url); no(new Error(isHeic(file) ? MSG_HEIC : MSG_BADIMG)); };
+    const t = setTimeout(fail, 20000);                                     // một số trình duyệt "treo" khi gặp HEIC → không để vòng chờ mãi
+    im.onload = ()=>{ if(done) return; done = true; clearTimeout(t); if(!im.naturalWidth || !im.naturalHeight){ URL.revokeObjectURL(url); no(new Error(MSG_BADIMG)); return; } ok({ im, url }); };
+    im.onerror = fail; im.decoding = "async"; im.src = url;
+  });
 }
 async function prepare(file){
-  if(!file || !/^image\//.test(file.type || "image/")) throw new Error("Hãy chọn một tấm ảnh.");
+  if(!file) throw new Error("Chưa chọn được ảnh. Hãy thử lại.");
+  if(file.type && !/^image\//.test(file.type)) throw new Error("Tệp này không phải ảnh. Hãy chọn một tấm ảnh món ăn (JPG, PNG hoặc ảnh chụp từ máy).");
+  if(file.size > 40 * 1048576) throw new Error("Ảnh quá lớn (trên 40 MB). Hãy chọn ảnh khác hoặc chụp lại.");
   const { im, url } = await loadImage(file);
   try{
     const MAX = 1280, s = Math.min(1, MAX / Math.max(im.naturalWidth, im.naturalHeight));
@@ -178,7 +190,7 @@ async function prepare(file){
    4. GIAO DIỆN (19/11 — làm lại: khung quét toàn màn + tấm hướng dẫn trắng, kết quả dạng thẻ: vòng năng lượng 3 màu,
       3 thẻ chất có biểu đồ nhỏ, danh sách thành phần chỉnh gam, thanh lưu cố định. Màu theo theme TapEasy: nền --navy, nhấn --accent, nút chính --cta-*, 3 chất = --ring-1/2/3.)
    --------------------------------------------------------------------- */
-const COL = { p:"var(--ring-1, #33D6C9)", f:"var(--ring-2, #FF7A45)", c:"var(--ring-3, #A3F0E8)" };   // màu chỉ số của theme (theme-accent.css)
+const COL = { p:"var(--fs-p, #33D6C9)", f:"var(--fs-f, #FF7A45)", c:"var(--fs-c, #A3F0E8)" };   // màu chỉ số theo theme (--ring-*; theme sáng làm đậm — xem #fk-scan trong css())
 /* icon nét mảnh còn thiếu trong icons.js (FK_LINE) cho màn chụp */
 function addIcons(){
   try{
@@ -206,23 +218,29 @@ function css(){
 .fk-scan-entry .ic{ flex:0 0 44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; background:var(--cta-bg, #FF7A45); color:var(--cta-fg, #061A24); }
 .fk-scan-entry b{ display:block; font-size:15px; } .fk-scan-entry span.s{ display:block; font-size:12.5px; color:var(--text-muted); line-height:1.35; margin-top:2px; }
 
-#fk-scan{ --ink:#F5F7F3; --mut:var(--text-muted, rgba(245,247,243,.74)); --line:rgba(255,255,255,.10); --soft:rgba(255,255,255,.07); --soft2:rgba(255,255,255,.12); --tile:rgba(255,255,255,.055);
-  --sheet:radial-gradient(90% 40% at 100% 0%, rgba(var(--accent-rgb, 51,214,201),.12), transparent 62%), rgb(var(--navy-rgb, 6,26,36));
+/* Token màu của overlay. Phần nằm TRÊN ẢNH / CAMERA (thanh trên, chip vật tham chiếu, trạng thái quét) luôn tối → chữ trắng cố định.
+   Phần nằm trên SHEET (hướng dẫn, thẻ kết quả, hộp thông báo) dùng --ink/--mut/--sheet → đổi theo theme sáng/tối (21/11: rà tương phản AA).
+   --fs-p/f/c = màu 3 chất (đạm/béo/tinh bột), --fs-hot = icon lửa giữa vòng: theme tối dùng thẳng --ring-*; theme sáng làm đậm lại (≥3:1 trên nền trắng). */
+#fk-scan{ --ink:#F5F7F3; --mut:rgba(245,247,243,.76); --line:rgba(255,255,255,.10); --soft:rgba(255,255,255,.07); --soft2:rgba(255,255,255,.12); --tile:rgba(255,255,255,.055);
+  --sheet-solid:rgb(var(--navy-rgb, 6,26,36));
+  --sheet:radial-gradient(90% 40% at 100% 0%, rgba(var(--accent-rgb, 51,214,201),.12), transparent 62%), var(--sheet-solid);
+  --fs-p:var(--ring-1, #33D6C9); --fs-f:var(--ring-2, #FF7A45); --fs-c:var(--ring-3, #A3F0E8); --fs-hot:var(--cta-solid, #FF7A45); --fs-link:var(--link, #A3F0E8);
   position:fixed; inset:0; z-index:2500; background:rgb(var(--navy-rgb, 6,26,36)); display:flex; flex-direction:column;
-  opacity:0; transition:opacity .25s ease; color:#fff; font-family:var(--font-ui, 'Inter', system-ui, sans-serif); overflow:hidden; }
+  opacity:0; transition:opacity .25s ease; color:#fff; font-family:var(--font-ui, 'Inter', system-ui, sans-serif); overflow:hidden; overscroll-behavior:contain; -webkit-tap-highlight-color:transparent; }
 #fk-scan.on{ opacity:1; }
+#fk-scan:not(.on){ pointer-events:none; }   /* đang mở/đang đóng (mờ dần 260 ms) → không nhận chạm: chặn bấm "Lưu" 2 lần ghi trùng nhật ký */
 .fk-scan-top{ position:absolute; top:0; left:0; right:0; z-index:7; display:flex; justify-content:space-between; align-items:center; gap:10px; padding:calc(env(safe-area-inset-top, 0px) + 10px) 14px 10px; }
-.fk-scan-x{ width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,.22); background:rgba(20,12,8,.32); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.fk-scan-x{ width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,.22); background:rgba(20,12,8,.42); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; }
 .fk-scan-dash{ display:flex; gap:6px; flex:1; justify-content:center; }
 .fk-scan-dash i{ width:22px; height:4px; border-radius:4px; background:rgba(255,255,255,.35); transition:width .4s cubic-bezier(.22,1,.36,1), background .3s; }
 .fk-scan-dash i.on{ width:34px; background:#fff; }
-.fk-scan-pill{ min-height:40px; padding:0 14px; border-radius:20px; border:1px solid rgba(255,255,255,.28); background:rgba(20,12,8,.32); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); color:#fff; font:inherit; font-size:13.5px; font-weight:600; cursor:pointer; }
+.fk-scan-pill{ min-height:44px; padding:0 16px; border-radius:22px; border:1px solid rgba(255,255,255,.28); background:rgba(20,12,8,.42); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); color:#fff; font:inherit; font-size:13.5px; font-weight:600; cursor:pointer; }
 #fk-scan.busy .fk-scan-pill, #fk-scan.done .fk-scan-pill{ visibility:hidden; }
 
 .fk-scan-stage{ position:absolute; inset:0; overflow:hidden; }
 .fk-scan-hero{ position:absolute; left:0; right:0; top:0; height:calc(100% - var(--sh, 45%) + 40px); background:radial-gradient(70% 55% at 70% 32%, rgba(var(--accent-rgb, 51,214,201),.55), rgba(var(--cta-rgb, 255,122,69),.18) 55%, transparent 80%), rgb(var(--navy-rgb, 6,26,36)); transition:opacity .4s ease, transform .6s cubic-bezier(.22,1,.36,1); }
 .fk-scan-hero img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:saturate(1.08) contrast(1.02); }
-.fk-scan-hero::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(25,10,4,.42), rgba(25,10,4,0) 26%, rgba(25,10,4,0) 70%, rgba(25,10,4,.5)); }
+.fk-scan-hero::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(25,10,4,.42), rgba(25,10,4,0) 26%, rgba(25,10,4,0) 52%, rgba(25,10,4,.66)); }
 #fk-scan.busy .fk-scan-hero, #fk-scan.done .fk-scan-hero{ opacity:0; }
 .fk-scan-photo{ position:absolute; object-fit:cover; border-radius:0; will-change:transform, top, left, width, height; display:none; }
 #fk-scan.busy .fk-scan-photo, #fk-scan.done .fk-scan-photo{ display:block; }
@@ -252,40 +270,43 @@ function css(){
 .fk-scan-status small{ display:block; font-weight:400; font-size:12.5px; opacity:.8; margin-top:3px; }
 /* vật tham chiếu: chip kính trên ảnh */
 .fk-scan-refs{ position:absolute; left:0; right:0; bottom:calc(100% + 14px); padding:0 14px; transition:opacity .3s; }
-.fk-scan-refs > small{ display:block; font-size:12px; font-weight:600; letter-spacing:.02em; color:rgba(255,255,255,.9); margin:0 0 8px 4px; text-shadow:0 1px 6px rgba(0,0,0,.4); }
+.fk-scan-refs > small{ display:block; font-size:12px; font-weight:600; letter-spacing:.02em; color:#fff; margin:0 0 8px 4px; text-shadow:0 1px 2px rgba(0,0,0,.55), 0 1px 8px rgba(0,0,0,.45); }
 .fk-scan-refs > div{ display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
 .fk-scan-refs > div::-webkit-scrollbar{ display:none; }
-.fk-scan-chip{ flex:none; min-height:36px; padding:0 12px; border-radius:18px; border:1px solid rgba(255,255,255,.26); background:rgba(20,12,8,.34); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+.fk-scan-chip{ flex:none; min-height:40px; padding:0 12px; border-radius:20px; border:1px solid rgba(255,255,255,.26); background:rgba(20,12,8,.46); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
   color:#fff; font:inherit; font-size:12.5px; font-weight:600; display:inline-flex; align-items:center; gap:6px; cursor:pointer; transition:background .25s, color .25s, transform .2s; }
 .fk-scan-chip .material-symbols-rounded{ font-size:16px; }
 .fk-scan-chip.on{ background:var(--accent, #33D6C9); color:var(--on-accent, #061A24); border-color:var(--accent, #33D6C9); }
 .fk-scan-chip:active{ transform:scale(.95); }
 #fk-scan.busy .fk-scan-refs, #fk-scan.done .fk-scan-refs{ opacity:0; pointer-events:none; }
 /* tấm hướng dẫn trắng */
-.fk-scan-intro{ position:absolute; left:0; right:0; bottom:0; z-index:5; max-height:64%; background:var(--sheet); color:var(--ink); border-top:1px solid var(--line); border-radius:30px 30px 0 0;
+.fk-scan-intro{ position:absolute; left:0; right:0; bottom:0; z-index:5; max-height:64%; display:flex; flex-direction:column; background:var(--sheet); color:var(--ink); border-top:1px solid var(--line); border-radius:30px 30px 0 0;
   padding:24px 22px calc(env(safe-area-inset-bottom, 0px) + 18px); box-shadow:0 -20px 50px rgba(0,0,0,.28); transition:transform .55s cubic-bezier(.22,.9,.24,1); }
 #fk-scan.busy .fk-scan-intro, #fk-scan.done .fk-scan-intro{ transform:translateY(105%); }
 .fk-scan-intro h2{ font-family:var(--font-head, inherit); font-size:22px; font-weight:600; letter-spacing:-.02em; margin:0 0 14px; color:var(--ink); }
-.fk-scan-intro .sc{ max-height:calc(64vh - 30px); overflow-y:auto; margin:0 -22px; padding:0 22px; }
+.fk-scan-intro .sc{ flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; margin:0 -22px; padding:0 22px; }   /* cuộn được trên iOS, không tràn xuống dưới mép màn */
+.fk-scan-intro .ft{ flex:0 0 auto; }   /* nút Chụp ảnh / Chọn ảnh luôn thấy, không bị đẩy xuống dưới vùng home indicator */
 .fk-scan-tip{ display:flex; gap:14px; align-items:center; padding:7px 0; }
 .fk-scan-tip .t{ flex:0 0 44px; height:44px; border-radius:14px; background:var(--soft); display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 0 1px var(--line); }
 .fk-scan-tip .t .material-symbols-rounded{ font-size:22px; }
 .fk-scan-tip b{ display:block; font-size:14.5px; font-weight:600; color:var(--ink); }
 .fk-scan-tip small{ display:block; font-size:13px; color:var(--mut); line-height:1.4; margin-top:1px; }
+.fk-scan-noteln input::placeholder{ color:var(--mut); opacity:1; }
 .fk-scan-noteln{ display:flex; align-items:center; gap:10px; margin:12px 0 0; min-height:48px; padding:0 14px; border-radius:16px; background:var(--soft); color:var(--mut); }
-.fk-scan-noteln input{ flex:1; min-width:0; border:0; background:transparent; font:inherit; font-size:14.5px; color:var(--ink); outline:none; min-height:44px; }
-.fk-scan-go{ width:100%; min-height:56px; border-radius:28px; border:0; background:var(--cta-bg, #FF7A45); color:var(--cta-fg, #061A24); box-shadow:var(--cta-shadow, none); font:inherit; font-size:16px; font-weight:600; margin-top:16px; cursor:pointer;
+.fk-scan-noteln input{ flex:1; min-width:0; border:0; background:transparent; font:inherit; font-size:16px; color:var(--ink); outline:none; min-height:44px; }
+.fk-scan-go{ width:100%; min-height:56px; border-radius:28px; border:0; background:var(--cta-bg, #FF7A45); color:var(--cta-fg, #061A24); box-shadow:var(--cta-shadow, none); font:inherit; font-size:16px; font-weight:600; margin-top:12px; cursor:pointer;
   display:flex; align-items:center; justify-content:center; gap:8px; transition:transform .2s; }
+.fk-scan-go:disabled, .fk-scan-go2:disabled{ opacity:.55; cursor:default; }
 .fk-scan-go:active{ transform:scale(.98); }
 .fk-scan-go2{ width:100%; min-height:48px; border:0; background:transparent; color:var(--ink); font:inherit; font-size:14.5px; font-weight:600; margin-top:4px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; }
-.fk-scan-priv{ font-size:11.5px; color:var(--mut); line-height:1.45; text-align:center; margin:6px 8px 0; }
+.fk-scan-priv{ font-size:12px; color:var(--mut); line-height:1.45; text-align:center; margin:12px 8px 6px; }
 
 /* ---- thẻ kết quả ---- */
-.fk-scan-card{ position:absolute; left:0; right:0; bottom:0; z-index:5; max-height:90%; display:flex; flex-direction:column; background:var(--sheet); color:var(--ink); border-radius:30px 30px 0 0;
+.fk-scan-card{ position:absolute; left:0; right:0; bottom:0; z-index:5; max-height:calc(100% - env(safe-area-inset-top, 0px) - 66px); display:flex; flex-direction:column; background:var(--sheet); color:var(--ink); border-radius:30px 30px 0 0;
   box-shadow:0 -18px 50px rgba(0,0,0,.4); border-top:1px solid var(--line); transform:translateY(104%); transition:transform .56s cubic-bezier(.22,.9,.24,1); }
 .fk-scan-card.on{ transform:none; }
 .fk-scan-grab{ width:44px; height:5px; border-radius:5px; background:var(--soft2); margin:10px auto 0; flex:0 0 auto; }
-.fk-scan-body{ overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 16px 0; }
+.fk-scan-body{ flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:12px 16px 0; }
 .fk-scan-head{ display:flex; gap:12px; align-items:center; padding:2px 2px 12px; }
 .fk-scan-thumb{ flex:0 0 56px; width:56px; height:56px; border-radius:18px; background:var(--soft) center/cover no-repeat; box-shadow:0 6px 16px -6px rgba(0,0,0,.3); }
 .fk-scan-head small{ display:block; font-size:12.5px; color:var(--mut); }
@@ -303,7 +324,7 @@ function css(){
 .anim .fk-scan-ring .seg{ animation:fk-ring-in .9s cubic-bezier(.22,1,.36,1) both; animation-delay:calc(.25s + var(--d, 0s)); }
 @keyframes fk-ring-in{ from{ stroke-dashoffset:var(--len); } to{ stroke-dashoffset:0; } }
 .fk-scan-ring .mid{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }   /* đĩa giữa vẽ trong SVG (div bo tròn + bóng đè lên SVG có hoạt ảnh làm Chrome treo khi chụp) */
-.fk-scan-ring .mid .material-symbols-rounded{ font-size:28px; color:var(--cta-solid, #FF7A45); }
+.fk-scan-ring .mid .material-symbols-rounded{ font-size:28px; color:var(--fs-hot); }
 .fk-scan-mac{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:10px 0 0; }
 .fk-scan-mac > div{ background:var(--tile); border:1px solid var(--line); border-radius:18px; padding:11px 11px 8px; min-width:0; }
 .fk-scan-mac .h{ display:flex; align-items:center; gap:5px; font-size:12.5px; font-weight:600; color:var(--ink); }
@@ -326,14 +347,14 @@ function css(){
 .fk-scan-row .n{ flex:1; min-width:0; font-size:14.5px; font-weight:600; overflow-wrap:anywhere; }
 .fk-scan-row .m{ display:block; font-size:12px; color:var(--mut); font-weight:400; margin-top:2px; }
 .fk-scan-row .k{ font-size:14.5px; font-weight:600; text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
-.fk-scan-tag{ display:inline-block; font-size:10.5px; font-weight:600; padding:2px 7px; border-radius:99px; background:rgba(var(--accent-rgb, 51,214,201),.16); color:var(--link, #A3F0E8); margin-left:6px; vertical-align:1px; }
+.fk-scan-tag{ display:inline-block; font-size:10.5px; font-weight:600; padding:2px 7px; border-radius:99px; background:rgba(var(--accent-rgb, 51,214,201),.16); color:var(--fs-link); margin-left:6px; vertical-align:1px; }
 .fk-scan-tag.ai{ background:rgba(var(--cta-rgb, 255,122,69),.16); color:var(--ink); }
 .fk-scan-step{ display:flex; align-items:center; gap:6px; margin:10px 0 0 20px; }
 .fk-scan-step .pill{ display:inline-flex; align-items:center; background:var(--soft); border-radius:22px; padding:2px; }
 .fk-scan-step .pill button{ width:40px; height:40px; border-radius:50%; border:0; background:var(--soft2); color:var(--ink); font-size:19px; font-weight:600; cursor:pointer; }
 .fk-scan-step .pill button:active{ transform:scale(.92); }
-.fk-scan-step input{ width:58px; height:40px; border:0; background:transparent; color:var(--ink); text-align:center; font:inherit; font-size:15.5px; font-weight:600; -moz-appearance:textfield; }
-.fk-scan-step input::-webkit-inner-spin-button{ -webkit-appearance:none; }
+.fk-scan-step input{ width:58px; height:40px; border:0; background:transparent; color:var(--ink); text-align:center; font:inherit; font-size:16px; font-weight:600; -moz-appearance:textfield; }
+.fk-scan-step input::-webkit-inner-spin-button, .fk-scan-step input::-webkit-outer-spin-button{ -webkit-appearance:none; margin:0; }
 .fk-scan-step .u{ font-size:13px; color:var(--mut); flex:1 1 auto; }
 .fk-scan-step .del{ width:40px; height:40px; border-radius:50%; border:0; background:transparent; color:var(--mut); cursor:pointer; }
 .fk-scan-opts{ display:flex; gap:8px; flex-wrap:wrap; }
@@ -343,17 +364,31 @@ function css(){
 .fk-scan-warn .material-symbols-rounded{ font-size:18px; }
 .fk-scan-note{ font-size:12px; color:var(--mut); line-height:1.5; margin:12px 4px 0; }
 .fk-scan-bar{ position:sticky; bottom:0; display:flex; gap:10px; align-items:center; margin:16px -16px 0; padding:12px 16px calc(env(safe-area-inset-bottom, 0px) + 12px);
-  background:linear-gradient(180deg, transparent, rgb(var(--navy-rgb, 6,26,36)) 34%); }
+  background:linear-gradient(180deg, transparent, var(--sheet-solid) 34%); }   /* theo nền sheet (trước: luôn navy → dải tối trên thẻ trắng ở theme sáng) */
 .fk-scan-round{ flex:0 0 56px; height:56px; border-radius:50%; border:1px solid var(--line); background:var(--soft); color:var(--ink); display:flex; align-items:center; justify-content:center; cursor:pointer; }
 .fk-scan-save{ flex:1; min-height:56px; border-radius:28px; border:0; background:var(--cta-bg, #FF7A45); color:var(--cta-fg, #061A24); box-shadow:var(--cta-shadow, none); font:inherit; font-size:16px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
 .fk-scan-save:disabled{ opacity:.4; }
-.fk-scan-msg{ position:absolute; left:20px; right:20px; top:50%; transform:translateY(-50%); z-index:8; text-align:center; background:var(--sheet); color:var(--ink); border:1px solid var(--line); border-radius:24px; padding:22px 20px 18px; box-shadow:0 20px 60px rgba(0,0,0,.4); }
+.fk-scan-msg{ position:absolute; left:20px; right:20px; top:50%; transform:translateY(-50%); z-index:8; max-height:calc(100% - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 120px); overflow-y:auto; text-align:center; background:var(--sheet); color:var(--ink); border:1px solid var(--line); border-radius:24px; padding:22px 20px 18px; box-shadow:0 20px 60px rgba(0,0,0,.4); }
 .fk-scan-msg p{ margin:0 0 16px; font-size:15px; line-height:1.5; }
-.fk-scan-acts{ display:flex; gap:10px; }
+.fk-scan-acts{ display:flex; gap:10px; flex-wrap:wrap; }
+.fk-scan-msg .fk-scan-btn{ min-width:120px; }
 .fk-scan-btn{ flex:1 1 0; min-height:50px; border-radius:25px; border:0; font:inherit; font-size:15px; font-weight:600; cursor:pointer; }
 .fk-scan-btn.pri{ background:var(--cta-bg, #FF7A45); color:var(--cta-fg, #061A24); } .fk-scan-btn.sec{ background:var(--soft2); color:var(--ink); }
-html.fk-light #fk-scan{ --ink:#14232B; --mut:rgba(20,35,43,.7); --line:rgba(20,35,43,.10); --soft:rgba(20,35,43,.05); --soft2:rgba(20,35,43,.09); --tile:#fff; }
-html.fk-light #fk-scan .fk-scan-chip:not(.on){ color:#fff; }
+/* Theme SÁNG (Sáng, Thu Alpine, Cam năng lượng, Chanh sáng): sheet nền sáng + chữ đậm. Đo tương phản trên #F7FAFB / thẻ #fff:
+   --ink 15:1 · --mut 6,2:1 · màu 3 chất sau khi làm đậm ≥3,3:1 (số 26 px + icon) · nút chính = --cta-bg/--cta-fg của theme (≥4,5:1). */
+html.fk-light #fk-scan{ --ink:#14232B; --mut:rgba(20,35,43,.74); --line:rgba(20,35,43,.12); --soft:rgba(20,35,43,.05); --soft2:rgba(20,35,43,.09); --tile:#fff;
+  --sheet-solid:#F7FAFB;
+  --sheet:radial-gradient(90% 40% at 100% 0%, rgba(var(--accent-rgb, 2,188,179),.10), transparent 62%), var(--sheet-solid);   /* 21/11: trước navy + chữ tối = chìm */
+  --fs-p:#00756F; --fs-f:#B83D0B; --fs-c:#02625D; --fs-hot:#B83D0B; --fs-link:var(--ink); }
+@supports (color: color-mix(in srgb, red 50%, blue)){
+  html.fk-light #fk-scan{ --fs-p:color-mix(in srgb, var(--ring-1, #00756F) 55%, #14232B); --fs-f:color-mix(in srgb, var(--ring-2, #B83D0B) 55%, #14232B);
+    --fs-c:color-mix(in srgb, var(--ring-3, #02958D) 55%, #14232B); --fs-hot:color-mix(in srgb, var(--ring-2, #B83D0B) 55%, #14232B); }
+}
+html.fk-light[data-theme="light"] #fk-scan{ --fs-p:#00756F; --fs-f:#B83D0B; --fs-c:#02625D; --fs-hot:#B83D0B; }   /* bảng màu Sáng gốc đã đạt AA → giữ nguyên độ tươi */
+html.fk-light #fk-scan .fk-scan-chip:not(.on), html.fk-light #fk-scan .fk-scan-pill, html.fk-light #fk-scan .fk-scan-x, html.fk-light #fk-scan .fk-scan-status{ color:#fff; }   /* nằm trên ảnh/camera tối */
+html.fk-light #fk-scan .fk-scan-warn{ background:#FFF4D6; border-color:rgba(176,110,0,.35); }
+html.fk-light #fk-scan .fk-scan-intro, html.fk-light #fk-scan .fk-scan-card{ box-shadow:0 -14px 40px rgba(6,26,36,.22); }
+html.fk-light .fk-scan-entry{ border-color:rgba(20,35,43,.12); }
 @media (prefers-reduced-motion: reduce){
   .fk-scan-line{ animation:none; top:45%; } #fk-scan .fk-scan-frame .c{ animation:none; }
   .fk-scan-card, .fk-scan-intro, .fk-scan-photo.fly, .fk-scan-frame{ transition:none; }
@@ -363,9 +398,9 @@ html.fk-light #fk-scan .fk-scan-chip:not(.on){ color:#fff; }
 const ic = n=> `<span class="material-symbols-rounded" aria-hidden="true">${n}</span>`;
 let S = null;       // phiên chụp hiện tại
 const INTRO_TIPS = [
-  ["crop_free", "var(--ring-1, #33D6C9)", "Đặt món trong khung", "Chụp thẳng từ trên xuống, cả bữa nằm gọn trong khung quét."],
-  ["fullscreen", "var(--ring-2, #FF7A45)", "Thấy đủ cả đĩa", "Đừng cắt mất mép đĩa, bát — tách món riêng nếu được."],
-  ["straighten", "var(--link, #A3F0E8)", "Thêm vật tham chiếu", "Đũa, muỗng hay thẻ ATM giúp AI đo khẩu phần sát hơn."],
+  ["crop_free", "var(--fs-p, #33D6C9)", "Đặt món trong khung", "Chụp thẳng từ trên xuống, cả bữa nằm gọn trong khung quét."],
+  ["fullscreen", "var(--fs-f, #FF7A45)", "Thấy đủ cả đĩa", "Đừng cắt mất mép đĩa, bát — tách món riêng nếu được."],
+  ["straighten", "var(--fs-c, #A3F0E8)", "Thêm vật tham chiếu", "Đũa, muỗng hay thẻ ATM giúp AI đo khẩu phần sát hơn."],
 ];
 /** Ảnh nền màn hướng dẫn: ảnh món của app (nếu đã tải chỉ mục ảnh), không có → nền cam ấm */
 function heroSrc(){
@@ -388,15 +423,39 @@ function open(mealId){
   paintRefs();
   el.querySelector(".fk-scan-refs").addEventListener("click", ev=>{ const b = ev.target.closest("[data-ref]"); if(!b) return; sess.ref = b.dataset.ref; haptic("light"); paintRefs(); });
   const f1 = el.querySelector("#fk-scan-f1"), f2 = el.querySelector("#fk-scan-f2");
-  el.querySelector("#fk-scan-cam").addEventListener("click", ()=> f1.click());
-  el.querySelector("#fk-scan-lib").addEventListener("click", ()=> f2.click());
-  el.querySelector(".fk-scan-pill").addEventListener("click", ()=> f2.click());
-  const onFile = e=>{ const f = e.target.files && e.target.files[0]; e.target.value = ""; if(!f) return; sess.note = el.querySelector("#fk-scan-note").value; run(f); };
+  const pick = f=>{ if(sess.busy || sess.closed) return; try{ D.activeElement && D.activeElement.blur && D.activeElement.blur(); }catch(e){} f.value = ""; f.click(); };   // reset trước → chọn lại CÙNG một ảnh vẫn chạy
+  el.querySelector("#fk-scan-cam").addEventListener("click", ()=> pick(f1));
+  el.querySelector("#fk-scan-lib").addEventListener("click", ()=> pick(f2));
+  el.querySelector(".fk-scan-pill").addEventListener("click", ()=> pick(f2));
+  el.querySelector("#fk-scan-note").addEventListener("keydown", ev=>{ if(ev.key === "Enter"){ ev.preventDefault(); ev.target.blur(); } });
+  const onFile = e=>{ const f = e.target.files && e.target.files[0]; e.target.value = ""; if(!f || sess.busy || sess.closed) return; sess.note = el.querySelector("#fk-scan-note").value; run(f); };
   f1.addEventListener("change", onFile); f2.addEventListener("change", onFile);
+}
+/** Quay về màn hướng dẫn trong CÙNG overlay (giữ vật tham chiếu + ghi chú) — dùng cho "Chụp lại" / "Chọn ảnh khác" */
+function backToIntro(el, sess, then){
+  const m = el.querySelector(".fk-scan-msg"); if(m) m.remove();
+  sess.shots = []; sess.busy = false;
+  el.classList.remove("busy", "done"); el.classList.add("intro"); setStep(el, 0);
+  const im = el.querySelector(".fk-scan-photo"); if(im){ im.classList.remove("fly"); im.removeAttribute("src"); im.style.display = "none"; }
+  const card = el.querySelector(".fk-scan-card"); if(card) card.classList.remove("on");
+  if(then === "cam"){ const f = el.querySelector("#fk-scan-f1"); if(f){ f.value = ""; f.click(); } }          // vẫn trong cú chạm của người dùng → trình duyệt cho mở camera
+}
+/** Lỗi → câu tiếng Việt nói rõ cần làm gì */
+function errText(e){
+  const code = String(e && e.code || ""), msg = String(e && e.message || "");
+  const offline = typeof navigator !== "undefined" && navigator.onLine === false;
+  if(code === "need-login") return { t:"Bạn cần đăng nhập để dùng chụp ảnh tính calo. Mỗi tài khoản có 20 lượt AI mỗi ngày (dùng chung mọi tính năng AI).", login:true };
+  if(/permission-denied/.test(code)) return { t: msg && /Đăng nhập/.test(msg) ? msg : "Hãy đăng nhập bằng tài khoản (email / Google / Apple) để dùng tính năng AI.", login:true };
+  if(code === "not-configured") return { t:"Tính năng AI đọc ảnh chưa được bật trên máy chủ. Bạn có thể nhập khoá AI riêng trong Hồ sơ → Cài đặt AI, hoặc thêm món bằng ô tìm kiếm." };
+  if(/resource-exhausted/.test(code)) return { t:"Bạn đã dùng hết 20 lượt AI hôm nay (dùng chung cho chụp món, đọc InBody, hỏi AI…). Lượt sẽ làm mới vào ngày mai — trong lúc chờ, hãy thêm món bằng ô tìm kiếm, hoặc nhập khoá AI riêng trong Hồ sơ → Cài đặt AI." };
+  if(/invalid-argument/.test(code)) return { t:"Ảnh không hợp lệ hoặc quá lớn. Hãy chụp lại hoặc chọn ảnh khác.", retry:false, again:true };
+  if(offline || /unavailable|deadline-exceeded|internal|cancelled|network|offline/i.test(code) || /failed to fetch|network|timeout|offline/i.test(msg))
+    return { t: offline ? "Máy đang mất mạng. Bật Wi-Fi hoặc 4G rồi bấm \u201cThử lại\u201d." : (msg && /[à-ỹ]/i.test(msg) && !/^Đã có lỗi/.test(msg) ? msg + " " : "Chưa kết nối được dịch vụ AI. ") + "Kiểm tra mạng rồi bấm \u201cThử lại\u201d.", retry:true };
+  return { t: (msg && /[à-ỹ]/i.test(msg) ? msg : "Chưa phân tích được ảnh.") + " Bấm \u201cThử lại\u201d hoặc chụp ảnh khác.", retry:true };
 }
 
 function overlay(){
-  let el = D.getElementById("fk-scan"); if(el) el.remove();
+  let el = D.getElementById("fk-scan"); if(el){ try{ el._fkOff && el._fkOff(); }catch(e){} el.remove(); }
   const hero = heroSrc();
   el = D.createElement("div"); el.id = "fk-scan"; el.className = "intro"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Chụp ảnh tính calo");
   el.innerHTML = `<div class="fk-scan-stage">
@@ -412,20 +471,29 @@ function overlay(){
       <div class="fk-scan-refs"><small>Vật đặt cạnh món để đo kích thước</small><div role="group" aria-label="Vật tham chiếu"></div></div>
       <div class="sc"><h2>Chụp trọn cả bữa</h2>
       ${INTRO_TIPS.map(t=> `<div class="fk-scan-tip"><span class="t" style="color:${t[1]}">${ic(t[0])}</span><span><b>${esc(t[2])}</b><small>${esc(t[3])}</small></span></div>`).join("")}
-      <label class="fk-scan-noteln">${ic("edit_note")}<input type="text" id="fk-scan-note" maxlength="200" placeholder="Ghi chú cho AI · VD: cơm tấm, chiên nhiều dầu" aria-label="Ghi chú cho AI (không bắt buộc)"></label>
-      <button type="button" class="fk-scan-go" id="fk-scan-cam">${ic("photo_camera")}Chụp ảnh</button>
+      <label class="fk-scan-noteln">${ic("edit_note")}<input type="text" id="fk-scan-note" maxlength="200" enterkeyhint="done" autocomplete="off" placeholder="Ghi chú cho AI · VD: cơm tấm, chiên nhiều dầu" aria-label="Ghi chú cho AI (không bắt buộc)"></label>
+      <p class="fk-scan-priv">Ảnh chỉ gửi tới dịch vụ AI để phân tích, không lưu trên máy chủ TapEasy. Kết quả là ước lượng — bạn xem và chỉnh trước khi lưu.</p></div>
+      <div class="ft"><button type="button" class="fk-scan-go" id="fk-scan-cam">${ic("photo_camera")}Chụp ảnh</button>
       <button type="button" class="fk-scan-go2" id="fk-scan-lib">${ic("photo_library")}Chọn ảnh có sẵn</button>
-      <p class="fk-scan-priv">Ảnh chỉ gửi tới dịch vụ AI để phân tích, không lưu trên máy chủ TapEasy. Kết quả là ước lượng — bạn xem và chỉnh trước khi lưu.</p>
       <input type="file" accept="image/*" capture="environment" id="fk-scan-f1" hidden><input type="file" accept="image/*" id="fk-scan-f2" hidden></div></div>
     <div class="fk-scan-card" aria-live="polite"><div class="fk-scan-grab"></div><div class="fk-scan-body"></div></div>`;
   D.body.appendChild(el);
   el.querySelector(".fk-scan-x").addEventListener("click", close);
+  const onKey = ev=>{ if(ev.key === "Escape" && D.getElementById("fk-scan") === el){ ev.preventDefault(); close(); } };
+  D.addEventListener("keydown", onKey); el._fkOff = ()=> D.removeEventListener("keydown", onKey);
+  el._fkFocus = D.activeElement;                                            // trả focus về nút đã mở khi đóng
+  setTimeout(()=>{ try{ el.querySelector(".fk-scan-x").focus({ preventScroll:true }); }catch(e){} }, 60);
   const sh = ()=>{ const it = el.querySelector(".fk-scan-intro"); if(it && it.offsetHeight) el.style.setProperty("--sh", it.offsetHeight + "px"); };
   sh(); requestAnimationFrame(()=>{ sh(); el.classList.add("on"); });
   try{ if(G.ResizeObserver) new ResizeObserver(sh).observe(el.querySelector(".fk-scan-intro")); }catch(e){}
   return el;
 }
-function close(){ const el = D.getElementById("fk-scan"); if(!el) return; el.classList.remove("on"); setTimeout(()=>{ try{ el.remove(); }catch(e){} }, 260); S = S && Object.assign(S, { closed:true }); }
+function close(){
+  const el = D.getElementById("fk-scan"); S = S && Object.assign(S, { closed:true }); if(!el) return;
+  try{ el._fkOff && el._fkOff(); }catch(e){}
+  el.classList.remove("on"); setTimeout(()=>{ try{ el.remove(); }catch(e){} }, 260);
+  try{ const f = el._fkFocus; if(f && f.isConnected && f.focus) f.focus({ preventScroll:true }); }catch(e){}
+}
 function fitPhoto(el, shot){
   const im = el.querySelector(".fk-scan-photo"), W = el.clientWidth, H = el.clientHeight;
   const s = Math.max(W / shot.w, H / shot.h), w = shot.w * s, h = shot.h * s;          // phủ kín màn như khung ngắm
@@ -441,33 +509,56 @@ const STEPS = ["Đang nhận diện từng món…", "Đang đo kích thước k
 
 async function run(file){
   const el = D.getElementById("fk-scan") || overlay(), sess = S;
+  if(!sess || sess.closed || sess.busy) return;
+  sess.busy = true;
   const setSt = (a, b)=>{ const x = el.querySelector("#fk-scan-st"), y = el.querySelector("#fk-scan-st2"); if(x) x.textContent = a; if(y) y.textContent = b || ""; };
+  const btns = on=> el.querySelectorAll("#fk-scan-cam, #fk-scan-lib").forEach(b=>{ b.disabled = on; });
+  /* mọi hộp thông báo dùng chung 1 bộ xử lý: x = đóng · r = chụp lại (mở camera) · pick = chọn ảnh khác · t = thử lại · go = vẫn phân tích · login = đăng nhập */
+  const ask = (html, acts)=> message(el, html).addEventListener("click", ev=>{
+    const a = ev.target.closest("[data-a]"); if(!a) return; const k = a.dataset.a;
+    if(k === "x") close();
+    else if(k === "r") backToIntro(el, sess, "cam");
+    else if(k === "pick") backToIntro(el, sess);
+    else if(k === "login"){ close(); setTimeout(()=>{ try{ if(typeof showAuth === "function") showAuth("login"); }catch(e){} }, 280); }
+    else if(acts && acts[k]){ const m = el.querySelector(".fk-scan-msg"); if(m) m.remove(); acts[k](); }
+  });
   let shot;
-  try{ shot = await prepare(file); }catch(e){ message(el, `<p>${esc(e.message || "Không đọc được ảnh.")}</p><button class="fk-scan-btn sec" data-a="x">Đóng</button>`).querySelector("[data-a]").addEventListener("click", close); return; }
-  if(sess.closed) return;
+  btns(true);
+  try{ shot = await prepare(file); }
+  catch(e){
+    btns(false); sess.busy = false; if(sess.closed) return;
+    ask(`<p>${esc((e && e.message) || MSG_BADIMG)}</p><div class="fk-scan-acts"><button type="button" class="fk-scan-btn sec" data-a="pick">Chọn ảnh khác</button><button type="button" class="fk-scan-btn pri" data-a="r">Chụp ảnh</button></div>`);
+    return;
+  }
+  btns(false);
+  if(sess.closed){ sess.busy = false; return; }
   sess.shots.push(shot); fitPhoto(el, shot); el.classList.remove("intro"); el.classList.add("done"); setStep(el, 1);
   const go = async ()=>{
+    sess.busy = true;
     el.classList.remove("intro", "done"); el.classList.add("busy"); setStep(el, 1);
-    let i = 0; setSt(STEPS[0], sess.shots.length > 1 ? "Dùng cả 2 ảnh" : "");
-    const tick = setInterval(()=>{ i = Math.min(STEPS.length - 1, i + 1); setSt(STEPS[i], ""); }, 2200);
-    try{
-      const res = await analyze(sess.shots.map(s=> s.dataUrl), sess.ref, sess.note);
-      clearInterval(tick); if(sess.closed) return;
-      if(!res.is_food){ message(el, `<p>AI không thấy món ăn trong ảnh này. Hãy chụp gần hơn, đủ sáng và để món ăn nằm giữa khung hình.</p><div class="fk-scan-acts"><button class="fk-scan-btn sec" data-a="x">Đóng</button><button class="fk-scan-btn pri" data-a="r">Chụp lại</button></div>`)
-        .addEventListener("click", ev=>{ const a = ev.target.closest("[data-a]"); if(!a) return; close(); if(a.dataset.a === "r") setTimeout(()=> open(sess.meal), 260); }); return; }
-      showResult(el, sess, res);
-    }catch(e){
-      clearInterval(tick); if(sess.closed) return;
-      const code = e && e.code, login = code === "need-login", nc = code === "not-configured";
-      message(el, `<p>${esc(login ? "Đăng nhập để dùng chụp ảnh tính calo. Mỗi tài khoản có 20 lượt AI mỗi ngày (dùng chung mọi tính năng AI)." : nc ? "Tính năng AI đọc ảnh chưa được bật trên máy chủ. Bạn có thể nhập khoá AI riêng trong Hồ sơ → Cài đặt AI, hoặc thêm món bằng cách tìm kiếm." : (e && e.message) || "Chưa phân tích được ảnh. Kiểm tra mạng rồi thử lại.")}</p>
-        <div class="fk-scan-acts"><button class="fk-scan-btn sec" data-a="x">Đóng</button>${login || nc ? "" : `<button class="fk-scan-btn pri" data-a="t">Thử lại</button>`}</div>`)
-        .addEventListener("click", ev=>{ const a = ev.target.closest("[data-a]"); if(!a) return; if(a.dataset.a === "t"){ el.querySelector(".fk-scan-msg").remove(); go(); } else close(); });
+    let i = 0; setSt(STEPS[0], sess.shots.length > 1 ? "Dùng cả 2 ảnh" : "Thường mất 5–15 giây");
+    const tick = setInterval(()=>{ if(sess.closed){ clearInterval(tick); return; } i = Math.min(STEPS.length - 1, i + 1); setSt(STEPS[i], ""); }, 2200);
+    let res;
+    try{ res = await analyze(sess.shots.map(s=> s.dataUrl), sess.ref, sess.note); }
+    catch(e){
+      clearInterval(tick); sess.busy = false; if(sess.closed) return;
+      const E = errText(e);
+      ask(`<p>${esc(E.t)}</p><div class="fk-scan-acts"><button type="button" class="fk-scan-btn sec" data-a="x">Đóng</button>${
+        E.login ? `<button type="button" class="fk-scan-btn pri" data-a="login">Đăng nhập</button>` : E.retry ? `<button type="button" class="fk-scan-btn pri" data-a="t">Thử lại</button>` : E.again ? `<button type="button" class="fk-scan-btn pri" data-a="r">Chụp lại</button>` : ""}</div>`, { t: go });
+      return;
     }
+    clearInterval(tick); sess.busy = false; if(sess.closed) return;
+    if(!res.is_food){
+      ask(`<p>AI không thấy món ăn trong ảnh này. Hãy chụp gần hơn, đủ sáng và để món ăn nằm giữa khung hình.</p><div class="fk-scan-acts"><button type="button" class="fk-scan-btn sec" data-a="pick">Chọn ảnh khác</button><button type="button" class="fk-scan-btn pri" data-a="r">Chụp lại</button></div>`);
+      return;
+    }
+    try{ showResult(el, sess, res); }
+    catch(e){ ask(`<p>Có lỗi khi hiển thị kết quả. Hãy thử lại — nếu vẫn lỗi, thêm món bằng ô tìm kiếm.</p><div class="fk-scan-acts"><button type="button" class="fk-scan-btn sec" data-a="x">Đóng</button><button type="button" class="fk-scan-btn pri" data-a="t">Thử lại</button></div>`, { t: go }); }
   };
   if(shot.quality.dark || shot.quality.blur){
-    message(el, `<p>Ảnh ${shot.quality.dark && shot.quality.blur ? "khá tối và mờ" : shot.quality.dark ? "khá tối" : "hơi mờ"} — AI dễ đoán sai kích thước. Chụp lại ở chỗ sáng hơn và giữ chắc tay sẽ chính xác hơn.</p>
-      <div class="fk-scan-acts"><button class="fk-scan-btn sec" data-a="go">Vẫn phân tích</button><button class="fk-scan-btn pri" data-a="r">Chụp lại</button></div>`)
-      .addEventListener("click", ev=>{ const a = ev.target.closest("[data-a]"); if(!a) return; if(a.dataset.a === "go"){ el.querySelector(".fk-scan-msg").remove(); go(); } else { close(); setTimeout(()=> open(sess.meal), 260); } });
+    sess.busy = false;
+    ask(`<p>Ảnh ${shot.quality.dark && shot.quality.blur ? "khá tối và mờ" : shot.quality.dark ? "khá tối" : "hơi mờ"} — AI dễ đoán sai kích thước. Chụp lại ở chỗ sáng hơn và giữ chắc tay sẽ chính xác hơn.</p>
+      <div class="fk-scan-acts"><button type="button" class="fk-scan-btn sec" data-a="go">Vẫn phân tích</button><button type="button" class="fk-scan-btn pri" data-a="r">Chụp lại</button></div>`, { go });
   } else go();
 }
 
@@ -537,7 +628,7 @@ function showResult(el, sess, res){
       <div class="fk-scan-opts">${meals.map(m=> `<button type="button" class="fk-scan-opt ${m.id === meal ? "on" : ""}" data-meal="${m.id}" aria-pressed="${m.id === meal}">${esc(m.label)}</button>`).join("")}</div>
       <p class="fk-scan-note">Con số là ước lượng: AI thường sai khối lượng khoảng 30–40 % và hay đoán thiếu khi phần ăn lớn. Món có nhãn “bảng TapEasy” được tính calo từ bảng thực phẩm của app theo số gam bạn xác nhận.</p>
       <div class="fk-scan-bar">${sess.shots.length < 2 && !res.simulated ? `<button type="button" class="fk-scan-round" data-a="more" aria-label="Thêm ảnh nghiêng 45° để đo chính xác hơn" title="Thêm ảnh nghiêng 45°">${ic("add_a_photo")}</button>` : `<button type="button" class="fk-scan-round" data-a="redo" aria-label="Chụp lại" title="Chụp lại">${ic("restart_alt")}</button>`}
-        <button type="button" class="fk-scan-save" data-a="save" ${C.rows.length ? "" : "disabled"}>${ic("check")}Lưu ${C.kcal} kcal</button></div>
+        <button type="button" class="fk-scan-save" data-a="save" ${C.rows.some(r=> r.it.grams > 0) ? "" : "disabled"}>${ic("check")}Lưu ${C.kcal} kcal</button></div>
       <input type="file" accept="image/*" capture="environment" id="fk-scan-f3" hidden></div>`;
     const th = body.querySelector("#fk-scan-thumb"); if(!first) th.style.backgroundImage = `url("${sess.shots[0].dataUrl}")`;
   };
@@ -548,16 +639,21 @@ function showResult(el, sess, res){
     else if(t.dataset.del != null){ res.items.splice(Number(t.dataset.del), 1); paint(); }
     else if(t.dataset.oil != null){ oil = Number(t.dataset.oil); res.oilEdited = true; haptic("light"); paint(); }
     else if(t.dataset.meal){ meal = t.dataset.meal; paint(); }
-    else if(t.dataset.a === "redo"){ close(); setTimeout(()=> open(meal), 260); }
-    else if(t.dataset.a === "more"){ const f = body.querySelector("#fk-scan-f3"); f.onchange = async e=>{ const file = e.target.files && e.target.files[0]; if(!file) return;
-        try{ const s2 = await prepare(file); sess.shots.push(s2); }catch(_){ say("Không đọc được ảnh thứ hai"); return; }
+    else if(t.dataset.a === "redo"){ sess.meal = meal; backToIntro(el, sess); }
+    else if(t.dataset.a === "more"){ if(sess.busy) return; const f = body.querySelector("#fk-scan-f3"); f.value = ""; f.onchange = async e=>{ const file = e.target.files && e.target.files[0]; e.target.value = ""; if(!file || sess.busy || sess.closed) return;
+        sess.busy = true;
+        try{ const s2 = await prepare(file); sess.shots.push(s2); }catch(err){ sess.busy = false; say((err && err.message) || "Không đọc được ảnh thứ hai — giữ kết quả cũ", "error"); return; }
+        if(sess.closed) return;
         card.classList.remove("on"); const im = el.querySelector(".fk-scan-photo"); im.classList.remove("fly"); fitPhoto(el, sess.shots[0]);
         el.classList.remove("done"); el.classList.add("busy"); setStep(el, 1);
-        el.querySelector("#fk-scan-st").textContent = "Đang phân tích lại với 2 ảnh…";
-        try{ const r2 = await analyze(sess.shots.map(s=> s.dataUrl), sess.ref, sess.note); if(sess.closed) return; if(r2.is_food){ showResult(el, sess, r2); return; } }catch(_){ }
-        if(!sess.closed){ say("Chưa phân tích lại được — giữ kết quả cũ"); sess.shots.pop(); reveal(false); } };
+        el.querySelector("#fk-scan-st").textContent = "Đang phân tích lại với 2 ảnh…"; el.querySelector("#fk-scan-st2").textContent = "";
+        let why = "AI không nhận ra món ăn trong ảnh thứ hai";
+        try{ const r2 = await analyze(sess.shots.map(s=> s.dataUrl), sess.ref, sess.note); sess.busy = false; if(sess.closed) return; if(r2.is_food){ showResult(el, sess, r2); return; } }
+        catch(err){ why = errText(err).t.replace(/\s*Bấm .*$/, ""); }
+        sess.busy = false;
+        if(!sess.closed){ say("Chưa phân tích lại được — giữ kết quả cũ. " + why, "info"); sess.shots.pop(); reveal(false); } };
       f.click(); }
-    else if(t.dataset.a === "save"){ saveLog(res, oil, meal, sess); }
+    else if(t.dataset.a === "save"){ if(sess.saved) return; sess.saved = true; if(!saveLog(res, oil, meal, sess)) sess.saved = false; }
   });
   body.addEventListener("change", ev=>{ const t = ev.target; if(t.dataset && t.dataset.gi != null){ res.items[Number(t.dataset.gi)].grams = Math.round(num(t.value, 0, 2000, 0)); paint(); } });
 
@@ -587,15 +683,19 @@ function saveLog(res, oil, meal, sess){
   try{
     const C = compute(res, oil), L = getDayFoodLog()[meal];
     if(!Array.isArray(L)) throw new Error("no meal");
-    C.rows.forEach(r=>{ if(r.it.grams > 0) L.push(Object.assign({ name: r.it.name, grams: r.it.grams, kcal: r.kcal, protein: r.protein, carbs: r.carbs, fat: r.fat, ai: true }, r.it.id ? { foodId: r.it.id } : {})); });
-    if(C.oil > 0) L.push({ name: "Dầu mỡ khi nấu (ước lượng)", grams: C.oil, kcal: C.oilKcal, protein: 0, carbs: 0, fat: C.oil, ai: true });
+    const add = C.rows.filter(r=> r.it.grams > 0).map(r=> Object.assign({ name: r.it.name, grams: r.it.grams, kcal: r.kcal, protein: r.protein, carbs: r.carbs, fat: r.fat, ai: true }, r.it.id ? { foodId: r.it.id } : {}));
+    if(C.oil > 0) add.push({ name: "Dầu mỡ khi nấu (ước lượng)", grams: C.oil, kcal: C.oilKcal, protein: 0, carbs: 0, fat: C.oil, ai: true });
+    if(!add.length) throw new Error("empty");
     const st = state; st.foodScan = st.foodScan && typeof st.foodScan === "object" ? st.foodScan : {}; st.foodScan.n = (Number(st.foodScan.n) || 0) + 1; st.foodScan.ref = sess.ref;
+    const n0 = L.length; L.push(...add);
+    try{ saveState(); }catch(e){ L.splice(n0, add.length); throw e; }         // lưu lỗi → gỡ lại, bấm Lưu lần nữa không bị ghi trùng
     try{ if(typeof nuUI !== "undefined") nuUI.open[meal] = true; }catch(e){}
-    saveState(); close();
+    close();
     try{ renderNutritionScreen(); }catch(e){}
     try{ if(typeof fkTrack === "function") fkTrack("meal_logged", { meal, items: C.rows.length, source: "photo" }); }catch(e){}
     haptic("success"); say(`Đã lưu ${C.kcal} kcal vào ${((typeof MEAL_TYPES !== "undefined" && MEAL_TYPES.find(m=> m.id === meal)) || { label:"bữa ăn" }).label.toLowerCase()}`, "check_circle");
-  }catch(e){ say("Chưa lưu được — thử lại", "error"); }
+    return true;
+  }catch(e){ say("Chưa lưu được vào nhật ký ăn. Bấm Lưu lại một lần nữa; nếu vẫn lỗi, hãy tải lại app.", "error"); return false; }
 }
 
 /* Nút vào ở màn Dinh dưỡng (đặt ngay trên danh sách bữa ăn; không bị vẽ lại) */
