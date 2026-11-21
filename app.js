@@ -933,8 +933,21 @@ function openSheet(html, opts){
   const body = opts && opts.text ? `<p class="small-note">${escapeHtml(toastPlain(html))}</p>` : html;
   const wasOpen = bd.classList.contains("open");
   sc.innerHTML = `<div class="sheet-handle"></div>` + body;
+  try{ fkSheetAddBack(sc); }catch(e){}
   bd.classList.add("open");
   try{ fkSheetA11yOpen(sc, bd, wasOpen); }catch(e){}
+}
+/* 21/11 (góp ý người dùng): mọi sheet KHÔNG có đầu (tiêu đề + nút đóng/quay lại) — VD chi tiết bài, sheet video — có nút "Quay lại"
+   ở trên cùng (như màn tập). Sheet đã có .sheet-header / nút đóng ở đầu thì giữ nguyên, không thêm trùng. */
+function fkSheetAddBack(sc){
+  if(!sc || sc.querySelector(".sheet-header, .sess-back, [data-no-back]")) return;
+  const top = Array.from(sc.children).slice(0, 4);
+  const has = top.some(el=> el.matches && (el.matches('[aria-label^="Đóng"], [aria-label^="Quay lại"], [aria-label^="Close"]') || el.querySelector('[aria-label^="Đóng"], [aria-label^="Quay lại"], [aria-label^="Close"]')));
+  if(has) return;
+  const b = document.createElement("button"); b.type = "button"; b.className = "sess-back"; b.setAttribute("aria-label", "Quay lại");
+  b.innerHTML = `<span class="material-symbols-rounded">arrow_back</span>Quay lại`;
+  b.addEventListener("click", ()=>{ try{ closeSheet(); }catch(e){} });
+  const h = sc.querySelector(".sheet-handle"); if(h) h.after(b); else sc.prepend(b);
 }
 function fkSheetFocusables(sc){
   if(!sc || !sc.querySelectorAll) return [];
