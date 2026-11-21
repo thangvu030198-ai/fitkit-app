@@ -114,7 +114,7 @@ const cleanModel = m=>{ const s = str(m, 100); return /^[A-Za-z0-9][A-Za-z0-9._:
 const cleanKey = k=>{ const s = String(k == null ? "" : k).trim(); return s.length >= 8 && s.length <= 400 && /^[\x21-\x7e]+$/.test(s) ? s : ""; };
 const hostOf = b=>{ try{ return new URL(b).host; }catch(e){ return "?"; } };
 const uniq = arr=> arr.filter((m, i)=> m && arr.indexOf(m) === i);
-const CALL_MS = 75000, TOTAL_MS = 110000;   // 21/11: gemini-3.8-flash (model suy luận) đọc phiếu có thể >45 s → client chờ 130 s (cloud.js), hàm 150 s
+const CALL_MS = 40000, TOTAL_MS = 115000;   // 21/11: gemini-3.8-flash (model suy luận) đọc phiếu có thể >45 s → client chờ 130 s (cloud.js), hàm 150 s
 async function fetchT(f, url, opt, ms){
   const ctl = typeof AbortController === "function" ? new AbortController() : null;
   const t = ctl ? setTimeout(()=> ctl.abort(), ms) : null;
@@ -204,13 +204,14 @@ async function rateGate(uid, nowMs, db, max){
    và CHUNG hạn mức mỗi người/ngày (ai_rate/{uid}_{ngày}, giới hạn = dailyLimit, mặc định 20) — chụp món, đọc InBody, hỏi AI, soạn giáo án:
    mỗi lần dùng = 1 lượt. Model đọc ảnh thử lần lượt: visionModel → VISION_API cũ (Gemini) → model → fallback (model chat có thể không đọc ảnh).
    Lượt chỉ bị trừ khi AI trả lời được: lỗi máy chủ / nhà cung cấp → hoàn lượt (refundRate). */
-const GEMINI_FALLBACK = ["gemini-3.8-flash", "gemini-flash-latest", "gemini-2.5-flash-lite"];
+/* 21/11 (log): 3.8-flash hay quá tải (503) / chậm >75 s; 2.5-* bị khoá với tài khoản mới → ưu tiên bản lite nhanh, rồi mới tới flash */
+const GEMINI_FALLBACK = ["gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-3.8-flash", "gemini-flash-latest"];
 function legacyProvider(){
   const key = String(value(VISION_API_KEY, "") || "").trim();
   /* 21/11: Google báo gemini-2.5-flash "no longer available to new users" (404) → luôn thử thêm model Gemini mới khi gọi thẳng Google */
   const base = cleanBase(value(VISION_API_BASE, "")), isGoogle = /generativelanguage\.googleapis\.com/.test(base);
   const cfgM = cleanModel(value(VISION_MODEL, "")), oldM = /^gemini-(1\.|2\.0|2\.5-flash$)/.test(cfgM);
-  const models = uniq(isGoogle ? (oldM ? GEMINI_FALLBACK.concat([cfgM]) : [cfgM].concat(GEMINI_FALLBACK)) : [cfgM]);
+  const models = uniq(isGoogle ? GEMINI_FALLBACK.concat(oldM ? [] : [cfgM]) : [cfgM]);
   return key && key !== "unset" && base && models.length ? { key, base, models, label: "VISION_API" } : null;
 }
 async function sharedAi(db){
