@@ -2,44 +2,45 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>HYROX 3D — bản mẫu (TapEasy)</title>
-<!-- Bản mẫu độc lập: nạp hyrox_map.glb + hyrox_runner.glb (nén meshopt) + hyrox_path.json cùng thư mục.
-     Tham số URL: ?base=<thư mục>  ?q=low|high  ?debug=1
-     Sinh bởi workflow "Media — bản đồ HYROX 3D" (docs/HYROX-3D.md). Chưa tích hợp vào app. -->
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<link rel="icon" href="data:,">
+<title>HYROX 3D — xem thử gói tài nguyên</title>
 <style>
-  :root { --teal:#52a09a; --bg:#0a0b0d; --fg:#eef2f2; --mut:#8a9696; }
+  :root { --teal:#5EE6C7; --navy:#061A24; --coral:#FF7A45; --ink:#E8F4F2; --mut:#7FA3A8; }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  html,body { margin:0; height:100%; background:var(--bg); color:var(--fg);
-    font:14px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; overflow:hidden; }
-  #app { display:flex; flex-direction:column; height:100%; }
-  #stage { position:relative; flex:1; min-height:0; }
-  #c { position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none; }
+  html,body { margin:0; height:100%; background:var(--navy); color:var(--ink); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; overflow:hidden; }
+  #app { display:flex; flex-direction:column; height:100vh; height:100dvh; }
+  #stage { position:relative; flex:0 0 60%; min-height:0; overflow:hidden; background:linear-gradient(#0C2C3A,#061A24 70%); }
+  #cv { position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none; }
   #labels { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
-  .lb { position:absolute; transform:translate(-50%,-100%); white-space:nowrap; text-align:center;
-    text-shadow:0 1px 3px #000; transition:opacity .2s; }
-  .lb b { display:block; font:800 18px/1 "Anton","Impact",system-ui,sans-serif; color:var(--teal); letter-spacing:.5px; }
-  .lb span { font-size:10px; color:#d8dede; letter-spacing:.3px; }
-  .lb.done b { color:#9ff3ea; } .lb.active b { color:#fff; }
-  #hud { position:absolute; left:8px; top:8px; font:11px/1.3 ui-monospace,Menlo,Consolas,monospace; color:#9fb;
-    background:#0008; padding:6px 8px; border-radius:8px; pointer-events:none; white-space:pre; }
-  #clock { position:absolute; right:10px; top:8px; font:700 20px/1 ui-monospace,Menlo,monospace; color:#fff;
-    background:#0008; padding:6px 10px; border-radius:8px; display:none; }
-  #msg { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center;
-    padding:24px; color:var(--mut); }
-  #panel { padding:10px 12px calc(10px + env(safe-area-inset-bottom)); background:#111316; border-top:1px solid #222; }
-  #leg { font-weight:700; margin-bottom:8px; min-height:1.35em; }
-  #leg small { color:var(--mut); font-weight:500; }
-  .row { display:flex; gap:8px; flex-wrap:wrap; }
-  button { flex:1; min-width:96px; min-height:48px; border:0; border-radius:14px; font:700 15px system-ui,sans-serif;
-    background:#23272b; color:var(--fg); cursor:pointer; }
-  button.primary { background:var(--teal); color:#041312; flex:2; }
-  button:disabled { opacity:.45; }
-  button:active { transform:scale(.97); }
+  .lbl { position:absolute; left:0; top:0; white-space:nowrap; display:flex; align-items:center; gap:4px; padding:2px 6px 2px 4px; border-radius:7px;
+         background:rgba(6,26,36,.72); border:1px solid rgba(94,230,199,.28); will-change:transform; transition:border-color .3s, background .3s, opacity .2s; }
+  .lbl b { font-size:17px; line-height:1; font-weight:800; color:var(--teal); letter-spacing:-.5px; font-variant-numeric:tabular-nums; }
+  .lbl span { font-size:10px; line-height:1.1; font-weight:600; color:var(--ink); }
+  .lbl i { display:block; font-style:normal; font-size:8.5px; font-weight:500; color:var(--mut); }
+  .lbl.active { border-color:var(--coral); background:rgba(60,24,10,.82); } .lbl.active b { color:var(--coral); }
+  .lbl.done { background:rgba(10,60,50,.82); border-color:var(--teal); } .lbl em { font-style:normal; } .lbl.done em::after { content:" ✓"; color:var(--teal); }
+  .lbl.gate { padding:2px 7px; border-color:rgba(255,255,255,.25); } .lbl.gate span { font-size:9px; letter-spacing:.8px; color:#fff; }
+  #stats { position:absolute; left:6px; top:6px; font:10px/1.35 ui-monospace,Menlo,Consolas,monospace; color:#BFE; background:rgba(0,0,0,.45); padding:4px 6px; border-radius:6px; white-space:pre; cursor:pointer; }
+  #statsBtn { position:absolute; left:6px; top:6px; width:22px; height:22px; border-radius:11px; border:0; background:rgba(0,0,0,.4); color:#BFE; font:11px monospace; display:none; }
+  #clock { position:absolute; right:8px; top:6px; font:700 13px/1.2 ui-monospace,Menlo,Consolas,monospace; color:var(--teal); background:rgba(0,0,0,.4); padding:4px 8px; border-radius:6px; display:none; }
+  #load { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; background:var(--navy); font-size:13px; color:var(--mut); z-index:5; text-align:center; padding:20px; }
+  #load .bar { width:180px; height:4px; background:#12343c; border-radius:2px; overflow:hidden; } #load .bar div { height:100%; width:0; background:var(--teal); transition:width .2s; }
+  #panel { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:8px; padding:10px 14px calc(10px + env(safe-area-inset-bottom)); background:#071E2A; border-top:1px solid #12343c; }
+  #legTitle { font-size:12px; color:var(--mut); } #legName { font-size:19px; font-weight:800; line-height:1.15; min-height:44px; } #legName small { display:block; font-size:12px; font-weight:500; color:var(--mut); margin-top:2px; }
+  #dots { display:grid; grid-template-columns:repeat(16,1fr); gap:3px; } #dots div { height:6px; border-radius:3px; background:#12343c; transition:background .3s; }
+  #dots div.d { background:var(--teal); } #dots div.c { background:var(--coral); } #dots div:nth-child(even) { height:6px; opacity:.85; }
+  #scrubRow { display:none; align-items:center; gap:8px; font:11px ui-monospace,monospace; color:var(--mut); } #scrub { flex:1; accent-color:var(--teal); height:24px; }
+  #btnDone { margin-top:auto; height:64px; border:0; border-radius:16px; background:var(--teal); color:#04221c; font-size:21px; font-weight:800; letter-spacing:.3px; box-shadow:0 6px 0 #2aa58a; cursor:pointer; }
+  #btnDone:active { transform:translateY(3px); box-shadow:0 3px 0 #2aa58a; } #btnDone:disabled { background:#1c4a45; color:#6c9a94; box-shadow:none; }
+  #row2 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; } #row2 button { height:42px; border-radius:12px; border:1px solid #1d4a52; background:#0b2b38; color:var(--ink); font-size:13px; font-weight:600; cursor:pointer; }
+  #row2 button.on { border-color:var(--teal); color:var(--teal); }
+  @media (max-width: 520px) { .lbl i { display:none; } .lbl b { font-size:15px; } .lbl span { font-size:9.5px; } .lbl { padding:2px 5px 2px 3px; gap:3px; background:rgba(6,26,36,.6); } }
+  @media (min-aspect-ratio: 1/1) { #app { flex-direction:row; } #stage { flex:1 1 auto; } #panel { flex:0 0 360px; border-top:0; border-left:1px solid #12343c; } }
 </style>
 <script type="importmap">
 { "imports": {
-  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js",
   "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
 } }
 </script>
@@ -47,438 +48,313 @@
 <body>
 <div id="app">
   <div id="stage">
-    <canvas id="c"></canvas>
+    <canvas id="cv"></canvas>
     <div id="labels"></div>
-    <div id="hud">đang tải…</div>
-    <div id="clock">0:00:00</div>
-    <div id="msg">Đang tải bản đồ 3D…</div>
+    <div id="stats"></div><button id="statsBtn">i</button>
+    <div id="clock"></div>
+    <div id="load"><div id="loadTxt">Đang tải bản đồ HYROX…</div><div class="bar"><div id="loadBar"></div></div></div>
   </div>
   <div id="panel">
-    <div id="leg">&nbsp;</div>
-    <div class="row">
-      <button id="bDone" class="primary" disabled>Xong chặng</button>
-      <button id="bReplay" disabled>Phát lại</button>
-    </div>
-    <div class="row" style="margin-top:8px">
-      <button id="bCam">Toàn cảnh</button>
-      <button id="bQ">Chất lượng: …</button>
-      <button id="bReset">Đặt lại</button>
-    </div>
+    <div id="legTitle">Chặng 1/16</div>
+    <div id="legName">—</div>
+    <div id="dots"></div>
+    <div id="scrubRow"><span id="scrubT">0:00</span><input id="scrub" type="range" min="0" max="1000" value="0"><button id="btnPause" style="height:28px;border-radius:8px;border:1px solid #1d4a52;background:#0b2b38;color:#E8F4F2;font-size:11px;padding:0 8px">Dừng</button></div>
+    <button id="btnDone" disabled>XONG CHẶNG</button>
+    <div id="row2"><button id="btnReplay">Phát lại</button><button id="btnCam">Bám theo</button><button id="btnReset">Làm lại</button></div>
   </div>
 </div>
 <script type="module">
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
 
 const $ = (id) => document.getElementById(id);
+const showErr = (e) => { const m = (e && (e.reason || e.error || e)); document.getElementById('loadTxt').textContent = 'Lỗi tải: ' + (m && m.message || m); document.getElementById('load').style.display = 'flex'; };
+window.addEventListener('unhandledrejection', showErr); window.addEventListener('error', showErr);
 const Q = new URLSearchParams(location.search);
-const BASE = (Q.get('base') || './').replace(/\/?$/, '/');
-const TEAL = new THREE.Color(0.32, 0.62, 0.60);
-const RUN_DUR = 1.5;          // giây chạy sang trạm kế khi bấm "Xong chặng"
-const MAX_RUN_SCALE = 3.2;    // giới hạn tốc độ phát Run (vượt → chấp nhận trượt chân nhẹ)
-const REPLAY_TOTAL = 20;      // giây cho cả cuộc đua khi phát lại
+const BASE = new URL('./', location.href).href;
+const LOW = Q.has('low') || (navigator.deviceMemory && navigator.deviceMemory <= 4) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+const MAX_DPR = +(Q.get('dpr') || (LOW ? 1.5 : 2));
+const LOD_PX = +(Q.get('lodpx') || 56);          // VĐV thấp hơn ngần này px -> cập nhật 15 Hz; < 150 px -> 30 Hz
+const SPLITS = [285,255, 300,170, 310,290, 315,300, 320,270, 325,120, 330,250, 335,330];   // split mẫu (giây) cho 16 chặng
+const REPLAY_S = 20, FINISH_RUN_S = 1.6, CELEB_S = 3.0;
 
-// ------------------------------------------------------------ chất lượng
-const weak = (navigator.deviceMemory && navigator.deviceMemory <= 4) || (navigator.hardwareConcurrency || 8) <= 4 ||
-  (/Android|iPhone|iPad|Mobi/i.test(navigator.userAgent) && Math.min(screen.width, screen.height) * (devicePixelRatio || 1) < 1100);
-let quality = Q.get('q') || (weak ? 'low' : 'high');
+// ---------- tải ----------
+const sizes = {}; let bytes = 0, nLoaded = 0, nTotal = 11;
+async function fetchBuf(u) {
+  const r = await fetch(BASE + u); if (!r.ok) throw new Error(u + ' → HTTP ' + r.status);
+  const b = await r.arrayBuffer(); bytes += b.byteLength; sizes[u] = b.byteLength;
+  $('loadBar').style.width = (100 * ++nLoaded / nTotal) + '%'; return b;
+}
+const gltfLoader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+const loadGLB = async (u) => { const b = await fetchBuf(u); return new Promise((res, rej) => gltfLoader.parse(b, BASE, res, rej)); };
+async function loadTex(u) {
+  const b = await fetchBuf(u);
+  const bmp = await createImageBitmap(new Blob([b], { type: 'image/webp' }), { premultiplyAlpha: 'none', colorSpaceConversion: 'none' });
+  const t = new THREE.Texture(bmp); t.flipY = false; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; t.needsUpdate = true; return t;
+}
 
-const canvas = $('c');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: quality === 'high', powerPreference: 'high-performance' });
+// ---------- renderer / cảnh ----------
+const canvas = $('cv'), stage = $('stage');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: !LOW, alpha: false, stencil: false, powerPreference: 'high-performance' }); if (!renderer.capabilities.isWebGL2) throw new Error('no webgl2'); }
+catch (e) { $('loadTxt').textContent = 'Thiết bị không hỗ trợ WebGL2 — app nên dùng bản đồ 2D dự phòng.'; throw e; }
+let dpr = Q.has('forcedpr') ? +Q.get('forcedpr') : Math.min(window.devicePixelRatio || 1, MAX_DPR);
+renderer.setPixelRatio(dpr);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.AgXToneMapping ?? THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.15;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.25;
+renderer.shadowMap.enabled = false;
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0b0d);
-scene.fog = new THREE.Fog(0x0a0b0d, 30, 70);
-const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 200);
+{ const c = document.createElement('canvas'); c.width = 4; c.height = 256; const g = c.getContext('2d'); const gr = g.createLinearGradient(0, 0, 0, 256);
+  gr.addColorStop(0, '#0E3140'); gr.addColorStop(.55, '#082230'); gr.addColorStop(1, '#061A24'); g.fillStyle = gr; g.fillRect(0, 0, 4, 256);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; scene.background = t; }
+const camera = new THREE.PerspectiveCamera(7, 1, 1, 300);
+scene.add(new THREE.HemisphereLight(0xcfe6f2, 0x0b1e28, 1.15));
+const sun = new THREE.DirectionalLight(0xffe2bd, 2.6); sun.position.set(-10.2, 19.4, 12.1); scene.add(sun);
 
-scene.add(new THREE.HemisphereLight(0xdfe8ff, 0x0d0e10, 0.75));
-const sun = new THREE.DirectionalLight(0xfff3e6, 2.4);
-sun.position.set(-8, 24, -6);
-sun.shadow.mapSize.set(1024, 1024);
-Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 16, bottom: -16, near: 1, far: 60 });
-sun.shadow.bias = -0.0008;
-scene.add(sun, sun.target);
-const fill = new THREE.DirectionalLight(0xcfe0ff, 0.6);
-fill.position.set(10, 8, 14);
-scene.add(fill);
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(120, 120),
-  new THREE.MeshStandardMaterial({ color: 0x0b0c0e, roughness: 0.95 }));
-ground.rotation.x = -Math.PI / 2; ground.position.y = -1.6; ground.receiveShadow = true;
-scene.add(ground);
+const P = await (await fetch(BASE + 'hyrox_path.json')).json();
+const L = P.length_m, PTS = P.points, HEADS = P.headings.slice();
+for (let i = 1; i < HEADS.length; i++) { while (HEADS[i] - HEADS[i - 1] > Math.PI) HEADS[i] -= 2 * Math.PI; while (HEADS[i] - HEADS[i - 1] < -Math.PI) HEADS[i] += 2 * Math.PI; }
+function pathPos(f, out) { const x = Math.min(Math.max(f, 0), 1) * (PTS.length - 1), i = Math.min(Math.floor(x), PTS.length - 2), t = x - i, a = PTS[i], b = PTS[i + 1];
+  return out.set(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t); }
+function pathHeading(f) { const x = Math.min(Math.max(f, 0), 1) * (HEADS.length - 1), i = Math.min(Math.floor(x), HEADS.length - 2), t = x - i; return HEADS[i] + (HEADS[i + 1] - HEADS[i]) * t; }
+const angDiff = (a, b) => { let d = (b - a) % (2 * Math.PI); if (d > Math.PI) d -= 2 * Math.PI; if (d < -Math.PI) d += 2 * Math.PI; return d; };
+const smooth = (u) => u * u * (3 - 2 * u), clamp01 = (x) => Math.min(1, Math.max(0, x));
 
-function applyQuality() {
-  const pr = Math.min(devicePixelRatio || 1, quality === 'high' ? 2 : 1.25);
-  renderer.setPixelRatio(pr);
-  const sh = quality === 'high';
-  renderer.shadowMap.enabled = sh;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  sun.castShadow = sh;
-  scene.traverse((o) => { if (o.material) [].concat(o.material).forEach((m) => (m.needsUpdate = true)); });
-  $('bQ').textContent = 'Chất lượng: ' + (quality === 'high' ? 'Cao' : 'Thấp');
-  resize();
-}
-function resize() {
-  const w = canvas.clientWidth, h = canvas.clientHeight;
-  if (!w || !h) return;
-  renderer.setSize(w, h, false);
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
-}
-addEventListener('resize', resize);
+const variantKeys = [...new Set([P.hero.variant, ...P.stations.map(s => s.athlete.variant)])];
+nTotal = 4 + variantKeys.length;
+const [gMap, gProps, gM, gF, ...texArr] = await Promise.all([loadGLB(P.files.map), loadGLB(P.files.props), loadGLB(P.files.athletes.M), loadGLB(P.files.athletes.F), ...variantKeys.map(k => loadTex(P.variants[k].texture))]);
+const TEX = Object.fromEntries(variantKeys.map((k, i) => [k, texArr[i]]));
+const GL = { M: gM, F: gF };
 
-// ------------------------------------------------------------ tải
-const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
-const loaded = {};
-async function fetchBuf(name) {
-  const r = await fetch(BASE + name);
-  if (!r.ok) throw new Error(name + ': HTTP ' + r.status);
-  const b = await r.arrayBuffer();
-  loaded[name] = b.byteLength;
-  return b;
-}
-const parseGLB = (buf) => new Promise((res, rej) => loader.parse(buf, BASE, res, rej));
-
-let PATH, curve, L, scaleS, stS, startS, finishS, map, runnerRoot, runnerScene, mixer, actions = {}, props = {};
-let rings = [], labels = [], natural = 2.25;
-
-async function load() {
-  const [mb, rb, pj] = await Promise.all([fetchBuf('hyrox_map.glb'), fetchBuf('hyrox_runner.glb'),
-    fetch(BASE + 'hyrox_path.json').then((r) => { if (!r.ok) throw new Error('hyrox_path.json: HTTP ' + r.status); return r.text(); })]);
-  loaded['hyrox_path.json'] = pj.length;
-  PATH = JSON.parse(pj);
-  const [mg, rg] = await Promise.all([parseGLB(mb), parseGLB(rb)]);
-  // đường: Catmull-Rom qua các điểm mẫu, tham số độ dài cung
-  curve = new THREE.CatmullRomCurve3(PATH.points.map((p) => new THREE.Vector3(p[0], p[1], p[2])), false, 'centripetal');
-  curve.arcLengthDivisions = 3000;
-  L = curve.getLength();
-  scaleS = L / PATH.length;
-  stS = PATH.stations.map((s) => s.s * scaleS);
-  startS = PATH.start.s * scaleS;
-  finishS = PATH.finish.s * scaleS;
-  natural = PATH.natural_run_speed || PATH.stride / PATH.run_cycle_seconds;
-  // bản đồ
-  map = mg.scene;
-  map.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
-  scene.add(map);
-  for (const st of PATH.stations) {
-    const r = map.getObjectByName(st.ring_node);
-    if (r && r.isMesh) { r.material = r.material.clone(); r.castShadow = false; }
-    rings.push(r || null);
-  }
-  // nhân vật
-  runnerScene = rg.scene;
-  runnerRoot = new THREE.Group();
-  runnerRoot.rotation.order = 'YXZ';
-  runnerRoot.add(runnerScene);
-  scene.add(runnerRoot);
-  runnerScene.traverse((o) => {
-    if (o.isMesh) { o.castShadow = true; if (o.isSkinnedMesh) o.frustumCulled = false; }
-    // node đạo cụ gốc (mesh nhiều vật liệu → GLTFLoader tạo Group "Prop_X" + con "Prop_X_1"… → chỉ lấy node gốc)
-    if (/^Prop_/.test(o.name) && !(o.parent && /^Prop_/.test(o.parent.name))) { props[o.name] = o; o.visible = false; }
-  });
-  mixer = new THREE.AnimationMixer(runnerScene);
-  for (const clip of rg.animations) actions[clip.name] = mixer.clipAction(clip);
-  buildProgress();
-  buildLabels();
-}
-
-// ------------------------------------------------------------ đường & gốc nhân vật
-const UP = new THREE.Vector3(0, 1, 0), _v = new THREE.Vector3(), _t = new THREE.Vector3(), _r = new THREE.Vector3();
-const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
-const smoother = (t) => { t = clamp(t, 0, 1); return t * t * t * (t * (t * 6 - 15) + 10); };
-const wrapPi = (a) => Math.atan2(Math.sin(a), Math.cos(a));
-function lateral(s) {
-  let w = 0;
-  for (const sk of stS) { const d = Math.abs(s - sk); if (d < PATH.approach) w = Math.max(w, smoother(1 - d / PATH.approach)); }
-  return PATH.work_offset * w;
-}
-function rootPos(s, out = new THREE.Vector3()) {
-  const u = clamp(s / L, 0, 1);
-  curve.getPointAt(u, out);
-  curve.getTangentAt(u, _t);
-  _r.crossVectors(_t, UP).normalize();
-  return out.addScaledVector(_r, lateral(s));
-}
-function easeProfile(tau, e = 0.22) {   // giống build_scene_v2.ease_profile
-  tau = clamp(tau, 0, 1);
-  const vmax = 1 / (1 - e);
-  const ramp = (t) => vmax * (t / 2 - e / (2 * Math.PI) * Math.sin(Math.PI * t / e));
-  if (tau < e) return ramp(tau);
-  if (tau > 1 - e) return 1 - ramp(1 - tau);
-  return ramp(e) + vmax * (tau - e);
-}
-
-// ------------------------------------------------------------ đường tiến độ phát sáng
-let prog, progN = 700, progHead;
-function buildProgress() {
-  const pos = [], idx = [];
-  const p = new THREE.Vector3();
-  for (let i = 0; i <= progN; i++) {
-    const u = i / progN;
-    curve.getPointAt(u, p); curve.getTangentAt(u, _t);
-    _r.crossVectors(_t, UP).normalize();
-    pos.push(p.x - _r.x * 0.08, 0.014, p.z - _r.z * 0.08, p.x + _r.x * 0.08, 0.014, p.z + _r.z * 0.08);
-    if (i < progN) { const a = 2 * i; idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); }
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  g.setIndex(idx);
-  g.setDrawRange(0, 0);
-  prog = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: TEAL.clone().multiplyScalar(2.2), toneMapped: false }));
-  prog.renderOrder = 2;
-  scene.add(prog);
-  progHead = new THREE.Mesh(new THREE.SphereGeometry(0.11, 16, 8), new THREE.MeshBasicMaterial({ color: 0xbffff6, toneMapped: false }));
-  scene.add(progHead);
-}
-function setProgress(s) {
-  const u = clamp(s / L, 0, 1);
-  prog.geometry.setDrawRange(0, Math.floor(u * progN) * 6);
-  curve.getPointAt(u, progHead.position); progHead.position.y = 0.05;
-}
-
-// ------------------------------------------------------------ vòng sáng + nhãn HTML
-const ringState = [];
-function setRing(k, state) { ringState[k] = state; const lb = labels[k]; if (lb) lb.className = 'lb ' + state; }
-function updateRings(t) {
-  rings.forEach((r, k) => {
-    if (!r) return;
-    const st = ringState[k] || 'idle', m = r.material;
-    m.emissive.copy(TEAL);
-    m.emissiveIntensity = st === 'done' ? 4.0 : st === 'active' ? 1.4 + 1.2 * Math.sin(t * 6) : 0.0;
-  });
-}
-function buildLabels() {
-  const box = $('labels');
-  PATH.stations.forEach((st) => {
-    const d = document.createElement('div');
-    d.className = 'lb idle';
-    d.innerHTML = `<b>${st.code}</b><span>${st.name} · ${st.dist}</span>`;
-    box.appendChild(d); labels.push(d);
-  });
-}
-const _p = new THREE.Vector3();
-function updateLabels() {
-  const w = canvas.clientWidth, h = canvas.clientHeight;
-  PATH.stations.forEach((st, k) => {
-    const a = camMode === 'map' ? st.label_anchor : st.pad_center;
-    _p.set(a[0], camMode === 'map' ? a[1] + 0.3 : 2.5, a[2]).project(camera);
-    const vis = _p.z < 1 && Math.abs(_p.x) < 1.1 && Math.abs(_p.y) < 1.1;
-    const el = labels[k];
-    el.style.opacity = vis ? 1 : 0;
-    if (vis) el.style.left = ((_p.x + 1) / 2 * w).toFixed(1) + 'px', el.style.top = ((1 - _p.y) / 2 * h).toFixed(1) + 'px';
-  });
-}
-
-// ------------------------------------------------------------ hoạt ảnh
-let current = null;
-function play(name, fade = 0.25) {
-  const a = actions[name];
-  if (!a) { console.warn('thiếu clip', name); return; }
-  if (current === a) return;
-  a.reset().setEffectiveTimeScale(1).setEffectiveWeight(1).fadeIn(fade).play();
-  if (current) current.fadeOut(fade);
-  current = a;
-  const show = (PATH.props && PATH.props[name]) || [];
-  for (const [n, o] of Object.entries(props)) o.visible = show.includes(n);
-}
-
-const M = { s: 0, yaw: 0, bank: 0, pitch: 0, moving: false, s0: 0, s1: 0, t: 0, dur: 1, done: null, prev: new THREE.Vector3(), v: 0 };
-function runTo(s1, dur) {
-  return new Promise((res) => {
-    Object.assign(M, { s0: M.s, s1, t: 0, dur: Math.max(0.3, dur), moving: true, done: res });
-    play('Run', 0.18);
-  });
-}
-let simWaits = [];
-let simTime = 0;
-const wait = (sec) => new Promise((res) => simWaits.push({ at: simTime + sec, res }));
-
-function updateMover(dt) {
-  if (M.moving) {
-    M.t += dt;
-    const tau = Math.min(1, M.t / M.dur);
-    M.s = M.s0 + (M.s1 - M.s0) * easeProfile(tau);
-    if (tau >= 1) { M.moving = false; const d = M.done; M.done = null; d && d(); }
-  }
-  const pos = rootPos(M.s, _v);
-  const v = dt > 0 ? pos.distanceTo(M.prev) / dt : 0;
-  const acc = (v - M.v) / Math.max(dt, 1e-3);
-  M.v += (v - M.v) * (1 - Math.exp(-dt / 0.05));
-  M.prev.copy(pos);
-  runnerRoot.position.copy(pos);
-  // hướng nhìn: điểm phía trước (look-ahead) + làm mượt
-  const ahead = rootPos(M.s + (M.v > 0.05 ? 1.1 : 0.6), new THREE.Vector3());
-  const behind = rootPos(M.s - (M.v > 0.05 ? 0.25 : 0.6), new THREE.Vector3());
-  const target = Math.atan2(ahead.x - behind.x, ahead.z - behind.z);
-  const prevYaw = M.yaw;
-  M.yaw += wrapPi(target - M.yaw) * (1 - Math.exp(-dt / 0.09));
-  const omega = dt > 0 ? wrapPi(M.yaw - prevYaw) / dt : 0;
-  const bankT = clamp(-0.55 * Math.atan(M.v * omega / 9.81), -0.21, 0.21);
-  const pitchT = clamp(0.2 * Math.atan(acc / 9.81), -0.09, 0.1);
-  M.bank += (bankT - M.bank) * (1 - Math.exp(-dt / 0.12));
-  M.pitch += (pitchT - M.pitch) * (1 - Math.exp(-dt / 0.15));
-  runnerRoot.rotation.set(M.pitch, M.yaw, M.bank, 'YXZ');
-  // đồng bộ tốc độ chân với tốc độ thật (STRIDE)
-  if (actions.Run) actions.Run.setEffectiveTimeScale(clamp(M.v / natural, 0.2, MAX_RUN_SCALE));
-  setProgress(Math.max(M.s, progMax));
-}
-let progMax = 0;
-
-// ------------------------------------------------------------ camera
-let camMode = 'follow';
-const camPos = new THREE.Vector3(), camTgt = new THREE.Vector3();
-let camFov = 50, camInit = false;
-function camGoal(outP, outT) {
-  if (camMode === 'map') {
-    const c = PATH.camera.map;
-    outT.set(...c.target);
-    outP.set(...c.pos);
-    const a = camera.aspect, k = a < 0.5625 ? 0.5625 / a : 1;   // màn hẹp hơn 9:16 → lùi xa
-    outP.sub(outT).multiplyScalar(k).add(outT);
-    return c.fov_v_deg;
-  }
-  const o = PATH.camera.follow_offset;
-  outT.copy(runnerRoot.position).add(new THREE.Vector3(Math.sin(M.yaw) * M.v * 0.22, 0.85, Math.cos(M.yaw) * M.v * 0.22));
-  outP.copy(runnerRoot.position).add(new THREE.Vector3(o[0], o[1], o[2]));
-  return 46;
-}
-const _gp = new THREE.Vector3(), _gt = new THREE.Vector3();
-function updateCamera(dt) {
-  const fov = camGoal(_gp, _gt);
-  if (!camInit) { camPos.copy(_gp); camTgt.copy(_gt); camFov = fov; camInit = true; }
-  const k = 1 - Math.exp(-dt * (camMode === 'map' ? 2.5 : 3.5));
-  camPos.lerp(_gp, k); camTgt.lerp(_gt, k); camFov += (fov - camFov) * k;
-  camera.position.copy(camPos); camera.lookAt(camTgt);
-  if (Math.abs(camera.fov - camFov) > 0.01) { camera.fov = camFov; camera.updateProjectionMatrix(); }
-  if (quality === 'high') { sun.target.position.copy(runnerRoot.position); sun.position.copy(runnerRoot.position).add(new THREE.Vector3(-8, 24, -6)); }
-}
-
-// ------------------------------------------------------------ 16 chặng
-const legs = [];
-for (let k = 0; k < 8; k++) { legs.push({ type: 'run', k }); legs.push({ type: 'station', k }); }
-let leg = 0, busy = false, token = 0;
-function legText() {
-  if (leg >= 16) return 'Về đích! <small>— bấm Phát lại để xem lại cuộc đua</small>';
-  const L_ = legs[leg], st = PATH.stations[L_.k];
-  return L_.type === 'run' ? `Chặng ${leg + 1}/16 · Chạy 1 km <small>→ trạm ${st.code}</small>`
-    : `Chặng ${leg + 1}/16 · ${st.code} ${st.name} <small>${st.dist}</small>`;
-}
-function refreshUI() {
-  $('leg').innerHTML = legText();
-  $('bDone').disabled = busy || leg >= 16;
-  $('bReplay').disabled = busy && !replaying;
-}
-async function doneLeg() {
-  if (busy || leg >= 16) return;
-  busy = true; refreshUI();
-  const L_ = legs[leg];
-  if (L_.type === 'run') {
-    await runTo(stS[L_.k], RUN_DUR);
-    progMax = Math.max(progMax, stS[L_.k]);
-    setRing(L_.k, 'active');
-    play(PATH.stations[L_.k].action, 0.3);
-  } else {
-    setRing(L_.k, 'done');
-    play('Idle', 0.35);
-    if (L_.k === 7) { await wait(0.4); await runTo(finishS, RUN_DUR); progMax = finishS; play('Celebrate', 0.3); }
-  }
-  leg++; busy = false; refreshUI();
-}
-function resetRace() {
-  token++; replaying = false; busy = false;
-  M.moving = false; M.done = null; simWaits = [];
-  M.s = startS; progMax = startS; leg = 0;
-  for (let k = 0; k < 8; k++) setRing(k, 'idle');
-  play('Idle', 0.2);
-  $('clock').style.display = 'none';
-  refreshUI();
-}
-// phát lại theo split thật (giây), nén vào ~20 s
-let replaying = false, clockT0 = 0, clockReal = 0, clockRate = 1;
-async function replay() {
-  resetRace();
-  const my = token;
-  replaying = true; busy = true; refreshUI();
-  const splits = PATH.sample_splits_s;
-  const total = splits.reduce((a, b) => a + b, 0);
-  const sc = REPLAY_TOTAL / total;
-  $('clock').style.display = 'block';
-  let realAcc = 0;
-  for (let i = 0; i < 16; i++) {
-    if (my !== token) return;
-    const L_ = legs[i], dur = Math.max(0.45, splits[i] * sc);
-    leg = i; refreshUI();
-    clockT0 = simTime; clockReal = realAcc; clockRate = splits[i] / dur;
-    if (L_.type === 'run') {
-      await runTo(stS[L_.k], dur);
-      progMax = Math.max(progMax, stS[L_.k]);
-      setRing(L_.k, 'active');
-      play(PATH.stations[L_.k].action, 0.2);
-    } else {
-      await wait(dur);
-      setRing(L_.k, 'done');
-    }
-    realAcc += splits[i];
-  }
-  if (my !== token) return;
-  clockRate = 0; clockReal = realAcc;
-  await runTo(finishS, 0.9); progMax = finishS;
-  play('Celebrate', 0.3);
-  leg = 16; replaying = false; busy = false; refreshUI();
-}
-function fmt(t) { t = Math.floor(t); const h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60, s = t % 60; return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; }
-
-// ------------------------------------------------------------ vòng lặp + FPS + tự hạ chất lượng
-const clock = new THREE.Clock();
-let fpsEma = 60, lowFor = 0, frames = 0;
-function hud() {
-  const kb = (n) => (loaded[n] / 1024).toFixed(1) + ' KB';
-  const inf = renderer.info.render;
-  $('hud').textContent = `FPS ${fpsEma.toFixed(0)}  ·  ${quality}  pr ${renderer.getPixelRatio().toFixed(2)}\n` +
-    `map ${kb('hyrox_map.glb')}  runner ${kb('hyrox_runner.glb')}  json ${kb('hyrox_path.json')}\n` +
-    `draw ${inf.calls}  tam giác ${(inf.triangles / 1000).toFixed(1)}k  clip ${Object.keys(actions).length}`;
-}
-function loop() {
-  const dt = Math.min(clock.getDelta(), 0.05);
-  simTime += dt;
-  for (const w of simWaits.slice()) if (simTime >= w.at) { simWaits.splice(simWaits.indexOf(w), 1); w.res(); }
-  updateMover(dt);
-  mixer.update(dt);
-  updateRings(simTime);
-  updateCamera(dt);
-  renderer.render(scene, camera);
-  updateLabels();
-  if (replaying) $('clock').textContent = fmt(clockReal + (simTime - clockT0) * clockRate);
-  if (dt > 0) fpsEma += (1 / dt - fpsEma) * 0.05;
-  if (quality === 'high' && fpsEma < 40 && !Q.get('q')) { lowFor += dt; if (lowFor > 3) { quality = 'low'; applyQuality(); } } else lowFor = 0;
-  if (++frames % 15 === 0) hud();
-  requestAnimationFrame(loop);
-}
-
-$('bDone').onclick = doneLeg;
-$('bReplay').onclick = replay;
-$('bReset').onclick = resetRace;
-$('bCam').onclick = () => { camMode = camMode === 'map' ? 'follow' : 'map'; $('bCam').textContent = camMode === 'map' ? 'Bám theo' : 'Toàn cảnh'; };
-$('bQ').onclick = () => { quality = quality === 'high' ? 'low' : 'high'; applyQuality(); };
-window.__hyrox = { get state() { return { leg, busy, replaying, s: M.s, v: M.v, fps: fpsEma, quality, current: current && current.getClip().name, loaded, clips: Object.keys(actions), props: Object.keys(props) }; }, doneLeg, replay, resetRace };
-
-applyQuality();
-load().then(() => {
-  $('msg').remove();
-  M.s = startS; progMax = startS; M.yaw = PATH.start.yaw;
-  M.prev.copy(rootPos(M.s));
-  resetRace();
-  resize();
-  loop();
-}).catch((e) => {
-  console.error(e);
-  $('msg').innerHTML = 'Không tải được bản đồ 3D.<br><small>' + String(e.message || e) +
-    '<br>Chạy workflow “Media — bản đồ HYROX 3D” để sinh hyrox_map.glb / hyrox_runner.glb / hyrox_path.json vào media/hyrox/.</small>';
-  $('hud').textContent = '';
+// ---------- bản đồ ----------
+scene.add(gMap.scene);
+const TEAL = new THREE.Color('#5EE6C7'), CORAL = new THREE.Color('#FF7A45');
+const progMat = new THREE.ShaderMaterial({
+  uniforms: { uProg: { value: 0 }, uOn: { value: TEAL.clone() }, uOff: { value: new THREE.Color('#143E46') } },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+  fragmentShader: 'varying vec2 vUv; uniform float uProg; uniform vec3 uOn, uOff; void main(){ float m = smoothstep(uProg + .003, uProg - .003, vUv.x); float head = exp(-abs(vUv.x - uProg) * 90.0) * step(.0005, uProg); vec3 c = mix(uOff, uOn, m) + uOn * head * .8; gl_FragColor = vec4(c, 1.0);\n#include <colorspace_fragment>\n}',
+  side: THREE.DoubleSide, toneMapped: false });
+const rings = [];
+gMap.scene.traverse(o => {
+  if (!o.isMesh) return;
+  if (o.name === 'Progress') { o.material = progMat; }
+  else if (o.name.startsWith('Station_')) { o.material = o.material.clone(); o.material.polygonOffset = true; o.material.polygonOffsetFactor = -2; o.material.polygonOffsetUnits = -2; rings[+o.name.slice(8, 10) - 1] = o; }
+  else if (o.material.name === 'HXM_Glow') { o.material.toneMapped = false; }
+  else if (LOW && o.material.name === 'HXM_Matte') { o.material = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide }); }
 });
+const mapBox = new THREE.Box3().setFromObject(gMap.scene);
+gMap.scene.traverse(o => { o.updateMatrix(); o.matrixAutoUpdate = false; }); gMap.scene.updateMatrixWorld(true); gMap.scene.matrixWorldAutoUpdate = false;
+
+// ---------- đạo cụ ----------
+scene.add(gProps.scene);
+const propClip = (n) => gProps.animations.find(a => a.name === n);
+
+// ---------- VĐV ----------
+const matCache = {};
+function variantMats(key) {
+  if (matCache[key]) return matCache[key];
+  const v = P.variants[key], src = GL[v.character].scene; let body, hair;
+  src.traverse(o => { if (o.isSkinnedMesh) { if (o.material.name === 'Body') body = o.material; else hair = o.material; } });
+  const b = LOW ? new THREE.MeshLambertMaterial({ side: THREE.DoubleSide }) : body.clone(); b.map = TEX[key]; b.color.set(0xffffff);
+  const h = hair.clone(); h.color.setRGB(...v.hair_color_linear).multiplyScalar(1.6);
+  return matCache[key] = { body: b, hair: h };
+}
+function makeAthlete(key) {
+  const v = P.variants[key], g = GL[v.character], root = SkeletonUtils.clone(g.scene), m = variantMats(key);
+  root.traverse(o => { if (!o.isSkinnedMesh) return; o.frustumCulled = false;
+    if (o.material.name === 'Body') o.material = m.body; else { o.material = m.hair; o.visible = (o.name === v.hair_mesh); } });
+  const mixer = new THREE.AnimationMixer(root);
+  const act = (n) => mixer.clipAction(g.animations.find(a => a.name === n));
+  scene.add(root);
+  // skeleton chỉ tính lại + nạp bone texture khi mixer vừa cập nhật (VĐV xa chạy 15–30 Hz)
+  const skels = []; root.traverse(o => { if (o.isSkinnedMesh && o.visible) { const sk = o.skeleton, up = sk.update.bind(sk); sk.dirty = true; sk.update = () => { if (sk.dirty) { up(); sk.dirty = false; } }; skels.push(sk); } });
+  return { root, mixer, act, key, acc: 0, char: v.character, skels };
+}
+const stations = P.stations.map((s, i) => {
+  const a = makeAthlete(s.athlete.variant);
+  a.root.position.fromArray(s.athlete.pos); a.root.rotation.y = s.athlete.heading;
+  const w = a.act(s.athlete.clip); w.play(); w.time = s.athlete.phase_s;
+  let pm = null;
+  if (s.athlete.prop_clip) { const c = propClip(s.athlete.prop_clip); c.duration = w.getClip().duration; pm = new THREE.AnimationMixer(gProps.scene); const pa = pm.clipAction(c); pa.play(); pa.time = s.athlete.phase_s; }
+  a.mixer.update(0); if (pm) pm.update(0);
+  a.propMixer = pm; a.acc = i * 0.009; a.center = new THREE.Vector3().fromArray(s.athlete.pos).add(new THREE.Vector3(0, 0.9, 0));
+  return a;
+});
+const hero = makeAthlete(P.hero.variant);
+hero.idle = hero.act('Idle'); hero.run = hero.act('Run'); hero.cel = hero.act('Celebrate');
+for (const a of [hero.idle, hero.run, hero.cel]) { a.play(); a.setEffectiveWeight(0); }
+hero.idle.setEffectiveWeight(1); hero.run.timeScale = 0;
+hero.w = { idle: 1, run: 0, cel: 0 }; hero.heading = P.hero.spawn.heading;
+const RUN = P.run[P.hero.character], RUN_DUR = hero.run.getClip().duration;
+
+// bóng tròn giả (1 draw call) + vòng đánh dấu nhân vật chính
+const blobTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); const r = g.createRadialGradient(32, 32, 2, 32, 32, 31);
+  r.addColorStop(0, 'rgba(0,0,0,.75)'); r.addColorStop(.6, 'rgba(0,0,0,.35)'); r.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = r; g.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
+const blobGeo = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
+const blobs = new THREE.InstancedMesh(blobGeo, new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false, toneMapped: false, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }), 9);
+blobs.frustumCulled = false; const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _v = new THREE.Vector3(), _s = new THREE.Vector3();
+P.stations.forEach((s, i) => { const p = s.athlete.pos; _m4.compose(_v.set(p[0], p[1] + 0.006, p[2]), _q.identity(), _s.set(1.1, 1, 1.1)); blobs.setMatrixAt(i + 1, _m4); });
+scene.add(blobs);
+const marker = new THREE.Mesh(new THREE.RingGeometry(0.40, 0.47, 40).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: TEAL, transparent: true, opacity: .95, toneMapped: false, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -6, polygonOffsetUnits: -6 }));
+scene.add(marker);
+
+// ---------- nhãn HTML ----------
+const labels = [];
+function addLabel(pos, html, cls) { const el = document.createElement('div'); el.className = 'lbl ' + (cls || ''); el.innerHTML = html; $('labels').appendChild(el); const o = { el, pos: new THREE.Vector3().fromArray(pos) }; labels.push(o); return o; }
+const stLabels = P.stations.map(s => addLabel([s.label.pos[0], 0.1, s.label.pos[2]], `<b>${String(s.id).padStart(2, '0')}</b><span><em>${s.name_vi}</em><i>${s.metric}</i></span>`));
+addLabel([P.start.pos[0], 2.75, P.start.pos[2]], '<span>XUẤT PHÁT</span>', 'gate');
+addLabel([P.finish.pos[0], 2.75, P.finish.pos[2]], '<span>VỀ ĐÍCH</span>', 'gate');
+
+// ---------- trạng thái cuộc đua ----------
+const F_SPAWN = P.f.hero_spawn, F_ST = P.f.stations, F_FIN = Math.min(0.995, P.f.finish + 0.012);
+const S = { legsDone: 0, f: F_SPAWN, mode: 'idle', stopHeading: P.hero.spawn.heading, move: null, replay: null, cam: 'map' };
+let uiKey = '';
+function refreshUI() {
+  const n = S.legsDone, moving = S.mode === 'run', key = n + '|' + S.mode + '|' + !!S.replay;
+  if (key === uiKey) return; uiKey = key;
+  for (let j = 0; j < 8; j++) {
+    const done = n >= 2 * j + 2, active = n === 2 * j + 1 && !moving, m = rings[j] && rings[j].material, el = stLabels[j].el;
+    el.classList.toggle('done', done); el.classList.toggle('active', active);
+    if (m) { if (done) { m.color.copy(TEAL); m.emissive.copy(TEAL).multiplyScalar(.7); } else if (active) { m.color.copy(CORAL); m.emissive.copy(CORAL).multiplyScalar(.8); } else { m.color.set('#2B6E66'); m.emissive.set('#0A2A26'); } }
+  }
+  const dots = $('dots').children; for (let i = 0; i < 16; i++) { dots[i].className = i < n ? 'd' : (i === n ? 'c' : ''); }
+  const fin = n >= 16, leg = P.legs[Math.min(n, 15)];
+  $('legTitle').textContent = fin ? 'Hoàn thành 16/16' : `Chặng ${n + 1}/16`;
+  $('legName').innerHTML = fin ? 'Về đích!<small>8 km chạy + 8 trạm</small>' : (leg.type === 'run' ? `Chạy 1 km<small>→ Trạm ${String(leg.to_station).padStart(2, '0')} · ${P.stations[leg.to_station - 1].name_vi}</small>` : `${leg.name_vi}<small>Trạm ${String(leg.station).padStart(2, '0')} · ${leg.metric}</small>`);
+  $('btnDone').disabled = fin || !!S.replay; $('btnDone').textContent = fin ? 'HOÀN THÀNH' : 'XONG CHẶNG';
+}
+function startMove(fb, then) { const fa = S.f, d = Math.abs(fb - fa) * L; S.move = { fa, fb, T: Math.min(2.0, Math.max(1.1, 0.55 + d / 2.4)), t: 0, then }; S.mode = 'run'; }
+function finishMove() { const m = S.move; if (!m) return; S.f = m.fb; S.move = null; S.mode = 'idle'; if (m.then) m.then(); }
+function pressDone() {
+  if (S.replay || S.legsDone >= 16) return;
+  if (S.move) finishMove();
+  const n = ++S.legsDone;
+  if (n % 2 === 1) { const j = (n - 1) / 2; S.stopHeading = P.stations[j].stop.heading; startMove(F_ST[j]); }       // xong chặng chạy -> chạy tới trạm j
+  else if (n === 16) { S.stopHeading = P.finish.heading; startMove(F_FIN, () => { S.mode = 'cel'; }); }            // xong trạm 8 -> về đích
+}
+function reset() { S.legsDone = 0; S.f = F_SPAWN; S.mode = 'idle'; S.move = null; S.replay = null; S.stopHeading = P.hero.spawn.heading; hero.heading = S.stopHeading; $('scrubRow').style.display = 'none'; $('clock').style.display = 'none'; uiKey = ''; }
+// phát lại: dòng thời gian thuần (tua được)
+const TL = (() => { const sum = SPLITS.reduce((a, b) => a + b, 0), segs = []; let t = 0, race = 0, f = F_SPAWN;
+  for (let i = 0; i < 16; i++) { const d = REPLAY_S * SPLITS[i] / sum, j = i >> 1; const sg = { i, t0: t, t1: t + d, r0: race, r1: race + SPLITS[i] };
+    if (i % 2 === 0) { sg.type = 'run'; sg.fa = f; sg.fb = F_ST[j]; f = sg.fb; } else { sg.type = 'work'; sg.f = f; } sg.head = P.stations[j].stop.heading; segs.push(sg); t += d; race += SPLITS[i]; }
+  segs.push({ i: 16, type: 'run', fa: f, fb: F_FIN, t0: t, t1: t + FINISH_RUN_S, r0: race, r1: race, head: P.finish.heading }); t += FINISH_RUN_S;
+  segs.push({ i: 16, type: 'cel', f: F_FIN, t0: t, t1: t + CELEB_S, r0: race, r1: race, head: P.finish.heading }); t += CELEB_S;
+  return { segs, total: t, race }; })();
+const fmt = (s) => { s = Math.round(s); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(ss).padStart(2, '0'); };
+function applyReplay(T) {
+  T = Math.min(Math.max(T, 0), TL.total - 1e-4); const sg = TL.segs.find(s => T < s.t1) || TL.segs[TL.segs.length - 1], u = (T - sg.t0) / (sg.t1 - sg.t0);
+  S.legsDone = sg.i; S.stopHeading = sg.head;
+  if (sg.type === 'run') { S.f = sg.fa + (sg.fb - sg.fa) * smooth(u); S.mode = (u > 0.03 && u < 0.95) ? 'run' : 'idle'; }
+  else { S.f = sg.f; S.mode = sg.type === 'cel' ? 'cel' : 'idle'; }
+  const ct = fmt(sg.r0 + (sg.r1 - sg.r0) * u); if (ct !== applyReplay.last) { applyReplay.last = ct; $('clock').textContent = ct; $('scrubT').textContent = ct; }
+}
+function startReplay() { reset(); S.replay = { T: 0, playing: true }; $('scrubRow').style.display = 'flex'; $('clock').style.display = 'block'; $('btnPause').textContent = 'Dừng'; uiKey = ''; }
+
+// ---------- camera ----------
+const camMap = { pos: new THREE.Vector3(), tgt: new THREE.Vector3(), fov: 7 }, camCur = { a: 0, follow: new THREE.Vector3() };
+function fitMapCam() {
+  const w = stage.clientWidth, h = stage.clientHeight, aspect = w / h; camera.aspect = aspect;
+  const p0 = new THREE.Vector3().fromArray(P.camera.map.pos), t0 = new THREE.Vector3().fromArray(P.camera.map.target), dir = p0.clone().sub(t0), dist = dir.length(); dir.normalize();
+  const box = mapBox.clone(); box.max.y = Math.max(box.max.y, 2.2); const c = box.getCenter(new THREE.Vector3()); c.y = 0.6;
+  const tmp = new THREE.PerspectiveCamera(10, aspect, 1, 500); let tgt = c.clone(), half = 0.05;
+  for (let it = 0; it < 3; it++) {
+    tmp.position.copy(tgt).addScaledVector(dir, dist); tmp.lookAt(tgt); tmp.updateMatrixWorld(true);
+    let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+    for (let k = 0; k < 8; k++) { _v.set(k & 1 ? box.max.x : box.min.x, k & 2 ? box.max.y : box.min.y, k & 4 ? box.max.z : box.min.z).applyMatrix4(tmp.matrixWorldInverse); const x = _v.x / -_v.z, y = _v.y / -_v.z; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+    const right = new THREE.Vector3().setFromMatrixColumn(tmp.matrixWorld, 0), up = new THREE.Vector3().setFromMatrixColumn(tmp.matrixWorld, 1);
+    tgt.addScaledVector(right, (x0 + x1) / 2 * dist).addScaledVector(up, (y0 + y1) / 2 * dist);
+    half = Math.max((y1 - y0) / 2, (x1 - x0) / 2 / aspect) * 1.07;
+  }
+  camMap.tgt.copy(tgt); camMap.pos.copy(tgt).addScaledVector(dir, dist); camMap.fov = THREE.MathUtils.radToDeg(2 * Math.atan(half));
+}
+function resize() { const w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return; renderer.setPixelRatio(dpr); renderer.setSize(w, h, false); fitMapCam(); camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(stage); resize();
+const FO = new THREE.Vector3().fromArray(P.camera.follow.offset), FT = new THREE.Vector3().fromArray(P.camera.follow.target_offset), FFOV = Math.min(P.camera.follow.fov, 40);
+const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _d1 = new THREE.Vector3(), _d2 = new THREE.Vector3(), _t = new THREE.Vector3();
+function updateCamera(dt, snap) {
+  const goal = S.cam === 'follow' ? 1 : 0, k = snap ? 1 : 1 - Math.exp(-dt * 3.2);
+  camCur.a += (goal - camCur.a) * k; if (Math.abs(goal - camCur.a) < 1e-4) camCur.a = goal;
+  camCur.follow.lerp(S.focus != null ? stations[S.focus].root.position : hero.root.position, snap ? 1 : 1 - Math.exp(-dt * 5));
+  const a = smooth(clamp01(camCur.a));
+  // nội suy: mục tiêu (lerp), hướng nhìn (nlerp), cỡ khung (log), fov (lerp) -> zoom mượt giữa 2 chế độ
+  _a.copy(camCur.follow).add(FT); _t.lerpVectors(camMap.tgt, _a, a);
+  _d1.copy(camMap.pos).sub(camMap.tgt); const dm = _d1.length(); _d1.divideScalar(dm); _d2.copy(FO).sub(FT); const df = _d2.length(); _d2.divideScalar(df);
+  _b.lerpVectors(_d1, _d2, a).normalize();
+  const fov = camMap.fov + (FFOV - camMap.fov) * a, hm = dm * Math.tan(THREE.MathUtils.degToRad(camMap.fov / 2)), hf = df * Math.tan(THREE.MathUtils.degToRad(FFOV / 2));
+  const hh = Math.exp(Math.log(hm) + (Math.log(hf) - Math.log(hm)) * a), dist = hh / Math.tan(THREE.MathUtils.degToRad(fov / 2));
+  camera.position.copy(_t).addScaledVector(_b, dist); camera.fov = fov; camera.near = Math.max(0.3, dist - 30); camera.far = dist + 40; camera.updateProjectionMatrix(); camera.lookAt(_t); camera.updateMatrixWorld();
+}
+
+// ---------- UI ----------
+for (let i = 0; i < 16; i++) $('dots').appendChild(document.createElement('div'));
+$('btnDone').onclick = pressDone;
+$('btnReset').onclick = reset;
+$('btnReplay').onclick = startReplay;
+$('btnCam').onclick = () => { S.cam = S.cam === 'map' ? 'follow' : 'map'; $('btnCam').textContent = S.cam === 'map' ? 'Bám theo' : 'Toàn cảnh'; $('btnCam').classList.toggle('on', S.cam === 'follow'); };
+$('btnPause').onclick = () => { if (!S.replay) return; if (S.replay.T >= TL.total - 0.01) S.replay.T = 0; S.replay.playing = !S.replay.playing; $('btnPause').textContent = S.replay.playing ? 'Dừng' : 'Phát'; };
+$('scrub').oninput = (e) => { if (S.replay) { S.replay.T = e.target.value / 1000 * TL.total; } };
+let statsOn = !Q.has('nostats');
+$('stats').onclick = () => { statsOn = false; $('stats').style.display = 'none'; $('statsBtn').style.display = 'block'; };
+$('statsBtn').onclick = () => { statsOn = true; $('stats').style.display = 'block'; $('statsBtn').style.display = 'none'; };
+if (!statsOn) $('stats').onclick();
+
+// ---------- vòng lặp ----------
+const frustum = new THREE.Frustum(), _pm = new THREE.Matrix4(), sphere = new THREE.Sphere(new THREE.Vector3(), 1.5), _p = new THREE.Vector3();
+const clock = new THREE.Clock(); let fpsT = 0, fpsN = 0, fps = 0, lowCount = 0, mixUpdates = 0, frameMs = 0;
+const stat = { fps: 0, calls: 0, tris: 0, dpr, mix: 0 };
+function updateHero(dt) {
+  if (S.replay) { if (S.replay.playing) { S.replay.T += dt; if (S.replay.T >= TL.total) { S.replay.T = TL.total; S.replay.playing = false; $('btnPause').textContent = 'Phát'; } const sv = Math.round(S.replay.T / TL.total * 200) * 5; if (sv !== S.replay.sv) { S.replay.sv = sv; $('scrub').value = sv; } } applyReplay(S.replay.T); }
+  else if (S.move) { const m = S.move; m.t += dt; const u = Math.min(1, m.t / m.T); S.f = m.fa + (m.fb - m.fa) * smooth(u); S.mode = (u > 0.03 && u < 0.94) ? 'run' : 'idle'; if (u >= 1) finishMove(); }
+  const k = 1 - Math.exp(-dt * 13), w = hero.w, tw = { idle: S.mode === 'idle' ? 1 : 0, run: S.mode === 'run' ? 1 : 0, cel: S.mode === 'cel' ? 1 : 0 };
+  for (const n of ['idle', 'run', 'cel']) { w[n] += (tw[n] - w[n]) * k; hero[n].setEffectiveWeight(w[n]); }
+  hero.run.time = ((S.f * L) / RUN.speed_mps) % RUN_DUR;                    // pha chân theo quãng đường -> không trượt
+  const inMove = S.mode === 'run' || (S.move && S.move.t / S.move.T < 0.94);
+  hero.heading += angDiff(hero.heading, inMove ? pathHeading(S.f) : S.stopHeading) * (1 - Math.exp(-dt * (inMove ? 14 : 7)));
+  pathPos(S.f, hero.root.position); hero.root.rotation.y = hero.heading;
+  hero.mixer.update(dt); for (const sk of hero.skels) sk.dirty = true;
+  marker.visible = S.mode !== 'cel';
+  _m4.compose(_v.copy(hero.root.position).setY(hero.root.position.y + 0.006), _q.identity(), _s.set(1.0, 1, 1.0)); blobs.setMatrixAt(0, _m4); blobs.instanceMatrix.needsUpdate = true;
+  marker.position.copy(hero.root.position).setY(hero.root.position.y + 0.012); marker.material.opacity = 0.75 + 0.2 * Math.sin(performance.now() / 260);
+  progMat.uniforms.uProg.value = S.f <= F_SPAWN + 1e-4 ? 0 : S.f;
+}
+function updateStations(dt) {
+  _pm.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); frustum.setFromProjectionMatrix(_pm);
+  const pxPerM = stage.clientHeight / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))); mixUpdates = 0;
+  for (const a of stations) {
+    sphere.center.copy(a.center); const vis = frustum.intersectsSphere(sphere); a.root.visible = vis; a.acc += dt;
+    if (!vis) continue;                                                     // ngoài khung nhìn: không cập nhật mixer (dồn dt)
+    const px = 1.8 * pxPerM / camera.position.distanceTo(a.center), iv = px >= 150 ? 0 : (px >= LOD_PX ? 1 / 30 : 1 / 15);
+    if (a.acc >= iv * 0.92) { a.mixer.update(a.acc); if (a.propMixer) a.propMixer.update(a.acc); a.acc = 0; mixUpdates++; for (const sk of a.skels) sk.dirty = true; }
+  }
+}
+let lblKey = '';
+function updateLabels() {
+  const w = stage.clientWidth, h = stage.clientHeight, e = camera.matrixWorld.elements;
+  const key = w + '|' + h + '|' + camera.fov.toFixed(3) + '|' + e[12].toFixed(3) + '|' + e[13].toFixed(3) + '|' + e[14].toFixed(3) + '|' + e[8].toFixed(4) + '|' + e[9].toFixed(4);
+  if (key === lblKey) return; lblKey = key;                              // camera đứng yên -> không đụng DOM
+  for (const l of labels) { _p.copy(l.pos).project(camera); const ok = _p.z < 1 && _p.z > -1 && Math.abs(_p.x) < 1.15 && Math.abs(_p.y) < 1.15;
+    if (!ok) { if (l.vis !== false) { l.el.style.opacity = 0; l.vis = false; } continue; }
+    if (l.vis !== true) { l.el.style.opacity = 1; l.vis = true; }
+    l.el.style.transform = `translate(${((_p.x + 1) * w / 2).toFixed(1)}px,${((1 - _p.y) * h / 2).toFixed(1)}px) translate(-50%,-50%)`; }
+}
+let first = true;
+function frame() {
+  requestAnimationFrame(frame);
+  const dt = Math.min(clock.getDelta(), 0.1), t0 = performance.now();
+  updateHero(dt); updateCamera(dt, first); updateStations(dt); refreshUI(); updateLabels();
+  renderer.render(scene, camera);
+  frameMs += performance.now() - t0;
+  stat.calls = renderer.info.render.calls; stat.tris = renderer.info.render.triangles;
+  fpsT += dt; fpsN++;
+  if (fpsT >= 0.5) { fps = fpsN / fpsT; stat.fps = fps; stat.mix = mixUpdates; stat.cpuMs = frameMs / fpsN; fpsT = 0; fpsN = 0; frameMs = 0;
+    if (fps < 42 && dpr > 1 && !first) { if (++lowCount >= 4) { dpr = Math.max(1, dpr - 0.25); stat.dpr = dpr; lowCount = 0; resize(); } } else lowCount = 0;
+    if (statsOn) $('stats').textContent = `${fps.toFixed(0)} fps · ${stat.cpuMs.toFixed(1)} ms\n${stat.calls} draw · ${(stat.tris / 1000).toFixed(1)}k tri\ndpr ${dpr} · ${(bytes / 1024).toFixed(0)} KB tải${LOW ? ' · LOW' : ''}`; }
+  if (first) { first = false; $('load').style.display = 'none'; }
+}
+window.__hx = { THREE, renderer, scene, camera, S, P, stat, sizes, hero, stations, TL, pressDone, reset, startReplay, get bytes() { return bytes; } };
+frame();
 </script>
 </body>
 </html>
