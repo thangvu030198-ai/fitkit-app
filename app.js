@@ -580,10 +580,21 @@ function getExerciseMeta(item){
     name: item.custom.name, muscle: item.custom.muscle || "Tuỳ chỉnh",
     equipment: item.custom.equipment || "—",
     guide: item.custom.guide || "Chưa có hướng dẫn kỹ thuật — hãy xem lại video bạn đã tải lên để nhớ đúng form thực hiện.",
-    img: item.custom.img || IMG.muscle_core,
+    /* 22/11: không còn ảnh người tập chung nhóm cơ (ảnh muscle_core cũ) — ảnh đúng bài (exdb) hoặc ô minh hoạ trung tính (exdb.js · fkThumb) */
+    img: (typeof fkThumbForItem === "function" ? fkThumbForItem(item).src : "") || item.custom.img || "",
   };
-  const ex = EXERCISES[item.exerciseId] || { name:"Bài tập đã bị xoá", muscle:"—", equipment:"—", guide:"", img: IMG.muscle_core };
+  const ex = EXERCISES[item.exerciseId] || { name:"Bài tập đã bị xoá", muscle:"—", equipment:"—", guide:"", img: (typeof fkThumbNeutral === "function" ? fkThumbNeutral({}).src : "") };
   return { name: ex.name, muscle: ex.muscle, equipment: ex.equipment, guide: ex.guide, img: ex.img };
+}
+/* 22/11 — ảnh bìa thẻ bài (giáo án / buổi tập): ảnh minh hoạ đã duyệt (fkExArt, đang tắt) → khung 3D / ảnh free-exercise-db ĐÚNG bài
+   (fkThumb, exdb.js) → ảnh bìa clip hướng dẫn đã gắn (item.stock.thumb) → "" = dùng ô minh hoạ trung tính (fkThumbHTML) */
+function fkPlanThumbSrc(item){
+  if(!item) return "";
+  const art = window.fkExArt && fkExArt.thumb(item);
+  if(art) return art;
+  const exact = typeof fkThumbExactSrc === "function" ? fkThumbExactSrc(item) : "";
+  if(exact) return exact;
+  return (item.stock && item.stock.thumb) || (typeof fkThumbForItem === "function" ? "" : getExerciseMeta(item).img) || "";
 }
 
 /* ---------------------------------------------------------------------
@@ -1490,7 +1501,7 @@ function renderWorkoutScreen(){
     return `
     <div class="list-item ${done?'done':''}" data-ex="${escapeHtml(item.uid)}">
       <div class="thumb-wrap">
-        ${item.clipId ? `<video muted preload="metadata" data-thumb-clip="${escapeHtml(item.clipId)}"></video>` : `<img src="${attrUrl((window.fkExArt && fkExArt.thumb(item)) || (item.stock && item.stock.thumb) || meta.img)}" data-exart="${escapeHtml(item.custom ? "" : String(item.exerciseId || ""))}" alt="${escapeHtml(meta.name)}" loading="lazy" decoding="async" data-fallback="${attrUrl(meta.img)}" onerror="this.onerror=null;if(this.dataset.fallback)this.src=this.dataset.fallback">`}
+        ${item.clipId ? `<video muted preload="metadata" data-thumb-clip="${escapeHtml(item.clipId)}"></video>` : (fkPlanThumbSrc(item) ? `<img src="${attrUrl((window.fkExArt && fkExArt.thumb(item)) || fkPlanThumbSrc(item))}" data-exart="${escapeHtml(item.custom ? "" : String(item.exerciseId || ""))}" alt="${escapeHtml(meta.name)}" loading="lazy" decoding="async" data-fallback="${attrUrl(meta.img)}" onerror="this.onerror=null;if(this.dataset.fallback)this.src=this.dataset.fallback">` : fkThumbHTML(fkThumbForItem(item), { alt: meta.name }))}
         ${item.clipId ? `<div class="cam-badge"><span class="material-symbols-rounded">videocam</span></div>` : (item.stock && item.stock.url ? `<div class="cam-badge play"><span class="material-symbols-rounded">play_arrow</span></div>` : "")}
       </div>
       <div class="info">
@@ -1524,7 +1535,7 @@ function openExerciseDetail(itemUid, isToday){
   const done = isToday && log && (log.completedExerciseIds || []).includes(itemUid);
   const mediaHtml = item.clipId
     ? mediaVideoHTML(item.clipId, "ex-detail-video")
-    : `<img src="${attrUrl(meta.img)}" alt="${escapeHtml(meta.name)}" style="width:100%;height:170px;object-fit:cover;border-radius:16px;margin-bottom:14px;">`;
+    : (fkPlanThumbSrc(item) ? `<img src="${attrUrl(fkPlanThumbSrc(item))}" alt="${escapeHtml(meta.name)}" style="width:100%;height:170px;object-fit:contain;background:#fff;border-radius:16px;margin-bottom:14px;">` : fkThumbHTML(fkThumbForItem(item), { alt: meta.name, cls: "lg", style: "width:100%;height:170px;margin-bottom:14px" }));
   openSheet(`
     ${mediaHtml}
     ${item.clipId ? `<button class="btn btn-outline btn-block" id="btn-fit-toggle-detail" style="margin-bottom:14px;">${fitToggleLabel(getClipFit(item.clipId))}</button>` : ""}
@@ -1893,7 +1904,7 @@ function renderSessionStep(){
     ? `Chưa biết mức tạ? Chọn mức <b>nhẹ</b> làm được khoảng ${(top || 10) + 3} lần mà vẫn đúng kỹ thuật, gõ kg ở hiệp 1 — các hiệp sau tự điền theo.` : "";
   const mediaHtml = item.clipId
     ? mediaVideoHTML(item.clipId, "session-video", { maxHeight: "34vh" })
-    : `<img src="${attrUrl(meta.img)}" alt="${escapeHtml(meta.name)}" style="width:100%;height:150px;object-fit:cover;border-radius:16px;margin-bottom:12px;" onerror="this.style.display='none'">`;
+    : (fkPlanThumbSrc(item) ? `<img src="${attrUrl(fkPlanThumbSrc(item))}" alt="${escapeHtml(meta.name)}" style="width:100%;height:150px;object-fit:contain;background:#fff;border-radius:16px;margin-bottom:12px;" onerror="this.style.display='none'">` : fkThumbHTML(fkThumbForItem(item), { alt: meta.name, cls: "lg", style: "width:100%;height:150px" }));
   const kgLabel = eqc === "db" ? "Kg/quả" : "Kg";                  // QT-16: tạ đơn ghi kg của 1 quả
   const rpeOpts = r=> `<option value="">–</option>${[6,7,7.5,8,8.5,9,9.5,10].map(v=>`<option ${String(r.rpe)===String(v)?'selected':''}>${v}</option>`).join("")}`;
   const tagTxt = session.makeup ? "Tập bù · lưu hôm nay" : session.isToday ? "Hôm nay" : "Xem trước";
@@ -2632,7 +2643,7 @@ function renderPlanEditorHTML(plan){
         const meta = getExerciseMeta(it);
         return `<div class="list-item" data-item="${escapeHtml(String(it.uid))}">
           <div class="thumb-wrap">
-            ${it.clipId ? `<video muted preload="metadata" data-thumb-clip="${escapeHtml(String(it.clipId))}"></video>` : `<img src="${attrUrl((window.fkExArt && fkExArt.thumb(it)) || (it.stock && it.stock.thumb) || meta.img)}" data-exart="${escapeHtml(it.custom ? "" : String(it.exerciseId || ""))}" alt="${escapeHtml(meta.name)}" loading="lazy">`}
+            ${it.clipId ? `<video muted preload="metadata" data-thumb-clip="${escapeHtml(String(it.clipId))}"></video>` : (fkPlanThumbSrc(it) ? `<img src="${attrUrl((window.fkExArt && fkExArt.thumb(it)) || fkPlanThumbSrc(it))}" data-exart="${escapeHtml(it.custom ? "" : String(it.exerciseId || ""))}" alt="${escapeHtml(meta.name)}" loading="lazy">` : fkThumbHTML(fkThumbForItem(it), { alt: meta.name }))}
             ${it.clipId ? `<div class="cam-badge"><span class="material-symbols-rounded">videocam</span></div>` : ""}
           </div>
           <div class="info"><div class="name">${escapeHtml(meta.name)}</div><div class="meta">${escapeHtml(meta.muscle||"")} · ${escapeHtml(String(it.sets))} hiệp × ${escapeHtml(String(it.reps))}</div></div>
@@ -2768,7 +2779,8 @@ function openPlanItemEditor(plan, dayKey, itemUid){
       mountClipVideo("#pie-video", item.clipId);
       attachFitToggle($("#pie-fit-toggle"), "#pie-video", item.clipId);
     } else {
-      mediaEl.innerHTML = `<img src="${attrUrl((window.fkExArt && fkExArt.full(item.custom ? "" : item.exerciseId)) || (item.stock && item.stock.thumb) || meta.img)}" alt="${escapeHtml(meta.name)}" style="width:100%;height:150px;object-fit:cover;border-radius:14px;">`;   // QS-04
+      const pieSrc = (window.fkExArt && fkExArt.full(item.custom ? "" : item.exerciseId)) || fkPlanThumbSrc(item);
+      mediaEl.innerHTML = pieSrc ? `<img src="${attrUrl(pieSrc)}" alt="${escapeHtml(meta.name)}" style="width:100%;height:150px;object-fit:contain;background:#fff;border-radius:14px;">` : fkThumbHTML(fkThumbForItem(item), { alt: meta.name, cls: "lg", style: "width:100%;height:150px;margin-bottom:0" });   // QS-04
     }
     try{ if(window.FKEquip) FKEquip.mount({ plan, dayKey, item, host: $("#pie-media"), reopen: ()=>{ renderPlansScreen(); openPlanItemEditor(plan, dayKey, itemUid); } }); }catch(e){}   // 16/11: chọn dụng cụ
     $$("#sheet-content [data-plan-side]").forEach(b=> b.addEventListener("click", ()=>{   // 22/11: đặt sẵn kiểu tập cho bài này trong giáo án

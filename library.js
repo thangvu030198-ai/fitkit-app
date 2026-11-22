@@ -54,7 +54,7 @@ function libBuiltinItems(){
   return Object.entries(EXERCISES).map(([id, e])=>({
     key:"fk:"+id, src:"fitkit", id, name:e.name, sub:`${e.muscle} · ${e.equipment}`, muscleVi:e.muscle,
     equip:/tạ đơn/i.test(e.equipment)?"dumbbell":/đòn/i.test(e.equipment)?"barbell":/cáp/i.test(e.equipment)?"cable":/máy/i.test(e.equipment)?"machine":/cơ thể|không/i.test(e.equipment)?"body only":"other",
-    level:"beginner", img:e.img, guide:e.guide, sets:e.sets, reps:e.reps, restSec:e.restSec,
+    level:"beginner", img:(typeof fkThumbForKey === "function" ? fkThumbForKey(id).src : e.img), guide:e.guide, sets:e.sets, reps:e.reps, restSec:e.restSec,
     groups: MUSCLE_GROUPS_UI.filter(g=> (g.vi||[]).some(v=> e.muscle.split("/").map(s=>s.trim()).includes(v))).map(g=>g.id),
   }));
 }
@@ -62,7 +62,7 @@ function libExdbItem(ex){
   const it = exdbToItem(ex);
   return {
     key:"db:"+ex.id, src:"exdb", ex, name:ex.name, sub:[viHint(ex), exdbMuscleVi(ex)].filter(Boolean).join(" · "), muscleVi:exdbMuscleVi(ex),
-    equip:ex.equipment||"other", level:ex.level||"beginner", img:exdbImg(ex,0), guide:it.guide, sets:it.sets, reps:it.reps, restSec:it.restSec,
+    equip:ex.equipment||"other", level:ex.level||"beginner", img:(typeof fkThumbForExdb === "function" ? fkThumbForExdb(ex).src : exdbImg(ex,0)), guide:it.guide, sets:it.sets, reps:it.reps, restSec:it.restSec,
     groups: MUSCLE_GROUPS_UI.filter(g=> (g.cat && g.cat.includes(ex.category)) || (g.ex && !["cardio","stretching"].includes(ex.category) && (ex.primaryMuscles||[]).some(m=>g.ex.includes(m)))).map(g=>g.id),
   };
 }
@@ -178,9 +178,15 @@ function libShellHTML(){
     <div class="exlib-chips" role="group" aria-label="Cấp độ">${LEVEL_FILTERS.map(f=>`<button type="button" class="pill ${exLib.level===f.id?'active':''}" data-lv="${escapeHtml(f.id)}" aria-pressed="${exLib.level===f.id}">${escapeHtml(f.label)}</button>`).join("")}</div>
     <div id="exlib-body"></div>`;
 }
+/* 22/11: ảnh bìa đúng từng bài (exdb.js · fkThumb): khung 3D / ảnh free-exercise-db của chính bài; không có → ô minh hoạ trung tính
+   (icon dụng cụ + chữ viết tắt) — không còn ảnh người tập chung nhóm cơ */
+function libThumbHTML(x){
+  if(typeof fkThumbForLib === "function") return fkThumbHTML(fkThumbForLib(x), { cls:"thumb", w:56, h:56 });
+  return x.img ? `<img class="thumb" src="${escapeHtml(x.img)}" loading="lazy" decoding="async" width="56" height="56" alt="" onerror="this.style.visibility='hidden'">` : `<div class="thumb ex-num"><span class="material-symbols-rounded">fitness_center</span></div>`;
+}
 function libRowHTMLBase(x){
   return `<div class="list-item exlib-row" data-ex="${escapeHtml(x.key)}">
-    ${x.img ? `<img class="thumb" src="${escapeHtml(x.img)}" loading="lazy" decoding="async" width="56" height="56" alt="" onerror="this.style.visibility='hidden'">` : `<div class="thumb ex-num"><span class="material-symbols-rounded">fitness_center</span></div>`}
+    ${libThumbHTML(x)}
     <div class="info"><div class="name">${escapeHtml(x.name)}</div><div class="meta">${escapeHtml(x.sub)}</div>
       <div class="exlib-tags">${x.src==="fitkit"?`<span class="tg fk">Bài chuẩn</span>`:""}<span class="tg">${escapeHtml(EXDB_LEVEL_VI[x.level]||"Mới tập")}</span></div></div>
     <button type="button" class="nu-mini" data-add="${escapeHtml(x.key)}" aria-label="Thêm ${escapeHtml(x.name)} vào giáo án"><span class="material-symbols-rounded">add</span></button>

@@ -351,7 +351,7 @@ var EXDB_VI = window.EXDB_VI = window.EXDB_VI || {};
   /* Danh sách khi tìm kiếm: chạy bản gốc rồi thay phần danh sách bằng kết quả xếp hạng (khớp không dấu) */
   function libRowHTML(x){
     return `<div class="list-item exlib-row" data-ex="${escapeHtml(x.key)}">
-      ${x.img ? `<img class="thumb" src="${escapeHtml(x.img)}" loading="lazy" alt="" onerror="this.style.visibility='hidden'">` : `<div class="thumb ex-num"><span class="material-symbols-rounded">fitness_center</span></div>`}
+      ${typeof libThumbHTML === "function" ? libThumbHTML(x) : (x.img ? `<img class="thumb" src="${escapeHtml(x.img)}" loading="lazy" alt="" onerror="this.style.visibility='hidden'">` : `<div class="thumb ex-num"><span class="material-symbols-rounded">fitness_center</span></div>`)}
       <div class="info"><div class="name">${escapeHtml(x.name)}</div><div class="meta">${escapeHtml(x.sub)}</div>
         <div class="exlib-tags">${x.src === "fitkit" ? `<span class="tg fk">Bài chuẩn</span>` : ""}<span class="tg">${EXDB_LEVEL_VI[x.level] || "Mới tập"}</span></div></div>
       <button class="nu-mini" data-add="${escapeHtml(x.key)}" aria-label="Thêm vào giáo án"><span class="material-symbols-rounded">add</span></button>

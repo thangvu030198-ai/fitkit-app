@@ -63,6 +63,7 @@ curl -fsSL https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/
 # Ảnh: nền, icon app, favicon, lối tắt PWA, ảnh chia sẻ, logo thương hiệu TapEasy (assets/brand/ — không chép source/)
 mkdir -p www/assets/brand
 mkdir -p www/assets/sports && cp assets/sports/*.png www/assets/sports/   # 21/11: logo bộ môn (màn chọn bộ môn)
+mkdir -p www/assets/ex-thumbs && cp assets/ex-thumbs/*.svg www/assets/ex-thumbs/   # 22/11: ô minh hoạ trung tính khi bài chưa có ảnh đúng (exdb.js · fkThumb)
 cp assets/bg-storm.jpg www/assets/
 cp assets/icon-*.png assets/apple-touch-icon-180.png assets/shortcut-*.png www/assets/ 2>/dev/null || echo "⚠️ Thiếu một số icon PNG trong assets/"
 cp assets/favicon.svg assets/favicon-32.png assets/favicon-16.png assets/favicon.ico www/assets/ 2>/dev/null || echo "⚠️ Thiếu favicon trong assets/"
