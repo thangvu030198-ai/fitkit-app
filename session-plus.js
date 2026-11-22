@@ -370,6 +370,8 @@ function actsRow(s, st, sc, item, host, single){
   });
 }
 
+/** 22/11: "lần trước" của bài trong buổi — cùng kiểu tập (app.js fkSessLast); không có hàm → như cũ */
+function lastOf(st, key, item){ try{ if(typeof fkSessLast === "function") return fkSessLast(key, item); }catch(e){} return (st.setLog || {})[key]; }
 /* ---------- màn superset / circuit của training-pro ---------- */
 function enhanceGroup(s, st, sc){
   const item = s.items[s.idx]; if(!item || !grouped(s, item)) return;
@@ -381,7 +383,7 @@ function enhanceGroup(s, st, sc){
     const k = Number(sec.dataset.k), it = items[k], rows = it && s.sets && s.sets[it.uid], table = sec.querySelector(".set-table");
     if(!it || !rows || !table) return;
     const key = exKey(it), meta = getExerciseMeta(it), timed = typeof isTimedReps === "function" && isTimedReps(it.reps);
-    rowsUI({ s, st, sc, scope: table, rows, last: (st.setLog || {})[key], timed, key, meta, types: ["", "w", "f"], allowDel: false, onChange: paintStats,
+    rowsUI({ s, st, sc, scope: table, rows, last: lastOf(st, key, it), timed, key, meta, types: ["", "w", "f"], allowDel: false, onChange: paintStats,
       rowEl: i => table.querySelector(`[data-tp-row="${k}:${i}"]`), kgSel: "[data-tp-kg]", repsSel: "[data-tp-reps]",
       doneBtns: [...table.querySelectorAll("[data-tp-done]")].map(b => [b, Number(b.getAttribute("data-tp-done").split(":")[1])]) });
   });
@@ -409,7 +411,7 @@ function enhance(){
   const item = s.items[s.idx], rows = s.sets && s.sets[item.uid];
   if(!rows) return;
   const key = exKey(item), meta = getExerciseMeta(item);
-  const last = (st.setLog || {})[key];
+  const last = lastOf(st, key, item);   // 22/11: "lần trước" CÙNG kiểu tập (hai bên / từng bên)
   const timed = typeof isTimedReps === "function" && isTimedReps(item.reps);
 
   /* buổi trước có khởi động / drop → dựng lại (1 lần cho mỗi bài) */

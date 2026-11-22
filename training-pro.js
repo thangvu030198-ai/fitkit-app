@@ -426,11 +426,18 @@ function initSession(s){
 function ctxFor(item){
   const meta = getExerciseMeta(item), key = exKey(item);
   state.setLog = state.setLog || {};
-  const last = state.setLog[key];
+  let last = state.setLog[key], cross = null;
   const timed = isTimedReps(item.reps);
+  /* 22/11 (exercise-side.js): "lần trước" CÙNG kiểu tập (hai bên / từng bên); chưa có → điền theo lần khác kiểu, không tự tăng tạ */
+  try{
+    if(!timed && typeof fkSideClass === "function" && typeof fkLastForMode === "function"){
+      const cls = fkSideClass(item, meta, timed);
+      if(cls !== "bi"){ const lf = fkLastForMode(last, fkSideMode(item, meta, timed) ? "uni" : "both", cls); cross = lf.cross; last = lf.last || lf.cross; }
+    }
+  }catch(e){}
   const nSets = Math.min(20, Math.max(1, Math.round(num(item.sets)) || 1));   // R3-CORE-05: kẹp 1–20 hiệp
   const top = repTop(item.reps);
-  const prog = progressionFor(item, meta, last, timed, nSets);
+  const prog = cross ? { delta:0 } : progressionFor(item, meta, last, timed, nSets);
   return { meta, key, last, timed, nSets, top, prog };
 }
 /* Top set + back-off (QT-08): hiệp 1 nặng nhất, các hiệp sau giảm ~10%.

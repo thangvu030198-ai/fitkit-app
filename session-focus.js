@@ -132,7 +132,7 @@ function rightTouched(c){
 function prevSide(c, sd){
   try{
     const P = G.FKSessionPlus, ss = typeof session !== "undefined" ? session : null, it = ss && ss.items && ss.items[ss.idx];
-    const last = it && state.setLog ? state.setLog[curKey()] : null, data = it && ss.sets ? ss.sets[it.uid] : null;
+    const last = it && state.setLog ? (typeof fkSessLast === "function" ? fkSessLast(curKey(), it) : state.setLog[curKey()]) : null, data = it && ss.sets ? ss.sets[it.uid] : null;   // 22/11: cùng kiểu tập
     const p = P && typeof P.prevFor === "function" && last && data ? P.prevFor(last, data, c.i) : null;
     if(p && p.side && p.side[sd]){ const x = p.side[sd];
       return `Lần trước ${numv(x.kg) > 0 ? fmt(numv(x.kg)) + "×" : ""}${x.reps}${numv(x.rpe) > 0 ? " @" + fmt(numv(x.rpe)) : ""}`; }
