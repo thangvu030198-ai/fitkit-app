@@ -1,9 +1,13 @@
 """
-HYROX Race Map v2 — Blender scene builder + xuất glb cho app (TapEasy).
+HYROX Race Map v2 (bố cục v3a) — Blender scene builder + xuất glb cho app (TapEasy).
+
+v3a: đường ngắn 7 hàng / 6 khúc cua, người + thiết bị to so với đường (CHAR_SCALE), mỗi trạm có "vịnh" cạnh đường
+     với 1 VĐV đang tập (chỉ trong render; glb vẫn 1 runner) + bảng nhãn to; --selftest kiểm hộp bao 2D theo MapCam.
+     --render stills (mặc định CI: preview_map + 11 tư thế + 2 ảnh cận, không motion blur) | clip (thêm clip ≤45 khung).
 
 Chạy (CI / dòng lệnh):
     blender --background --factory-startup --python-exit-code 1 \
-        --python build_scene_v2.py -- --out build/hyrox3d [--render preview|none] [--res 540]
+        --python build_scene_v2.py -- --out build/hyrox3d [--render stills|clip|none] [--res 540]
         [--samples 24] [--engine cycles|eevee] [--gpu] [--no-blend]
 Chạy trong Blender (máy anh Thắng, Blender 4.2 → 5.x):
     tab Scripting → Open build_scene_v2.py → Run Script
@@ -35,15 +39,24 @@ import argparse
 FPS = 30
 TEAL = (0.32, 0.62, 0.60)
 
-PATH_W = 1.5          # bề rộng đường
+# ---- v3a: bố cục "infographic" — đường ngắn uốn 6 khúc cua (7 hàng ngang), người + máy TO so với đường -------
+CHAR_SCALE = 1.1      # hệ số phóng nhân vật + thiết bị (app: scale bản sao runner theo số này)
+CHAR_H = 1.74         # chiều cao nhân vật ở tư thế đứng (m, chưa nhân CHAR_SCALE)
+PATH_W = 1.3          # bề rộng đường  (≈ 0,68 × chiều cao người sau khi phóng)
 PATH_H = 0.28         # độ dày đường
 ROAD_R = 0.07         # bán kính bo cạnh đường
-PAD_R = 1.2           # bán kính bục trạm
-PAD_TOP = 0.025       # mặt bục cao hơn mặt đường
-PAD_SHIFT = 0.55      # tâm bục lệch sang phải đường
-WORK_X = 0.95         # vị trí tập: lệch phải so với tim đường
-APPROACH = 1.8        # quãng (m) để rẽ dần vào / ra vị trí tập
-START_S = 0.9         # vị trí vạch xuất phát (m tính từ đầu đường)
+HALF_W = 3.5          # nửa bề rộng cảnh (mép ngoài đường ở khúc cua)
+ROW_D = 2.65          # khoảng cách 2 hàng đường liên tiếp
+N_ROWS = 7            # 7 hàng → 6 khúc cua
+BAY_D = 1.25          # bề sâu "vịnh" trạm (sàn bê tông cạnh đường, phía gần camera)
+PAD_TOP = 0.012       # mặt vịnh cao hơn mặt đường (tránh z-fighting chỗ chạm khúc cua)
+PAD_R = 0.62          # bán kính vòng trạng thái dưới chân VĐV trạm (đã nhân CHAR_SCALE)
+WORK_X = PATH_W / 2 + 0.60   # vị trí tập: lệch khỏi tim đường (dấu theo STATION_SIDE)
+PAD_SHIFT = 0.0       # (giữ cho tương thích cũ)
+APPROACH = 1.6        # quãng (m) để rẽ dần vào / ra vị trí tập
+START_S = 0.5         # vị trí vạch xuất phát (m tính từ đầu đường)
+FINISH_BACK = 0.45 
+GATE_H = 1.80         # chiều cao cổng xuất phát / đích   # vạch đích cách cuối đường (m)
 
 STATIONS = [
     ("01", "SKIERG", "1000 M", "Work_SkiErg"),
@@ -55,16 +68,75 @@ STATIONS = [
     ("07", "SANDBAG LUNGES", "100 M", "Work_Lunge"),
     ("08", "WALL BALLS", "100 REPS", "Work_WallBall"),
 ]
-STATION_F = [0.075 + i * 0.112 for i in range(8)]
-FINISH_F = 0.975
+# hàng (0 = trên cùng) và toạ độ x (m) của VĐV từng trạm; hàng chẵn chạy +X, hàng lẻ chạy −X
+STATION_ROW = [0, 1, 2, 3, 4, 5, 6, 6]
+STATION_X = [0.85, -0.15, -0.30, -0.50, 0.70, -1.25, -0.45, 1.30]
+STATION_ON_ROAD = [False] * 8      # True = tập ngay trên tim đường (không có vịnh)
+# vịnh trạm: (lùi sau lưng, vươn trước mặt) tính theo hướng nhìn của VĐV (m, đã nhân CHAR_SCALE)
+BAY_EXT = [(0.75, 1.35), (1.05, 2.05), (0.75, 2.40), (1.25, 1.60), (1.20, 1.50),
+           (0.70, 0.95), (0.85, 0.95), (0.75, 1.45)]
+# nhãn trạm trong ảnh render (tâm bảng, m): x, y trên mặt đất, z = độ cao tâm; bảng dựng đứng quay về MapCam
+LABEL_POS = [(-2.05, 0.0, 0.62)] * 8     # gán lại bên dưới (sau khi có row_y)
+LABEL_NUM = 0.95       # cỡ chữ số trạm (teal)
+LABEL_TXT = 0.27       # cỡ chữ tên trạm / cự ly
+LABEL_SUB = 0.19       # cỡ chữ dòng phụ "CHẠY 1 KM"
+LABEL_RUN = "CHẠY 1 KM"
+LABEL_LINES = [        # tên trạm (1–2 dòng) + cự ly (dòng cuối, teal)
+    ("SKIERG", "1000 M"),
+    ("SLED PUSH", "50 M"),
+    ("SLED PULL", "50 M"),
+    ("BURPEE", "BROAD JUMPS", "80 M"),
+    ("ROWING", "1000 M"),
+    ("FARMERS", "CARRY", "200 M"),
+    ("SANDBAG", "LUNGES", "100 M"),
+    ("WALL BALLS", "100 REPS"),
+]
+# pha (khung trong action) của VĐV trạm trong ảnh tĩnh — "giữa động tác", lệch pha nhau
+HERO_FRAME = {"Work_SkiErg": 9, "Work_SledPush": 3, "Work_SledPull": 0, "Work_Burpee": 18, "Work_Row": 12,
+              "Work_Farmers": 2, "Work_Lunge": 15, "Work_WallBall": 13}
+# camera toàn cảnh (ảnh dọc 9:16): nhìn chếch từ phía −Y
+MAP_CAM_ELEV = 36.0    # độ so với mặt đất
+MAP_CAM_LENS = 150.0   # mm (cảm biến 36 mm theo chiều dọc)
+MAP_CAM_DIST = 64.0    # m từ camera tới điểm ngắm
+MAP_CAM_TGT = (0.0, -1.15, 0.0)
 
-CTRL = [(-5.8, 11.5), (-1.0, 11.6), (3.8, 11.0), (5.6, 9.0), (4.0, 7.0),
-        (0.0, 6.4), (-4.2, 5.6), (-5.6, 3.4), (-3.6, 1.4), (0.5, 0.8),
-        (4.4, -0.2), (5.6, -2.6), (3.6, -4.6), (-0.4, -5.2), (-4.4, -6.2),
-        (-5.6, -8.6), (-3.4, -10.6), (1.0, -11.2), (6.0, -11.4)]
 
-LABEL_POS = [(-2.5, 9.1), (2.0, 9.1), (0.5, 4.1), (-3.1, 2.9),
-             (-0.4, -1.8), (1.2, -3.2), (-1.9, -7.4), (1.5, -8.8)]
+def row_y(r):
+    return ((N_ROWS - 1) / 2.0 - r) * ROW_D
+
+
+def row_dir(r):
+    return 1.0 if r % 2 == 0 else -1.0
+
+
+def build_ctrl():
+    """điểm điều khiển: 7 hàng ngang nối bằng nửa đường tròn bán kính ROW_D/2"""
+    R = ROW_D / 2.0
+    xb = HALF_W - PATH_W / 2.0 - R
+    pts = []
+    for r in range(N_ROWS):
+        d = row_dir(r)
+        y = row_y(r)
+        xa, xe = -d * xb, d * xb
+        if r == 0:
+            xa = -d * (HALF_W - 0.1)
+        if r == N_ROWS - 1:
+            xe = d * (HALF_W - 0.1)
+        n = max(2, int(round(abs(xe - xa) / 0.45)))
+        for i in range(n + 1):
+            pts.append((xa + (xe - xa) * i / n, y))
+        if r < N_ROWS - 1:
+            for i in range(1, 8):
+                t = math.pi * i / 8
+                pts.append((d * xb + d * R * math.sin(t), y - R + R * math.cos(t)))
+    return pts
+
+
+CTRL = build_ctrl()
+_LZ = 0.95
+LABEL_POS = [(-1.35, row_y(0) - 1.5, _LZ), (2.25, row_y(1) - 1.5, _LZ), (-2.3, row_y(2) - 1.5, _LZ),
+             (2.1, row_y(3) - 1.5, _LZ), (-2.35, row_y(4) - 1.5, _LZ), (0.47, row_y(5) - 1.5, _LZ),
+             (-2.25, row_y(6) - 1.5, _LZ), (1.6, row_y(6) - 3.5, 0.72)]
 
 # ---- hoạt ảnh chạy -----------------------------------------------------------
 RUN_CYCLE = 20                 # frame / chu kỳ (2 bước) @30fps = 0.667 s
@@ -78,7 +150,7 @@ RUN_PMAX = 32.0                # độ kiễng mũi chân khi đạp (độ)
 RUN_PLAND = -6.0               # mũi chân hếch khi tiếp đất
 
 # ---- lịch video xem trước ----------------------------------------------------
-PREVIEW_RUN_SPEED = 4.6        # m/s trong video xem trước
+PREVIEW_RUN_SPEED = 3.3        # m/s trong video xem trước
 WORK_FRAMES = 54               # dừng ở trạm (video xem trước)
 IDLE0 = 24
 CELEB_FRAMES = 72
@@ -87,6 +159,7 @@ EASE_FRAC = 0.22               # tỉ lệ thời gian tăng/giảm tốc mỗi 
 
 ACTION_NAMES = ["Run", "Idle", "Celebrate"] + [s[3] for s in STATIONS]
 PROPS_FOR_ACTION = {
+    "Work_SkiErg": ["Prop_SkiHandle_L", "Prop_SkiHandle_R"],
     "Work_Row": ["Prop_RowHandle"],
     "Work_Farmers": ["Prop_KB_L", "Prop_KB_R"],
     "Work_Lunge": ["Prop_Sandbag"],
@@ -114,8 +187,12 @@ MATS = {
     "Hair": dict(color=(0.02, 0.018, 0.016), rough=0.6),
     # chỉ dùng khi render
     "Floor": dict(color=(0.012, 0.012, 0.013), rough=0.9),
-    "TextWhite": dict(color=(0.9, 0.9, 0.9), rough=0.5, emit=(1, 1, 1), strength=0.6),
-    "TextTeal": dict(color=TEAL, rough=0.4, emit=TEAL, strength=0.9),
+    "TextWhite": dict(color=(0.9, 0.9, 0.9), rough=0.5, emit=(1, 1, 1), strength=1.0),
+    "TextDim": dict(color=(0.6, 0.6, 0.6), rough=0.5, emit=(1, 1, 1), strength=0.45),
+    "TextTeal": dict(color=TEAL, rough=0.4, emit=TEAL, strength=1.6),
+    "LabelPlate": dict(color=(0.018, 0.02, 0.023), rough=0.7),
+    "ShirtTeal": dict(color=TEAL, rough=0.5, emit=TEAL, strength=0.35),
+    "Glow": dict(color=TEAL, rough=0.4, emit=TEAL, strength=5.0),
 }
 
 SAMPLE_SPLITS = [  # giây — split mẫu cho "Phát lại" (run, trạm, run, trạm, ...)
@@ -347,8 +424,8 @@ def catmull_rom(pts, per_seg=64, alpha=0.5):
 
 
 class Path2D:
-    def __init__(self, ctrl=CTRL, per_seg=64):
-        self.pts = catmull_rom(ctrl, per_seg)
+    def __init__(self, ctrl=None, per_seg=10):
+        self.pts = catmull_rom(ctrl if ctrl is not None else CTRL, per_seg)
         self.cum = [0.0]
         for a, b in zip(self.pts, self.pts[1:]):
             self.cum.append(self.cum[-1] + math.hypot(b[0] - a[0], b[1] - a[1]))
@@ -387,19 +464,39 @@ class Path2D:
         return wrap_pi(self.heading(s + e) - self.heading(s - e)) / (2 * e)
 
 
+def _nearest_s(path, x, y):
+    best, bs = 1e9, 0.0
+    n = int(path.L / 0.02)
+    for i in range(n + 1):
+        q = path.pos(i * 0.02)
+        d = (q[0] - x) ** 2 + (q[1] - y) ** 2
+        if d < best:
+            best, bs = d, i * 0.02
+    return bs
+
+
+_P0 = Path2D()
+STATION_F = [_nearest_s(_P0, STATION_X[k], row_y(STATION_ROW[k])) / _P0.L for k in range(8)]
+FINISH_F = 1.0 - FINISH_BACK / _P0.L
+# vịnh trạm luôn nằm phía −Y (gần camera) của hàng: +1 = bên phải hướng chạy, −1 = bên trái
+STATION_SIDE = [0.0 if STATION_ON_ROAD[k] else (1.0 if row_dir(STATION_ROW[k]) > 0 else -1.0) for k in range(8)]
+
+
 def station_s(path):
     return [f * path.L for f in STATION_F]
 
 
 def lateral(path, s, st_s=None):
-    """độ lệch phải của gốc nhân vật (rẽ vào vị trí tập ở mỗi trạm)"""
+    """độ lệch (phải +) của gốc nhân vật khi rẽ vào vị trí tập ở mỗi trạm"""
     st_s = st_s if st_s is not None else station_s(path)
-    w = 0.0
-    for sk in st_s:
+    w, sg = 0.0, 1.0
+    for k, sk in enumerate(st_s):
         d = abs(s - sk)
         if d < APPROACH:
-            w = max(w, smootherstep(1.0 - d / APPROACH))
-    return WORK_X * w
+            ww = smootherstep(1.0 - d / APPROACH)
+            if ww > w:
+                w, sg = ww, STATION_SIDE[k]
+    return WORK_X * w * sg
 
 
 def root_xy(path, s, st_s=None):
@@ -409,14 +506,37 @@ def root_xy(path, s, st_s=None):
     return (p[0] + r[0] * lat, p[1] + r[1] * lat)
 
 
-def station_frame(path, k):
-    """ma trận khung trạm k: gốc = vị trí tập, +Y = chiều đường, +X = bên phải"""
+def station_place(path, k):
+    """→ (vị trí VĐV (x, y, z), hướng nhìn rad (theo chiều chạy của hàng))"""
     sk = STATION_F[k] * path.L
     p = path.pos(sk)
     r = path.right(sk)
-    th = path.heading(sk)
-    w = (p[0] + r[0] * WORK_X, p[1] + r[1] * WORK_X, 0.0)
-    return m_mul(m_T(*w), m_Rz(th - math.pi / 2)), w, th
+    th = 0.0 if row_dir(STATION_ROW[k]) > 0 else math.pi
+    sg = STATION_SIDE[k]
+    return (p[0] + r[0] * WORK_X * sg, p[1] + r[1] * WORK_X * sg, PAD_TOP), th
+
+
+def station_frame(path, k):
+    """ma trận khung trạm k: gốc = vị trí tập, +Y = hướng nhìn VĐV, +X = bên phải; đã nhân CHAR_SCALE"""
+    w, th = station_place(path, k)
+    return m_mul(m_T(*w), m_Rz(th - math.pi / 2), m_S(CHAR_SCALE)), w, th
+
+
+def bay_rect(path, k):
+    """vịnh trạm (toạ độ thế giới): (x0, x1, y0, y1); trạm tập ngay trên đường → None"""
+    if STATION_ON_ROAD[k]:
+        return None
+    w, th = station_place(path, k)
+    d = row_dir(STATION_ROW[k])
+    back, front = BAY_EXT[k]
+    xa, xe = w[0] - d * back, w[0] + d * front
+    y1 = row_y(STATION_ROW[k]) - PATH_W / 2.0 + 0.10
+    return (min(xa, xe), max(xa, xe), y1 - 0.10 - BAY_D, y1)
+
+
+def char_to_station(p):
+    """điểm trong hệ nhân vật (nhìn −Y) → hệ khung trạm (nhìn +Y)"""
+    return (-p[0], -p[1], p[2])
 
 
 # =============================================================================
@@ -808,7 +928,7 @@ def build_lines(path, st_s):
     s = START_S + 0.6
     finish_s = FINISH_F * path.L
     while s + dash < path.L - 0.4:
-        near = any(abs(s + dash / 2 - sk) < PAD_R + 0.35 for sk in st_s) or abs(s + dash / 2 - finish_s) < 0.8
+        near = abs(s + dash / 2 - finish_s) < 0.8
         if not near:
             pairs = []
             for k in range(3):
@@ -820,35 +940,93 @@ def build_lines(path, st_s):
     return parts
 
 
-def pad_prim():
-    R, top, b = PAD_R, PAD_TOP, 0.05
-    prof = [(R, -PATH_H, 1, 0), (R, top - b, 1, 0)] + arc_pts(R - b, top - b, b, 0, 90, 3)[1:] + [(0.0, top, 0, 1)]
-    return lathe([prof], 40)
+def bay_prim(rect):
+    """tấm sàn trạm (hộp vát) — trả (prim, ma trận)"""
+    x0, x1, y0, y1 = rect
+    hz = (PATH_H + PAD_TOP) / 2.0
+    return cbox((x1 - x0) / 2.0, (y1 - y0) / 2.0, hz, 0.05), m_T((x0 + x1) / 2.0, (y0 + y1) / 2.0, PAD_TOP - hz)
+
+
+def pad_prim():  # tương thích cũ
+    return cylinder(PAD_R, 0.01, 24)
 
 
 def ring_prim():
-    return torus(PAD_R + 0.012, 0.045, 64, 6)
+    return torus(PAD_R, 0.04, 56, 6)
 
 
 # ---- thiết bị (toạ độ khung trạm: gốc = vị trí tập, +Y trước mặt, +X phải) ----
 
 
-def eq_sled(G, xf, poles=False, hook=False):
+def hand_points(action, frame):
+    """vị trí 2 lòng bàn tay (hệ khung trạm, chưa nhân CHAR_SCALE) của action ở khung frame → (trái, phải)"""
+    N, frames = action_frames(action)
+    rot, off = solve_pose(frames[int(frame) % N])
+    head, wR = fk(rot, off)
+    return (char_to_station(bone_point(head, wR, "LeftHand", (0.227, 0.0, 0.712))),
+            char_to_station(bone_point(head, wR, "RightHand", (-0.227, 0.0, 0.712))))
+
+
+def sled_push_grip():
+    """điểm nắm càng đẩy = trung bình vị trí tay suốt chu kỳ Work_SledPush → (|x|, y, z)"""
+    N = action_specs()["Work_SledPush"][0]
+    acc = [0.0, 0.0, 0.0]
+    for f in range(N):
+        l, r = hand_points("Work_SledPush", f)
+        acc[0] += (abs(l[0]) + abs(r[0])) / 2.0
+        acc[1] += (l[1] + r[1]) / 2.0
+        acc[2] += (l[2] + r[2]) / 2.0
+    return (acc[0] / N, acc[1] / N, acc[2] / N)
+
+
+def sled_pull_rope():
+    """dây kéo căng: đi qua tay sau → tay trước (2 pha đổi tay) → móc sled ở độ cao 0,2 m.
+    → dict(front, rear, hook, sled_y, pts)"""
+    fr, re = [0.0, 0.0], [0.0, 0.0]
+    for f, front_left in ((0, True), (15, False)):
+        l, r = hand_points("Work_SledPull", f)
+        a, b = (l, r) if front_left else (r, l)
+        fr[0] += a[1] / 2.0
+        fr[1] += a[2] / 2.0
+        re[0] += b[1] / 2.0
+        re[1] += b[2] / 2.0
+    slope = (re[1] - fr[1]) / min(-0.05, re[0] - fr[0])      # dz/dy (âm: càng xa người càng thấp)
+    hook_z = 0.36
+    hook_y = fr[0] + (hook_z - fr[1]) / min(-0.05, slope)
+    pts = [(0.0, hook_y, hook_z), (0.0, fr[0], fr[1]), (0.0, re[0], re[1]),
+           (0.0, re[0] - 0.10, re[1] - 0.02), (0.10, re[0] - 0.30, 0.45), (0.14, re[0] - 0.42, 0.03),
+           (0.14, re[0] - 0.62, 0.022)]
+    return {"front": (0.0, fr[0], fr[1]), "rear": (0.0, re[0], re[1]), "hook": pts[0], "sled_y": hook_y + 0.42,
+            "pts": pts}
+
+
+SKI_PULLEY = (0.13, 0.50, 2.08)      # ròng rọc SkiErg (|x|, y, z) hệ khung trạm
+WALL_TARGET = (0.0, 0.98, 2.72)      # tâm đích wall ball
+
+
+def eq_sled(G, xf, poles=None, hook=False):
+    """poles = (|x|, y, z) điểm nắm (toạ độ riêng của sled) hoặc None"""
     S = lambda *m: m_mul(xf, *m)
-    for sx in (-0.24, 0.24):
-        G.add(cbox(0.03, 0.40, 0.03, 0.01), "Steel", S(m_T(sx, 0, 0.03)))
-        G.add(tube([(sx, 0.38, 0.03), (sx, 0.46, 0.05), (sx, 0.50, 0.12)], 0.028, 8), "Steel", xf)
-    G.add(cbox(0.28, 0.36, 0.025, 0.012), "DarkMetal", S(m_T(0, 0, 0.085)))
-    G.add(cylinder(0.03, 0.42, 12, bottom=False), "Steel", S(m_T(0, 0, 0.11)))
-    for i, z in enumerate((0.11, 0.158, 0.206)):
-        G.add(disc_beveled(0.25, 0.044, 24), "Rubber", S(m_T(0, 0, z)))
-    G.add(torus(0.235, 0.008, 28, 4), "Teal", S(m_T(0, 0, 0.251)))
+    hw = 0.30
+    for sx in (-hw, hw):
+        G.add(cbox(0.035, 0.44, 0.035, 0.012), "Steel", S(m_T(sx, 0, 0.035)))
+        G.add(tube([(sx, 0.42, 0.035), (sx, 0.50, 0.06), (sx, 0.54, 0.14)], 0.032, 8), "Steel", xf)
+    G.add(cbox(hw + 0.04, 0.40, 0.03, 0.012), "DarkMetal", S(m_T(0, 0, 0.10)))
+    G.add(cylinder(0.035, 0.50, 12, bottom=False), "Steel", S(m_T(0, 0, 0.13)))
+    for i, z in enumerate((0.13, 0.19, 0.25, 0.31)):
+        G.add(disc_beveled(0.29, 0.055, 28), "Rubber", S(m_T(0, 0, z)))
+    G.add(torus(0.27, 0.012, 28, 5), "Teal", S(m_T(0, 0, 0.368)))
     if poles:
-        for sx in (-0.22, 0.22):
-            G.add(tube([(sx, -0.30, 0.10), (sx, -0.36, 0.55), (sx, -0.42, 1.02)], 0.022, 10), "Steel", xf)
-            G.add(tube([(sx, -0.385, 0.74), (sx, -0.42, 1.0)], 0.030, 10), "Rubber", xf)
+        px, py, pz = poles
+        for sx in (-px, px):
+            sb = (hw if sx > 0 else -hw)
+            top = (sx, py - 0.035, pz + 0.16)
+            G.add(tube([(sb, -0.34, 0.10), (sx, py + 0.10, pz - 0.42), (sx, py, pz), top], 0.026, 10), "Steel", xf)
+            G.add(tube([(sx, py + 0.035, pz - 0.15), (sx, py, pz), top], 0.034, 10), "Rubber", xf)
+        G.add(tube([(-px, py + 0.06, pz - 0.26), (px, py + 0.06, pz - 0.26)], 0.02, 8), "Steel", xf)
     if hook:
-        G.add(torus(0.045, 0.01, 16, 6), "Steel", S(m_T(0, -0.40, 0.12), m_Rx(math.pi / 2)))
+        G.add(torus(0.05, 0.012, 16, 6), "Steel", S(m_T(0, -0.42, 0.36), m_Rx(math.pi / 2)))
+        G.add(cbox(0.03, 0.03, 0.14, 0.008), "Steel", S(m_T(0, -0.38, 0.24)))
 
 
 def eq_kettlebell(G, xf, r=0.12):
@@ -874,34 +1052,31 @@ def eq_sandbag(G, xf, mat="Sandbag"):
 
 def build_equipment(G, k, xf):
     S = lambda *m: m_mul(xf, *m)
-    if k == 0:  # SkiErg
-        G.add(cbox(0.32, 0.30, 0.02, 0.01), "DarkMetal", S(m_T(0, 0.02, 0.02)))
-        G.add(cbox(0.28, 0.22, 0.035, 0.015), "DarkMetal", S(m_T(0, 0.64, 0.035)))
-        G.add(cbox(0.06, 0.055, 0.97, 0.015), "DarkMetal", S(m_T(0, 0.72, 1.0)))
-        G.add(disc_beveled(0.19, 0.12, 32, 0.02), "Rubber", S(m_T(-0.06, 0.66, 0.55), m_Ry(math.pi / 2)))
-        G.add(torus(0.19, 0.012, 32, 5), "Teal", S(m_T(0.0, 0.66, 0.55), m_Ry(math.pi / 2)))
-        G.add(cbox(0.15, 0.12, 0.05, 0.015), "DarkMetal", S(m_T(0, 0.64, 1.95)))
-        for sx in (-0.10, 0.10):
-            G.add(disc_beveled(0.045, 0.03, 12, 0.006), "Steel", S(m_T(sx - 0.015, 0.53, 1.92), m_Ry(math.pi / 2)))
-            G.add(tube([(sx, 0.50, 1.90), (sx * 1.15, 0.46, 1.62), (sx * 1.2, 0.44, 1.48)], 0.007, 6, False), "Rubber", xf)
-            G.add(cylinder(0.02, 0.13, 10, 0.006), "Rubber", S(m_T(sx * 1.2, 0.44, 1.35)))
-        G.add(cbox(0.09, 0.03, 0.07, 0.01), "DarkMetal", S(m_T(0, 0.62, 1.66)))
-        G.add(cbox(0.07, 0.004, 0.05), "Teal", S(m_T(0, 0.588, 1.66)))
-    elif k == 1:  # Sled push
-        eq_sled(G, S(m_T(0, 0.86, 0)), poles=True)
-    elif k == 2:  # Sled pull + dây
-        eq_sled(G, S(m_T(0, 1.18, 0), m_Rz(math.pi)), hook=True)
-        rope = [(0, 0.78, 0.12), (0.0, 0.66, 0.03), (0.02, 0.45, 0.018), (0.06, 0.15, 0.018), (0.02, -0.12, 0.018),
-                (-0.15, -0.30, 0.018)]
-        G.add(tube(rope, 0.018, 6), "Rope", xf)
-        for i, z in enumerate((0.018, 0.05)):
-            G.add(torus(0.15 - 0.02 * i, 0.018, 20, 5), "Rope", S(m_T(-0.26, -0.40, z)))
-    elif k == 3:  # Burpee broad jump: vạch + cọc
+    if k == 0:  # SkiErg (tay nắm = đạo cụ Prop_SkiHandle_* gắn theo bàn tay; dây chỉ vẽ trong ảnh render)
+        py = SKI_PULLEY[1] + 0.22
+        G.add(cbox(0.36, 0.34, 0.022, 0.01), "DarkMetal", S(m_T(0, 0.0, 0.022)))
+        G.add(cbox(0.30, 0.24, 0.04, 0.015), "DarkMetal", S(m_T(0, py - 0.06, 0.04)))
+        G.add(cbox(0.07, 0.06, 1.04, 0.015), "DarkMetal", S(m_T(0, py, 1.06)))
+        G.add(disc_beveled(0.24, 0.14, 32, 0.02), "Rubber", S(m_T(-0.07, py - 0.06, 0.62), m_Ry(math.pi / 2)))
+        G.add(torus(0.24, 0.016, 32, 5), "Teal", S(m_T(0.0, py - 0.06, 0.62), m_Ry(math.pi / 2)))
+        G.add(cbox(0.19, 0.14, 0.06, 0.015), "DarkMetal", S(m_T(0, py - 0.08, SKI_PULLEY[2] + 0.04)))
+        for sx in (-SKI_PULLEY[0], SKI_PULLEY[0]):
+            G.add(disc_beveled(0.055, 0.035, 12, 0.006), "Steel",
+                  S(m_T(sx - 0.0175, SKI_PULLEY[1], SKI_PULLEY[2]), m_Ry(math.pi / 2)))
+        G.add(cbox(0.10, 0.03, 0.08, 0.01), "DarkMetal", S(m_T(0, py - 0.09, 1.62)))
+        G.add(cbox(0.08, 0.004, 0.06), "Teal", S(m_T(0, py - 0.124, 1.62)))
+    elif k == 1:  # Sled push: càng đẩy đặt đúng vị trí 2 bàn tay
+        gx, gy, gz = sled_push_grip()
+        sy = gy + 0.50
+        eq_sled(G, S(m_T(0, sy, 0)), poles=(gx, gy + 0.03 - sy, gz))
+    elif k == 2:  # Sled pull: sled trước mặt, dây căng thẳng từ móc sled qua 2 tay, đuôi dây thả sau lưng
+        rp = sled_pull_rope()
+        eq_sled(G, S(m_T(0, rp["sled_y"], 0)), hook=True)
+        G.add(tube(rp["pts"], 0.02, 8), "Rope", xf)
+    elif k == 3:  # Burpee broad jump: chỉ vạch sàn
+        G.add(cbox(0.40, 0.03, 0.004), "Lane", S(m_T(0, 0.16, 0.004)))
         for i in range(5):
-            G.add(cbox(0.32, 0.018, 0.004), "Teal", S(m_T(0, 0.28 + i * 0.18, PAD_TOP + 0.004)))
-        for sx in (-0.42, 0.42):
-            G.add(cone(0.06, 0.16, 14), "Teal", S(m_T(sx, 1.0, PAD_TOP)))
-            G.add(cone(0.06, 0.16, 14), "Teal", S(m_T(sx, 0.28, PAD_TOP)))
+            G.add(cbox(0.34, 0.02, 0.004), "Teal", S(m_T(0, 0.42 + i * 0.22, 0.004)))
     elif k == 4:  # Rower
         G.add(cbox(0.045, 0.80, 0.03, 0.01), "Steel", S(m_T(0, 0.0, 0.22)))
         G.add(cbox(0.20, 0.04, 0.10, 0.015), "DarkMetal", S(m_T(0, -0.78, 0.10)))
@@ -915,25 +1090,24 @@ def build_equipment(G, k, xf):
         G.add(tube([(0, 0.82, 0.52), (0, 0.70, 0.70), (0, 0.63, 0.78)], 0.014, 8), "Steel", xf)
         G.add(cbox(0.08, 0.02, 0.06, 0.008), "DarkMetal", S(m_T(0, 0.61, 0.80)))
         G.add(cbox(0.065, 0.004, 0.045), "Teal", S(m_T(0, 0.588, 0.80)))
-    elif k == 5:  # Farmers carry: 2 tạ ấm dự phòng + vạch
-        for sx in (-0.26, 0.26):
-            eq_kettlebell(G, S(m_T(sx, 0.70, PAD_TOP)))
-        for y in (0.35, 1.0):
-            G.add(cbox(0.36, 0.015, 0.004), "Lane", S(m_T(0, y, PAD_TOP + 0.004)))
+    elif k == 5:  # Farmers carry: vạch + 2 tạ ấm dự phòng
+        for sx in (-0.22, 0.22):
+            eq_kettlebell(G, S(m_T(sx, 0.62, 0.0)), r=0.13)
+        G.add(cbox(0.36, 0.018, 0.004), "Lane", S(m_T(0, 0.34, 0.004)))
     elif k == 6:  # Sandbag lunges: vạch bước + bao cát dự phòng
-        for i in range(4):
+        for i in range(3):
             sx = -0.18 if i % 2 == 0 else 0.18
-            G.add(cbox(0.08, 0.015, 0.004), "Teal", S(m_T(sx, 0.30 + i * 0.22, PAD_TOP + 0.004)))
-        eq_sandbag(G, S(m_T(0.45, 0.75, PAD_TOP + 0.10), m_Rz(math.radians(70))))
-    elif k == 7:  # Wall ball
-        for sx in (-0.48, 0.48):
-            G.add(cbox(0.04, 0.04, 1.25, 0.012), "DarkMetal", S(m_T(sx, 0.92, 1.25)))
-            G.add(cbox(0.06, 0.25, 0.02, 0.01), "DarkMetal", S(m_T(sx, 0.92, 0.02)))
-        G.add(cbox(0.43, 0.03, 1.0, 0.015), "DarkMetal", S(m_T(0, 0.92, 1.35)))
-        G.add(cbox(0.42, 0.006, 0.02), "Teal", S(m_T(0, 0.885, 2.20)))
-        G.add(torus(0.22, 0.022, 40, 6), "Teal", S(m_T(0, 0.882, 2.20), m_Rx(math.pi / 2)))
-        G.add(sphere(0.13, 16, 8), "Rubber", S(m_T(0.36, 0.50, PAD_TOP + 0.13)))
-        G.add(torus(0.131, 0.01, 20, 4), "Teal", S(m_T(0.36, 0.50, PAD_TOP + 0.13)))
+            G.add(cbox(0.09, 0.018, 0.004), "Teal", S(m_T(sx, 0.30 + i * 0.20, 0.004)))
+    elif k == 7:  # Wall ball: cột mảnh + đĩa/vòng đích tròn trên cao (không còn tấm bảng đặc)
+        tx, ty, tz = WALL_TARGET
+        G.add(cbox(0.26, 0.22, 0.02, 0.01), "DarkMetal", S(m_T(0, ty + 0.10, 0.02)))
+        G.add(cbox(0.035, 0.035, (tz + 0.20) / 2, 0.01), "DarkMetal", S(m_T(0, ty + 0.10, (tz + 0.20) / 2)))
+        G.add(cbox(0.025, 0.05, 0.025, 0.006), "DarkMetal", S(m_T(0, ty + 0.05, tz)))
+        G.add(cylinder(0.26, 0.02, 32), "DarkMetal", S(m_T(tx, ty + 0.01, tz), m_Rx(math.pi / 2)))
+        G.add(torus(0.27, 0.03, 40, 6), "Teal", S(m_T(tx, ty - 0.012, tz), m_Rx(math.pi / 2)))
+        G.add(cylinder(0.07, 0.012, 20), "Teal", S(m_T(tx, ty - 0.012, tz), m_Rx(math.pi / 2)))
+        G.add(sphere(0.14, 16, 8), "Rubber", S(m_T(0.42, 0.55, 0.14)))
+        G.add(torus(0.141, 0.011, 20, 4), "Teal", S(m_T(0.42, 0.55, 0.14)))
 
 
 def build_gate(G, path, s, kind):
@@ -942,10 +1116,10 @@ def build_gate(G, path, s, kind):
     S = lambda *m: m_mul(xf, *m)
     hw = PATH_W / 2 + 0.14
     for sx in (-hw, hw):
-        G.add(cylinder(0.05, 2.25, 14, 0.01), "Steel", S(m_T(sx, 0, 0)))
+        G.add(cylinder(0.05, GATE_H, 14, 0.01), "Steel", S(m_T(sx, 0, 0)))
         G.add(cbox(0.12, 0.12, 0.03, 0.01), "DarkMetal", S(m_T(sx, 0, 0.03)))
     if kind == "start":
-        G.add(cbox(hw + 0.05, 0.04, 0.16, 0.02), "Teal", S(m_T(0, 0, 2.14)))
+        G.add(cbox(hw + 0.05, 0.04, 0.16, 0.02), "Teal", S(m_T(0, 0, GATE_H - 0.11)))
         G.add(cbox(PATH_W / 2 - 0.02, 0.05, 0.004), "Lane", S(m_T(0, 0, 0.004)))
     else:
         n = 12
@@ -953,16 +1127,16 @@ def build_gate(G, path, s, kind):
         for i in range(n):
             for j in range(2):
                 G.add(cbox(w / 2, 0.035, 0.08), "CheckWhite" if (i + j) % 2 == 0 else "CheckBlack",
-                      S(m_T(-hw - 0.05 + w * (i + 0.5), 0, 2.06 + j * 0.16)))
+                      S(m_T(-hw - 0.05 + w * (i + 0.5), 0, GATE_H - 0.19 + j * 0.16)))
         cols, rows = 8, 2
         sq = PATH_W / cols
         for rr in range(rows):
             for c in range(cols):
                 G.add(cbox(sq / 2, sq / 2, 0.004), "CheckWhite" if (rr + c) % 2 == 0 else "CheckBlack",
-                      S(m_T(-PATH_W / 2 + sq * (c + 0.5), (rr - 0.5) * sq + 0.5, 0.006)))
+                      S(m_T(-PATH_W / 2 + sq * (c + 0.5), (rr - 0.5) * sq + 0.18, 0.006)))
         # cờ caro bay (sóng sin tĩnh) trên cột bên phải
-        px, py = hw + 0.55, 0.7
-        G.add(cylinder(0.025, 2.6, 10, 0.006), "Steel", S(m_T(px, py, 0)))
+        px, py = hw + 0.30, 0.25
+        G.add(cylinder(0.025, GATE_H + 0.35, 10, 0.006), "Steel", S(m_T(px, py, 0)))
         nx, ny = 6, 4
         fw, fh = 0.75, 0.48
         polys_w, polys_b = [], []
@@ -970,7 +1144,7 @@ def build_gate(G, path, s, kind):
             for j in range(ny):
                 def pt(a, b):
                     x = a / nx * fw
-                    return (px + x, py + 0.05 * math.sin(x * 7.0) * (x / fw + 0.2), 2.55 - b / ny * fh)
+                    return (px + x, py + 0.05 * math.sin(x * 7.0) * (x / fw + 0.2), GATE_H + 0.30 - b / ny * fh)
                 poly = [pt(i, j), pt(i + 1, j), pt(i + 1, j + 1), pt(i, j + 1)]
                 (polys_w if (i + j) % 2 == 0 else polys_b).append(poly)
         for polys, mat in ((polys_w, "CheckWhite"), (polys_b, "CheckBlack")):
@@ -993,15 +1167,21 @@ def build_map_geo(path):
     G.add(cap, "Concrete")
     for part in build_lines(path, st_s):
         G.add(part, "Lane")
-    pad = pad_prim()
     ring_pos = []
     pad_centers = []
     for k in range(8):
         xf, w, th = station_frame(path, k)
-        pc = m_apply(xf, (-(WORK_X - PAD_SHIFT), 0, 0))
-        pad_centers.append(pc)
-        G.add(pad, "Pad", m_T(pc[0], pc[1], 0))
-        ring_pos.append((pc[0], pc[1], PAD_TOP + 0.006))
+        rc = bay_rect(path, k)
+        if rc:
+            prim, bxf = bay_prim(rc)
+            G.add(prim, "Pad", bxf)
+            # viền teal mép trước vịnh (phía camera)
+            G.add(cbox((rc[1] - rc[0]) / 2.0 - 0.08, 0.02, 0.004), "Teal",
+                  m_T((rc[0] + rc[1]) / 2.0, rc[2] + 0.09, PAD_TOP + 0.004))
+            pad_centers.append(((rc[0] + rc[1]) / 2.0, (rc[2] + rc[3]) / 2.0, 0.0))
+        else:
+            pad_centers.append((w[0], w[1], 0.0))
+        ring_pos.append((w[0], w[1], PAD_TOP + 0.012))
         build_equipment(G, k, xf)
     build_gate(G, path, START_S, "start")
     build_gate(G, path, FINISH_F * path.L, "finish")
@@ -1390,12 +1570,14 @@ def action_specs():
         (18, _m(lean, _sym(sh=70, el=38, abd=12), {"hip_up": -0.19, "R_ff": 0.16, "R_fz": ANKLE_H, "R_fp": 0,
                                                     "L_ff": -0.22, "L_fz": tiptoe(30) + 0.06, "L_fp": 30})),
     ])
-    pull = {"pel_pitch": -9, "sp_pitch": -4, "hip_up": -0.12, "L_ff": 0.18, "R_ff": -0.20, "R_fp": 8, "L_fs": 0.04,
+    # v3a: ngồi thấp, ngả sau; 2 tay đổi nhau trên CÙNG một đường dây (xem sled_pull_rope)
+    pull = {"pel_pitch": -9, "sp_pitch": -4, "hip_up": -0.24, "L_ff": 0.18, "R_ff": -0.20, "R_fp": 8, "L_fs": 0.04,
             "R_fs": 0.04, "neck_pitch": 6}
     A["Work_SledPull"] = (30, [
-        (0, _m(pull, {"L_sh": 78, "L_el": 10, "R_sh": -15, "R_el": 100, "ch_yaw": -10, "L_abd": 6, "R_abd": 14})),
-        (15, _m(pull, {"R_sh": 78, "R_el": 10, "L_sh": -15, "L_el": 100, "ch_yaw": 10, "R_abd": 6, "L_abd": 14,
-                       "hip_up": -0.13})),
+        (0, _m(pull, {"L_sh": 56, "L_el": 0, "L_abd": -8, "L_tw": 60, "R_sh": 12, "R_el": 114, "R_abd": 8, "R_tw": 60,
+                      "ch_yaw": -10})),
+        (15, _m(pull, {"R_sh": 56, "R_el": 0, "R_abd": -8, "R_tw": 60, "L_sh": 12, "L_el": 114, "L_abd": 8, "L_tw": 60,
+                       "ch_yaw": 10, "hip_up": -0.25})),
     ])
     stand = _sym(sh=4, el=12, abd=5)
     squat = _m(_sym(sh=12, el=0, abd=10), {"hip_up": -0.42, "hip_fwd": -0.04, "pel_pitch": 40, "sp_pitch": 18,
@@ -1476,6 +1658,7 @@ def prop_specs():
     for side, sx in (("Left", 1), ("Right", -1)):
         hp = BONE[side + "Hand"][2]
         specs["Prop_KB_" + side[0]] = {"bone": side + "Hand", "kind": "kb", "at": (sx * 0.227, 0.0, 0.70)}
+        specs["Prop_SkiHandle_" + side[0]] = {"bone": side + "Hand", "kind": "grip", "at": (sx * 0.227, -0.005, 0.708)}
     specs["Prop_Sandbag"] = {"bone": "Spine1", "kind": "sandbag", "at": (0.0, 0.075, 1.33)}
     # bóng wall ball: giữa 2 bàn tay ở tư thế ôm bóng
     N, keys = action_specs()["Work_WallBall"]
@@ -1512,6 +1695,10 @@ def build_prop_geo(spec):
     elif k == "ball":
         G.add(sphere(0.13, 16, 8), "Rubber", m_T(*at))
         G.add(torus(0.131, 0.01, 20, 4), "Teal", m_T(*at))
+    elif k == "grip":
+        prim, xf = capsule((at[0], at[1] - 0.075, at[2]), (at[0], at[1] + 0.075, at[2]), 0.02, 0.02, 8, 2)
+        G.add(prim, "Rubber", xf)
+        G.add(torus(0.024, 0.006, 10, 4), "Teal", m_mul(m_T(at[0], at[1] + 0.07, at[2]), m_Rx(math.pi / 2)))
     elif k == "bar":
         ax = spec["axis"]
         prim, xf = capsule(v_sub(at, v_mul(ax, 0.23)), v_add(at, v_mul(ax, 0.23)), 0.014, 0.014, 8, 1)
@@ -1615,7 +1802,7 @@ def build_schedule(path):
         pitches.append(pitch)
         speeds.append(v)
     # camera bám (lò xo giảm chấn tới hạn), góc 3/4
-    OFF = (3.2, -6.4, 5.6)
+    OFF = FOLLOW_OFF
     cams = []
     cp = ct = None
     cv = tv = (0.0, 0.0, 0.0)
@@ -1636,7 +1823,7 @@ def build_schedule(path):
             ct, tv = spring(ct, tv, want_t)
         cams.append((cp, ct))
     # thời gian dải NLA Run (khung trong action) theo quãng đường thật
-    run_time = [cum[i] / STRIDE * RUN_CYCLE for i in range(len(frames))]
+    run_time = [cum[i] / (STRIDE * CHAR_SCALE) * RUN_CYCLE for i in range(len(frames))]
     return {
         "segs": segs, "markers": markers, "frames": frames, "end": end, "s": [s_at[f] for f in frames], "xy": xy,
         "cum": cum, "heading": heads, "bank": banks, "pitch": pitches, "speed": speeds, "cams": cams,
@@ -1647,6 +1834,161 @@ def build_schedule(path):
 # =============================================================================
 # 8. JSON CHO APP
 # =============================================================================
+
+
+FOLLOW_OFF = (2.6, -5.6, 4.2)     # camera bám (clip xem trước / app)
+
+
+def map_cam():
+    """→ (vị trí, điểm ngắm, tiêu cự mm) của MapCam"""
+    e = math.radians(MAP_CAM_ELEV)
+    t = MAP_CAM_TGT
+    return (t[0], t[1] - MAP_CAM_DIST * math.cos(e), t[2] + MAP_CAM_DIST * math.sin(e)), t, MAP_CAM_LENS
+
+
+def cam_axes(pos, tgt):
+    fwd = v_norm(v_sub(tgt, pos))
+    right = v_norm(v_cross(fwd, (0.0, 0.0, 1.0)))
+    return fwd, right, v_cross(right, fwd)
+
+
+def cam_project(p, pos, tgt, lens, aspect=9.0 / 16.0):
+    """chiếu điểm thế giới → (u, v) chuẩn hoá 0..1 (u trái→phải, v trên→dưới) của khung dọc; cảm biến 36 mm theo chiều dọc"""
+    fwd, right, up = cam_axes(pos, tgt)
+    d = v_sub(p, pos)
+    z = max(1e-6, v_dot(d, fwd))
+    return (0.5 + v_dot(d, right) / z / (2 * 18.0 * aspect / lens), 0.5 - v_dot(d, up) / z / (2 * 18.0 / lens))
+
+
+def label_layout(k):
+    """bố cục bảng nhãn trạm k (m, gốc = tâm bảng): → dict(w, h, num_x, num_w, txt_x, txt_w, rows=[(text, size, y, kind)])"""
+    lines = LABEL_LINES[k]
+    tw = max([len(t) * 0.47 * LABEL_TXT for t in lines] + [len(LABEL_RUN) * 0.47 * LABEL_SUB])
+    nw = 0.47 * LABEL_NUM * 2
+    pad, gap = 0.11, 0.13
+    lh, sh = 1.14 * LABEL_TXT, 1.25 * LABEL_SUB
+    th = sh + lh * len(lines)
+    h = max(0.78 * LABEL_NUM, th) + 2 * pad
+    w = nw + gap + tw + 2 * pad
+    rows = [(LABEL_RUN, LABEL_SUB, th / 2 - sh / 2, "sub")]
+    for i, t in enumerate(lines):
+        rows.append((t, LABEL_TXT, th / 2 - sh - lh * (i + 0.5), "dist" if i == len(lines) - 1 else "name"))
+    return {"w": w, "h": h, "num_x": -w / 2 + pad + nw / 2, "num_w": nw, "txt_x": -w / 2 + pad + nw + gap, "txt_w": tw,
+            "rows": rows}
+
+
+def label_size(k):
+    L = label_layout(k)
+    return (L["w"], L["h"])
+
+
+def athlete_points(path, k, frame=None):
+    """các điểm khớp (thế giới) của VĐV trạm k ở khung HERO"""
+    work = STATIONS[k][3]
+    N, frames = action_frames(work)
+    rot, off = solve_pose(frames[(HERO_FRAME[work] if frame is None else int(frame)) % N])
+    head, wR = fk(rot, off)
+    pts = []
+    for name, parent, h, t in BONES:
+        pts.append(head[name])
+        pts.append(bone_point(head, wR, name, t))
+    pts.append(bone_point(head, wR, "Head", (0.0, 0.0, 1.64)))
+    for side in ("Left", "Right"):
+        pts += list(foot_points(head, wR, side).values())
+    specs = prop_specs()
+    for pn in PROPS_FOR_ACTION.get(work, []):
+        c = bone_point(head, wR, specs[pn]["bone"], specs[pn]["at"])
+        r = {"sandbag": 0.27, "kb": 0.20, "ball": 0.14, "bar": 0.24}.get(specs[pn]["kind"], 0.08)
+        pts += [v_add(c, (dx, 0.0, dz)) for dx in (-r, r) for dz in (-r, r)]
+        pts += [v_add(c, (0.0, dy, 0.0)) for dy in (-r, r)]
+    xf, w, th = station_frame(path, k)
+    out = []
+    for p in pts:
+        q = char_to_station(p)
+        for d in ((0.11, 0, 0), (-0.11, 0, 0), (0, 0.11, 0), (0, -0.11, 0), (0, 0, 0.09), (0, 0, -0.02)):
+            out.append(m_apply(xf, v_add(q, d)))
+    return out
+
+
+def equipment_points(path, k):
+    G = Geo()
+    xf, w, th = station_frame(path, k)
+    build_equipment(G, k, xf)
+    return list(G.v)
+
+
+def label_points(k):
+    pos, tgt, lens = map_cam()
+    fwd, right, up = cam_axes(pos, tgt)
+    w, h = label_size(k)
+    c = LABEL_POS[k]
+    return [v_add(c, v_add(v_mul(right, sx * w / 2), v_mul(up, sy * h / 2))) for sx in (-1, 1) for sy in (-1, 1)]
+
+
+def _box(pts2):
+    return (min(p[0] for p in pts2), min(p[1] for p in pts2), max(p[0] for p in pts2), max(p[1] for p in pts2))
+
+
+def _overlap(a, b, m=0.0):
+    return min(a[2], b[2]) - max(a[0], b[0]) > m and min(a[3], b[3]) - max(a[1], b[1]) > m
+
+
+def layout_report(path):
+    """hộp bao 2D (chiếu theo MapCam, đơn vị = tỉ lệ khung) của người / thiết bị / nhãn từng trạm + kiểm chồng lấn"""
+    pos, tgt, lens = map_cam()
+    pr = lambda pts: _box([cam_project(p, pos, tgt, lens) for p in pts])
+    boxes = []
+    for k in range(8):
+        boxes.append(("athlete", k, pr(athlete_points(path, k))))
+        boxes.append(("equipment", k, pr(equipment_points(path, k))))
+        boxes.append(("label", k, pr(label_points(k))))
+    problems = []
+    for i in range(len(boxes)):
+        ka, ia, ba = boxes[i]
+        if ba[0] < 0.01 or ba[1] < 0.01 or ba[2] > 0.99 or ba[3] > 0.99:
+            problems.append("%s %02d tràn khung %s" % (ka, ia + 1, [round(c, 3) for c in ba]))
+        for j in range(i + 1, len(boxes)):
+            kb, ib, bb = boxes[j]
+            if ia == ib and "label" not in (ka, kb):
+                continue      # người và máy của CÙNG trạm được phép chạm nhau
+            if _overlap(ba, bb, 0.002):
+                problems.append("%s %02d chồng %s %02d" % (ka, ia + 1, kb, ib + 1))
+    # bề rộng cảnh (đường + mọi hộp) so với khung
+    us = []
+    for i in range(0, int(path.L * 4) + 1):
+        s = i / 4.0
+        p, r = path.pos(s), path.right(s)
+        for sg in (-1, 1):
+            us.append(cam_project((p[0] + r[0] * sg * PATH_W / 2, p[1] + r[1] * sg * PATH_W / 2, 0.0), pos, tgt, lens))
+    for gs in (START_S, FINISH_F * path.L):
+        p, r = path.pos(gs), path.right(gs)
+        for sg in (-1, 1):
+            us.append(cam_project((p[0] + r[0] * sg * (PATH_W / 2 + 0.2), p[1] + r[1] * sg * (PATH_W / 2 + 0.2), GATE_H + 0.1),
+                                  pos, tgt, lens))
+    u0 = min([u[0] for u in us] + [b[2][0] for b in boxes])
+    u1 = max([u[0] for u in us] + [b[2][2] for b in boxes])
+    v0 = min([u[1] for u in us] + [b[2][1] for b in boxes])
+    v1 = max([u[1] for u in us] + [b[2][3] for b in boxes])
+    hs = []
+    for k in range(8):
+        w, th = station_place(path, k)
+        a = cam_project(w, pos, tgt, lens)
+        b = cam_project((w[0], w[1], w[2] + CHAR_H * CHAR_SCALE), pos, tgt, lens)
+        hs.append(a[1] - b[1])
+    num_h = [(cam_project(v_add(LABEL_POS[k], (0, 0, 0.0)), pos, tgt, lens)[1]
+              - cam_project(v_add(LABEL_POS[k], v_mul(cam_axes(pos, tgt)[2], 0.72 * LABEL_NUM)), pos, tgt, lens)[1])
+             for k in range(8)]
+    return {
+        "ok": not problems and u0 > 0.0 and u1 < 1.0 and v0 > 0.0 and v1 < 1.0, "problems": problems,
+        "scene_width_frac": round(u1 - u0, 3), "scene_u": [round(u0, 3), round(u1, 3)],
+        "scene_v": [round(v0, 3), round(v1, 3)],
+        "athlete_height_frac": [round(min(hs), 4), round(max(hs), 4)],
+        "athlete_height_1_over": [round(1 / max(hs), 1), round(1 / min(hs), 1)],
+        "road_width_over_athlete_height": round(PATH_W / (CHAR_H * CHAR_SCALE), 3),
+        "label_number_px_at_960": [round(min(num_h) * 960), round(max(num_h) * 960)],
+        "label_text_px_at_960": round(min(num_h) * 960 * LABEL_TXT / LABEL_NUM),
+        "boxes": [[k, i + 1] + [round(c, 3) for c in b] for k, i, b in boxes],
+    }
 
 
 def r6(x):
@@ -1661,49 +2003,71 @@ def build_path_json(path, map_info=None, n_points=200):
         p = path.pos(s)
         pts.append([r6(c) for c in to_gl((p[0], p[1], 0.0))])
 
+    def gl(p):
+        return [r6(c) for c in to_gl(p)]
+
     def pinfo(s):
         p, t, r = path.pos(s), path.tan(s), path.right(s)
-        return {"s": r6(s), "f": r6(s / path.L), "pos": [r6(c) for c in to_gl((p[0], p[1], 0.0))],
-                "tangent": [r6(c) for c in to_gl((t[0], t[1], 0.0))],
-                "right": [r6(c) for c in to_gl((r[0], r[1], 0.0))],
+        return {"s": r6(s), "f": r6(s / path.L), "pos": gl((p[0], p[1], 0.0)),
+                "tangent": gl((t[0], t[1], 0.0)),
+                "right": gl((r[0], r[1], 0.0)),
                 "yaw": r6(math.atan2(t[0], -t[1]))}  # three.js rotation.y để nhân vật (+Z) nhìn theo đường
 
     stations = []
     for k, (code, name, dist, work) in enumerate(STATIONS):
         d = pinfo(st_s[k])
         xf, wpos, th = station_frame(path, k)
-        pc = m_apply(xf, (-(WORK_X - PAD_SHIFT), 0, 0))
-        lx, ly = LABEL_POS[k]
+        rc = bay_rect(path, k) or (wpos[0] - 0.6, wpos[0] + 0.6, wpos[1] - PATH_W / 2, wpos[1] + PATH_W / 2)
+        pc = ((rc[0] + rc[1]) / 2.0, (rc[2] + rc[3]) / 2.0, PAD_TOP)
+        yaw = r6(math.atan2(math.cos(th), -math.sin(th)))
+        ev = equipment_points(path, k)
+        ex0, ex1 = min(p[0] for p in ev), max(p[0] for p in ev)
+        ey0, ey1 = min(p[1] for p in ev), max(p[1] for p in ev)
+        lw, lh = label_size(k)
         d.update({"id": k + 1, "code": code, "name": name, "dist": dist, "action": work,
-                  "work_pos": [r6(c) for c in to_gl(wpos)], "pad_center": [r6(c) for c in to_gl(pc)],
-                  "ring_node": "StatusRing_%02d" % (k + 1), "label_anchor": [r6(c) for c in to_gl((lx, ly, 0.4))],
+                  "side": int(STATION_SIDE[k]), "on_road": bool(STATION_ON_ROAD[k]),
+                  "work_pos": gl(wpos), "pad_center": gl(pc),
+                  "bay": {"min": gl((rc[0], rc[3], PAD_TOP)), "max": gl((rc[1], rc[2], PAD_TOP))},
+                  "athlete": {"pos": gl(wpos), "heading": yaw, "scale": CHAR_SCALE, "action": work,
+                              "hero_frame": HERO_FRAME[work],
+                              "phase": r6(HERO_FRAME[work] / float(action_specs()[work][0]))},
+                  "equipment": {"pos": gl(((ex0 + ex1) / 2.0, (ey0 + ey1) / 2.0, PAD_TOP)), "heading": yaw,
+                                "size": [r6(ex1 - ex0), r6(max(p[2] for p in ev) - PAD_TOP), r6(ey1 - ey0)],
+                                "baked_in": "hyrox_map.glb"},
+                  "label": {"pos": gl(LABEL_POS[k]), "size": [r6(lw), r6(lh)], "lines": [LABEL_RUN] + list(LABEL_LINES[k])},
+                  "ring_node": "StatusRing_%02d" % (k + 1), "label_anchor": gl(LABEL_POS[k]),
                   "props": PROPS_FOR_ACTION.get(work, [])})
         stations.append(d)
-    map_lens = 41.0
+    cpos, ctgt, clens = map_cam()
     return {
-        "version": 2,
-        "generator": "scripts/hyrox3d/build_scene_v2.py",
+        "version": 3,
+        "generator": "scripts/hyrox3d/build_scene_v2.py (v3a)",
         "units": "met (1 đơn vị Blender); toạ độ glTF Y-up; nhân vật nhìn +Z",
         "fps": FPS,
         "length": r6(path.L),
         "road_width": PATH_W,
+        "scale": {"character": CHAR_SCALE, "character_height": r6(CHAR_H * CHAR_SCALE),
+                  "equipment_baked": CHAR_SCALE,
+                  "note": "runner.glb xuất ở tỉ lệ 1; app đặt scale = scale.character cho runner chính và các bản sao ở trạm"},
         "points": pts,
         "start": pinfo(START_S),
         "stations": stations,
         "finish": pinfo(FINISH_F * path.L),
         "work_offset": WORK_X,
+        "work_side": [int(v) for v in STATION_SIDE],
         "approach": APPROACH,
         "stride": STRIDE,
+        "stride_scaled": r6(STRIDE * CHAR_SCALE),
         "run_cycle_frames": RUN_CYCLE,
         "run_cycle_seconds": r6(RUN_CYCLE / FPS),
-        "natural_run_speed": r6(STRIDE / (RUN_CYCLE / FPS)),
+        "natural_run_speed": r6(STRIDE * CHAR_SCALE / (RUN_CYCLE / FPS)),
         "actions": {n: {"frames": action_specs()[n][0] if n != "Run" else RUN_CYCLE, "loop": True} for n in ACTION_NAMES},
         "props": PROPS_FOR_ACTION,
         "rings": ["StatusRing_%02d" % (k + 1) for k in range(8)],
         "camera": {
-            "map": {"pos": [r6(c) for c in to_gl((0, -20.5, 29))], "target": [r6(c) for c in to_gl((0, 0.6, 0))],
-                    "fov_v_deg": r6(math.degrees(2 * math.atan(18 / map_lens)))},
-            "follow_offset": [r6(c) for c in to_gl((3.2, -6.4, 5.6))],
+            "map": {"pos": gl(cpos), "target": gl(ctgt),
+                    "fov_v_deg": r6(math.degrees(2 * math.atan(18 / clens)))},
+            "follow_offset": gl(FOLLOW_OFF),
         },
         "sample_splits_s": SAMPLE_SPLITS,
         "colors": {"teal": TEAL},
@@ -1790,6 +2154,28 @@ def selftest(verbose=True):
     rep["markers"] = dict(sch["markers"])
     rep["max_speed"] = round(max(sch["speed"]), 2)
     rep["max_bank_deg"] = round(math.degrees(max(abs(b) for b in sch["bank"])), 2)
+    # v3a: tay chạm thiết bị
+    gx, gy, gz = sled_push_grip()
+    dev = 0.0
+    for f in range(action_specs()["Work_SledPush"][0]):
+        for h in hand_points("Work_SledPush", f):
+            dev = max(dev, math.sqrt((abs(h[0]) - gx) ** 2 + (h[1] - gy) ** 2 + (h[2] - gz) ** 2))
+    rep["sled_push_hand_to_grip_max_m"] = round(dev, 3)
+    rp = sled_pull_rope()
+
+    def _d_seg(p, a, b):
+        ab, ap = v_sub(b, a), v_sub(p, a)
+        t = clamp(v_dot(ap, ab) / max(1e-9, v_dot(ab, ab)), 0.0, 1.0)
+        return v_len(v_sub(p, v_add(a, v_mul(ab, t))))
+    dev = 0.0
+    for f in range(action_specs()["Work_SledPull"][0]):
+        for h in hand_points("Work_SledPull", f):
+            dev = max(dev, _d_seg(h, rp["hook"], rp["rear"]))
+    rep["sled_pull_hand_to_rope_max_m"] = round(dev, 3)
+    rep["sled_pull_rope_min_z"] = round(min(p[2] for p in rp["pts"][:3]), 3)
+    lay = layout_report(path)
+    rep["layout"] = lay
+    rep["layout_ok"] = lay["ok"]
     js = build_path_json(path)
     rep["json_points"] = len(js["points"])
     rep["json_bytes"] = len(json.dumps(js, separators=(",", ":")))
@@ -1828,13 +2214,15 @@ def soft(name, fn, *a, **kw):
 def parse_args(argv):
     ap = argparse.ArgumentParser(prog="build_scene_v2.py")
     ap.add_argument("--out", default=None)
-    ap.add_argument("--render", default="none", choices=["none", "preview"])
+    ap.add_argument("--render", default="none", choices=["none", "stills", "clip", "preview"],
+                    help="stills = preview_map + 11 tư thế + 2 ảnh cận trạm (không motion blur); clip = stills + clip ≤45 khung; "
+                         "preview = như clip (tên cũ)")
     ap.add_argument("--res", type=int, default=540, help="chiều ngang ảnh dọc 9:16 (540 → 540×960)")
     ap.add_argument("--samples", type=int, default=24)
     ap.add_argument("--engine", default="cycles", choices=["cycles", "eevee"])
     ap.add_argument("--gpu", action="store_true", help="Cycles dùng GPU (OptiX/CUDA/HIP/Metal) nếu có")
     ap.add_argument("--no-blend", action="store_true")
-    ap.add_argument("--frames", type=int, default=90, help="số khung video đoạn trạm 4→5")
+    ap.add_argument("--frames", type=int, default=45, help="số khung clip đoạn trạm 4→5 (tối đa 45)")
     ap.add_argument("--selftest", action="store_true")
     return ap.parse_args(argv)
 
@@ -2213,6 +2601,105 @@ def blender_main(args):
     scene.frame_end = sch["end"]
     for name, fr in sch["markers"]:
         scene.timeline_markers.new(name, frame=fr)
+    # khung chụp ảnh tĩnh: nhân vật chính đang chạy giữa trạm 3 → 4, mọi VĐV trạm ở đúng pha HERO
+    _r3 = [s_ for s_ in sch["segs"] if s_[0] == "run" and s_[5] == 3][0]
+    F_MAP = int((_r3[1] + _r3[2]) // 2)
+    station_objs = {}
+
+    def slot_fix(st):
+        try:
+            if hasattr(st, "action_slot") and st.action_slot is None and len(st.action.slots):
+                st.action_slot = st.action.slots[0]
+        except Exception:
+            pass
+
+    def setup_station_athletes():
+        """mỗi trạm 1 bản sao armature + lưới (+ đạo cụ) lặp action Work_x, lệch pha; KHÔNG xuất glb"""
+        for k, (code, nm, dist, work) in enumerate(STATIONS):
+            w, th = station_place(path, k)
+            ca = arm.copy()
+            ca.name = "Athlete_%s" % code
+            C_PREV.objects.link(ca)
+            ca.parent = None
+            ca.location = w
+            ca.rotation_euler = (0, 0, th + math.pi / 2)
+            ca.scale = (CHAR_SCALE, CHAR_SCALE, CHAR_SCALE)
+            try:
+                ca.show_in_front = False
+            except Exception:
+                pass
+            cb = body.copy()
+            cb.name = "AthleteBody_%s" % code
+            C_PREV.objects.link(cb)
+            cb.parent = ca
+            for md in cb.modifiers:
+                if md.type == "ARMATURE":
+                    md.object = ca
+            objs = [ca, cb]
+            for pname in PROPS_FOR_ACTION.get(work, []):
+                po = props[pname].copy()
+                po.name = "%s_%s" % (pname, code)
+                C_PREV.objects.link(po)
+                po.parent = ca
+                po.parent_type = "BONE"
+                po.parent_bone = props[pname].parent_bone
+                po.matrix_parent_inverse = props[pname].matrix_parent_inverse.copy()
+                po.hide_render = False
+                po.hide_viewport = False
+                objs.append(po)
+            act = actions[work]
+            N = int(action_specs()[work][0])
+            cad = ca.animation_data or ca.animation_data_create()
+            cad.action = None
+            for t in list(cad.nla_tracks):
+                cad.nla_tracks.remove(t)
+            tr = cad.nla_tracks.new()
+            tr.name = work
+            start = 1 + ((F_MAP - HERO_FRAME[work] - 1) % N)
+            st = tr.strips.new(work, int(start), act)
+            st.repeat = float(int((sch["end"] - start) / N) + 2)
+            try:
+                st.use_auto_blend = False
+            except Exception:
+                pass
+            st.blend_in = st.blend_out = 0
+            st.extrapolation = "HOLD"
+            slot_fix(st)
+            station_objs[k] = objs
+        info("VĐV trạm: %d bản sao (khung ảnh tĩnh %d)" % (len(station_objs), F_MAP))
+
+    soft("VĐV ở trạm", setup_station_athletes)
+
+    def setup_ski_cords():
+        """dây SkiErg từ ròng rọc tới 2 tay của VĐV trạm 01 ở pha HERO (chỉ đúng trong ảnh tĩnh)"""
+        xf, w, th = station_frame(path, 0)
+        hl, hr = hand_points("Work_SkiErg", HERO_FRAME["Work_SkiErg"])
+        cg = Geo()
+        for h, sx in ((hl, -1.0), (hr, 1.0)):
+            cg.add(tube([(sx * SKI_PULLEY[0], SKI_PULLEY[1], SKI_PULLEY[2]), (h[0], h[1] + 0.02, h[2] + 0.03)], 0.009, 6),
+                   "Rubber", xf)
+        o = obj("SkiCords", geo_to_mesh("SkiCords", cg), C_PREV)
+        station_objs.setdefault(0, []).append(o)
+
+    soft("dây SkiErg", setup_ski_cords)
+
+    def setup_station_vis():
+        """ẩn bản sao ở trạm k trong lúc nhân vật chính đang tập tại đó (tránh 2 người chồng nhau trong clip)"""
+        for k, objs in station_objs.items():
+            a, d = mk["S%d" % (k + 1)] - 14, mk["S%d_DONE" % (k + 1)] + 14
+            for o in objs:
+                for fr, hid in ((1, False), (a, True), (d, False)):
+                    o.hide_render = hid
+                    o.keyframe_insert("hide_render", frame=fr)
+                ad_ = o.animation_data
+                if ad_ and ad_.action:
+                    for fc in action_fcurves(ad_.action):
+                        if fc.data_path == "hide_render":
+                            for kp in fc.keyframe_points:
+                                kp.interpolation = "CONSTANT"
+                o.hide_render = False
+
+    soft("ẩn/hiện VĐV trạm", setup_station_vis)
 
     # vòng sáng: mỗi trạm 1 vật liệu riêng (liên kết theo object, chỉ sau khi đã xuất glb)
     def setup_rings():
@@ -2292,6 +2779,21 @@ def blender_main(args):
     root.empty_display_size = 0.5
     arm.parent = root
     arm.location = (0, 0, 0)
+    root.scale = (CHAR_SCALE, CHAR_SCALE, CHAR_SCALE)
+
+    def setup_hero_accent():
+        """nhân vật chính (người chạy): áo teal + vòng sáng dưới chân — chỉ trong render, glb không đổi"""
+        for sl in body.material_slots:
+            if sl.material and sl.material.name == "Shirt":
+                sl.link = "OBJECT"
+                sl.material = M["ShirtTeal"]
+        hg = Geo()
+        hg.add(torus(0.46, 0.035, 48, 6), "Glow", m_T(0, 0, 0.03))
+        hg.add(torus(0.60, 0.012, 48, 4), "Glow", m_T(0, 0, 0.02))
+        ho = obj("HeroRing", geo_to_mesh("HeroRing", hg), C_PREV)
+        ho.parent = root
+
+    soft("điểm nhấn nhân vật chính", setup_hero_accent)
     for i, fr in enumerate(sch["frames"]):
         x, y = sch["xy"][i]
         root.location = (x, y, 0.0)
@@ -2438,62 +2940,60 @@ def blender_main(args):
                     break
                 except Exception:
                     pass
+        if font is None:
+            warn("không có font Anton/Impact → dùng font mặc định của Blender (chữ tự co cho vừa bảng)")
 
-        def text(body_, size, material, loc, align="LEFT", parent=None, rot=None):
+        def text(body_, size, material, loc, align, parent, max_w=None):
             td = bpy.data.curves.new("txt", "FONT")
             td.body = body_
             td.size = size
             td.align_x = align
             td.align_y = "CENTER"
-            td.extrude = 0.008
+            td.extrude = 0.006
             if font:
                 td.font = font
             o = obj("T_" + body_[:12], td, C_PREV)
             o.data.materials.append(material)
             o.location = loc
-            if rot:
-                o.rotation_euler = rot
-            if parent:
-                o.parent = parent
+            o.parent = parent
+            if max_w:
+                try:
+                    bpy.context.view_layer.update()
+                    wx = o.dimensions.x
+                    if wx > max_w > 0:
+                        td.size = size * max_w / wx
+                except Exception as e:
+                    warn("đo chữ %r: %r" % (body_, e))
             return o
 
-        cam_rot = Euler((math.radians(35.3), 0, 0), "XYZ")
-        mc = bpy.data.objects.get("MapCam")
-        if mc:
-            bpy.context.view_layer.update()
-            cam_rot = mc.matrix_world.to_euler()
+        cpos, ctgt, clens = map_cam()
+        cam_rot = (Vector(ctgt) - Vector(cpos)).to_track_quat("-Z", "Y").to_euler()
         for k, (code, nm, dist, work) in enumerate(STATIONS):
-            x, y = LABEL_POS[k]
+            L = label_layout(k)
             g = obj("Label_%s" % code, None, C_PREV)
-            g.location = (x, y, 0.4)
+            g.location = LABEL_POS[k]
             g.rotation_euler = cam_rot
-            text(code, 0.9, M["TextTeal"], (0, 0, 0), "RIGHT", g)
-            text("RUN 1 KM", 0.3, M["TextWhite"], (0.18, 0.2, 0), "LEFT", g)
-            text("%s  %s" % (nm, dist), 0.3, M["TextWhite"], (0.18, -0.22, 0), "LEFT", g)
-            # số trên bục (nằm phẳng, phía trái đường)
-            sk = st_s[k]
-            p, r = path.pos(sk), path.right(sk)
-            pc = map_info["pad_centers"][k]
-            q = (pc[0] - r[0] * 0.78, pc[1] - r[1] * 0.78, PAD_TOP + 0.004)
-            text(code, 0.36, M["TextTeal"], q, "CENTER", None, (0, 0, 0))
-        title = obj("Title", None, C_PREV)
-        title.location = (0, 15.2, 1.0)
-        title.rotation_euler = cam_rot
-        text("HYROX RACE", 1.15, M["TextWhite"], (0, 0.55, 0), "CENTER", title)
-        text("MAP", 1.0, M["TextTeal"], (0, -0.75, 0), "CENTER", title)
+            pg = Geo()
+            pg.add(cbox(L["w"] / 2, L["h"] / 2, 0.012, 0.0), "LabelPlate", m_T(0, 0, -0.03))
+            pg.add(cbox(0.02, L["h"] / 2 - 0.06, 0.004, 0.0), "TextTeal", m_T(L["txt_x"] - 0.065, 0, -0.012))
+            po = obj("LabelPlate_%s" % code, geo_to_mesh("LabelPlate_%s" % code, pg), C_PREV)
+            po.parent = g
+            text(code, LABEL_NUM, M["TextTeal"], (L["num_x"], 0, 0), "CENTER", g, L["num_w"])
+            for body_, size, y, kind in L["rows"]:
+                mt = {"sub": M["TextDim"], "name": M["TextWhite"], "dist": M["TextTeal"]}[kind]
+                text(body_, size, mt, (L["txt_x"], y, 0), "LEFT", g, L["txt_w"])
 
     # camera
     def setup_cams():
+        cpos, ctgt, clens = map_cam()
         cd = bpy.data.cameras.new("MapCam")
-        cd.lens = 41
+        cd.lens = clens
+        cd.sensor_width = 36.0
+        cd.clip_start = 0.5
+        cd.clip_end = 400.0
         cam = obj("MapCam", cd, C_PREV)
-        cam.location = (0, -20.5, 29)
-        tgt = obj("CamTarget", None, C_PREV)
-        tgt.location = (0, 0.6, 0)
-        tc = cam.constraints.new("TRACK_TO")
-        tc.target = tgt
-        tc.track_axis = "TRACK_NEGATIVE_Z"
-        tc.up_axis = "UP_Y"
+        cam.location = cpos
+        cam.rotation_euler = (Vector(ctgt) - Vector(cpos)).to_track_quat("-Z", "Y").to_euler()
         scene.camera = cam
         fd = bpy.data.cameras.new("FollowCam")
         fd.lens = 34
@@ -2568,11 +3068,7 @@ def blender_main(args):
             scene.render.use_persistent_data = True
         except Exception:
             pass
-        scene.render.use_motion_blur = True
-        try:
-            scene.render.motion_blur_shutter = 0.5
-        except Exception:
-            pass
+        scene.render.use_motion_blur = False      # ảnh tĩnh: KHÔNG motion blur (chỉ bật khi render clip)
         try:
             scene.view_settings.view_transform = "AgX"
         except Exception:
@@ -2603,54 +3099,77 @@ def blender_main(args):
             info("đã lưu hyrox_race_map_v2.blend")
         soft("lưu .blend", save_blend)
 
-    if args.render == "preview":
+    if args.render in ("stills", "clip", "preview"):
+        import time as _time
+        t0 = _time.time()
+
         def render_still(path_, cam, frame, rx=None, ry=None):
             scene.camera = cam
-            scene.frame_set(frame)
+            if scene.frame_current != frame:
+                scene.frame_set(frame)
             ox, oy = scene.render.resolution_x, scene.render.resolution_y
             if rx:
                 scene.render.resolution_x, scene.render.resolution_y = rx, ry
             scene.render.filepath = path_
+            scene.render.use_motion_blur = False
             bpy.ops.render.render(write_still=True)
             scene.render.resolution_x, scene.render.resolution_y = ox, oy
 
         mapcam = bpy.data.objects.get("MapCam")
         fcam = bpy.data.objects.get("FollowCam")
         rcam = bpy.data.objects.get("RunnerCam")
-        soft("preview_map", render_still, os.path.join(out, "preview_map.png"), mapcam, mk["S5"] + 10)
+        soft("preview_map", render_still, os.path.join(out, "preview_map.png"), mapcam, F_MAP)
+        info("preview_map xong sau %.0f s" % (_time.time() - t0))
 
-        def render_clip():
-            a = mk["S4_DONE"] - 14
-            b = min(a + args.frames - 1, mk["S5"] + 30)
-            fdir = os.path.join(out, "frames")
-            os.makedirs(fdir, exist_ok=True)
-            scene.camera = fcam
-            fs, fe = scene.frame_start, scene.frame_end
-            scene.frame_start, scene.frame_end = a, b
-            scene.render.filepath = os.path.join(fdir, "f_")
-            bpy.ops.render.render(animation=True)
-            scene.frame_start, scene.frame_end = fs, fe
-            info("đã render khung %d..%d (FollowCam)" % (a, b))
+        def aim(cam, cpos, tpos):
+            cam.location = cpos
+            cam.rotation_euler = (Vector(tpos) - Vector(cpos)).to_track_quat("-Z", "Y").to_euler()
 
-        soft("clip trạm 4→5", render_clip)
+        def station_view(k, wide=1.0):
+            """camera góc 3/4 TRƯỚC của trạm k, đứng phía −Y (phía camera toàn cảnh) → thấy cả người lẫn thiết bị"""
+            w, th = station_place(path, k)
+            d = row_dir(STATION_ROW[k])
+            back, front = BAY_EXT[k]
+            tall = {0: 2.7, 7: 3.3}.get(k, 2.1)
+            cx = w[0] + d * (front - back) / 2.0
+            span = max(front + back, tall) * wide
+            tz = min(tall, 2.4) / 2.0 if k not in (0, 7) else tall / 2.0
+            dist = 0.5 * span / math.tan(math.radians(19.0)) * 1.12
+            dirv = Vector((d * 0.50, -0.72, 0.50)).normalized()
+            tpos = (cx, w[1], tz)
+            return tuple(Vector(tpos) + dirv * dist), tpos
+
+        def render_station_shots():
+            n = 0
+            for k in range(8):
+                cpos, tpos = station_view(k)
+                aim(rcam, cpos, tpos)
+                render_still(os.path.join(out, "runner_%s.png" % STATIONS[k][3]), rcam, F_MAP, 360, 360)
+                n += 1
+            info("đã render %d ảnh trạm (người + thiết bị) sau %.0f s" % (n, _time.time() - t0))
 
         def render_runner_shots():
-            shots = [("Idle", 12)]
-            r2 = [s_ for s_ in sch["segs"] if s_[0] == "run"][2]
-            shots.append(("Run", (r2[1] + r2[2]) // 2))
-            for k in range(8):
-                shots.append((STATIONS[k][3], (mk["S%d" % (k + 1)] + mk["S%d_DONE" % (k + 1)]) // 2 + 4))
-            shots.append(("Celebrate", mk["FINISH"] + 22))
+            shots = [("Run", F_MAP), ("Idle", 12), ("Celebrate", mk["FINISH"] + 22)]
             for name, fr in shots:
                 scene.frame_set(fr)
                 bpy.context.view_layer.update()
-                mw = root.matrix_world
-                cpos = mw @ Vector((1.5, -2.6, 1.35))
-                tpos = mw @ Vector((0, 0, 0.78))
-                rcam.location = cpos
-                rcam.rotation_euler = (tpos - cpos).to_track_quat("-Z", "Y").to_euler()
+                p = root.matrix_world.translation
+                h = root.rotation_euler[2] - math.pi / 2      # hướng nhìn của nhân vật
+                fwd = Vector((math.cos(h), math.sin(h), 0.0))
+                side = Vector((fwd.y, -fwd.x, 0.0))
+                if side.y > 0:                                   # luôn đứng phía −Y (sáng hơn, không bị máy che)
+                    side = -side
+                cpos = p + (fwd * 2.3 + side * 1.9) * CHAR_SCALE + Vector((0, 0, 1.45 * CHAR_SCALE))
+                aim(rcam, cpos, p + Vector((0, 0, 0.85 * CHAR_SCALE)))
                 render_still(os.path.join(out, "runner_%s.png" % name), rcam, fr, 360, 360)
-            info("đã render %d ảnh nhân vật" % len(shots))
+            info("đã render %d ảnh nhân vật chính sau %.0f s" % (len(shots), _time.time() - t0))
+
+        def render_closeups():
+            for k in (2, 7):       # 2 ảnh cận: Sled Pull (dây) + Wall Ball (đích)
+                cpos, tpos = station_view(k, 1.25)
+                aim(rcam, cpos, tpos)
+                render_still(os.path.join(out, "station_%s.png" % STATIONS[k][0]), rcam, F_MAP, args.res, args.res)
+            info("đã render 2 ảnh cận trạm sau %.0f s" % (_time.time() - t0))
 
         def with_low_samples(fn):
             try:
@@ -2664,7 +3183,35 @@ def blender_main(args):
                 if old is not None:
                     scene.cycles.samples = old
 
-        soft("ảnh nhân vật", with_low_samples, render_runner_shots)
+        soft("ảnh trạm", with_low_samples, render_station_shots)
+        soft("ảnh cận trạm", render_closeups)
+        soft("ảnh nhân vật chính", with_low_samples, render_runner_shots)
+
+        def render_clip():
+            n = max(1, min(int(args.frames), 45))
+            r4 = [s_ for s_ in sch["segs"] if s_[0] == "run" and s_[5] == 4][0]
+            a = max(r4[1] + 2, (r4[1] + r4[2]) // 2 - n // 2)
+            b = min(a + n - 1, r4[2] + 20)
+            fdir = os.path.join(out, "frames")
+            os.makedirs(fdir, exist_ok=True)
+            scene.camera = fcam
+            fs, fe = scene.frame_start, scene.frame_end
+            scene.frame_start, scene.frame_end = a, b
+            scene.render.filepath = os.path.join(fdir, "f_")
+            scene.render.use_motion_blur = True
+            try:
+                scene.render.motion_blur_shutter = 0.25
+            except Exception:
+                pass
+            try:
+                bpy.ops.render.render(animation=True)
+            finally:
+                scene.render.use_motion_blur = False
+                scene.frame_start, scene.frame_end = fs, fe
+            info("đã render khung %d..%d (FollowCam, %d khung) sau %.0f s" % (a, b, b - a + 1, _time.time() - t0))
+
+        if args.render in ("clip", "preview"):
+            soft("clip trạm 4→5", render_clip)
 
     with open(os.path.join(out, "build_log.json"), "w", encoding="utf-8") as fh:
         json.dump(LOG, fh, ensure_ascii=False, indent=1)
@@ -2697,7 +3244,10 @@ def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [a for a in sys.argv[1:] if a == "--selftest"]
     args = parse_args(argv)
     if args.selftest:
-        selftest()
+        rep_ = selftest()
+        if not rep_.get("layout_ok", True):
+            sys.stderr.write("[hyrox3d] SELFTEST LỖI bố cục: %s\n" % "; ".join(rep_["layout"]["problems"]))
+            sys.exit(1)
         return
     try:
         import bpy  # noqa
