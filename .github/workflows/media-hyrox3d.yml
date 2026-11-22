@@ -2,13 +2,22 @@ name: Media — bản đồ HYROX 3D (Blender → glb → meshopt)
 
 # Dựng bản đồ đường đua HYROX + nhân vật có xương & 11 hoạt ảnh bằng Blender (chạy nền, CPU),
 # xuất glb → tối ưu meshopt (gltf-transform) → (tuỳ chọn) render ảnh/clip xem trước bằng Cycles CPU + OIDN.
+# render=stills (mặc định, ~14 ảnh tĩnh, mục tiêu < 6 phút): preview_map + contact sheet 11 tư thế + 2 ảnh cận trạm.
+# render=clip: thêm clip ≤ 45 khung (chậm hơn nhiều). render=none: chỉ xuất glb/json.
 # Kết quả: artifact "hyrox3d" (glb gốc + nén, json, png, mp4, báo cáo dung lượng, .blend)
-#          + commit media/hyrox/ nếu commit=true (glb nén, json, ảnh xem trước nhỏ). viewer.html đã nằm sẵn ở media/hyrox/.
+#          + commit media/hyrox/ nếu commit=true (glb nén, json, ảnh xem trước nhỏ).
+# viewer.html: deploy-bundle.yml BỎ thư mục media/ khi giải nén gói → viewer.html gửi qua gói không bao giờ vào repo.
+#   Vì vậy bản nguồn nằm ở scripts/hyrox3d/viewer.html và workflow này chép sang media/hyrox/viewer.html mỗi lần chạy.
 # Tài liệu: docs/HYROX-3D.md
 on:
   workflow_dispatch:
     inputs:
-      render:  { description: "Ảnh/clip xem trước: preview | none", default: "preview", required: false }
+      render:
+        description: "Xem trước: stills (ảnh tĩnh, nhanh) | clip (ảnh + clip 45 khung) | none"
+        type: choice
+        options: [stills, clip, none]
+        default: stills
+        required: false
       res:     { description: "Chiều ngang khung dọc 9:16 (540 → 540×960)", default: "540", required: false }
       samples: { description: "Cycles samples (CPU, có OIDN khử nhiễu)", default: "24", required: false }
       blender: { description: "Phiên bản Blender Linux chính thức (4.2 LTS)", default: "4.2.23", required: false }
@@ -28,7 +37,7 @@ env:
 jobs:
   hyrox3d:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -45,7 +54,9 @@ jobs:
 
       - name: Kiểm lõi Python thuần (đường, IK, hoạt ảnh, lịch chạy)
         run: |
+          set -eo pipefail
           python -m py_compile scripts/hyrox3d/build_scene_v2.py scripts/hyrox3d/export_pure.py
+          # --selftest thoát mã 1 nếu hộp bao người/thiết bị/nhãn các trạm chồng nhau hoặc tràn khung MapCam
           python scripts/hyrox3d/build_scene_v2.py --selftest | tee selftest.json
 
       - name: Tải Blender ${{ inputs.blender || '4.2.23' }} (download.blender.org) — có cache
@@ -92,7 +103,7 @@ jobs:
           "${{ steps.bl.outputs.dir }}/blender" --version | head -1
           "${{ steps.bl.outputs.dir }}/blender" --background --factory-startup --python-exit-code 1 \
             --python scripts/hyrox3d/build_scene_v2.py -- \
-            --out "$OUT" --render "${{ inputs.render || 'preview' }}" --res "${{ inputs.res || '540' }}" \
+            --out "$OUT" --render "${{ inputs.render || 'stills' }}" --res "${{ inputs.res || '540' }}" \
             --samples "${{ inputs.samples || '24' }}" 2>&1 | tee blender.log
           test -s "$OUT/hyrox_map.glb" && test -s "$OUT/hyrox_runner.glb" && test -s "$OUT/hyrox_path.json"
           cat "$OUT/build_log.json"
@@ -104,15 +115,18 @@ jobs:
           python scripts/hyrox3d/export_pure.py --out "$OUT"
           echo "fallback" > "$OUT/FALLBACK_PURE_PYTHON.txt"
 
-      - name: Clip xem trước (trạm 4 → 5) + contact sheet nhân vật
-        if: ${{ (inputs.render || 'preview') == 'preview' }}
+      - name: Contact sheet 11 tư thế (+ clip trạm 4 → 5 nếu render=clip)
+        if: ${{ (inputs.render || 'stills') != 'none' }}
+        env:
+          RENDER_MODE: ${{ inputs.render || 'stills' }}
         run: |
           set -e
           if ls "$OUT"/frames/*.png >/dev/null 2>&1; then
             ffmpeg -y -loglevel error -framerate 30 -pattern_type glob -i "$OUT/frames/*.png" \
               -c:v libx264 -pix_fmt yuv420p -crf 20 -preset slow -movflags +faststart "$OUT/preview_run.mp4"
             echo "preview_run.mp4: $(du -h "$OUT/preview_run.mp4" | cut -f1), $(ls "$OUT"/frames/*.png | wc -l) khung"
-          else echo "::warning::Không có khung clip"; fi
+          elif [ "$RENDER_MODE" = "clip" ]; then echo "::warning::Không có khung clip"; fi
+          ls "$OUT"/preview_map.png >/dev/null 2>&1 || echo "::warning::Không có preview_map.png (xem blender.log)"
           python - <<'EOF'
           import glob, os
           from PIL import Image, ImageDraw
@@ -156,9 +170,22 @@ jobs:
             ffmpeg -y -loglevel error -i "$OUT/preview_map.png" -vf "scale=540:-2" -q:v 3 media/hyrox/preview_map.jpg; fi
           if [ -f "$OUT/preview_runner.png" ]; then
             ffmpeg -y -loglevel error -i "$OUT/preview_runner.png" -vf "scale='min(1080,iw)':-2" -q:v 4 media/hyrox/preview_runner.jpg; fi
+          for st in "$OUT"/station_*.png; do
+            [ -f "$st" ] || continue
+            ffmpeg -y -loglevel error -i "$st" -vf "scale=540:-2" -q:v 3 "media/hyrox/preview_$(basename "${st%.png}").jpg"; done
           if [ -f "$OUT/preview_run.mp4" ]; then
             ffmpeg -y -loglevel error -i "$OUT/preview_run.mp4" -vf "scale=360:-2" -c:v libx264 -crf 26 -pix_fmt yuv420p \
-              -movflags +faststart -an media/hyrox/preview_run.mp4; fi
+              -movflags +faststart -an media/hyrox/preview_run.mp4
+          elif [ -f "$OUT/preview_map.png" ]; then
+            rm -f media/hyrox/preview_run.mp4   # clip cũ (bố cục cũ) không còn khớp ảnh mới
+          fi
+          # viewer.html: bản nguồn ở scripts/hyrox3d/ (media/ bị deploy-bundle bỏ qua) → luôn chép sang media/hyrox/
+          if [ -f scripts/hyrox3d/viewer.html ]; then
+            cp scripts/hyrox3d/viewer.html media/hyrox/viewer.html
+          elif [ ! -f media/hyrox/viewer.html ]; then
+            git checkout HEAD -- media/hyrox/viewer.html 2>/dev/null || true
+          fi
+          [ -f media/hyrox/viewer.html ] || echo "::warning::Thiếu media/hyrox/viewer.html (không có ở scripts/hyrox3d/ lẫn trong repo)"
           ls -la media/hyrox
           du -sh media/hyrox
 
@@ -185,7 +212,15 @@ jobs:
         run: |
           git config user.name "tapeasy-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add media/hyrox
+          git add -A media/hyrox
+          # không bao giờ để commit của workflow xoá viewer.html
+          if git diff --cached --name-status -- media/hyrox/viewer.html | grep -q '^D'; then
+            echo "::warning::viewer.html sắp bị xoá khỏi repo → khôi phục từ HEAD"
+            git reset -q HEAD -- media/hyrox/viewer.html
+            git checkout HEAD -- media/hyrox/viewer.html
+          fi
+          git ls-files --error-unmatch media/hyrox/viewer.html >/dev/null 2>&1 \
+            && echo "viewer.html: có trong commit" || echo "::warning::viewer.html KHÔNG có trong repo"
           if git diff --cached --quiet; then echo "Không có gì mới"; exit 0; fi
           SRC=$([ -f "$OUT/FALLBACK_PURE_PYTHON.txt" ] && echo "python thuần (Blender lỗi)" || echo "Blender ${{ inputs.blender || '4.2.23' }}")
           git commit -m "media: bản đồ HYROX 3D (glb meshopt, $SRC, $(date +%Y-%m-%d))"
