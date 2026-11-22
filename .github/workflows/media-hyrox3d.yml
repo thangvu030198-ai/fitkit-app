@@ -1,0 +1,192 @@
+name: Media — bản đồ HYROX 3D (Blender → glb → meshopt)
+
+# Dựng bản đồ đường đua HYROX + nhân vật có xương & 11 hoạt ảnh bằng Blender (chạy nền, CPU),
+# xuất glb → tối ưu meshopt (gltf-transform) → (tuỳ chọn) render ảnh/clip xem trước bằng Cycles CPU + OIDN.
+# Kết quả: artifact "hyrox3d" (glb gốc + nén, json, png, mp4, báo cáo dung lượng, .blend)
+#          + commit media/hyrox/ nếu commit=true (glb nén, json, ảnh xem trước nhỏ). viewer.html đã nằm sẵn ở media/hyrox/.
+# Tài liệu: docs/HYROX-3D.md
+on:
+  workflow_dispatch:
+    inputs:
+      render:  { description: "Ảnh/clip xem trước: preview | none", default: "preview", required: false }
+      res:     { description: "Chiều ngang khung dọc 9:16 (540 → 540×960)", default: "540", required: false }
+      samples: { description: "Cycles samples (CPU, có OIDN khử nhiễu)", default: "24", required: false }
+      blender: { description: "Phiên bản Blender Linux chính thức (4.2 LTS)", default: "4.2.23", required: false }
+      commit:  { description: "Commit media/hyrox vào repo (true/false)", default: "true", required: false }
+
+permissions:
+  contents: write
+
+concurrency:
+  group: media-hyrox3d
+  cancel-in-progress: false
+
+env:
+  PYTHONUNBUFFERED: "1"
+  OUT: build/hyrox3d
+
+jobs:
+  hyrox3d:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+
+      - name: Cài ffmpeg + thư viện cho Blender chạy nền
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg libxi6 libxxf86vm1 libxfixes3 libxrender1 libxkbcommon0 libsm6 libice6 \
+            libgl1 libegl1 libglu1-mesa >/dev/null
+          pip install -q pillow
+
+      - name: Kiểm lõi Python thuần (đường, IK, hoạt ảnh, lịch chạy)
+        run: |
+          python -m py_compile scripts/hyrox3d/build_scene_v2.py scripts/hyrox3d/export_pure.py
+          python scripts/hyrox3d/build_scene_v2.py --selftest | tee selftest.json
+
+      - name: Tải Blender ${{ inputs.blender || '4.2.23' }} (download.blender.org) — có cache
+        id: bl
+        env:
+          BLV: ${{ inputs.blender || '4.2.23' }}
+        run: |
+          set -e
+          MM=$(echo "$BLV" | cut -d. -f1,2)
+          echo "dir=$RUNNER_TEMP/blender-$BLV" >> "$GITHUB_OUTPUT"
+          echo "url=https://download.blender.org/release/Blender$MM/blender-$BLV-linux-x64.tar.xz" >> "$GITHUB_OUTPUT"
+          echo "sha=https://download.blender.org/release/Blender$MM/blender-$BLV.sha256" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        id: blcache
+        with:
+          path: ${{ steps.bl.outputs.dir }}
+          key: blender-linux-x64-${{ inputs.blender || '4.2.23' }}
+      - name: Giải nén Blender
+        if: steps.blcache.outputs.cache-hit != 'true'
+        env:
+          BLV: ${{ inputs.blender || '4.2.23' }}
+        run: |
+          set -e
+          cd "$RUNNER_TEMP"
+          curl -fsSL --retry 3 -o blender.tar.xz "${{ steps.bl.outputs.url }}"
+          curl -fsSL --retry 3 -o blender.sha256 "${{ steps.bl.outputs.sha }}"
+          want=$(grep "blender-$BLV-linux-x64.tar.xz" blender.sha256 | awk '{print $1}')
+          got=$(sha256sum blender.tar.xz | awk '{print $1}')
+          echo "sha256 mong đợi=$want thực tế=$got"
+          if [ -z "$want" ] || [ "$want" != "$got" ]; then echo "::error::Sai sha256 Blender"; exit 1; fi
+          mkdir -p "${{ steps.bl.outputs.dir }}"
+          tar -xf blender.tar.xz -C "${{ steps.bl.outputs.dir }}" --strip-components=1
+          rm blender.tar.xz
+      - name: Font Anton (OFL) cho chữ trong ảnh xem trước
+        run: curl -fsSL --retry 2 -o /tmp/Anton-Regular.ttf https://github.com/google/fonts/raw/main/ofl/anton/Anton-Regular.ttf || echo "::warning::Không tải được Anton — dùng font mặc định"
+
+      - name: Dựng cảnh + xuất glb (+ render xem trước)
+        id: blender
+        continue-on-error: true
+        env:
+          HYROX_FONT: /tmp/Anton-Regular.ttf
+        run: |
+          set -eo pipefail
+          "${{ steps.bl.outputs.dir }}/blender" --version | head -1
+          "${{ steps.bl.outputs.dir }}/blender" --background --factory-startup --python-exit-code 1 \
+            --python scripts/hyrox3d/build_scene_v2.py -- \
+            --out "$OUT" --render "${{ inputs.render || 'preview' }}" --res "${{ inputs.res || '540' }}" \
+            --samples "${{ inputs.samples || '24' }}" 2>&1 | tee blender.log
+          test -s "$OUT/hyrox_map.glb" && test -s "$OUT/hyrox_runner.glb" && test -s "$OUT/hyrox_path.json"
+          cat "$OUT/build_log.json"
+      - name: DỰ PHÒNG — Blender lỗi → xuất glb bằng Python thuần (export_pure.py)
+        if: steps.blender.outcome != 'success'
+        run: |
+          echo "::warning::Bước Blender lỗi — dùng glb từ export_pure.py (xem blender.log trong artifact)"
+          mkdir -p "$OUT"
+          python scripts/hyrox3d/export_pure.py --out "$OUT"
+          echo "fallback" > "$OUT/FALLBACK_PURE_PYTHON.txt"
+
+      - name: Clip xem trước (trạm 4 → 5) + contact sheet nhân vật
+        if: ${{ (inputs.render || 'preview') == 'preview' }}
+        run: |
+          set -e
+          if ls "$OUT"/frames/*.png >/dev/null 2>&1; then
+            ffmpeg -y -loglevel error -framerate 30 -pattern_type glob -i "$OUT/frames/*.png" \
+              -c:v libx264 -pix_fmt yuv420p -crf 20 -preset slow -movflags +faststart "$OUT/preview_run.mp4"
+            echo "preview_run.mp4: $(du -h "$OUT/preview_run.mp4" | cut -f1), $(ls "$OUT"/frames/*.png | wc -l) khung"
+          else echo "::warning::Không có khung clip"; fi
+          python - <<'EOF'
+          import glob, os
+          from PIL import Image, ImageDraw
+          out = os.environ["OUT"]
+          files = sorted(glob.glob(os.path.join(out, "runner_*.png")))
+          order = ["Idle", "Run", "Work_SkiErg", "Work_SledPush", "Work_SledPull", "Work_Burpee", "Work_Row",
+                   "Work_Farmers", "Work_Lunge", "Work_WallBall", "Celebrate"]
+          files.sort(key=lambda f: order.index(os.path.basename(f)[7:-4]) if os.path.basename(f)[7:-4] in order else 99)
+          if files:
+              ims = [Image.open(f).convert("RGB") for f in files]
+              w, h = ims[0].size
+              cols = 4
+              rows = (len(ims) + cols - 1) // cols
+              sheet = Image.new("RGB", (cols * w, rows * (h + 22)), (12, 12, 14))
+              d = ImageDraw.Draw(sheet)
+              for i, (im, f) in enumerate(zip(ims, files)):
+                  x, y = (i % cols) * w, (i // cols) * (h + 22)
+                  sheet.paste(im, (x, y))
+                  d.text((x + 6, y + h + 4), os.path.basename(f)[7:-4], fill=(150, 230, 220))
+              sheet.save(os.path.join(out, "preview_runner.png"))
+              print("contact sheet:", len(ims), "ảnh")
+          EOF
+
+      - name: Tối ưu glb (meshopt + quantize; so sánh Draco)
+        run: |
+          set -e
+          cd scripts/hyrox3d
+          npm install --no-audit --no-fund --loglevel=error
+          node optimize.mjs --in "../../$OUT" --out "../../$OUT/opt" --report "../../$OUT/size-report.md" --draco
+          cat "../../$OUT/size-report.md" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"; cat ../../selftest.json >> "$GITHUB_STEP_SUMMARY"; echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Chuẩn bị media/hyrox
+        run: |
+          set -e
+          mkdir -p media/hyrox
+          cp "$OUT/opt/hyrox_map.glb" "$OUT/opt/hyrox_runner.glb" "$OUT/hyrox_path.json" media/hyrox/
+          cp "$OUT/size-report.md" media/hyrox/size-report.md
+          if [ -f "$OUT/preview_map.png" ]; then
+            ffmpeg -y -loglevel error -i "$OUT/preview_map.png" -vf "scale=540:-2" -q:v 3 media/hyrox/preview_map.jpg; fi
+          if [ -f "$OUT/preview_runner.png" ]; then
+            ffmpeg -y -loglevel error -i "$OUT/preview_runner.png" -vf "scale='min(1080,iw)':-2" -q:v 4 media/hyrox/preview_runner.jpg; fi
+          if [ -f "$OUT/preview_run.mp4" ]; then
+            ffmpeg -y -loglevel error -i "$OUT/preview_run.mp4" -vf "scale=360:-2" -c:v libx264 -crf 26 -pix_fmt yuv420p \
+              -movflags +faststart -an media/hyrox/preview_run.mp4; fi
+          ls -la media/hyrox
+          du -sh media/hyrox
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hyrox3d
+          path: |
+            build/hyrox3d/*.glb
+            build/hyrox3d/*.json
+            build/hyrox3d/*.png
+            build/hyrox3d/*.mp4
+            build/hyrox3d/*.md
+            build/hyrox3d/*.blend
+            build/hyrox3d/*.txt
+            build/hyrox3d/opt
+            blender.log
+            selftest.json
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Lưu vào repo (media/hyrox)
+        if: ${{ (inputs.commit || 'true') == 'true' }}
+        run: |
+          git config user.name "tapeasy-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add media/hyrox
+          if git diff --cached --quiet; then echo "Không có gì mới"; exit 0; fi
+          SRC=$([ -f "$OUT/FALLBACK_PURE_PYTHON.txt" ] && echo "python thuần (Blender lỗi)" || echo "Blender ${{ inputs.blender || '4.2.23' }}")
+          git commit -m "media: bản đồ HYROX 3D (glb meshopt, $SRC, $(date +%Y-%m-%d))"
+          git pull --rebase && git push
