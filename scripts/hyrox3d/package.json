@@ -1,0 +1,16 @@
+{
+  "name": "tapeasy-hyrox3d-tools",
+  "private": true,
+  "type": "module",
+  "description": "Tối ưu glb bản đồ HYROX 3D (meshopt). Chỉ dùng trong workflow media-hyrox3d / máy dev, không đóng gói vào app.",
+  "scripts": {
+    "optimize": "node optimize.mjs --in ../../build/hyrox3d --out ../../build/hyrox3d/opt --draco"
+  },
+  "dependencies": {
+    "@gltf-transform/core": "^4.1.0",
+    "@gltf-transform/extensions": "^4.1.0",
+    "@gltf-transform/functions": "^4.1.0",
+    "meshoptimizer": "^0.22.0",
+    "draco3dgltf": "^1.5.7"
+  }
+}
