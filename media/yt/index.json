@@ -786,13 +786,33 @@
 "iG0_W6Bwc_Y",
 "aHOudYjiB9A"
 ],
+"Double_Kettlebell_Alternating_Hang_Clean": [
+"tCgwaQEY5bI",
+"lliRf_d6MDc"
+],
 "Double_Kettlebell_Jerk": [
 "tCgwaQEY5bI",
 "8qcv0cpI7jI"
 ],
+"Double_Kettlebell_Push_Press": [
+"tCgwaQEY5bI",
+"HZBUz01mOS8"
+],
+"Double_Kettlebell_Snatch": [
+"tXBqqW-qswQ",
+"uwCKh7t7yhI"
+],
+"Double_Kettlebell_Windmill": [
+"EZWHnzAjctU",
+"q8K_Wg8OuV4"
+],
 "Double_Leg_Butt_Kick": [
 "oMW59TKZvaI",
 "bebSBEGQE8I"
+],
+"Downward_Facing_Balance": [
+"PRja65swvic",
+"hALsoh41FAI"
 ],
 "Drag_Curl": [
 "ntl_xrjfCt8",
@@ -801,6 +821,10 @@
 "Drop_Push": [
 "hM93IjT_UqI",
 "4g2znwarlDE"
+],
+"Dumbbell_Alternate_Bicep_Curl": [
+"Vs56yc15EzY",
+"_aoad2yuP5w"
 ],
 "Dumbbell_Bench_Press": [
 "1V3vpcaxRYQ",
@@ -841,6 +865,16 @@
 "Dumbbell_Lying_One-Arm_Rear_Lateral_Raise": [
 "hsglKkHnGDs"
 ],
+"Dumbbell_Lying_Pronation": [
+"t2S1lIZndKE"
+],
+"Dumbbell_Lying_Rear_Lateral_Raise": [
+"JMt_uxE8bBc",
+"JIhbYYA1Q90"
+],
+"Dumbbell_Lying_Supination": [
+"U2IxKQ-K_1Y"
+],
 "Dumbbell_One-Arm_Shoulder_Press": [
 "LGhnN6RyMGY",
 "sMfhKVua96A"
@@ -848,9 +882,33 @@
 "Dumbbell_One-Arm_Triceps_Extension": [
 "bjXPpf5jQnw"
 ],
+"Dumbbell_One-Arm_Upright_Row": [
+"qN54-QNO1eQ",
+"jpi4reqwiKY"
+],
+"Dumbbell_Prone_Incline_Curl": [
+"XhIsIcjIbCw",
+"0zsvm1h_-M4"
+],
+"Dumbbell_Raise": [
+"JMt_uxE8bBc",
+"JIhbYYA1Q90"
+],
 "Dumbbell_Rear_Lunge": [
 "4be_Wy8RDJU",
 "RZKXLMxPF_I"
+],
+"Dumbbell_Scaption": [
+"pDtt6b9NUSU",
+"N3P7rp7bCYc"
+],
+"Dumbbell_Seated_Box_Jump": [
+"64OAo8kINPQ",
+"XswKRtk4mGc"
+],
+"Dumbbell_Seated_One-Leg_Calf_Raise": [
+"BxfKOyI8sUg",
+"ar8nav0jGoE"
 ],
 "Dumbbell_Shoulder_Press": [
 "osEKVtXBLlU",
@@ -860,21 +918,211 @@
 "j2-RccWDhDo",
 "yDzbztHQ1yI"
 ],
+"Dumbbell_Side_Bend": [
+"dL9ZzqtQI5c",
+"VwLXMuL_30Q"
+],
 "Dumbbell_Squat": [
 "MJao9o7ROs0",
 "bSPvrDNRaOg"
+],
+"Dumbbell_Squat_To_A_Bench": [
+"v_c67Omje48",
+"6B04mSVq4qc"
+],
+"Dumbbell_Step_Ups": [
+"btF_rOOyWX8",
+"aKj-6hgiViA"
+],
+"Dumbbell_Tricep_Extension_-Pronated_Grip": [
+"AYqg9S5FrUU",
+"_gsUck-7M74"
+],
+"Dynamic_Back_Stretch": [
+"7T4OfWLPkpM",
+"COswASjdnRo"
+],
+"Dynamic_Chest_Stretch": [
+"urICkMgMrjk",
+"u7AFpzWV2I8"
+],
+"EZ-Bar_Curl": [
+"Uez9eEAS1Ac",
+"4128AO9AGRM"
+],
+"EZ-Bar_Skullcrusher": [
+"GaK2da6B2zM",
+"Q2cA5xv2rSs"
+],
+"Elbow_Circles": [
+"KtXaS3g0eFM",
+"LsSI6bjxFR8"
+],
+"Elbow_to_Knee": [
+"v4CVrkRNhvs",
+"aQFLVDY0DMU"
+],
+"Elbows_Back": [
+"94-5ktG_Lkg",
+"NM_FDASE4Pc"
+],
+"Elliptical_Trainer": [
+"G1H_WKqifsc",
+"fh16ENgLHVc"
+],
+"Exercise_Ball_Crunch": [
+"Imui46JTe7s",
+"O4d3kd1ZLyc"
+],
+"Exercise_Ball_Pull-In": [
+"3R81zuUD_L0",
+"ZvSwTGgETIo"
+],
+"Extended_Range_One-Arm_Kettlebell_Floor_Press": [
+"B340QckIfJM",
+"hEoUlbVWFsE"
+],
+"External_Rotation": [
+"tijDtTzNdu8",
+"BY7UKjJMx2A"
+],
+"External_Rotation_with_Band": [
+"7DqYesMRkzU",
+"ybNV36DoRfY"
+],
+"External_Rotation_with_Cable": [
+"GxDF2AYsI1Q",
+"meUts1w5mcI"
 ],
 "Face_Pull": [
 "I41wK3wTZlo",
 "wnPX6Fwe-Fg"
 ],
+"Farmers_Walk": [
+"4d-4gKn_lKk",
+"E94UNm8fD-4"
+],
+"Fast_Skipping": [
+"GQlebWZpErk",
+"VLC6YO9w5iU"
+],
+"Finger_Curls": [
+"gnDRXH2J5Yc",
+"7v_H-d_xFYk"
+],
 "Flat_Bench_Cable_Flyes": [
 "M97ra0UR-40",
 "D04sUKQi85Y"
 ],
+"Flat_Bench_Leg_Pull-In": [
+"df28vuIsH_0",
+"0MbZ81BpVDg"
+],
+"Flat_Bench_Lying_Leg_Raise": [
+"x6kydTgo0cA",
+"PkLYH3uRtSs"
+],
+"Flexor_Incline_Dumbbell_Curls": [
+"0-qmVm4tHDw",
+"YTuMtQPgse0"
+],
+"Floor_Glute-Ham_Raise": [
+"blX1If7ScxY",
+"J9YLsDSRrKU"
+],
+"Floor_Press": [
+"riT31sLb8HU"
+],
+"Floor_Press_with_Chains": [
+"PpiqWNY52M0",
+"rgDzHCcTLac"
+],
+"Flutter_Kicks": [
+"ANVdMDaYRts",
+"K5wuM_gNWyw"
+],
+"Foot-SMR": [
+"WA_GJYK42tw",
+"MPKVX6BYy2w"
+],
+"Frankenstein_Squat": [
+"8C4sf6yEWYU",
+"ncxH7TckCa4"
+],
+"Freehand_Jump_Squat": [
+"H0ljU4qPYZE",
+"PbMZtjtXpXM"
+],
+"Frog_Hops": [
+"fCc9UB0LuHk",
+"e9ZTJFHJDSk"
+],
+"Frog_Sit-Ups": [
+"tFs0cJ86QYI",
+"qtBhmrMqeeY"
+],
 "Front_Barbell_Squat": [
 "N4WGYDGu6bI",
 "r6Z_h_WAX5o"
+],
+"Front_Barbell_Squat_To_A_Bench": [
+"N4WGYDGu6bI",
+"-HpmBJu-Fn8"
+],
+"Front_Box_Jump": [
+"hxldG9FX4j4",
+"LeiLzSU3OXE"
+],
+"Front_Cable_Raise": [
+"seSFBTfaOPA",
+"NdQE5Fhfqn4"
+],
+"Front_Cone_Hops_or_hurdle_hops": [
+"w2L-Hzl55K8",
+"MXGrFkxkub0"
+],
+"Front_Dumbbell_Raise": [
+"yHx8wPv4RPo",
+"U2IxKQ-K_1Y"
+],
+"Front_Incline_Dumbbell_Raise": [
+"yHx8wPv4RPo",
+"DBLb6RY_dB0"
+],
+"Front_Leg_Raises": [
+"JB2oyawG9KI",
+"PpZxg66ftYc"
+],
+"Front_Plate_Raise": [
+"e8my9OOCXVo",
+"hFo-LIkCozU"
+],
+"Front_Raise_And_Pullover": [
+"OO8x69XwRZY",
+"yKXreRgjdwk"
+],
+"Front_Squat_Clean_Grip": [
+"tW2H0Ib_hQw",
+"pAI6NwZO9X0"
+],
+"Front_Squats_With_Two_Kettlebells": [
+"6XghYOzny8U",
+"3nA2ERmAyP0"
+],
+"Front_Two-Dumbbell_Raise": [
+"yHx8wPv4RPo",
+"U2IxKQ-K_1Y"
+],
+"Full_Range-Of-Motion_Lat_Pulldown": [
+"8Wv1l90lNIE",
+"cczFstlkvzQ"
+],
+"Gironda_Sternum_Chins": [
+"xJ4Yh7KiT2g"
+],
+"Glute_Ham_Raise": [
+"blX1If7ScxY",
+"J9YLsDSRrKU"
 ],
 "Glute_Kickback": [
 "n-cgsNePyFo",
@@ -888,6 +1136,21 @@
 "sAAn3y-qxP4",
 "_mORJ50GH7g"
 ],
+"Good_Morning_off_Pins": [
+"yihU2gFswpk",
+"f23vXjoG2e8"
+],
+"Gorilla_Chin_Crunch": [
+"oyLFxhLdWKc"
+],
+"Groin_and_Back_Stretch": [
+"4xOP3JM23ro",
+"aDeXR3puzCU"
+],
+"Groiners": [
+"qdSSM1VWIMM",
+"vRH5wywUefI"
+],
 "Hack_Squat": [
 "0tn5K9NlCfo",
 "g9i05umL5vc"
@@ -896,13 +1159,98 @@
 "lmIo_gVE8T4",
 "VuEclXR7sZY"
 ],
+"Hammer_Grip_Incline_DB_Bench_Press": [
+"iVfAejapZ5c",
+"ou6s32mJgjU"
+],
+"Hamstring-SMR": [
+"_M29fhv3LoI",
+"49lQp52xgmc"
+],
+"Hamstring_Stretch": [
+"T_l0AyZywjU",
+"2SdMmx_sLNc"
+],
+"Handstand_Push-Ups": [
+"q5sbqedk5tc",
+"gSjHRuRQ4hk"
+],
+"Hang_Clean": [
+"WCdhjfg7fv4",
+"frSZNeT0FIk"
+],
+"Hang_Clean_-_Below_the_Knees": [
+"frSZNeT0FIk",
+"qQ8InArxi-Y"
+],
+"Hang_Snatch": [
+"QGHTu91Z6EQ",
+"sar6A-mv08c"
+],
+"Hang_Snatch_-_Below_Knees": [
+"xyR1jUXHTdk",
+"YLNpOh8ev0k"
+],
+"Hanging_Bar_Good_Morning": [
+"YnCeFEpAZ_k"
+],
 "Hanging_Leg_Raise": [
 "2n4UqRIJyk4",
 "iYyp2QrsV2g"
 ],
+"Hanging_Pike": [
+"wVRlRmGsZ2w",
+"ZQTnjtyXeC8"
+],
+"Heaving_Snatch_Balance": [
+"VCYa3N9Qb4o",
+"xoXwoXoJo_Y"
+],
+"High_Cable_Curls": [
+"_Z8Afknw_Fc",
+"NFzTWp2qpiE"
+],
+"Hip_Circles_prone": [
+"x-5h_QUOem8"
+],
+"Hip_Extension_with_Bands": [
+"9Ww7jGzO09M",
+"305k_HxPCOA"
+],
+"Hip_Flexion_with_Band": [
+"rqbEUl26R2Y"
+],
+"Hug_A_Ball": [
+"hpleHEyG0tA",
+"Fg6SBZf8dt4"
+],
+"Hug_Knees_To_Chest": [
+"BCf3UEHiuJs",
+"iAaLLSALFMg"
+],
+"Hurdle_Hops": [
+"SuddHMMcK5I",
+"ME8FQQVw1Z8"
+],
 "Hyperextensions_Back_Extensions": [
 "upxW1WlptUE",
 "GcT1ntwkjZ0"
+],
+"Hyperextensions_With_No_Hyperextension_Bench": [
+"k6LyPhGRV-o",
+"Y--TP9HkEgY"
+],
+"IT_Band_and_Glute_Stretch": [
+"1l8GPdtVX0M",
+"yntoiRjuZ0k"
+],
+"Inchworm": [
+"ZY2ji_Ho0dA",
+"NlN22MWG2ZQ"
+],
+"Incline_Barbell_Triceps_Extension": [
+"9YPrhQmTqHs",
+"Uc5a-SxWPWQ"
 ],
 "Incline_Cable_Chest_Press": [
 "u_FUPxXYKYI",
@@ -1972,10 +2320,16 @@
 "Dips_-_Chest_Version": "2026-11-22",
 "Dips_-_Triceps_Version": "2026-11-22",
 "Donkey_Calf_Raises": "2026-11-22",
+"Double_Kettlebell_Alternating_Hang_Clean": "2026-11-23",
 "Double_Kettlebell_Jerk": "2026-11-22",
+"Double_Kettlebell_Push_Press": "2026-11-23",
+"Double_Kettlebell_Snatch": "2026-11-23",
+"Double_Kettlebell_Windmill": "2026-11-23",
 "Double_Leg_Butt_Kick": "2026-11-22",
+"Downward_Facing_Balance": "2026-11-23",
 "Drag_Curl": "2026-11-22",
 "Drop_Push": "2026-11-22",
+"Dumbbell_Alternate_Bicep_Curl": "2026-11-23",
 "Dumbbell_Bench_Press": "2026-11-19",
 "Dumbbell_Bench_Press_with_Neutral_Grip": "2026-11-22",
 "Dumbbell_Bicep_Curl": "2026-11-19",
@@ -1985,20 +2339,108 @@
 "Dumbbell_Incline_Row": "2026-11-19",
 "Dumbbell_Incline_Shoulder_Raise": "2026-11-22",
 "Dumbbell_Lunges": "2026-11-19",
+"Dumbbell_Lying_Pronation": "2026-11-23",
+"Dumbbell_Lying_Rear_Lateral_Raise": "2026-11-23",
+"Dumbbell_Lying_Supination": "2026-11-23",
+"Dumbbell_One-Arm_Upright_Row": "2026-11-23",
+"Dumbbell_Prone_Incline_Curl": "2026-11-23",
+"Dumbbell_Raise": "2026-11-23",
 "Dumbbell_Rear_Lunge": "2026-11-19",
+"Dumbbell_Scaption": "2026-11-23",
+"Dumbbell_Seated_Box_Jump": "2026-11-23",
+"Dumbbell_Seated_One-Leg_Calf_Raise": "2026-11-23",
 "Dumbbell_Shoulder_Press": "2026-11-19",
 "Dumbbell_Shrug": "2026-11-19",
+"Dumbbell_Side_Bend": "2026-11-23",
 "Dumbbell_Squat": "2026-11-19",
+"Dumbbell_Squat_To_A_Bench": "2026-11-23",
+"Dumbbell_Step_Ups": "2026-11-23",
+"Dumbbell_Tricep_Extension_-Pronated_Grip": "2026-11-23",
+"Dynamic_Back_Stretch": "2026-11-23",
+"Dynamic_Chest_Stretch": "2026-11-23",
+"EZ-Bar_Curl": "2026-11-23",
+"EZ-Bar_Skullcrusher": "2026-11-23",
+"Elbow_Circles": "2026-11-23",
+"Elbow_to_Knee": "2026-11-23",
+"Elbows_Back": "2026-11-23",
+"Elevated_Back_Lunge": "2026-11-23",
+"Elevated_Cable_Rows": "2026-11-23",
+"Elliptical_Trainer": "2026-11-23",
+"Exercise_Ball_Crunch": "2026-11-23",
+"Exercise_Ball_Pull-In": "2026-11-23",
+"Extended_Range_One-Arm_Kettlebell_Floor_Press": "2026-11-23",
+"External_Rotation": "2026-11-23",
+"External_Rotation_with_Band": "2026-11-23",
+"External_Rotation_with_Cable": "2026-11-23",
 "Face_Pull": "2026-11-19",
+"Farmers_Walk": "2026-11-23",
+"Fast_Skipping": "2026-11-23",
+"Finger_Curls": "2026-11-23",
 "Flat_Bench_Cable_Flyes": "2026-11-19",
+"Flat_Bench_Leg_Pull-In": "2026-11-23",
+"Flat_Bench_Lying_Leg_Raise": "2026-11-23",
+"Flexor_Incline_Dumbbell_Curls": "2026-11-23",
+"Floor_Glute-Ham_Raise": "2026-11-23",
+"Floor_Press": "2026-11-23",
+"Floor_Press_with_Chains": "2026-11-23",
+"Flutter_Kicks": "2026-11-23",
+"Foot-SMR": "2026-11-23",
+"Forward_Drag_with_Press": "2026-11-23",
+"Frankenstein_Squat": "2026-11-23",
+"Freehand_Jump_Squat": "2026-11-23",
+"Frog_Hops": "2026-11-23",
+"Frog_Sit-Ups": "2026-11-23",
 "Front_Barbell_Squat": "2026-11-19",
+"Front_Barbell_Squat_To_A_Bench": "2026-11-23",
+"Front_Box_Jump": "2026-11-23",
+"Front_Cable_Raise": "2026-11-23",
+"Front_Cone_Hops_or_hurdle_hops": "2026-11-23",
+"Front_Dumbbell_Raise": "2026-11-23",
+"Front_Incline_Dumbbell_Raise": "2026-11-23",
+"Front_Leg_Raises": "2026-11-23",
+"Front_Plate_Raise": "2026-11-23",
+"Front_Raise_And_Pullover": "2026-11-23",
+"Front_Squat_Clean_Grip": "2026-11-23",
+"Front_Squats_With_Two_Kettlebells": "2026-11-23",
+"Front_Two-Dumbbell_Raise": "2026-11-23",
+"Full_Range-Of-Motion_Lat_Pulldown": "2026-11-23",
+"Gironda_Sternum_Chins": "2026-11-23",
+"Glute_Ham_Raise": "2026-11-23",
 "Glute_Kickback": "2026-11-19",
 "Goblet_Squat": "2026-11-19",
 "Good_Morning": "2026-11-19",
+"Good_Morning_off_Pins": "2026-11-23",
+"Gorilla_Chin_Crunch": "2026-11-23",
+"Groin_and_Back_Stretch": "2026-11-23",
+"Groiners": "2026-11-23",
 "Hack_Squat": "2026-11-19",
 "Hammer_Curls": "2026-11-19",
+"Hammer_Grip_Incline_DB_Bench_Press": "2026-11-23",
+"Hamstring-SMR": "2026-11-23",
+"Hamstring_Stretch": "2026-11-23",
+"Handstand_Push-Ups": "2026-11-23",
+"Hang_Clean": "2026-11-23",
+"Hang_Clean_-_Below_the_Knees": "2026-11-23",
+"Hang_Snatch": "2026-11-23",
+"Hang_Snatch_-_Below_Knees": "2026-11-23",
+"Hanging_Bar_Good_Morning": "2026-11-23",
 "Hanging_Leg_Raise": "2026-11-19",
+"Hanging_Pike": "2026-11-23",
+"Heaving_Snatch_Balance": "2026-11-23",
+"Heavy_Bag_Thrust": "2026-11-23",
+"High_Cable_Curls": "2026-11-23",
+"Hip_Circles_prone": "2026-11-23",
+"Hip_Extension_with_Bands": "2026-11-23",
+"Hip_Flexion_with_Band": "2026-11-23",
+"Hip_Lift_with_Band": "2026-11-23",
+"Hug_A_Ball": "2026-11-23",
+"Hug_Knees_To_Chest": "2026-11-23",
+"Hurdle_Hops": "2026-11-23",
 "Hyperextensions_Back_Extensions": "2026-11-19",
+"Hyperextensions_With_No_Hyperextension_Bench": "2026-11-23",
+"IT_Band_and_Glute_Stretch": "2026-11-23",
+"Inchworm": "2026-11-23",
+"Incline_Barbell_Triceps_Extension": "2026-11-23",
 "Incline_Cable_Chest_Press": "2026-11-19",
 "Incline_Dumbbell_Flyes": "2026-11-19",
 "Incline_Dumbbell_Press": "2026-11-19",
@@ -2013,13 +2455,13 @@
 "Low_Cable_Crossover": "2026-11-19",
 "Lying_Leg_Curls": "2026-11-19",
 "Lying_Machine_Squat": "2026-11-19",
-"Machine_Bench_Press": "2026-11-22",
+"Machine_Bench_Press": "2026-11-23",
 "Machine_Bicep_Curl": "2026-11-19",
 "Machine_Preacher_Curls": "2026-11-19",
 "Machine_Shoulder_Military_Press": "2026-11-19",
 "Machine_Triceps_Extension": "2026-11-19",
 "Narrow_Stance_Hack_Squats": "2026-11-19",
-"Narrow_Stance_Leg_Press": "2026-11-22",
+"Narrow_Stance_Leg_Press": "2026-11-23",
 "Narrow_Stance_Squats": "2026-11-19",
 "Olympic_Squat": "2026-11-19",
 "One_Leg_Barbell_Squat": "2026-11-19",
