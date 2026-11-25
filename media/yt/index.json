@@ -1668,6 +1668,17 @@
 "2XDPNh7a8p8",
 "NZaOgtWdAwo"
 ],
+"Lying_Face_Up_Plate_Neck_Resistance": [
+"__mHZwz1pzM"
+],
+"Lying_Glute": [
+"LORVjN2bg5o",
+"wPM8icPu6H8"
+],
+"Lying_Hamstring": [
+"-X2Oz6h-1WI",
+"P7-RxTVe6O0"
+],
 "Lying_Leg_Curls": [
 "yjWAuFOjhuY",
 "ZHlBSI6JPsA"
@@ -1678,6 +1689,25 @@
 "Lying_One-Arm_Lateral_Raise": [
 "VqFAWmgnb8I",
 "CnGvIAjl-Lc"
+],
+"Lying_Prone_Quadriceps": [
+"nd4CYtu0a1M"
+],
+"Lying_Rear_Delt_Raise": [
+"9bERtRKo4UY",
+"A8bTKrPdnQ0"
+],
+"Lying_Supine_Dumbbell_Curl": [
+"XhIsIcjIbCw",
+"_OAIwvpmAko"
+],
+"Lying_T-Bar_Row": [
+"-avLxYko1k0",
+"w0KnlQ-b7jw"
+],
+"Lying_Triceps_Press": [
+"4re6CJ0XNF8",
+"Vs28nY2m-Mk"
 ],
 "Machine_Bench_Press": [
 "QkaRB_lbMxg",
@@ -1699,36 +1729,343 @@
 "NNyuuN2sJb0",
 "fwzkg88Okwo"
 ],
+"Medicine_Ball_Chest_Pass": [
+"kFk3LPS76pU",
+"e-zHTwXA8mE"
+],
+"Medicine_Ball_Full_Twist": [
+"hRIdAjDs08Q",
+"99d2aPkgmDA"
+],
+"Medicine_Ball_Scoop_Throw": [
+"T_XkIEfDtP8",
+"DttZ5JU-b_U"
+],
+"Middle_Back_Stretch": [
+"GonNUMJOFlk",
+"VnDuWC40egg"
+],
+"Mixed_Grip_Chin": [
+"xjME35NboRA",
+"-WcLeyMhvNM"
+],
+"Monster_Walk": [
+"TeyfkdXAgUg",
+"Iw0qNhH95SU"
+],
+"Mountain_Climbers": [
+"7W4JEfEKuC4",
+"cnyTQDSE884"
+],
+"Moving_Claw_Series": [
+"alMwwGoeFiA"
+],
+"Muscle_Snatch": [
+"9Ze3-UiuRT0",
+"bJYzOo1cNqY"
+],
+"Muscle_Up": [
+"lbEl3yg4YWA",
+"uASGBouLpes"
+],
 "Narrow_Stance_Hack_Squats": [
 "7_WIBhSLiD8",
 "g9i05umL5vc"
 ],
 "Narrow_Stance_Leg_Press": [
 "nDh_BlnLCGc",
-"W1SD96lrudY"
+"Mk2mVfdyUQA"
 ],
 "Narrow_Stance_Squats": [
 "sMVyjUCp-XI",
 "SpY4UFrUkf4"
 ],
+"Natural_Glute_Ham_Raise": [
+"blX1If7ScxY",
+"J9YLsDSRrKU"
+],
+"Neck-SMR": [
+"dbHVqG5t0Ig",
+"6U8tiIAr6jc"
+],
+"Neck_Press": [
+"uD9kYAi7lHs",
+"zoN5EH50Dro"
+],
+"Oblique_Crunches": [
+"QxaKQG-gmPY",
+"QbL1ksNO0Js"
+],
+"Oblique_Crunches_-_On_The_Floor": [
+"QxaKQG-gmPY",
+"QbL1ksNO0Js"
+],
 "Olympic_Squat": [
 "6jK2cf72hnM",
 "AWlwifwVrhA"
+],
+"On-Your-Back_Quad_Stretch": [
+"aNXGOpP37CY",
+"ywgDXzYD6v8"
+],
+"On_Your_Side_Quad_Stretch": [
+"_xU-wIiMxpI",
+"aNXGOpP37CY"
+],
+"One-Arm_Dumbbell_Row": [
+"Pw3glZCQMGM",
+"BXnZ4UXVL_c"
+],
+"One-Arm_Kettlebell_Clean": [
+"lyEu6FlYRAU",
+"h4KafmF7Xwc"
+],
+"One-Arm_Kettlebell_Clean_and_Jerk": [
+"aFvMpEEDtOk",
+"DGql83eyHRE"
+],
+"One-Arm_Kettlebell_Floor_Press": [
+"B340QckIfJM",
+"hEoUlbVWFsE"
+],
+"One-Arm_Kettlebell_Jerk": [
+"_XBgegWiKl0",
+"lmhvF6tr_cU"
+],
+"One-Arm_Kettlebell_Military_Press_To_The_Side": [
+"QQBZuMOqgEw",
+"h4KafmF7Xwc"
+],
+"One-Arm_Kettlebell_Para_Press": [
+"B340QckIfJM",
+"OHo4GZHem7U"
+],
+"One-Arm_Kettlebell_Push_Press": [
+"B340QckIfJM",
+"OHo4GZHem7U"
+],
+"One-Arm_Kettlebell_Row": [
+"j2OdaGOmHlM",
+"R2TBqv5xGTE"
+],
+"One-Arm_Kettlebell_Snatch": [
+"6l2Iu26oWW8",
+"KEjArgg9Fgg"
+],
+"One-Arm_Kettlebell_Split_Jerk": [
+"_XBgegWiKl0",
+"8XmJ2JXBFRQ"
+],
+"One-Arm_Kettlebell_Split_Snatch": [
+"-xF3wm_-_9o",
+"0yhazS1BnBk"
 ],
 "One-Arm_Kettlebell_Swings": [
 "rH8JTfOflgI",
 "3G0KAYrgbnk"
 ],
+"One-Arm_Long_Bar_Row": [
+"i9BJwVCK5VQ"
+],
+"One-Arm_Medicine_Ball_Slam": [
+"IK8KA1TajU4"
+],
+"One-Arm_Open_Palm_Kettlebell_Clean": [
+"nGOefsEHQD0",
+"h4KafmF7Xwc"
+],
+"One-Arm_Overhead_Kettlebell_Squats": [
+"yh77uMrWw90",
+"AS8HBiHOUcM"
+],
+"One-Legged_Cable_Kickback": [
+"n-cgsNePyFo",
+"Zreysysk52c"
+],
+"One_Arm_Against_Wall": [
+"8BCN6mKvLEg"
+],
+"One_Arm_Chin-Up": [
+"SaAw64s2_dQ",
+"9X8qDYL86z8"
+],
 "One_Arm_Dumbbell_Bench_Press": [
 "X8zXg41yziI",
 "tzhUWsFN22g"
+],
+"One_Arm_Dumbbell_Preacher_Curl": [
+"Mg0NnlF5NZQ",
+"2hmQRh6ZF4o"
+],
+"One_Arm_Floor_Press": [
+"y477pOZ_fNM"
 ],
 "One_Arm_Lat_Pulldown": [
 "2qyHRUCuTEo",
 "eM162KNncD8"
 ],
+"One_Arm_Pronated_Dumbbell_Triceps_Extension": [
+"d1pIdeEySS0",
+"ekEo-BSg0_U"
+],
+"One_Arm_Supinated_Dumbbell_Triceps_Extension": [
+"9SornkbpIgA",
+"0SfJvAJMc70"
+],
+"One_Half_Locust": [
+"DumG6KyWSjs",
+"PhBQ034Dqss"
+],
+"One_Handed_Hang": [
+"kCRzNL3SXeU",
+"ToMtVwEV3xA"
+],
+"One_Knee_To_Chest": [
+"YEMMfW4kfKQ",
+"RJlykGcn5bo"
+],
 "One_Leg_Barbell_Squat": [
 "Jl1cxp0Iwv0"
+],
+"Open_Palm_Kettlebell_Clean": [
+"lyEu6FlYRAU",
+"Sp84PPmLtck"
+],
+"Otis-Up": [
+"BhtnaHGJa8w",
+"2use4VrurJo"
+],
+"Overhead_Cable_Curl": [
+"4XQLqBelbPw",
+"2MUEL4nL6hA"
+],
+"Overhead_Lat": [
+"z-lxcsIN4T4",
+"diBoTD4-uG8"
+],
+"Overhead_Slam": [
+"uuIJroNfvdQ",
+"c-p3Zxgr0Z4"
+],
+"Overhead_Squat": [
+"mGvEruE-0rc",
+"TUtBNkk_lio"
+],
+"Overhead_Stretch": [
+"RY8hWUe538Y",
+"-WFQhIRimnw"
+],
+"Overhead_Triceps": [
+"fYqswDVbJDg",
+"b_r_LW4HEcM"
+],
+"Pallof_Press": [
+"5aZ0IhJS8O8",
+"5_8d8vHgZvU"
+],
+"Pallof_Press_With_Rotation": [
+"5aZ0IhJS8O8",
+"auOA-GeHhww"
+],
+"Palms-Down_Dumbbell_Wrist_Curl_Over_A_Bench": [
+"jtQslxR3f0A",
+"lPxm-Nzpsxs"
+],
+"Palms-Down_Wrist_Curl_Over_A_Bench": [
+"b5ZGC_6p0Ss",
+"nTyn-Rt1-H4"
+],
+"Palms-Up_Barbell_Wrist_Curl_Over_A_Bench": [
+"u_owF2ZhdVs",
+"FeKtbXKhCzs"
+],
+"Palms-Up_Dumbbell_Wrist_Curl_Over_A_Bench": [
+"OsZSmbkSMn0",
+"c2ecPsbB4hk"
+],
+"Parallel_Bar_Dip": [
+"1_4OICx2WrY",
+"_HxxBada6Jw"
+],
+"Pelvic_Tilt_Into_Bridge": [
+"oje869YCAL4",
+"6Ayl6IXpgyM"
+],
+"Peroneals-SMR": [
+"_M29fhv3LoI",
+"wPFIq1lXQV4"
+],
+"Peroneals_Stretch": [
+"Cs9yRDbZHqE",
+"E5TDFEzWPdg"
+],
+"Physioball_Hip_Bridge": [
+"PhTDzR0TpZs",
+"CvdPjmokb6I"
+],
+"Pin_Presses": [
+"h1hQvDLFYt8",
+"hIE6FQJaS7k"
+],
+"Piriformis-SMR": [
+"XS5hY6vBi6g",
+"-XRTwzmN7Gw"
+],
+"Plank": [
+"3n8ecRuE1dY",
+"5gU3pyrkv-E"
+],
+"Plate_Pinch": [
+"_cdWkwQGffU",
+"jFTV3DQf3HE"
+],
+"Plate_Twist": [
+"i5EqfNJprmI",
+"HfabxzkQPdg"
+],
+"Platform_Hamstring_Slides": [
+"4aKoYTkfKi4",
+"QA8rihQi2KA"
+],
+"Plie_Dumbbell_Squat": [
+"am2MUThbmpI",
+"v_c67Omje48"
+],
+"Plyo_Push-up": [
+"FRo3b_Pfw3M",
+"Y-uF4F3mQIs"
+],
+"Posterior_Tibialis_Stretch": [
+"djwQBM0cfXo",
+"HnUw1oHqwUA"
+],
+"Power_Clean": [
+"vI7Akim4dKM",
+"HFKsnymM_R4"
+],
+"Power_Clean_from_Blocks": [
+"vI7Akim4dKM",
+"EIES2oibclU"
+],
+"Power_Jerk": [
+"M4VMMdUD2T8",
+"J2YH8S6-Pss"
+],
+"Power_Partials": [
+"Za_EGDFQx4U",
+"R3nNN6RvpSU"
+],
+"Power_Snatch": [
+"G0IAcNNE7yc",
+"eZvy51ucmOc"
+],
+"Power_Snatch_from_Blocks": [
+"Piicp8kYqS8",
+"hWLOXxFDz9o"
+],
+"Power_Stairs": [
+"bJMM4nLGE4E",
+"C_PD737206s"
 ],
 "Preacher_Curl": [
 "Htw-s61mOw0",
@@ -2903,18 +3240,113 @@
 "Lying_Close-Grip_Barbell_Triceps_Press_To_Chin": "2026-11-24",
 "Lying_Crossover": "2026-11-24",
 "Lying_Dumbbell_Tricep_Extension": "2026-11-24",
+"Lying_Face_Down_Plate_Neck_Resistance": "2026-11-25",
+"Lying_Face_Up_Plate_Neck_Resistance": "2026-11-25",
+"Lying_Glute": "2026-11-25",
+"Lying_Hamstring": "2026-11-25",
+"Lying_High_Bench_Barbell_Curl": "2026-11-25",
 "Lying_Leg_Curls": "2026-11-19",
 "Lying_Machine_Squat": "2026-11-19",
-"Machine_Bench_Press": "2026-11-24",
+"Lying_Prone_Quadriceps": "2026-11-25",
+"Lying_Rear_Delt_Raise": "2026-11-25",
+"Lying_Supine_Dumbbell_Curl": "2026-11-25",
+"Lying_T-Bar_Row": "2026-11-25",
+"Lying_Triceps_Press": "2026-11-25",
+"Machine_Bench_Press": "2026-11-25",
 "Machine_Bicep_Curl": "2026-11-19",
 "Machine_Preacher_Curls": "2026-11-19",
 "Machine_Shoulder_Military_Press": "2026-11-19",
 "Machine_Triceps_Extension": "2026-11-19",
+"Medicine_Ball_Chest_Pass": "2026-11-25",
+"Medicine_Ball_Full_Twist": "2026-11-25",
+"Medicine_Ball_Scoop_Throw": "2026-11-25",
+"Middle_Back_Shrug": "2026-11-25",
+"Middle_Back_Stretch": "2026-11-25",
+"Mixed_Grip_Chin": "2026-11-25",
+"Monster_Walk": "2026-11-25",
+"Mountain_Climbers": "2026-11-25",
+"Moving_Claw_Series": "2026-11-25",
+"Muscle_Snatch": "2026-11-25",
+"Muscle_Up": "2026-11-25",
 "Narrow_Stance_Hack_Squats": "2026-11-19",
-"Narrow_Stance_Leg_Press": "2026-11-24",
+"Narrow_Stance_Leg_Press": "2026-11-25",
 "Narrow_Stance_Squats": "2026-11-19",
+"Natural_Glute_Ham_Raise": "2026-11-25",
+"Neck-SMR": "2026-11-25",
+"Neck_Press": "2026-11-25",
+"Oblique_Crunches": "2026-11-25",
+"Oblique_Crunches_-_On_The_Floor": "2026-11-25",
 "Olympic_Squat": "2026-11-19",
+"On-Your-Back_Quad_Stretch": "2026-11-25",
+"On_Your_Side_Quad_Stretch": "2026-11-25",
+"One-Arm_Dumbbell_Row": "2026-11-25",
+"One-Arm_Flat_Bench_Dumbbell_Flye": "2026-11-25",
+"One-Arm_High-Pulley_Cable_Side_Bends": "2026-11-25",
+"One-Arm_Incline_Lateral_Raise": "2026-11-25",
+"One-Arm_Kettlebell_Clean": "2026-11-25",
+"One-Arm_Kettlebell_Clean_and_Jerk": "2026-11-25",
+"One-Arm_Kettlebell_Floor_Press": "2026-11-25",
+"One-Arm_Kettlebell_Jerk": "2026-11-25",
+"One-Arm_Kettlebell_Military_Press_To_The_Side": "2026-11-25",
+"One-Arm_Kettlebell_Para_Press": "2026-11-25",
+"One-Arm_Kettlebell_Push_Press": "2026-11-25",
+"One-Arm_Kettlebell_Row": "2026-11-25",
+"One-Arm_Kettlebell_Snatch": "2026-11-25",
+"One-Arm_Kettlebell_Split_Jerk": "2026-11-25",
+"One-Arm_Kettlebell_Split_Snatch": "2026-11-25",
+"One-Arm_Long_Bar_Row": "2026-11-25",
+"One-Arm_Medicine_Ball_Slam": "2026-11-25",
+"One-Arm_Open_Palm_Kettlebell_Clean": "2026-11-25",
+"One-Arm_Overhead_Kettlebell_Squats": "2026-11-25",
+"One-Arm_Side_Deadlift": "2026-11-25",
+"One-Arm_Side_Laterals": "2026-11-25",
+"One-Legged_Cable_Kickback": "2026-11-25",
+"One_Arm_Against_Wall": "2026-11-25",
+"One_Arm_Chin-Up": "2026-11-25",
+"One_Arm_Dumbbell_Preacher_Curl": "2026-11-25",
+"One_Arm_Floor_Press": "2026-11-25",
+"One_Arm_Pronated_Dumbbell_Triceps_Extension": "2026-11-25",
+"One_Arm_Supinated_Dumbbell_Triceps_Extension": "2026-11-25",
+"One_Half_Locust": "2026-11-25",
+"One_Handed_Hang": "2026-11-25",
+"One_Knee_To_Chest": "2026-11-25",
 "One_Leg_Barbell_Squat": "2026-11-19",
+"Open_Palm_Kettlebell_Clean": "2026-11-25",
+"Otis-Up": "2026-11-25",
+"Overhead_Cable_Curl": "2026-11-25",
+"Overhead_Lat": "2026-11-25",
+"Overhead_Slam": "2026-11-25",
+"Overhead_Squat": "2026-11-25",
+"Overhead_Stretch": "2026-11-25",
+"Overhead_Triceps": "2026-11-25",
+"Pallof_Press": "2026-11-25",
+"Pallof_Press_With_Rotation": "2026-11-25",
+"Palms-Down_Dumbbell_Wrist_Curl_Over_A_Bench": "2026-11-25",
+"Palms-Down_Wrist_Curl_Over_A_Bench": "2026-11-25",
+"Palms-Up_Barbell_Wrist_Curl_Over_A_Bench": "2026-11-25",
+"Palms-Up_Dumbbell_Wrist_Curl_Over_A_Bench": "2026-11-25",
+"Parallel_Bar_Dip": "2026-11-25",
+"Pelvic_Tilt_Into_Bridge": "2026-11-25",
+"Peroneals-SMR": "2026-11-25",
+"Peroneals_Stretch": "2026-11-25",
+"Physioball_Hip_Bridge": "2026-11-25",
+"Pin_Presses": "2026-11-25",
+"Piriformis-SMR": "2026-11-25",
+"Plank": "2026-11-25",
+"Plate_Pinch": "2026-11-25",
+"Plate_Twist": "2026-11-25",
+"Platform_Hamstring_Slides": "2026-11-25",
+"Plie_Dumbbell_Squat": "2026-11-25",
+"Plyo_Kettlebell_Pushups": "2026-11-25",
+"Plyo_Push-up": "2026-11-25",
+"Posterior_Tibialis_Stretch": "2026-11-25",
+"Power_Clean": "2026-11-25",
+"Power_Clean_from_Blocks": "2026-11-25",
+"Power_Jerk": "2026-11-25",
+"Power_Partials": "2026-11-25",
+"Power_Snatch": "2026-11-25",
+"Power_Snatch_from_Blocks": "2026-11-25",
+"Power_Stairs": "2026-11-25",
 "Preacher_Curl": "2026-11-19",
 "Pull_Through": "2026-11-19",
 "Reverse_Flyes": "2026-11-19",
